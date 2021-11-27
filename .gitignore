@@ -1,5 +1,7 @@
+3rdparty/VelodyneCapture-*/
 bin/
-build/
+build*/
+lib/
 
 # Prerequisites
 *.d

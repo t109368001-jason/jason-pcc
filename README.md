@@ -6,5 +6,5 @@
 
   ```bash
   sudo apt update
-  sudo apt install libpcl-dev
+  sudo apt install libpcap-dev libpcl-dev
   ```
