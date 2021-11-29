@@ -19,6 +19,8 @@ class ParserParameter : public Parameter {
 
   ParserParameter();
 
+  po::options_description getOpts() override;
+
   friend std::ostream& operator<<(std::ostream& out, const ParserParameter& obj);
 };
 

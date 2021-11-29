@@ -50,6 +50,7 @@ void ParameterParser::parse(int argc, char* argv[]) {
   for (Parameter* param : params_) {
     for (auto& [p1, p2] : param->getConflicts()) { conflicting_options(vm_final, p1, p2); }
     for (auto& [p1, p2] : param->getDependencies()) { option_dependency(vm_final, p1, p2); }
+    param->check();
   }
 
   notify(vm_final);

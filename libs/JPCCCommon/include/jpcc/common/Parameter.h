@@ -13,17 +13,14 @@ namespace common {
 namespace po = boost::program_options;
 
 class Parameter {
- protected:
-  po::options_description opts_;
-
  public:
-  Parameter(const std::string optsName);
-
-  po::options_description& getOpts();
+  virtual po::options_description getOpts();
 
   virtual std::vector<std::array<std::string, 2>> getConflicts();
 
   virtual std::vector<std::array<std::string, 2>> getDependencies();
+
+  virtual void check() const;
 };
 
 }  // namespace common

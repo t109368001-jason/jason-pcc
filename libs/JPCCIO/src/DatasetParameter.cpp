@@ -15,14 +15,18 @@ using namespace po;
 #define FILES_OPT DATASET_OPT_PREFIX ".files"
 #define FRAME_COUNTS_OPT DATASET_OPT_PREFIX ".frameCounts"
 
-DatasetParameter::DatasetParameter() : Parameter("DatasetOptions") {
-  opts_.add_options()                                                           //
+DatasetParameter::DatasetParameter() : type(""), folder(""), totalFiles(0), files(), frameCounts() {}
+
+options_description DatasetParameter::getOpts() {
+  options_description opts("DatasetOptions");
+  opts.add_options()                                                            //
       (TYPE_OPT, value<string>(&type), "dataset type")                          //
       (FOLDER_OPT, value<string>(&folder), "dataset folder")                    //
       (TOTAL_FILES_OPT, value<size_t>(&totalFiles), "dataset folder")           //
       (FILES_OPT, value<vector<string>>(&files), "dataset files")               //
       (FRAME_COUNTS_OPT, value<vector<size_t>>(&frameCounts), "dataset files")  //
       ;
+  return opts;
 }
 
 vector<array<string, 2>> DatasetParameter::getDependencies() {

@@ -22,9 +22,11 @@ class DatasetParameter : public jpcc::common::Parameter {
 
   DatasetParameter();
 
+  po::options_description getOpts() override;
+
   std::vector<std::array<std::string, 2>> getDependencies() override;
 
-  void check() const;
+  void check() const override;
 
   friend std::ostream& operator<<(std::ostream& out, const DatasetParameter& obj);
 };
