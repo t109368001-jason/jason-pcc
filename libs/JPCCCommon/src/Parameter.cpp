@@ -3,15 +3,16 @@
 namespace jpcc {
 namespace common {
 
-namespace po = boost::program_options;
+using namespace std;
+using namespace po;
 
-Parameter::Parameter(const std::string optsName) : opts_(std::move(optsName)) {}
+Parameter::Parameter(const string optsName) : opts_(move(optsName)) {}
 
-po::options_description& Parameter::getOpts() { return opts_; };
+options_description& Parameter::getOpts() { return opts_; };
 
-std::vector<std::array<std::string, 2>> Parameter::getConflicts() { return {}; }
+vector<array<string, 2>> Parameter::getConflicts() { return {}; }
 
-std::vector<std::array<std::string, 2>> Parameter::getDependencies() { return {}; }
+vector<array<string, 2>> Parameter::getDependencies() { return {}; }
 
 }  // namespace common
 }  // namespace jpcc

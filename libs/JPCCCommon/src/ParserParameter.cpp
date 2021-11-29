@@ -3,27 +3,31 @@
 namespace jpcc {
 namespace common {
 
-namespace po = boost::program_options;
+using namespace std;
+using namespace po;
+
+#define DISABLE_ENV_VAR_OPT "disableEnvVar"
+#define CONFIG_OPT "config"
 
 ParserParameter::ParserParameter() : Parameter("ParserOptions"), disableEnvVar(false) {
-  opts_.add_options()                                                                        //
-      ("disableEnvVar",                                                                      //
-       po::value<bool>(&disableEnvVar)->default_value(disableEnvVar),                        //
-       "disable parse environment variable")                                                 //
-      ("config", po::value<std::vector<std::string>>(&config)->composing(), "config files")  //
+  opts_.add_options()                                                            //
+      (DISABLE_ENV_VAR_OPT,                                                      //
+       value<bool>(&disableEnvVar)->default_value(disableEnvVar),                //
+       "disable parse environment variable")                                     //
+      (CONFIG_OPT, value<vector<string>>(&config)->composing(), "config files")  //
       ;
   ;
 }
 
-std::ostream& operator<<(std::ostream& out, const ParserParameter& obj) {
-  out << "ParserParameter (command line only)" << std::endl;
-  out << "\tdisableEnvVar=" << (obj.disableEnvVar ? "true" : "false") << std::endl;
-  out << "\tconfig=";
+ostream& operator<<(ostream& out, const ParserParameter& obj) {
+  out << "ParserParameter (command line only)" << endl;
+  out << "\t" DISABLE_ENV_VAR_OPT "=" << (obj.disableEnvVar ? "true" : "false") << endl;
+  out << "\t" CONFIG_OPT "=";
   for (size_t i = 0; i < obj.config.size(); i++) {
     if (i == 0) { out << "["; }
     if (i != 0) { out << ", "; }
     out << obj.config[i];
-    if (i == (obj.config.size() - 1)) { out << "]" << std::endl; }
+    if (i == (obj.config.size() - 1)) { out << "]" << endl; }
   }
   return out;
 }

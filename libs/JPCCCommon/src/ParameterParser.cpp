@@ -34,7 +34,7 @@ void ParameterParser::parse(int argc, char* argv[]) {
     return;
   }
   notify(vm);
-  std::cout << param_ << std::endl;
+  cout << param_ << endl;
   const parsed_options envOpts =
       parse_environment(opts_, boost::function1<string, string>([&](string envKey) {
                           transform(envKey.begin(), envKey.end(), envKey.begin(), ::toupper);
@@ -55,7 +55,7 @@ void ParameterParser::parse(int argc, char* argv[]) {
   notify(vm_final);
 }
 
-void ParameterParser::parseConfigs(const std::vector<std::string>& configs) {
+void ParameterParser::parseConfigs(const vector<string>& configs) {
   // latest config have higher priority
   for (auto it = configs.rbegin(); it != configs.rend(); ++it) {
     const string& config = *it;
@@ -72,16 +72,12 @@ void ParameterParser::parseConfigs(const std::vector<std::string>& configs) {
   }
 }
 
-void ParameterParser::conflicting_options(const po::variables_map& vm,
-                                          const std::string&       opt1,
-                                          const std::string&       opt2) {
+void ParameterParser::conflicting_options(const variables_map& vm, const string& opt1, const string& opt2) {
   if (vm.count(opt1) && !vm[opt1].defaulted() && vm.count(opt2) && !vm[opt2].defaulted())
     throw logic_error(string("Conflicting options '") + opt1 + "' and '" + opt2 + "'.");
 }
 
-void ParameterParser::option_dependency(const po::variables_map& vm,
-                                        const std::string&       opt,
-                                        const std::string&       requiredOpt) {
+void ParameterParser::option_dependency(const variables_map& vm, const string& opt, const string& requiredOpt) {
   if (vm.count(opt) && !vm[opt].defaulted())
     if (vm.count(requiredOpt) == 0 || vm[requiredOpt].defaulted())
       throw logic_error(string("Option '") + opt + "' requires option '" + requiredOpt + "'.");
