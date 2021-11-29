@@ -14,13 +14,17 @@ namespace po = boost::program_options;
 
 class DatasetParameter : public jpcc::common::Parameter {
  public:
-  std::string              datasetType;
-  std::string              datasetFolder;
-  std::vector<std::string> datasetFiles;
+  std::string              type;
+  std::string              folder;
+  size_t                   totalFiles;
+  std::vector<std::string> files;
+  std::vector<size_t>      frameCounts;
 
   DatasetParameter();
 
   std::vector<std::array<std::string, 2>> getDependencies() override;
+
+  void check() const;
 
   friend std::ostream& operator<<(std::ostream& out, const DatasetParameter& obj);
 };
