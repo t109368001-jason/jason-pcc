@@ -9,13 +9,17 @@ using namespace std;
 using namespace po;
 
 #define PCAP_READER_OPT_PREFIX "pcapReader"
+#define BUFFER_SIZE_OPT PCAP_READER_OPT_PREFIX ".bufferSize"
 #define POINT_TYPES_OPT PCAP_READER_OPT_PREFIX ".pointTypes"
 
-PcapReaderParameter::PcapReaderParameter() : pointTypes() {}
+PcapReaderParameter::PcapReaderParameter() : bufferSize(32), pointTypes() {}
 
 options_description PcapReaderParameter::getOpts() {
   options_description opts("DatasetOptions");
   opts.add_options()                                                              //
+      (BUFFER_SIZE_OPT,                                                           //
+       value<size_t>(&bufferSize)->default_value(bufferSize),                     //
+       "velodyne capture buffer size")                                            //
       (POINT_TYPES_OPT,                                                           //
        value<vector<string>>(&pointTypes_)->required(),                           //
        "types to read: [azimuth, vertical, distance, intensity, id, time, xyz]")  //
@@ -24,11 +28,13 @@ options_description PcapReaderParameter::getOpts() {
 }
 
 void PcapReaderParameter::notify() {
+  assert(bufferSize > 0);
   for (string& pointType : pointTypes_) { pointTypes.insert(pointType); }
 }
 
 ostream& operator<<(ostream& out, const PcapReaderParameter& obj) {
   out << "PcapReaderParameter" << endl;
+  out << "\t" BUFFER_SIZE_OPT "=" << obj.bufferSize << endl;
   out << "\t" POINT_TYPES_OPT "=";
   size_t                i = 0;
   set<string>::iterator it;

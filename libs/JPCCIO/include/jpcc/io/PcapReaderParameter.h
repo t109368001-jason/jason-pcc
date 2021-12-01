@@ -17,6 +17,7 @@ class PcapReaderParameter : public jpcc::common::Parameter {
   std::vector<std::string> pointTypes_;
 
  public:
+  size_t                bufferSize;
   std::set<std::string> pointTypes;
 
   PcapReaderParameter();

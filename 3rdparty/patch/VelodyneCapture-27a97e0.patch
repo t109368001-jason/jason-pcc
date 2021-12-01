@@ -1,9 +1,9 @@
 diff --git a/VelodyneCapture.cpp b/VelodyneCapture.cpp
 new file mode 100644
-index 0000000..3bef564
+index 0000000..4ed3d77
 --- /dev/null
 +++ b/VelodyneCapture.cpp
-@@ -0,0 +1,432 @@
+@@ -0,0 +1,455 @@
 +// VelodyneCapture
 +//
 +// VelodyneCapture is the capture class to retrieve the laser data from Velodyne sensors using Boost.Asio and PCAP.
@@ -106,7 +106,7 @@ index 0000000..3bef564
 +
 +#ifdef HAVE_PCAP
 +// Open Capture from PCAP
-+const bool VelodyneCapture::open(const std::string& filename) {
++const bool VelodyneCapture::open(const std::string& filename, const size_t bufferSize) {
 +  // Check Running
 +  if (isRun()) { close(); }
 +
@@ -131,8 +131,10 @@ index 0000000..3bef564
 +    return false;
 +  }
 +
-+  this->pcap     = pcap;
-+  this->filename = filename;
++  this->pcap               = pcap;
++  this->filename           = filename;
++  this->bufferSize_        = bufferSize;
++  this->currentFrameIndex_ = 0;
 +
 +  // Start Capture Thread
 +  run    = true;
@@ -140,6 +142,10 @@ index 0000000..3bef564
 +
 +  return true;
 +};
++
++std::string& VelodyneCapture::getFilename() { return filename; }
++
++size_t VelodyneCapture::getCurrentFrameIndex() { return currentFrameIndex_; }
 +#endif
 +
 +// Check Open
@@ -172,6 +178,9 @@ index 0000000..3bef564
 +// Close Capture
 +void VelodyneCapture::close() {
 +  run = false;
++#ifdef HAVE_PCAP
++  condition_.notify_all();
++#endif
 +  // Close Capturte Thread
 +  if (thread && thread->joinable()) {
 +    thread->join();
@@ -212,13 +221,15 @@ index 0000000..3bef564
 +// Retrieve Capture Data
 +void VelodyneCapture::retrieve(std::vector<Laser>& lasers, const bool sort) {
 +  // Pop One Rotation Data from Queue
-+  if (mutex.try_lock()) {
-+    if (!queue.empty()) {
-+      lasers = std::move(queue.front());
-+      queue.pop();
-+      if (sort) { std::sort(lasers.begin(), lasers.end()); }
-+    }
-+    mutex.unlock();
++  std::lock_guard<std::mutex> lock(mutex);
++  if (!queue.empty()) {
++    lasers = std::move(queue.front());
++    queue.pop();
++#ifdef HAVE_PCAP
++    currentFrameIndex_++;
++    condition_.notify_all();
++#endif
++    if (sort) { std::sort(lasers.begin(), lasers.end()); }
 +  }
 +};
 +
@@ -234,18 +245,16 @@ index 0000000..3bef564
 +}
 +
 +// private:
-+void VelodyneCapture::parseDataPacket(const DataPacket* packet, std::vector<Laser>& lasers, double& last_azimuth) {
++void VelodyneCapture::parseDataPacket(const DataPacket*   packet,
++                                      std::vector<Laser>& lasers,
++                                      double&             last_azimuth,
++                                      const long long     unixtime) {
 +  if (packet->sensorType != 0x21 && packet->sensorType != 0x22) {
 +    throw(std::runtime_error("This sensor is not supported"));
 +  }
 +  if (packet->mode != 0x37 && packet->mode != 0x38) {
 +    throw(std::runtime_error("Sensor can't be set in dual return mode"));
 +  }
-+
-+  // Retrieve Unix Time ( microseconds )
-+  const std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
-+  const std::chrono::microseconds epoch = std::chrono::duration_cast<std::chrono::microseconds>(now.time_since_epoch());
-+  const long long                 unixtime = epoch.count();
 +
 +  // Azimuth delta is the angle from one firing sequence to the next one
 +  double azimuth_delta = 0.0;
@@ -331,10 +340,16 @@ index 0000000..3bef564
 +    // Data Blocks ( 100 bytes * 12 blocks ) + Time Stamp ( 4 bytes ) + Factory ( 2 bytes )
 +    if (length != 1206) { continue; }
 +
++    // Retrieve Unix Time ( microseconds )
++    const std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
++    const std::chrono::microseconds                          epoch =
++        std::chrono::duration_cast<std::chrono::microseconds>(now.time_since_epoch());
++    const long long unixtime = epoch.count();
++
 +    // Convert to DataPacket Structure
 +    // Sensor Type 0x21 is HDL-32E, 0x22 is VLP-16
 +    const DataPacket* packet = reinterpret_cast<const DataPacket*>(data);
-+    parseDataPacket(packet, lasers, last_azimuth);
++    parseDataPacket(packet, lasers, last_azimuth, unixtime);
 +  }
 +  run = false;
 +};
@@ -347,6 +362,14 @@ index 0000000..3bef564
 +  std::vector<Laser> lasers;
 +
 +  while (run) {
++#ifdef HAVE_PCAP
++    if (getQueueSize() >= bufferSize_) {
++      std::mutex                   m;
++      std::unique_lock<std::mutex> lock(m);
++      condition_.wait(lock, [this] { return getQueueSize() < bufferSize_ || !run; });
++      continue;
++    }
++#endif
 +    // Retrieve Header and Data from PCAP
 +    struct pcap_pkthdr*  header;
 +    const unsigned char* data;
@@ -365,7 +388,7 @@ index 0000000..3bef564
 +    // Convert to DataPacket Structure ( Cut Header 42 bytes )
 +    // Sensor Type 0x21 is HDL-32E, 0x22 is VLP-16
 +    const DataPacket* packet = reinterpret_cast<const DataPacket*>(data + 42);
-+    parseDataPacket(packet, lasers, last_azimuth);
++    parseDataPacket(packet, lasers, last_azimuth, unixtime);
 +  }
 +  run = false;
 +};
@@ -385,9 +408,9 @@ index 0000000..3bef564
 +#endif
 +
 +#ifdef HAVE_PCAP
-+VLP16Capture::VLP16Capture(const std::string& filename) : VelodyneCapture() {
++VLP16Capture::VLP16Capture(const std::string& filename, const size_t bufferSize) : VelodyneCapture() {
 +  initialize();
-+  open(filename);
++  open(filename, bufferSize);
 +};
 +#endif
 +
@@ -437,9 +460,27 @@ index 0000000..3bef564
 +// };
 +}  // namespace velodyne
 diff --git a/VelodyneCapture.h b/VelodyneCapture.h
-index d553176..61174cf 100644
+index d553176..c20807a 100644
 --- a/VelodyneCapture.h
 +++ b/VelodyneCapture.h
+@@ -1,12 +1,12 @@
+ // VelodyneCapture
+ //
+ // VelodyneCapture is the capture class to retrieve the laser data from Velodyne sensors using Boost.Asio and PCAP.
+-// VelodyneCapture will be able to retrieve lasers infomation about azimuth, vertical and distance that capture at one rotation.
+-// This class supports direct capture form Velodyne sensors, or capture from PCAP files.
+-// ( This class only supports VLP-16 and HDL-32E sensor, and not supports Dual Return mode. )
++// VelodyneCapture will be able to retrieve lasers infomation about azimuth, vertical and distance that capture at one
++// rotation. This class supports direct capture form Velodyne sensors, or capture from PCAP files. ( This class only
++// supports VLP-16 and HDL-32E sensor, and not supports Dual Return mode. )
+ //
+-// If direct capture from sensors, VelodyneCapture are requires Boost.Asio and its dependent libraries ( Boost.System, Boost.Date_Time, Boost.Regex ).
+-// Please define HAVE_BOOST in preprocessor.
++// If direct capture from sensors, VelodyneCapture are requires Boost.Asio and its dependent libraries ( Boost.System,
++// Boost.Date_Time, Boost.Regex ). Please define HAVE_BOOST in preprocessor.
+ //
+ // If capture from PCAP files, VelodyneCapture are requires PCAP.
+ // Please define HAVE_PCAP in preprocessor.
 @@ -19,7 +19,6 @@
  #define VELODYNE_CAPTURE
  
@@ -448,7 +489,7 @@ index d553176..61174cf 100644
  #include <thread>
  #include <atomic>
  #include <mutex>
-@@ -27,19 +26,12 @@
+@@ -27,542 +26,187 @@
  #include <vector>
  #include <cassert>
  #include <cstdint>
@@ -463,47 +504,117 @@ index d553176..61174cf 100644
  #endif
  #ifdef HAVE_PCAP
  #include <pcap.h>
++#include <condition_variable>
  #endif
 -#define EPSILON 0.001
- 
- namespace velodyne
- {
-@@ -120,448 +112,98 @@ namespace velodyne
- 
-         public:
-             // Constructor
+-
+-namespace velodyne
+-{
+-    struct Laser
+-    {
+-        double azimuth;
+-        double vertical;
+-        float distance;
+-        unsigned char intensity;
+-        unsigned char id;
+-        long long time;
+-
+-        const bool operator < ( const struct Laser& laser ){
+-            if( azimuth == laser.azimuth ){
+-                return id < laser.id;
+-            }
+-            else{
+-                return azimuth < laser.azimuth;
+-            }
+-        }
+-    };
+-
+-    class VelodyneCapture
+-    {
+-        protected:
+-            #ifdef HAVE_BOOST
+-            boost::asio::io_service ioservice;
+-            boost::asio::ip::udp::socket* socket = nullptr;
+-            boost::asio::ip::address address;
+-            unsigned short port = 2368;
+-            #endif
+-
+-            #ifdef HAVE_PCAP
+-            pcap_t* pcap = nullptr;
+-            std::string filename = "";
+-            #endif
+-
+-            std::thread* thread = nullptr;
+-            std::atomic_bool run = { false };
+-            std::mutex mutex;
+-            std::queue<std::vector<Laser>> queue;
+-
+-            int max_num_lasers;
+-            std::vector<double> lut;
+-            double time_between_firings;
+-            double time_half_idle;
+-            double time_total_cycle;
+-
+-            static const int LASER_PER_FIRING = 32;
+-            static const int FIRING_PER_PKT = 12;
+-
+-            #pragma pack(push, 1)
+-            typedef struct LaserReturn
+-            {
+-                uint16_t distance;
+-                uint8_t intensity;
+-            } LaserReturn;
+-            #pragma pack(pop)
+-
+-            #pragma pack(push, 1)
+-            struct FiringData
+-            {
+-                uint16_t blockIdentifier;
+-                uint16_t rotationalPosition;
+-                LaserReturn laserReturns[LASER_PER_FIRING];
+-            };
+-            #pragma pack(pop)
+-
+-            #pragma pack(push, 1)
+-            struct DataPacket
+-            {
+-                FiringData firingData[FIRING_PER_PKT];
+-                uint32_t gpsTimestamp;
+-                uint8_t mode;
+-                uint8_t sensorType;
+-            };
+-            #pragma pack(pop)
+-
+-        public:
+-            // Constructor
 -            VelodyneCapture()
 -            {
 -            };
-+            VelodyneCapture();
- 
-             #ifdef HAVE_BOOST
-             // Constructor ( direct capture from Sensor )
+-
+-            #ifdef HAVE_BOOST
+-            // Constructor ( direct capture from Sensor )
 -            VelodyneCapture( const boost::asio::ip::address& address, const unsigned short port = 2368 )
 -            {
 -                open( address, port );
 -            };
-+            VelodyneCapture( const boost::asio::ip::address& address, const unsigned short port = 2368 );
-             #endif
- 
-             #ifdef HAVE_PCAP
-             // Constructor ( capture from PCAP )
+-            #endif
+-
+-            #ifdef HAVE_PCAP
+-            // Constructor ( capture from PCAP )
 -            VelodyneCapture( const std::string& filename )
 -            {
 -                open( filename );
 -            };
-+            VelodyneCapture( const std::string& filename );
-             #endif
- 
-             // Destructor
+-            #endif
+-
+-            // Destructor
 -            ~VelodyneCapture()
 -            {
 -                close();
 -            };
-+            ~VelodyneCapture();
- 
-             #ifdef HAVE_BOOST
-             // Open Direct Capture from Sensor
+-
+-            #ifdef HAVE_BOOST
+-            // Open Direct Capture from Sensor
 -            const bool open( const boost::asio::ip::address& address, const unsigned short port = 2368 )
 -            {
 -                // Check Running
@@ -539,11 +650,10 @@ index d553176..61174cf 100644
 -
 -                return true;
 -            };
-+            const bool open( const boost::asio::ip::address& address, const unsigned short port = 2368 );
-             #endif
- 
-             #ifdef HAVE_PCAP
-             // Open Capture from PCAP
+-            #endif
+-
+-            #ifdef HAVE_PCAP
+-            // Open Capture from PCAP
 -            const bool open( const std::string& filename )
 -            {
 -                // Check Running
@@ -581,10 +691,9 @@ index d553176..61174cf 100644
 -
 -                return true;
 -            };
-+            const bool open( const std::string& filename );
-             #endif
- 
-             // Check Open
+-            #endif
+-
+-            // Check Open
 -            const bool isOpen()
 -            {
 -                std::lock_guard<std::mutex> lock( mutex );
@@ -604,18 +713,16 @@ index d553176..61174cf 100644
 -                    #endif
 -                );
 -            };
-+            const bool isOpen();
- 
-             // Check Run
+-
+-            // Check Run
 -            const bool isRun()
 -            {
 -                // Returns True when Thread is Running or Queue is Not Empty
 -                std::lock_guard<std::mutex> lock( mutex );
 -                return ( run || !queue.empty() );
 -            }
-+            const bool isRun();
- 
-             // Close Capture
+-
+-            // Close Capture
 -            void close()
 -            {
 -                run = false;
@@ -655,9 +762,8 @@ index d553176..61174cf 100644
 -                // Clear Queue
 -                std::queue<std::vector<Laser>>().swap( queue );
 -            };
-+            void close();
- 
-             // Retrieve Capture Data
+-
+-            // Retrieve Capture Data
 -            void retrieve( std::vector<Laser>& lasers, const bool sort = false )
 -            {
 -                // Pop One Rotation Data from Queue
@@ -672,24 +778,21 @@ index d553176..61174cf 100644
 -                    mutex.unlock();
 -                }
 -            };
-+            void retrieve( std::vector<Laser>& lasers, const bool sort = false );
- 
-             // Operator Retrieve Capture Data with Sort
+-
+-            // Operator Retrieve Capture Data with Sort
 -            void operator >> ( std::vector<Laser>& lasers )
 -            {
 -                // Retrieve Capture Data
 -                retrieve( lasers, false );
 -            };
-+            void operator >> ( std::vector<Laser>& lasers );
- 
+-
 -            size_t getQueueSize()
 -            {
 -                std::lock_guard<std::mutex> lock( mutex );
 -                return queue.size();
 -            }
-+            size_t getQueueSize();
- 
-         private:
+-
+-        private:
 -          void parseDataPacket( const DataPacket* packet, std::vector<Laser>& lasers, double& last_azimuth )
 -          {
 -            if( packet->sensorType != 0x21 && packet->sensorType != 0x22 ){
@@ -774,10 +877,8 @@ index d553176..61174cf 100644
 -              #endif
 -
 -          };
-+          void parseDataPacket( const DataPacket* packet, std::vector<Laser>& lasers, double& last_azimuth );
-+            
-             #ifdef HAVE_BOOST
-             // Capture Thread from Sensor
+-            #ifdef HAVE_BOOST
+-            // Capture Thread from Sensor
 -            void captureSensor()
 -            {
 -                double last_azimuth = 0.0;
@@ -812,11 +913,10 @@ index d553176..61174cf 100644
 -                }
 -                run = false;
 -            };
-+            void captureSensor();
-             #endif
- 
-             #ifdef HAVE_PCAP
-             // Capture Thread from PCAP
+-            #endif
+-
+-            #ifdef HAVE_PCAP
+-            // Capture Thread from PCAP
 -            void capturePCAP()
 -            {
 -                double last_azimuth = 0.0;
@@ -849,43 +949,38 @@ index d553176..61174cf 100644
 -                }
 -                run = false;
 -            };
-+            void capturePCAP();
-             #endif
-     };
- 
-     class VLP16Capture : public VelodyneCapture
-     {
-         public:
+-            #endif
+-    };
+-
+-    class VLP16Capture : public VelodyneCapture
+-    {
+-        public:
 -            VLP16Capture() : VelodyneCapture()
 -            {
 -                initialize();
 -            };
-+            VLP16Capture();
- 
-             #ifdef HAVE_BOOST
+-
+-            #ifdef HAVE_BOOST
 -            VLP16Capture( const boost::asio::ip::address& address, const unsigned short port = 2368 ) : VelodyneCapture()
 -            {
 -                initialize();
 -                open( address, port );
 -            };
-+            VLP16Capture( const boost::asio::ip::address& address, const unsigned short port = 2368 );
-             #endif
- 
-             #ifdef HAVE_PCAP
+-            #endif
+-
+-            #ifdef HAVE_PCAP
 -            VLP16Capture( const std::string& filename ) : VelodyneCapture()
 -            {
 -                initialize();
 -                open( filename );
 -            };
-+            VLP16Capture( const std::string& filename );
-             #endif
- 
+-            #endif
+-
 -            ~VLP16Capture()
 -            {
 -            };
-+            ~VLP16Capture();
- 
-         private:
+-
+-        private:
 -            void initialize()
 -            {
 -                max_num_lasers       = 16;
@@ -894,42 +989,37 @@ index d553176..61174cf 100644
 -                time_half_idle       = 18.432;
 -                time_total_cycle     = 110.592; // 55.296*2;
 -            };
-+            void initialize();
-     };
- 
-     class HDL32ECapture : public VelodyneCapture
-     {
-         public:
+-    };
+-
+-    class HDL32ECapture : public VelodyneCapture
+-    {
+-        public:
 -            HDL32ECapture() : VelodyneCapture()
 -            {
 -                initialize();
 -            };
-+            HDL32ECapture();
- 
-             #ifdef HAVE_BOOST
+-
+-            #ifdef HAVE_BOOST
 -            HDL32ECapture( const boost::asio::ip::address& address, const unsigned short port = 2368 ) : VelodyneCapture()
 -            {
 -                initialize();
 -                open( address, port );
 -            };
-+            HDL32ECapture( const boost::asio::ip::address& address, const unsigned short port = 2368 );
-             #endif
- 
-             #ifdef HAVE_PCAP
+-            #endif
+-
+-            #ifdef HAVE_PCAP
 -            HDL32ECapture( const std::string& filename ) : VelodyneCapture()
 -            {
 -                initialize();
 -                open( filename );
 -            };
-+            HDL32ECapture( const std::string& filename );
-             #endif
- 
+-            #endif
+-
 -            ~HDL32ECapture()
 -            {
 -            };
-+            ~HDL32ECapture();
- 
-         private:
+-
+-        private:
 -            void initialize()
 -            {
 -                max_num_lasers       = 32;
@@ -939,7 +1029,182 @@ index d553176..61174cf 100644
 -                time_half_idle       = 0.0;
 -                time_total_cycle     = 46.080; 
 -            };
-+            void initialize();
-     };
- }
+-    };
+-}
++
++namespace velodyne {
++struct Laser {
++  double        azimuth;
++  double        vertical;
++  float         distance;
++  unsigned char intensity;
++  unsigned char id;
++  long long     time;
++
++  const bool operator<(const struct Laser& laser) {
++    if (azimuth == laser.azimuth) {
++      return id < laser.id;
++    } else {
++      return azimuth < laser.azimuth;
++    }
++  }
++};
++
++class VelodyneCapture {
++ protected:
++#ifdef HAVE_BOOST
++  boost::asio::io_service       ioservice;
++  boost::asio::ip::udp::socket* socket = nullptr;
++  boost::asio::ip::address      address;
++  unsigned short                port = 2368;
++#endif
++
++#ifdef HAVE_PCAP
++  pcap_t*                 pcap     = nullptr;
++  std::string             filename = "";
++  size_t                  bufferSize_;
++  std::condition_variable condition_;
++  size_t                  currentFrameIndex_ = 0;
++#endif
++
++  std::thread*                   thread = nullptr;
++  std::atomic_bool               run    = {false};
++  std::mutex                     mutex;
++  std::queue<std::vector<Laser>> queue;
++
++  int                 max_num_lasers;
++  std::vector<double> lut;
++  double              time_between_firings;
++  double              time_half_idle;
++  double              time_total_cycle;
++
++  static const int LASER_PER_FIRING = 32;
++  static const int FIRING_PER_PKT   = 12;
++
++#pragma pack(push, 1)
++  typedef struct LaserReturn {
++    uint16_t distance;
++    uint8_t  intensity;
++  } LaserReturn;
++#pragma pack(pop)
++
++#pragma pack(push, 1)
++  struct FiringData {
++    uint16_t    blockIdentifier;
++    uint16_t    rotationalPosition;
++    LaserReturn laserReturns[LASER_PER_FIRING];
++  };
++#pragma pack(pop)
++
++#pragma pack(push, 1)
++  struct DataPacket {
++    FiringData firingData[FIRING_PER_PKT];
++    uint32_t   gpsTimestamp;
++    uint8_t    mode;
++    uint8_t    sensorType;
++  };
++#pragma pack(pop)
++
++ public:
++  // Constructor
++  VelodyneCapture();
++
++#ifdef HAVE_BOOST
++  // Constructor ( direct capture from Sensor )
++  VelodyneCapture(const boost::asio::ip::address& address, const unsigned short port = 2368);
++#endif
++
++#ifdef HAVE_PCAP
++  // Constructor ( capture from PCAP )
++  VelodyneCapture(const std::string& filename);
++#endif
++
++  // Destructor
++  ~VelodyneCapture();
++
++#ifdef HAVE_BOOST
++  // Open Direct Capture from Sensor
++  const bool open(const boost::asio::ip::address& address, const unsigned short port = 2368);
++#endif
++
++#ifdef HAVE_PCAP
++  // Open Capture from PCAP
++  const bool open(const std::string& filename, const size_t bufferSize = 1);
++
++  std::string& getFilename();
++
++  size_t getCurrentFrameIndex();
++#endif
++
++  // Check Open
++  const bool isOpen();
++
++  // Check Run
++  const bool isRun();
++
++  // Close Capture
++  void close();
++
++  // Retrieve Capture Data
++  void retrieve(std::vector<Laser>& lasers, const bool sort = false);
++
++  // Operator Retrieve Capture Data with Sort
++  void operator>>(std::vector<Laser>& lasers);
++
++  size_t getQueueSize();
++
++ private:
++  void parseDataPacket(const DataPacket*   packet,
++                       std::vector<Laser>& lasers,
++                       double&             last_azimuth,
++                       const long long     unixtime);
++
++#ifdef HAVE_BOOST
++  // Capture Thread from Sensor
++  void captureSensor();
++#endif
++
++#ifdef HAVE_PCAP
++  // Capture Thread from PCAP
++  void capturePCAP();
++#endif
++};
++
++class VLP16Capture : public VelodyneCapture {
++ public:
++  VLP16Capture();
++
++#ifdef HAVE_BOOST
++  VLP16Capture(const boost::asio::ip::address& address, const unsigned short port = 2368);
++#endif
++
++#ifdef HAVE_PCAP
++  VLP16Capture(const std::string& filename, const size_t bufferSize = 1);
++#endif
++
++  ~VLP16Capture();
++
++ private:
++  void initialize();
++};
++
++class HDL32ECapture : public VelodyneCapture {
++ public:
++  HDL32ECapture();
++
++#ifdef HAVE_BOOST
++  HDL32ECapture(const boost::asio::ip::address& address, const unsigned short port = 2368);
++#endif
++
++#ifdef HAVE_PCAP
++  HDL32ECapture(const std::string& filename);
++#endif
++
++  ~HDL32ECapture();
++
++ private:
++  void initialize();
++};
++}  // namespace velodyne
  
+ #endif

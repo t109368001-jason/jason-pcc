@@ -6,6 +6,8 @@
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 
+#include <VelodyneCapture.h>
+
 #include <jpcc/common/Common.h>
 #include <jpcc/common/GroupOfFrame.h>
 #include <jpcc/io/DatasetParameter.h>
@@ -18,17 +20,27 @@ using GroupOfFrame = common::GroupOfFrame;
 
 class PcapReader {
  protected:
-  PcapReaderParameter param_;
-  DatasetParameter    datasetParam_;
+  PcapReaderParameter                             param_;
+  DatasetParameter                                datasetParam_;
+  std::vector<shared_ptr<velodyne::VLP16Capture>> captures;
 
  public:
   void setPcapReaderParameter(const PcapReaderParameter& param);
 
   void setDatasetParameter(const DatasetParameter& datasetParam);
 
-  void load(std::vector<GroupOfFrame>& sources, const size_t startFrameIndex, const size_t groupOfFramesSize, const bool parallel = false) const;
+  void load(std::vector<GroupOfFrame>& sources,
+            const size_t               startFrameIndex,
+            const size_t               groupOfFramesSize,
+            const bool                 parallel = false);
 
-  GroupOfFrame load(const size_t datasetIndex, const size_t startFrameIndex, const size_t groupOfFramesSize, const bool parallel = false) const;
+ protected:
+  void open(const size_t startFrameIndex);
+
+  GroupOfFrame load(const shared_ptr<velodyne::VLP16Capture>,
+                    const size_t startFrameIndex,
+                    const size_t groupOfFramesSize,
+                    const bool   parallel);
 };
 
 }  // namespace io
