@@ -13,6 +13,21 @@ SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
 SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 
 FIND_PACKAGE(Boost 1.65.0 REQUIRED COMPONENTS system program_options)
+IF(MSVC)
+macro(get_WIN32_WINNT version)
+    if (WIN32 AND CMAKE_SYSTEM_VERSION)
+        set(ver ${CMAKE_SYSTEM_VERSION})
+        string(REPLACE "." "" ver ${ver})
+        string(REGEX REPLACE "([0-9])" "0\\1" ver ${ver})
+
+        set(${version} "0x${ver}")
+    endif()
+endmacro()
+
+get_WIN32_WINNT(WIN32_WINNT)
+add_definitions(-D_WIN32_WINNT=${WIN32_WINNT})
+ENDIF(MSVC)
+
 FIND_PACKAGE(PCL 1.3 REQUIRED COMPONENTS common)
 ADD_DEFINITIONS(-DHAVE_BOOST)
 
