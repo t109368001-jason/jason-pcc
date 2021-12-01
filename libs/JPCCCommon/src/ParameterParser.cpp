@@ -33,8 +33,6 @@ void ParameterParser::parse(int argc, char* argv[]) {
     cout << opts_ << "\n";
     return;
   }
-  notify(vm);
-  cout << param_ << endl;
   const parsed_options envOpts =
       parse_environment(opts_, boost::function1<string, string>([&](string envKey) {
                           transform(envKey.begin(), envKey.end(), envKey.begin(), ::toupper);
@@ -50,10 +48,11 @@ void ParameterParser::parse(int argc, char* argv[]) {
   for (Parameter* param : params_) {
     for (auto& [p1, p2] : param->getConflicts()) { conflicting_options(vm_final, p1, p2); }
     for (auto& [p1, p2] : param->getDependencies()) { option_dependency(vm_final, p1, p2); }
-    param->check();
   }
 
   notify(vm_final);
+  for (Parameter* param : params_) { param->notify(); }
+  cout << param_ << endl;
 }
 
 void ParameterParser::parseConfigs(const vector<string>& configs) {

@@ -19,28 +19,24 @@ DatasetParameter::DatasetParameter() : type(""), folder(""), totalFiles(0), file
 
 options_description DatasetParameter::getOpts() {
   options_description opts("DatasetOptions");
-  opts.add_options()                                                            //
-      (TYPE_OPT, value<string>(&type), "dataset type")                          //
-      (FOLDER_OPT, value<string>(&folder), "dataset folder")                    //
-      (TOTAL_FILES_OPT, value<size_t>(&totalFiles), "dataset folder")           //
-      (FILES_OPT, value<vector<string>>(&files), "dataset files")               //
-      (FRAME_COUNTS_OPT, value<vector<size_t>>(&frameCounts), "dataset files")  //
+  opts.add_options()                                                               //
+      (TYPE_OPT, value<string>(&type)->required(), "dataset type")                 //
+      (FOLDER_OPT, value<string>(&folder)->required(), "dataset folder")           //
+      (TOTAL_FILES_OPT, value<size_t>(&totalFiles)->required(), "dataset folder")  //
+      (FILES_OPT, value<vector<string>>(&files), "dataset files")                  //
+      (FRAME_COUNTS_OPT, value<vector<size_t>>(&frameCounts), "dataset files")     //
       ;
   return opts;
 }
 
 vector<array<string, 2>> DatasetParameter::getDependencies() {
   return {
-      {FOLDER_OPT, TYPE_OPT},         //
-      {TOTAL_FILES_OPT, FOLDER_OPT},  //
-      {FILES_OPT, TYPE_OPT},          //
-      {FILES_OPT, FOLDER_OPT},        //
       {FILES_OPT, TOTAL_FILES_OPT},   //
       {FRAME_COUNTS_OPT, FILES_OPT},  //
   };
 }
 
-void DatasetParameter::check() const {
+void DatasetParameter::notify() {
   if (totalFiles != files.size()) { throw runtime_error(TOTAL_FILES_OPT " not match number of " FILES_OPT); }
   if (totalFiles != frameCounts.size()) {
     throw runtime_error(TOTAL_FILES_OPT " not match number of " FRAME_COUNTS_OPT);

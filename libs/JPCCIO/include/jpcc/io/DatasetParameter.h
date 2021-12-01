@@ -26,7 +26,7 @@ class DatasetParameter : public jpcc::common::Parameter {
 
   std::vector<std::array<std::string, 2>> getDependencies() override;
 
-  void check() const override;
+  void notify() override;
 
   friend std::ostream& operator<<(std::ostream& out, const DatasetParameter& obj);
 };

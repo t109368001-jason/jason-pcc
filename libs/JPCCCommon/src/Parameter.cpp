@@ -14,7 +14,7 @@ vector<array<string, 2>> Parameter::getConflicts() { return {}; }
 
 vector<array<string, 2>> Parameter::getDependencies() { return {}; }
 
-void Parameter::check() const {}
+void Parameter::notify() {}
 
 }  // namespace common
 }  // namespace jpcc

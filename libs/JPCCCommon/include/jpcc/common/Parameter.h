@@ -20,7 +20,7 @@ class Parameter {
 
   virtual std::vector<std::array<std::string, 2>> getDependencies();
 
-  virtual void check() const;
+  virtual void notify();
 };
 
 }  // namespace common
