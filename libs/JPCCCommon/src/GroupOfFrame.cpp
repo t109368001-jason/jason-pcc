@@ -13,7 +13,7 @@ void GroupOfFrame::setStartFrameIndex(const size_t startFrameIndex) { startFrame
 
 std::vector<Frame>& GroupOfFrame::getFrames() { return frames_; }
 
-Frame& Frame::operator[](size_t index) {
+Frame& GroupOfFrame::operator[](size_t index) {
   assert(index < frames_.size());
   return frames_[index];
 }
