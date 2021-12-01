@@ -28,6 +28,8 @@ class DatasetParameter : public jpcc::common::Parameter {
 
   void notify() override;
 
+  std::string getFilePath(const size_t index) const;
+
   friend std::ostream& operator<<(std::ostream& out, const DatasetParameter& obj);
 };
 

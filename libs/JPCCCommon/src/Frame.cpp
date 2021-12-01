@@ -5,6 +5,18 @@
 namespace jpcc {
 namespace common {
 
+using namespace std;
+
+void Frame::addPointTypes(const set<string>& pointTypes) {
+  if (pointTypes.contains("azimuth")) { addAzimuths(); }
+  if (pointTypes.contains("vertical")) { addVerticals(); }
+  if (pointTypes.contains("distance")) { addDistances(); }
+  if (pointTypes.contains("intensity")) { addIntensities(); }
+  if (pointTypes.contains("id")) { addIds(); }
+  if (pointTypes.contains("time")) { addTimes(); }
+  if (pointTypes.contains("point")) { addPoints(); }
+}
+
 void Frame::resize(const size_t size) {
   if (hasAzimuth()) { azimuths_.resize(size); }
   if (hasVertical()) { verticals_.resize(size); }
@@ -66,21 +78,21 @@ bool Frame::hasTime() const { return hasTime_; }
 
 bool Frame::hasPoint() const { return hasPoint_; }
 
-std::vector<double>& Frame::getAzimuths() { return azimuths_; };
+vector<double>& Frame::getAzimuths() { return azimuths_; };
 
-std::vector<double>& Frame::getVerticals() { return verticals_; };
+vector<double>& Frame::getVerticals() { return verticals_; };
 
-std::vector<float>& Frame::getDistances() { return distances_; };
+vector<float>& Frame::getDistances() { return distances_; };
 
-std::vector<unsigned char>& Frame::getIntensities() { return intensities_; };
+vector<unsigned char>& Frame::getIntensities() { return intensities_; };
 
-std::vector<unsigned char>& Frame::getIds() { return ids_; };
+vector<unsigned char>& Frame::getIds() { return ids_; };
 
-std::vector<long long>& Frame::getTimes() { return times_; };
+vector<long long>& Frame::getTimes() { return times_; };
 
-std::vector<Point>& Frame::getPoints() { return points_; };
+vector<Point>& Frame::getPoints() { return points_; };
 
-std::ostream& operator<<(std::ostream& out, Frame& obj) {
+ostream& operator<<(ostream& out, Frame& obj) {
   out << "Frame(";
   out << "azimuths=" << obj.getAzimuths().size() << ", ";
   out << "verticals=" << obj.getVerticals().size() << ", ";

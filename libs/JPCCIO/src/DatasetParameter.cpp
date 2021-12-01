@@ -43,6 +43,11 @@ void DatasetParameter::notify() {
   }
 }
 
+std::string DatasetParameter::getFilePath(const size_t index) const {
+  assert(index < files.size());
+  return folder + files[index];
+}
+
 ostream& operator<<(ostream& out, const DatasetParameter& obj) {
   out << "DatasetParameter" << endl;
   out << "\t" TYPE_OPT "=" << obj.type << endl;

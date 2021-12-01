@@ -1,6 +1,8 @@
 #ifndef JPCC_COMMON_FRAME_H_
 #define JPCC_COMMON_FRAME_H_
 
+#include <set>
+
 #include <jpcc/common/Common.h>
 
 namespace jpcc {
@@ -24,6 +26,8 @@ class Frame {
   std::vector<Point>         points_;
 
  public:
+  void addPointTypes(const std::set<std::string>& pointTypes);
+
   void resize(const size_t size);
 
   void add(const Laser& laser);
