@@ -38,6 +38,48 @@ size_t Frame::size() const {
   return 0;
 }
 
+void Frame::addAzimuths() { hasAzimuth_ = true; }
+
+void Frame::addVerticals() { hasVertical_ = true; }
+
+void Frame::addDistances() { hasDistance_ = true; }
+
+void Frame::addIntensities() { hasIntensity_ = true; }
+
+void Frame::addIds() { hasId_ = true; }
+
+void Frame::addTimes() { hasTime_ = true; }
+
+void Frame::addPoints() { hasPoint_ = true; }
+
+bool Frame::hasAzimuth() const { return hasAzimuth_; }
+
+bool Frame::hasVertical() const { return hasVertical_; }
+
+bool Frame::hasDistance() const { return hasDistance_; }
+
+bool Frame::hasIntensity() const { return hasIntensity_; }
+
+bool Frame::hasId() const { return hasId_; }
+
+bool Frame::hasTime() const { return hasTime_; }
+
+bool Frame::hasPoint() const { return hasPoint_; }
+
+std::vector<double>& Frame::getAzimuths() { return azimuths_; };
+
+std::vector<double>& Frame::getVerticals() { return verticals_; };
+
+std::vector<float>& Frame::getDistances() { return distances_; };
+
+std::vector<unsigned char>& Frame::getIntensities() { return intensities_; };
+
+std::vector<unsigned char>& Frame::getIds() { return ids_; };
+
+std::vector<long long>& Frame::getTimes() { return times_; };
+
+std::vector<Point>& Frame::getPoints() { return points_; };
+
 std::ostream& operator<<(std::ostream& out, Frame& obj) {
   out << "Frame(";
   out << "azimuths=" << obj.getAzimuths().size() << ", ";

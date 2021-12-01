@@ -24,53 +24,53 @@ class Frame {
   std::vector<Point>         points_;
 
  public:
-  void addAzimuths() { hasAzimuth_ = true; }
-
-  void addVerticals() { hasVertical_ = true; }
-
-  void addDistances() { hasDistance_ = true; }
-
-  void addIntensities() { hasIntensity_ = true; }
-
-  void addIds() { hasId_ = true; }
-
-  void addTimes() { hasTime_ = true; }
-
-  void addPoints() { hasPoint_ = true; }
-
-  bool hasAzimuth() const { return hasAzimuth_; }
-
-  bool hasVertical() const { return hasVertical_; }
-
-  bool hasDistance() const { return hasDistance_; }
-
-  bool hasIntensity() const { return hasIntensity_; }
-
-  bool hasId() const { return hasId_; }
-
-  bool hasTime() const { return hasTime_; }
-
-  bool hasPoint() const { return hasPoint_; }
-
-  std::vector<double>& getAzimuths() { return azimuths_; };
-
-  std::vector<double>& getVerticals() { return verticals_; };
-
-  std::vector<float>& getDistances() { return distances_; };
-
-  std::vector<unsigned char>& getIntensities() { return intensities_; };
-
-  std::vector<unsigned char>& getIds() { return ids_; };
-
-  std::vector<long long>& getTimes() { return times_; };
-
-  std::vector<Point>& getPoints() { return points_; };
-
   void resize(const size_t size);
 
   void add(const Laser& laser);
 
   size_t size() const;
+
+  void addAzimuths();
+
+  void addVerticals();
+
+  void addDistances();
+
+  void addIntensities();
+
+  void addIds();
+
+  void addTimes();
+
+  void addPoints();
+
+  bool hasAzimuth() const;
+
+  bool hasVertical() const;
+
+  bool hasDistance() const;
+
+  bool hasIntensity() const;
+
+  bool hasId() const;
+
+  bool hasTime() const;
+
+  bool hasPoint() const;
+
+  std::vector<double>& getAzimuths();
+
+  std::vector<double>& getVerticals();
+
+  std::vector<float>& getDistances();
+
+  std::vector<unsigned char>& getIntensities();
+
+  std::vector<unsigned char>& getIds();
+
+  std::vector<long long>& getTimes();
+
+  std::vector<Point>& getPoints();
 
   friend std::ostream& operator<<(std::ostream& out, Frame& obj);
 };
