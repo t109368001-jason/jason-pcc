@@ -1,16 +1,9 @@
 #ifndef JPCC_IO_PCAP_READER_H_
 #define JPCC_IO_PCAP_READER_H_
 
-#include <mutex>
-
-#include <pcl/point_types.h>
-#include <pcl/point_cloud.h>
-
-#include <VelodyneCapture.h>
-
 #include <jpcc/common/Common.h>
 #include <jpcc/common/GroupOfFrame.h>
-#include <jpcc/io/DatasetParameter.h>
+#include <jpcc/io/DatasetReader.h>
 #include <jpcc/io/PcapReaderParameter.h>
 
 namespace jpcc {
@@ -18,29 +11,26 @@ namespace io {
 
 using GroupOfFrame = common::GroupOfFrame;
 
-class PcapReader {
+class PcapReader : public DatasetReader {
  protected:
-  PcapReaderParameter                             param_;
-  DatasetParameter                                datasetParam_;
+  const PcapReaderParameter&                      param_;
   std::vector<shared_ptr<velodyne::VLP16Capture>> captures;
 
  public:
-  void setPcapReaderParameter(const PcapReaderParameter& param);
+  PcapReader(const DatasetParameter& datasetParam, const PcapReaderParameter& param);
 
-  void setDatasetParameter(const DatasetParameter& datasetParam);
+  void load(const size_t  datasetIndex,
+            GroupOfFrame& frames,
+            const size_t  startFrameIndex,
+            const size_t  groupOfFramesSize,
+            const bool    parallel = false) override;
 
-  void load(std::vector<GroupOfFrame>& sources,
-            const size_t               startFrameIndex,
-            const size_t               groupOfFramesSize,
-            const bool                 parallel = false);
+  const PcapReaderParameter& getPcapReaderParameter();
 
  protected:
-  void open(const size_t startFrameIndex);
+  void open(const size_t datasetIndex, const size_t startFrameIndex);
 
-  GroupOfFrame load(const shared_ptr<velodyne::VLP16Capture>,
-                    const size_t startFrameIndex,
-                    const size_t groupOfFramesSize,
-                    const bool   parallel);
+  void reset(const size_t datasetIndex);
 };
 
 }  // namespace io
