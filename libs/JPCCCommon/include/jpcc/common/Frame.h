@@ -9,28 +9,43 @@ namespace jpcc {
 namespace common {
 
 class Frame {
+ public:
+  using Ptr = shared_ptr<Frame>;
+
  protected:
-  bool                       hasAzimuth_;
-  bool                       hasVertical_;
-  bool                       hasDistance_;
-  bool                       hasIntensity_;
-  bool                       hasId_;
-  bool                       hasTime_;
-  bool                       hasPoint_;
-  std::vector<double>        azimuths_;
-  std::vector<double>        verticals_;
-  std::vector<float>         distances_;
-  std::vector<unsigned char> intensities_;
-  std::vector<unsigned char> ids_;
-  std::vector<long long>     times_;
-  std::vector<Point>         points_;
+  bool                  hasAzimuth_;
+  bool                  hasVertical_;
+  bool                  hasDistance_;
+  bool                  hasIntensity_;
+  bool                  hasId_;
+  bool                  hasTime_;
+  bool                  hasPoint_;
+  std::vector<float>    azimuths_;
+  std::vector<float>    verticals_;
+  std::vector<float>    distances_;
+  std::vector<uint8_t>  intensities_;
+  std::vector<uint8_t>  ids_;
+  std::vector<uint64_t> times_;
+  std::vector<Point>    points_;
 
  public:
   void addPointTypes(const std::set<std::string>& pointTypes);
 
-  void resize(const size_t size);
+  void add(float    azimuth,
+           float    vertical,
+           float    distance,
+           uint8_t  intensity,
+           uint8_t  id,
+           uint64_t time,
+           float    x,
+           float    y,
+           float    z);
 
-  void add(const Laser& laser);
+  void shrink_to_fit();
+
+  void reserve(const size_t size);
+
+  void resize(const size_t size);
 
   size_t size() const;
 
@@ -62,9 +77,9 @@ class Frame {
 
   bool hasPoint() const;
 
-  std::vector<double>& getAzimuths();
+  std::vector<float>& getAzimuths();
 
-  std::vector<double>& getVerticals();
+  std::vector<float>& getVerticals();
 
   std::vector<float>& getDistances();
 
@@ -72,7 +87,7 @@ class Frame {
 
   std::vector<unsigned char>& getIds();
 
-  std::vector<long long>& getTimes();
+  std::vector<uint64_t>& getTimes();
 
   std::vector<Point>& getPoints();
 

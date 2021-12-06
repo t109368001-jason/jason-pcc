@@ -1,7 +1,5 @@
 #include <jpcc/common/Frame.h>
 
-#include <jpcc/common/Transform.h>
-
 namespace jpcc {
 namespace common {
 
@@ -17,6 +15,44 @@ void Frame::addPointTypes(const set<string>& pointTypes) {
   if (pointTypes.contains("point")) { addPoints(); }
 }
 
+void Frame::add(float    azimuth,
+                float    vertical,
+                float    distance,
+                uint8_t  intensity,
+                uint8_t  id,
+                uint64_t time,
+                float    x,
+                float    y,
+                float    z) {
+  if (hasAzimuth()) { azimuths_.push_back(azimuth); }
+  if (hasVertical()) { verticals_.push_back(vertical); }
+  if (hasDistance()) { distances_.push_back(distance); }
+  if (hasIntensity()) { intensities_.push_back(intensity); }
+  if (hasId()) { ids_.push_back(id); }
+  if (hasTime()) { times_.push_back(time); }
+  if (hasPoint()) { points_.push_back(Point(x, y, z)); }
+}
+
+void Frame::shrink_to_fit() {
+  if (hasAzimuth()) { azimuths_.shrink_to_fit(); }
+  if (hasVertical()) { verticals_.shrink_to_fit(); }
+  if (hasDistance()) { distances_.shrink_to_fit(); }
+  if (hasIntensity()) { intensities_.shrink_to_fit(); }
+  if (hasId()) { ids_.shrink_to_fit(); }
+  if (hasTime()) { times_.shrink_to_fit(); }
+  if (hasPoint()) { points_.shrink_to_fit(); }
+}
+
+void Frame::reserve(const size_t size) {
+  if (hasAzimuth()) { azimuths_.reserve(size); }
+  if (hasVertical()) { verticals_.reserve(size); }
+  if (hasDistance()) { distances_.reserve(size); }
+  if (hasIntensity()) { intensities_.reserve(size); }
+  if (hasId()) { ids_.reserve(size); }
+  if (hasTime()) { times_.reserve(size); }
+  if (hasPoint()) { points_.reserve(size); }
+}
+
 void Frame::resize(const size_t size) {
   if (hasAzimuth()) { azimuths_.resize(size); }
   if (hasVertical()) { verticals_.resize(size); }
@@ -25,18 +61,6 @@ void Frame::resize(const size_t size) {
   if (hasId()) { ids_.resize(size); }
   if (hasTime()) { times_.resize(size); }
   if (hasPoint()) { points_.resize(size); }
-}
-
-void Frame::add(const Laser& laser) {
-  size_t index = size();
-  resize(index + 1);
-  if (hasAzimuth()) { azimuths_[index] = laser.azimuth; }
-  if (hasVertical()) { verticals_[index] = laser.vertical; }
-  if (hasDistance()) { distances_[index] = laser.distance; }
-  if (hasIntensity()) { intensities_[index] = laser.intensity; }
-  if (hasId()) { ids_[index] = laser.id; }
-  if (hasTime()) { times_[index] = laser.time; }
-  if (hasPoint()) { points_[index] = laser2Point(laser); }
 }
 
 size_t Frame::size() const {
@@ -78,9 +102,9 @@ bool Frame::hasTime() const { return hasTime_; }
 
 bool Frame::hasPoint() const { return hasPoint_; }
 
-vector<double>& Frame::getAzimuths() { return azimuths_; };
+vector<float>& Frame::getAzimuths() { return azimuths_; };
 
-vector<double>& Frame::getVerticals() { return verticals_; };
+vector<float>& Frame::getVerticals() { return verticals_; };
 
 vector<float>& Frame::getDistances() { return distances_; };
 
@@ -88,7 +112,7 @@ vector<unsigned char>& Frame::getIntensities() { return intensities_; };
 
 vector<unsigned char>& Frame::getIds() { return ids_; };
 
-vector<long long>& Frame::getTimes() { return times_; };
+vector<uint64_t>& Frame::getTimes() { return times_; };
 
 vector<Point>& Frame::getPoints() { return points_; };
 

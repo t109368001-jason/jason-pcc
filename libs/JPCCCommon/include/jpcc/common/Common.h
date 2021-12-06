@@ -6,15 +6,11 @@
 
 #include <pcl/point_types.h>
 
-#include <VelodyneCapture.h>
-
 namespace jpcc {
 
 using std::shared_ptr;
 
 using Point = pcl::PointXYZ;
-
-using velodyne::Laser;
 
 }  // namespace jpcc
 

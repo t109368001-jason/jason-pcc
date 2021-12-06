@@ -8,10 +8,12 @@ namespace common {
 
 class GroupOfFrame {
  protected:
-  size_t             startFrameIndex_;
-  std::vector<Frame> frames_;
+  size_t                  startFrameIndex_;
+  std::vector<Frame::Ptr> frames_;
 
  public:
+  Frame::Ptr& at(size_t index);
+
   void resize(const size_t size);
 
   size_t size();
@@ -20,9 +22,7 @@ class GroupOfFrame {
 
   void setStartFrameIndex(const size_t startFrameIndex);
 
-  std::vector<Frame>& getFrames();
-
-  Frame& operator[](size_t index);
+  std::vector<Frame::Ptr>& getFrames();
 };
 
 }  // namespace common

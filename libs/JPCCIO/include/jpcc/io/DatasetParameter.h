@@ -14,11 +14,13 @@ namespace po = boost::program_options;
 
 class DatasetParameter : public jpcc::common::Parameter {
  public:
+  std::string              sensor;
   std::string              type;
   std::string              folder;
   size_t                   totalFiles;
   std::vector<std::string> files;
   std::vector<size_t>      frameCounts;
+  bool                     haveGpsTime;
 
   DatasetParameter();
 

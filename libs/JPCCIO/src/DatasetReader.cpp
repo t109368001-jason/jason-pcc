@@ -7,7 +7,6 @@ namespace jpcc {
 namespace io {
 
 using namespace std;
-using namespace velodyne;
 using namespace jpcc::common;
 
 DatasetReader::DatasetReader(const DatasetParameter& datasetParam) : datasetParam_(datasetParam) {
@@ -19,16 +18,16 @@ void DatasetReader::loadAll(vector<GroupOfFrame>& sources,
                             const size_t          groupOfFramesSize,
                             const bool            parallel) {
   assert(groupOfFramesSize > 0);
-  std::vector<int> datasetIndices(datasetParam_.totalFiles);
-  std::generate(datasetIndices.begin(), datasetIndices.end(), [n = 0]() mutable { return n++; });
+  vector<int> datasetIndices(datasetParam_.totalFiles);
+  generate(datasetIndices.begin(), datasetIndices.end(), [n = 0]() mutable { return n++; });
 
   sources.resize(datasetIndices.size());
   if (parallel) {
-    std::for_each(std::execution::par, datasetIndices.begin(), datasetIndices.end(), [&](size_t datasetIndex) {
+    for_each(execution::par, datasetIndices.begin(), datasetIndices.end(), [&](size_t datasetIndex) {
       load(datasetIndex, sources[datasetIndex], startFrameIndex, groupOfFramesSize, parallel);
     });
   } else {
-    std::for_each(datasetIndices.begin(), datasetIndices.end(), [&](size_t datasetIndex) {
+    for_each(datasetIndices.begin(), datasetIndices.end(), [&](size_t datasetIndex) {
       load(datasetIndex, sources[datasetIndex], startFrameIndex, groupOfFramesSize, parallel);
     });
   }
