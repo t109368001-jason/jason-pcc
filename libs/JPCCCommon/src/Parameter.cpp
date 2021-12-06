@@ -8,7 +8,7 @@ namespace common {
 using namespace std;
 using namespace po;
 
-options_description Parameter::getOpts() { throw logic_error("Not Implemented " __FUNCTION__); };
+options_description Parameter::getOpts() { throw logic_error(string("Not Implemented ") + BOOST_CURRENT_FUNCTION); };
 
 vector<array<string, 2>> Parameter::getConflicts() { return {}; }
 

@@ -4,6 +4,8 @@
 #include <assert.h>
 #include <memory>
 
+#include <boost/current_function.hpp>
+
 #include <pcl/point_types.h>
 
 namespace jpcc {

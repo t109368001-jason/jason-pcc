@@ -38,7 +38,7 @@ void DatasetReader::load(const size_t  datasetIndex,
                          const size_t  startFrameIndex,
                          const size_t  groupOfFramesSize,
                          const bool    parallel) {
-  throw logic_error("Not Implemented " __FUNCTION__);
+  throw logic_error(string("Not Implemented ") + BOOST_CURRENT_FUNCTION);
 }
 
 const DatasetParameter& DatasetReader::getDatasetParameter() { return datasetParam_; }
