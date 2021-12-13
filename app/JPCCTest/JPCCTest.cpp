@@ -2,7 +2,14 @@
 #include <execution>
 #include <filesystem>
 #include <iostream>
+#include <mutex>
+#include <thread>
 #include <vector>
+
+#include <vtkObject.h>
+
+#include <pcl/point_cloud.h>
+#include <pcl/visualization/pcl_visualizer.h>
 
 #include <jpcc/common/Common.h>
 #include <jpcc/common/ParameterParser.h>
@@ -13,6 +20,7 @@
 #include <PCCChrono.h>
 #include <PCCMemory.h>
 
+using namespace std::chrono;
 using namespace pcc;
 using namespace jpcc;
 using namespace jpcc::common;
@@ -21,23 +29,67 @@ using namespace jpcc::io;
 void test(const DatasetParameter&         datasetParameter,
           const PcapReaderParameter&      pcapReaderParameter,
           pcc::chrono::StopwatchUserTime& clock) {
-  PcapReader                pcapReader(datasetParameter, pcapReaderParameter);
-  std::vector<GroupOfFrame> sources;
-  size_t                    groupOfFrameSize = 32;
-  size_t                    startFrameIndex  = 0;
-  while (true) {
-    clock.start();
-    pcapReader.loadAll(sources, startFrameIndex, groupOfFrameSize, false);
-    clock.stop();
-    if (std::all_of(sources.begin(), sources.end(), [&](auto& frames) { return frames.size() < groupOfFrameSize; })) {
-      break;
+  pcl::PointCloud<Point>::Ptr            cloud(new pcl::PointCloud<Point>());
+  pcl::visualization::PCLVisualizer::Ptr viewer(new pcl::visualization::PCLVisualizer("3D Viewer"));
+
+  viewer->initCameraParameters();
+  viewer->setCameraPosition(0.0, 0.0, 200000.0, 0.0, 0.0, -1.0, 0.0, 1.0, 0.0, 0);
+  viewer->setBackgroundColor(0, 0, 0);
+  viewer->addCoordinateSystem(3.0, "coordinate");
+
+  viewer->addPointCloud<Point>(cloud, "sample cloud");
+  viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "sample cloud");
+
+  std::atomic_bool       run(true);
+  std::mutex             mutex;
+  std::queue<Frame::Ptr> queue;
+
+  auto datasetLoading = [&] {
+    PcapReader                pcapReader(datasetParameter, pcapReaderParameter);
+    std::vector<GroupOfFrame> sources;
+    size_t                    groupOfFrameSize = 32;
+    size_t                    startFrameIndex  = 0;
+    while (run) {
+      clock.start();
+      pcapReader.loadAll(sources, startFrameIndex, groupOfFrameSize, false);
+      clock.stop();
+      if (std::any_of(sources.begin(), sources.end(), [&](auto& frames) { return frames.size() < groupOfFrameSize; })) {
+        startFrameIndex = 0;
+        continue;
+      }
+
+      pcl::PointCloud<Point>::Ptr _cloud(new pcl::PointCloud<Point>());
+
+      std::vector<Point>& points = sources[0].at(0)->getPoints();
+      _cloud->insert(_cloud->points.begin(), points.begin(), points.end());
+
+      std::lock_guard<std::mutex> lock(mutex);
+      cloud = _cloud;
+      std::this_thread::sleep_for(100ms);
+      startFrameIndex += groupOfFrameSize;
     }
-    startFrameIndex += groupOfFrameSize;
+  };
+
+  shared_ptr<std::thread> thread(new std::thread(datasetLoading));
+  while (!viewer->wasStopped()) {
+    viewer->spinOnce(100);
+    // std::this_thread::sleep_for(100ms);
+    pcl::PointCloud<Point>::Ptr cloud_;
+    {
+      std::lock_guard<std::mutex> lock(mutex);
+      cloud_ = cloud;
+    }
+    pcl::visualization::PointCloudColorHandlerCustom<Point> single_color(cloud_, 255.0, 0.0, 0.0);
+    viewer->updatePointCloud(cloud_, single_color, "sample cloud");
   }
+  run = false;
+  if (thread && thread->joinable()) { thread->join(); }
 }
 
 int main(int argc, char* argv[]) {
   std::cout << "JPCC Test App Start" << std::endl;
+
+  vtkObject::GlobalWarningDisplayOff();
 
   DatasetParameter    datasetParameter;
   PcapReaderParameter pcapReaderParameter;
@@ -53,16 +105,16 @@ int main(int argc, char* argv[]) {
   try {
     ParameterParser pp;
     // Timers to count elapsed wall/user time
-    pcc::chrono::Stopwatch<std::chrono::steady_clock> clockWall;
-    pcc::chrono::StopwatchUserTime                    clockUser;
+    pcc::chrono::Stopwatch<steady_clock> clockWall;
+    pcc::chrono::StopwatchUserTime       clockUser;
 
     clockWall.start();
     test(datasetParameter, pcapReaderParameter, clockUser);
     clockWall.stop();
 
-    auto totalWall      = std::chrono::duration_cast<std::chrono::milliseconds>(clockWall.count()).count();
-    auto totalUserSelf  = std::chrono::duration_cast<std::chrono::milliseconds>(clockUser.self.count()).count();
-    auto totalUserChild = std::chrono::duration_cast<std::chrono::milliseconds>(clockUser.children.count()).count();
+    auto totalWall      = duration_cast<milliseconds>(clockWall.count()).count();
+    auto totalUserSelf  = duration_cast<milliseconds>(clockUser.self.count()).count();
+    auto totalUserChild = duration_cast<milliseconds>(clockUser.children.count()).count();
     std::cout << "Processing time (wall): " << totalWall / 1000.0 << " s\n";
     std::cout << "Processing time (user.self): " << totalUserSelf / 1000.0 << " s\n";
     std::cout << "Processing time (user.children): " << totalUserChild / 1000.0 << " s\n";
