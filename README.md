@@ -6,5 +6,5 @@
 
   ```bash
   sudo apt update
-  sudo apt install libpcap-dev libpcl-dev
+  sudo apt install build-essential cmake libpcap-dev libtbb-dev libpcl-dev
   ```
