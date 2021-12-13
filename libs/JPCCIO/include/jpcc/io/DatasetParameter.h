@@ -16,6 +16,7 @@ class DatasetParameter : public jpcc::common::Parameter {
  public:
   std::string              sensor;
   std::string              type;
+  std::string              folderPrefix;
   std::string              folder;
   size_t                   totalFiles;
   std::vector<std::string> files;
