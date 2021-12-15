@@ -36,8 +36,6 @@ find_package(PCL 1.3 REQUIRED COMPONENTS common visualization)
 
 find_package(VTK 7.1 REQUIRED COMPONENTS vtkCommonCore)
 
-include(3rdparty/cmake/livox_sdk.cmake)
-
 add_subdirectory(libs/common)
 add_subdirectory(libs/io)
 add_subdirectory(libs/pcc_common)
