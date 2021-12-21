@@ -172,6 +172,7 @@ void PcapReader::load_(const size_t  datasetIndex,
     frameBuffer.push(frame);
   }
   while (currentFrameIndex < endFrameIndex) {
+    // TODO use frame.isLoaded()
     if (frameBuffer.size() > 1) {
       if (currentFrameIndex < startFrameIndex) {
         frameBuffer.pop();
@@ -258,7 +259,7 @@ void PcapReader::parseDataPacket(const size_t            startFrameIndex,
         azimuth = azimuth100 / 100.0f;
       }
       float    vertical  = verticals_.at(laser_index % maxNumLasers_);
-      float    distance  = static_cast<float>(firing_data.laserReturns[laser_index].distance * 2.0f);
+      float    distance  = static_cast<float>(firing_data.laserReturns[laser_index].distance / 500.0f);
       uint8_t  intensity = firing_data.laserReturns[laser_index].intensity;
       uint8_t  id        = static_cast<uint8_t>(laser_index % maxNumLasers_);
       uint64_t time;
@@ -271,7 +272,7 @@ void PcapReader::parseDataPacket(const size_t            startFrameIndex,
       float x     = static_cast<float>(rSinV * cos(phi));
       float y     = static_cast<float>(rSinV * sin(phi));
       float z     = static_cast<float>(distance * cosVerticals_.at(id));
-      frameBuffer.back()->add(azimuth, vertical, distance, intensity, id, time, x, y, z);
+      frameBuffer.back()->add(x, y, z, intensity, azimuth, vertical, distance, id, time);
     }
     // Update Last Rotation Azimuth
     lastAzimuth100 = azimuth100;

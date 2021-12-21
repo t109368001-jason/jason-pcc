@@ -13,33 +13,43 @@ class Frame {
   using Ptr = shared_ptr<Frame>;
 
  protected:
-  bool                  hasAzimuth_;
-  bool                  hasVertical_;
-  bool                  hasDistance_;
-  bool                  hasIntensity_;
-  bool                  hasId_;
-  bool                  hasTime_;
-  bool                  hasPoint_;
-  std::vector<float>    azimuths_;
-  std::vector<float>    verticals_;
-  std::vector<float>    distances_;
-  std::vector<uint8_t>  intensities_;
-  std::vector<uint8_t>  ids_;
-  std::vector<uint64_t> times_;
-  std::vector<Point>    points_;
+  bool                 loaded_;
+  bool                 hasAzimuth_;
+  bool                 hasVertical_;
+  bool                 hasDistance_;
+  bool                 hasIntensity_;
+  bool                 hasId_;
+  bool                 hasTime_;
+  bool                 hasPoint_;
+  int64_t              timestamp_;  // ms
+  std::vector<float>   azimuths_;
+  std::vector<float>   verticals_;
+  std::vector<float>   distances_;
+  std::vector<uint8_t> intensities_;
+  std::vector<uint8_t> ids_;
+  std::vector<int64_t> times_;
+  std::vector<Point>   points_;
 
  public:
+  Frame();
+
   void addPointTypes(const std::set<std::string>& pointTypes);
 
-  void add(float    azimuth,
-           float    vertical,
-           float    distance,
-           uint8_t  intensity,
-           uint8_t  id,
-           uint64_t time,
-           float    x,
-           float    y,
-           float    z);
+  void add(float x, float y, float z);
+
+  void add(float   x,
+           float   y,
+           float   z,
+           uint8_t intensity,
+           float   azimuth,
+           float   vertical,
+           float   distance,
+           uint8_t id,
+           int64_t time);
+
+  void setLoaded(bool loaded);
+
+  void setTimestamp(int64_t timestamp);
 
   void shrink_to_fit();
 
@@ -48,6 +58,8 @@ class Frame {
   void resize(const size_t size);
 
   size_t size() const;
+
+  void addPoints();
 
   void addAzimuths();
 
@@ -61,7 +73,9 @@ class Frame {
 
   void addTimes();
 
-  void addPoints();
+  bool isLoaded() const;
+
+  bool hasPoint() const;
 
   bool hasAzimuth() const;
 
@@ -75,7 +89,9 @@ class Frame {
 
   bool hasTime() const;
 
-  bool hasPoint() const;
+  int64_t getTimestamp();
+
+  std::vector<Point>& getPoints();
 
   std::vector<float>& getAzimuths();
 
@@ -87,9 +103,7 @@ class Frame {
 
   std::vector<unsigned char>& getIds();
 
-  std::vector<uint64_t>& getTimes();
-
-  std::vector<Point>& getPoints();
+  std::vector<int64_t>& getTimes();
 
   friend std::ostream& operator<<(std::ostream& out, Frame& obj);
 };
