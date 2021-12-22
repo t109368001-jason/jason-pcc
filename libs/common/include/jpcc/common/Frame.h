@@ -47,7 +47,7 @@ class Frame {
            uint8_t id,
            int64_t time);
 
-  void setLoaded(bool loaded);
+  void setLoaded(bool loaded = true);
 
   void setTimestamp(int64_t timestamp);
 

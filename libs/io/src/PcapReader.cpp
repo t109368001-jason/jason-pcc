@@ -234,8 +234,7 @@ int PcapReader::parseDataPacket(const size_t             startFrameIndex,
     uint16_t azimuth100 = firing_data.rotationalPosition;
     // Complete Retrieve Capture One Rotation Data
     if (lastAzimuth100 > azimuth100) {
-      frameBuffer.back()->shrink_to_fit();
-      frameBuffer.back()->setLoaded(true);
+      frameBuffer.back()->setLoaded();
       // Push One Rotation Data to Queue
       Frame::Ptr frame(new Frame());
       frame->addPointTypes(param_.pointTypes);

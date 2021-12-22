@@ -127,7 +127,7 @@ void LvxReader::load_(const size_t  datasetIndex,
     int64_t minLastTimestamp = *std::min_element(lastTimestamps.begin(), lastTimestamps.end());
     for (Frame::Ptr frame : frameBuffer) {
       if ((frame->getTimestamp() + param_.interval) > minLastTimestamp) { break; }
-      frame->setLoaded(true);
+      frame->setLoaded();
     }
   }
   if (currentFrameIndex >= startFrameIndex) {

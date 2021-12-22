@@ -34,6 +34,7 @@ void Frame::addPointTypes(const set<string>& pointTypes) {
 }
 
 void Frame::add(float x, float y, float z) {
+  assert(!loaded_);
   assert(hasPoint());
   points_.push_back(Point(x, y, z));
 }
@@ -47,6 +48,7 @@ void Frame::add(float   x,
                 float   distance,
                 uint8_t id,
                 int64_t time) {
+  assert(!loaded_);
   assert(hasAzimuth());
   assert(hasVertical());
   assert(hasDistance());
@@ -63,7 +65,10 @@ void Frame::add(float   x,
   { points_.push_back(Point(x, y, z)); }
 }
 
-void Frame::setLoaded(bool loaded) { loaded_ = loaded; }
+void Frame::setLoaded(bool loaded) {
+  loaded_ = loaded;
+  if (loaded) { shrink_to_fit(); }
+}
 
 void Frame::setTimestamp(int64_t timestamp) { timestamp_ = timestamp; }
 
@@ -88,6 +93,7 @@ void Frame::reserve(const size_t size) {
 }
 
 void Frame::resize(const size_t size) {
+  if (this->size() == size) { return; }
   if (hasPoint()) { points_.resize(size); }
   if (hasAzimuth()) { azimuths_.resize(size); }
   if (hasVertical()) { verticals_.resize(size); }
@@ -95,6 +101,7 @@ void Frame::resize(const size_t size) {
   if (hasIntensity()) { intensities_.resize(size); }
   if (hasId()) { ids_.resize(size); }
   if (hasTime()) { times_.resize(size); }
+  setLoaded(false);
 }
 
 size_t Frame::size() const {
