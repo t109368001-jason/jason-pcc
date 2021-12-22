@@ -149,7 +149,7 @@ void PcapReader::close(const size_t datasetIndex) {
     pcap = nullptr;
   }
   lastAzimuth100s_.at(datasetIndex) = 0;
-  std::queue<Frame::Ptr>().swap(frameBuffers_.at(datasetIndex));
+  frameBuffers_.at(datasetIndex).clear();
 }
 
 void PcapReader::load_(const size_t  datasetIndex,
@@ -158,51 +158,35 @@ void PcapReader::load_(const size_t  datasetIndex,
                        const size_t  groupOfFramesSize,
                        const bool    parallel) {
   assert(groupOfFramesSize > 0);
-  size_t            endFrameIndex     = startFrameIndex + groupOfFramesSize;
-  size_t&           currentFrameIndex = currentFrameIndices.at(datasetIndex);
-  pcap_t*           pcap              = pcaps_.at(datasetIndex);
-  uint16_t&         lastAzimuth       = lastAzimuth100s_.at(datasetIndex);
-  queue<Frame::Ptr> frameBuffer       = frameBuffers_.at(datasetIndex);
+  size_t             endFrameIndex     = startFrameIndex + groupOfFramesSize;
+  size_t&            currentFrameIndex = currentFrameIndices.at(datasetIndex);
+  pcap_t*            pcap              = pcaps_.at(datasetIndex);
+  uint16_t&          lastAzimuth       = lastAzimuth100s_.at(datasetIndex);
+  vector<Frame::Ptr> frameBuffer       = frameBuffers_.at(datasetIndex);
 
   frames.resize(groupOfFramesSize);
   if (frameBuffer.size() == 0) {
     Frame::Ptr frame(new Frame());
     frame->addPointTypes(param_.pointTypes);
     frame->reserve(29200);  // VLP 16 10 Hz (600 rpm)
-    frameBuffer.push(frame);
+    frameBuffer.push_back(frame);
   }
   while (currentFrameIndex < endFrameIndex) {
-    if (frameBuffer.size() > 1) {
+    // TODO use frame.isLoaded()
+    if (!frameBuffer.empty() && frameBuffer.front()->isLoaded()) {
       if (currentFrameIndex < startFrameIndex) {
-        frameBuffer.pop();
+        frameBuffer.erase(frameBuffer.begin());
         currentFrameIndex++;
         continue;
       }
-      frames.at(currentFrameIndex - startFrameIndex) = std::move(frameBuffer.front());
+      frames.at(currentFrameIndex - startFrameIndex) = frameBuffer.front();
       cout << datasetParam_.getFilePath(datasetIndex) << ":" << currentFrameIndex << " "
            << *frames.at(currentFrameIndex - startFrameIndex) << endl;
-      frameBuffer.pop();
+      frameBuffer.erase(frameBuffer.begin());
       currentFrameIndex++;
     }
-    // Retrieve Header and Data from PCAP
-    struct pcap_pkthdr*  header;
-    const unsigned char* data;
-    const int            ret = pcap_next_ex(pcap, &header, &data);
+    int ret = parseDataPacket(startFrameIndex, currentFrameIndex, pcap, lastAzimuth, frameBuffer);
     if (ret <= 0) { break; }
-
-    // Check Packet Data Size
-    // Data Blocks ( 100 bytes * 12 blocks ) + Time Stamp ( 4 bytes ) + Factory ( 2 bytes )
-    if ((header->len - 42) != 1206) { continue; }
-
-    uint64_t headerTime;
-    if (!datasetParam_.haveGpsTime) {
-      // Retrieve Unix Time ( microseconds )
-      headerTime = static_cast<uint64_t>(header->ts.tv_sec) * 1000000 + header->ts.tv_usec;
-    }
-    // Convert to DataPacket Structure ( Cut Header 42 bytes )
-    // Sensor Type 0x21 is HDL-32E, 0x22 is VLP-16
-    const DataPacket* packet = reinterpret_cast<const DataPacket*>(data + 42);
-    parseDataPacket(startFrameIndex, currentFrameIndex, packet, lastAzimuth, frameBuffer, headerTime);
   }
   if (currentFrameIndex >= startFrameIndex) {
     frames.resize(currentFrameIndex - startFrameIndex);
@@ -211,12 +195,30 @@ void PcapReader::load_(const size_t  datasetIndex,
   }
 }
 
-void PcapReader::parseDataPacket(const size_t            startFrameIndex,
-                                 size_t&                 currentFrameIndex,
-                                 const DataPacket*       packet,
-                                 uint16_t&               lastAzimuth100,
-                                 std::queue<Frame::Ptr>& frameBuffer,
-                                 const uint64_t          headerTime) {
+int PcapReader::parseDataPacket(const size_t             startFrameIndex,
+                                size_t&                  currentFrameIndex,
+                                pcap_t*                  pcap,
+                                uint16_t&                lastAzimuth100,
+                                std::vector<Frame::Ptr>& frameBuffer) {
+  // Retrieve Header and Data from PCAP
+  struct pcap_pkthdr*  header;
+  const unsigned char* data;
+  const int            ret = pcap_next_ex(pcap, &header, &data);
+  if (ret <= 0) { return ret; }
+
+  // Check Packet Data Size
+  // Data Blocks ( 100 bytes * 12 blocks ) + Time Stamp ( 4 bytes ) + Factory ( 2 bytes )
+  if ((header->len - 42) != 1206) { return ret; }
+
+  uint64_t headerTime;
+  if (!datasetParam_.haveGpsTime) {
+    // Retrieve Unix Time ( microseconds )
+    headerTime = static_cast<uint64_t>(header->ts.tv_sec) * 1000000 + header->ts.tv_usec;
+  }
+  // Convert to DataPacket Structure ( Cut Header 42 bytes )
+  // Sensor Type 0x21 is HDL-32E, 0x22 is VLP-16
+  const DataPacket* packet = reinterpret_cast<const DataPacket*>(data + 42);
+
   if (packet->sensorType != 0x21 && packet->sensorType != 0x22) {
     throw(std::runtime_error("This sensor is not supported"));
   }
@@ -232,7 +234,7 @@ void PcapReader::parseDataPacket(const size_t            startFrameIndex,
     uint16_t azimuth100 = firing_data.rotationalPosition;
     // Complete Retrieve Capture One Rotation Data
     if (lastAzimuth100 > azimuth100) {
-      frameBuffer.back()->shrink_to_fit();
+      frameBuffer.back()->setLoaded();
       // Push One Rotation Data to Queue
       Frame::Ptr frame(new Frame());
       frame->addPointTypes(param_.pointTypes);
@@ -241,7 +243,7 @@ void PcapReader::parseDataPacket(const size_t            startFrameIndex,
       if (size < 0) { size += 36000.0; }
       size = TOTAL_POINTS_MULTIPLE_MAX_AZIMUTH_DIFF_OF_PACKET / size;
       frame->reserve((size_t)size);
-      frameBuffer.push(frame);
+      frameBuffer.push_back(frame);
     }
     if (currentFrameIndex + frameBuffer.size() < startFrameIndex) {
       // Update Last Rotation Azimuth
@@ -258,7 +260,7 @@ void PcapReader::parseDataPacket(const size_t            startFrameIndex,
         azimuth = azimuth100 / 100.0f;
       }
       float    vertical  = verticals_.at(laser_index % maxNumLasers_);
-      float    distance  = static_cast<float>(firing_data.laserReturns[laser_index].distance * 2.0f);
+      float    distance  = static_cast<float>(firing_data.laserReturns[laser_index].distance / 500.0f);
       uint8_t  intensity = firing_data.laserReturns[laser_index].intensity;
       uint8_t  id        = static_cast<uint8_t>(laser_index % maxNumLasers_);
       uint64_t time;
@@ -271,11 +273,12 @@ void PcapReader::parseDataPacket(const size_t            startFrameIndex,
       float x     = static_cast<float>(rSinV * cos(phi));
       float y     = static_cast<float>(rSinV * sin(phi));
       float z     = static_cast<float>(distance * cosVerticals_.at(id));
-      frameBuffer.back()->add(azimuth, vertical, distance, intensity, id, time, x, y, z);
+      frameBuffer.back()->add(x, y, z, intensity, azimuth, vertical, distance, id, time);
     }
     // Update Last Rotation Azimuth
     lastAzimuth100 = azimuth100;
   }
+  return ret;
 }
 
 }  // namespace io

@@ -16,6 +16,8 @@
 #include <jpcc/io/DatasetParameter.h>
 #include <jpcc/io/PcapReaderParameter.h>
 #include <jpcc/io/PcapReader.h>
+#include <jpcc/io/LvxReaderParameter.h>
+#include <jpcc/io/LvxReader.h>
 
 #include <PCCChrono.h>
 #include <PCCMemory.h>
@@ -26,32 +28,35 @@ using namespace jpcc;
 using namespace jpcc::common;
 using namespace jpcc::io;
 
+using ReaderParameter = LvxReaderParameter;
+using Reader          = LvxReader;
+
 void test(const DatasetParameter&         datasetParameter,
-          const PcapReaderParameter&      pcapReaderParameter,
+          const ReaderParameter&          readerParameter,
           pcc::chrono::StopwatchUserTime& clock) {
   pcl::PointCloud<Point>::Ptr            cloud(new pcl::PointCloud<Point>());
   pcl::visualization::PCLVisualizer::Ptr viewer(new pcl::visualization::PCLVisualizer("3D Viewer"));
 
   viewer->initCameraParameters();
-  viewer->setCameraPosition(0.0, 0.0, 200000.0, 0.0, 0.0, -1.0, 0.0, 1.0, 0.0, 0);
+  viewer->setCameraPosition(0.0, 0.0, 200.0, 0.0, 0.0, -1.0, 0.0, 1.0, 0.0, 0);
   viewer->setBackgroundColor(0, 0, 0);
   viewer->addCoordinateSystem(3.0, "coordinate");
 
   viewer->addPointCloud<Point>(cloud, "sample cloud");
-  viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "sample cloud");
+  viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "sample cloud");
 
   std::atomic_bool       run(true);
   std::mutex             mutex;
   std::queue<Frame::Ptr> queue;
 
   auto datasetLoading = [&] {
-    PcapReader                pcapReader(datasetParameter, pcapReaderParameter);
+    Reader                    reader(datasetParameter, readerParameter);
     std::vector<GroupOfFrame> sources;
     size_t                    groupOfFrameSize = 32;
     size_t                    startFrameIndex  = 0;
     while (run) {
       clock.start();
-      pcapReader.loadAll(sources, startFrameIndex, groupOfFrameSize, false);
+      reader.loadAll(sources, startFrameIndex, groupOfFrameSize, false);
       clock.stop();
       if (std::any_of(sources.begin(), sources.end(), [&](auto& frames) { return frames.size() < groupOfFrameSize; })) {
         startFrameIndex = 0;
@@ -91,15 +96,15 @@ int main(int argc, char* argv[]) {
 
   vtkObject::GlobalWarningDisplayOff();
 
-  DatasetParameter    datasetParameter;
-  PcapReaderParameter pcapReaderParameter;
+  DatasetParameter datasetParameter;
+  ReaderParameter  readerParameter;
   try {
     ParameterParser pp;
     pp.add(datasetParameter);
-    pp.add(pcapReaderParameter);
+    pp.add(readerParameter);
     pp.parse(argc, argv);
     std::cout << datasetParameter << std::endl;
-    std::cout << pcapReaderParameter << std::endl;
+    std::cout << readerParameter << std::endl;
   } catch (std::exception& e) { std::cerr << e.what() << std::endl; }
 
   try {
@@ -109,7 +114,7 @@ int main(int argc, char* argv[]) {
     pcc::chrono::StopwatchUserTime       clockUser;
 
     clockWall.start();
-    test(datasetParameter, pcapReaderParameter, clockUser);
+    test(datasetParameter, readerParameter, clockUser);
     clockWall.stop();
 
     auto totalWall      = duration_cast<milliseconds>(clockWall.count()).count();

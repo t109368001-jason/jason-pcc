@@ -1,7 +1,7 @@
 #ifndef JPCC_IO_PCAP_READER_H_
 #define JPCC_IO_PCAP_READER_H_
 
-#include <queue>
+#include <vector>
 
 #include <pcap/pcap.h>
 
@@ -51,10 +51,10 @@ class PcapReader : public DatasetReader {
   std::vector<float>         sinVerticals_;
   std::vector<float>         cosVerticals_;
 
-  std::vector<size_t>                 currentFrameIndices;
-  std::vector<pcap_t*>                pcaps_;
-  std::vector<uint16_t>               lastAzimuth100s_;
-  std::vector<std::queue<Frame::Ptr>> frameBuffers_;
+  std::vector<size_t>                  currentFrameIndices;
+  std::vector<pcap_t*>                 pcaps_;
+  std::vector<uint16_t>                lastAzimuth100s_;
+  std::vector<std::vector<Frame::Ptr>> frameBuffers_;
 
  public:
   PcapReader(const DatasetParameter& datasetParam, const PcapReaderParameter& param);
@@ -80,12 +80,11 @@ class PcapReader : public DatasetReader {
              const size_t  groupOfFramesSize,
              const bool    parallel = false);
 
-  void parseDataPacket(const size_t            startFrameIndex,
-                       size_t&                 currentFrameIndex,
-                       const DataPacket*       packet,
-                       uint16_t&               lastAzimuth100,
-                       std::queue<Frame::Ptr>& frameBuffer,
-                       const uint64_t          headerTime);
+  int parseDataPacket(const size_t             startFrameIndex,
+                      size_t&                  currentFrameIndex,
+                      pcap_t*                  pcap,
+                      uint16_t&                lastAzimuth100,
+                      std::vector<Frame::Ptr>& frameBuffer);
 };
 
 }  // namespace io

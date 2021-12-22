@@ -20,7 +20,7 @@ options_description PcapReaderParameter::getOpts() {
   opts.add_options()                                                                     //
       (POINT_TYPES_OPT,                                                                  //
        value<vector<string>>(&pointTypes_)->required(),                                  //
-       "types to read: [azimuth, vertical, distance, intensity, id, time, xyz]")         //
+       "types to read: [xyz, intensity, azimuth, vertical, distance, id, time]")         //
       (EPSILON_OPT,                                                                      //
        value<float>(&epsilon)->default_value(epsilon),                                   //
        "epsilon, drop laser point if distance < epsilon")                                //

@@ -38,6 +38,7 @@ find_package(VTK 7.1 REQUIRED COMPONENTS vtkCommonCore)
 
 add_subdirectory(libs/common)
 add_subdirectory(libs/io)
+add_subdirectory(libs/lvx_common)
 add_subdirectory(libs/pcc_common)
 
 add_subdirectory(app/JPCCTest)
