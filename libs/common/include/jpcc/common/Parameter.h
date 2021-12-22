@@ -8,9 +8,10 @@
 #include <boost/program_options.hpp>
 
 namespace jpcc {
-namespace common {
 
 namespace po = boost::program_options;
+
+namespace common {
 
 class Parameter {
  protected:

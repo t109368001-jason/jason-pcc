@@ -1,7 +1,8 @@
 #ifndef JPCC_IO_DATASET_READER_H_
 #define JPCC_IO_DATASET_READER_H_
 
-#include <jpcc/common/Common.h>
+#include <vector>
+
 #include <jpcc/common/GroupOfFrame.h>
 #include <jpcc/io/DatasetParameter.h>
 

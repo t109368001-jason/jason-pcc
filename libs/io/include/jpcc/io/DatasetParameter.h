@@ -10,8 +10,6 @@
 namespace jpcc {
 namespace io {
 
-namespace po = boost::program_options;
-
 class DatasetParameter : public jpcc::common::Parameter {
  public:
   std::string              sensor;

@@ -65,7 +65,7 @@ void test(const DatasetParameter&         datasetParameter,
 
       pcl::PointCloud<Point>::Ptr _cloud(new pcl::PointCloud<Point>());
 
-      std::vector<Point>& points = sources[0].at(0)->getPoints();
+      std::vector<Point>& points = sources.at(0).at(0)->getPoints();
       _cloud->insert(_cloud->points.begin(), points.begin(), points.end());
 
       std::lock_guard<std::mutex> lock(mutex);

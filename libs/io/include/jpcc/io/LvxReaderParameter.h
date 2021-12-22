@@ -8,8 +8,6 @@
 namespace jpcc {
 namespace io {
 
-namespace po = boost::program_options;
-
 class LvxReaderParameter : public jpcc::io::ReaderParameterBase {
  public:
   float frequency;
