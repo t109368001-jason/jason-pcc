@@ -10,16 +10,14 @@
 namespace jpcc {
 namespace common {
 
-namespace po = boost::program_options;
-
 class ParserParameter : public Parameter {
  public:
   bool                     disableEnvVar;
-  std::vector<std::string> config;
+  std::vector<std::string> configs;
 
   ParserParameter();
 
-  po::options_description getOpts() override;
+  std::string getConfigsOpt();
 
   friend std::ostream& operator<<(std::ostream& out, const ParserParameter& obj);
 };

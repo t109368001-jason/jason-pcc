@@ -24,35 +24,42 @@ void ParameterParser::add(Parameter& param) {
   opts_.add(param.getOpts());
 }
 
-void ParameterParser::parse(int argc, char* argv[]) {
-  const parsed_options cmdOpts = parse_command_line(argc, argv, opts_);
-  pOpts_.push_back(cmdOpts);
-  variables_map vm;
-  store(cmdOpts, vm);
-  if (vm.count("help")) {
+bool ParameterParser::parse(int argc, char* argv[]) {
+  try {
+    const parsed_options cmdOpts = parse_command_line(argc, argv, opts_);
+    pOpts_.push_back(cmdOpts);
+    variables_map vm;
+    store(cmdOpts, vm);
+    if (vm.count("help")) {
+      cout << opts_ << "\n";
+      return false;
+    }
+    const parsed_options envOpts =
+        parse_environment(opts_, boost::function1<string, string>([&](string envKey) {
+                            transform(envKey.begin(), envKey.end(), envKey.begin(), ::toupper);
+                            return opts_.find_nothrow(envKey, false, false, false) ? envKey : "";
+                          }));
+    pOpts_.push_back(envOpts);
+    store(envOpts, vm);
+    if (vm.count(param_.getConfigsOpt())) { parseConfigs(vm[param_.getConfigsOpt()].as<vector<string>>()); }
+
+    variables_map vm_final;
+    for_each(pOpts_.begin(), pOpts_.end(), [&vm_final](auto& pOpts) { store(pOpts, vm_final); });
+
+    for (Parameter* param : params_) {
+      for (auto& [p1, p2] : param->getConflicts()) { conflicting_options(vm_final, p1, p2); }
+      for (auto& [p1, p2] : param->getDependencies()) { option_dependency(vm_final, p1, p2); }
+    }
+
+    notify(vm_final);
+    for (Parameter* param : params_) { param->notify(); }
+    cout << param_ << endl;
+    return true;
+  } catch (std::exception& e) {
+    std::cerr << e.what() << std::endl;
     cout << opts_ << "\n";
-    return;
+    throw e;
   }
-  const parsed_options envOpts =
-      parse_environment(opts_, boost::function1<string, string>([&](string envKey) {
-                          transform(envKey.begin(), envKey.end(), envKey.begin(), ::toupper);
-                          return opts_.find_nothrow(envKey, false, false, false) ? envKey : "";
-                        }));
-  pOpts_.push_back(envOpts);
-  store(envOpts, vm);
-  if (vm.count("config")) { parseConfigs(vm["config"].as<vector<string>>()); }
-
-  variables_map vm_final;
-  for_each(pOpts_.begin(), pOpts_.end(), [&vm_final](auto& pOpts) { store(pOpts, vm_final); });
-
-  for (Parameter* param : params_) {
-    for (auto& [p1, p2] : param->getConflicts()) { conflicting_options(vm_final, p1, p2); }
-    for (auto& [p1, p2] : param->getDependencies()) { option_dependency(vm_final, p1, p2); }
-  }
-
-  notify(vm_final);
-  for (Parameter* param : params_) { param->notify(); }
-  cout << param_ << endl;
 }
 
 void ParameterParser::parseConfigs(const vector<string>& configs) {

@@ -1,14 +1,14 @@
 #include <jpcc/common/Parameter.h>
 
-#include <exception>
-
 namespace jpcc {
 namespace common {
 
 using namespace std;
 using namespace po;
 
-options_description Parameter::getOpts() { throw logic_error(string("Not Implemented ") + BOOST_CURRENT_FUNCTION); };
+Parameter::Parameter(string prefix, string caption) : prefix_(prefix), caption_(caption), opts_(caption) {}
+
+options_description& Parameter::getOpts() { return opts_; };
 
 vector<array<string, 2>> Parameter::getConflicts() { return {}; }
 

@@ -12,8 +12,6 @@
 namespace jpcc {
 namespace common {
 
-namespace po = boost::program_options;
-
 class ParameterParser {
  protected:
   po::options_description         opts_;
@@ -27,7 +25,7 @@ class ParameterParser {
 
   void add(Parameter& param);
 
-  void parse(int argc, char* argv[]);
+  bool parse(int argc, char* argv[]);
 
   void parseConfigs(const std::vector<std::string>& configs);
 

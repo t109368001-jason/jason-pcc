@@ -10,8 +10,6 @@
 namespace jpcc {
 namespace io {
 
-namespace po = boost::program_options;
-
 class DatasetParameter : public jpcc::common::Parameter {
  public:
   std::string              sensor;
@@ -24,8 +22,6 @@ class DatasetParameter : public jpcc::common::Parameter {
   bool                     haveGpsTime;
 
   DatasetParameter();
-
-  po::options_description getOpts() override;
 
   std::vector<std::array<std::string, 2>> getDependencies() override;
 

@@ -65,7 +65,7 @@ void test(const DatasetParameter&         datasetParameter,
 
       pcl::PointCloud<Point>::Ptr _cloud(new pcl::PointCloud<Point>());
 
-      std::vector<Point>& points = sources[0].at(0)->getPoints();
+      std::vector<Point>& points = sources.at(0).at(0)->getPoints();
       _cloud->insert(_cloud->points.begin(), points.begin(), points.end());
 
       std::lock_guard<std::mutex> lock(mutex);
@@ -102,10 +102,13 @@ int main(int argc, char* argv[]) {
     ParameterParser pp;
     pp.add(datasetParameter);
     pp.add(readerParameter);
-    pp.parse(argc, argv);
+    if (!pp.parse(argc, argv)) { return 1; }
     std::cout << datasetParameter << std::endl;
     std::cout << readerParameter << std::endl;
-  } catch (std::exception& e) { std::cerr << e.what() << std::endl; }
+  } catch (std::exception& e) {
+    std::cerr << e.what() << std::endl;
+    return 1;
+  }
 
   try {
     ParameterParser pp;

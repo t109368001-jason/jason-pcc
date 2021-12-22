@@ -24,11 +24,11 @@ void DatasetReader::loadAll(vector<GroupOfFrame>& sources,
   sources.resize(datasetIndices.size());
   if (parallel) {
     for_each(execution::par, datasetIndices.begin(), datasetIndices.end(), [&](size_t datasetIndex) {
-      load(datasetIndex, sources[datasetIndex], startFrameIndex, groupOfFramesSize, parallel);
+      load(datasetIndex, sources.at(datasetIndex), startFrameIndex, groupOfFramesSize, parallel);
     });
   } else {
     for_each(datasetIndices.begin(), datasetIndices.end(), [&](size_t datasetIndex) {
-      load(datasetIndex, sources[datasetIndex], startFrameIndex, groupOfFramesSize, parallel);
+      load(datasetIndex, sources.at(datasetIndex), startFrameIndex, groupOfFramesSize, parallel);
     });
   }
 }
