@@ -102,10 +102,13 @@ int main(int argc, char* argv[]) {
     ParameterParser pp;
     pp.add(datasetParameter);
     pp.add(readerParameter);
-    pp.parse(argc, argv);
+    if (!pp.parse(argc, argv)) { return 1; }
     std::cout << datasetParameter << std::endl;
     std::cout << readerParameter << std::endl;
-  } catch (std::exception& e) { std::cerr << e.what() << std::endl; }
+  } catch (std::exception& e) {
+    std::cerr << e.what() << std::endl;
+    return 1;
+  }
 
   try {
     ParameterParser pp;
