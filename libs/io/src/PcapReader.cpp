@@ -74,11 +74,7 @@ PcapReader::PcapReader(const DatasetParameter& datasetParam, const PcapReaderPar
     sinVerticals_.resize(maxNumLasers_);
     cosVerticals_.resize(maxNumLasers_);
     for (size_t i = 0; i < maxNumLasers_; i++) {
-      if (param_.useRadian) {
-        verticals_.at(i) = VLP16_VERTICAL_RADIAN[i];
-      } else {
-        verticals_.at(i) = VLP16_VERTICAL_DEGREE[i];
-      }
+      verticals_.at(i)    = VLP16_VERTICAL_RADIAN[i];
       sinVerticals_.at(i) = VLP16_VERTICAL_SIN[i];
       cosVerticals_.at(i) = VLP16_VERTICAL_COS[i];
     }
@@ -88,11 +84,7 @@ PcapReader::PcapReader(const DatasetParameter& datasetParam, const PcapReaderPar
     sinVerticals_.resize(maxNumLasers_);
     cosVerticals_.resize(maxNumLasers_);
     for (size_t i = 0; i < maxNumLasers_; i++) {
-      if (param_.useRadian) {
-        verticals_.at(i) = HDL32_VERTICAL_RADIAN[i];
-      } else {
-        verticals_.at(i) = HDL32_VERTICAL_DEGREE[i];
-      }
+      verticals_.at(i)    = HDL32_VERTICAL_RADIAN[i];
       sinVerticals_.at(i) = HDL32_VERTICAL_SIN[i];
       cosVerticals_.at(i) = HDL32_VERTICAL_COS[i];
     }
@@ -252,13 +244,7 @@ int PcapReader::parseDataPacket(const size_t             startFrameIndex,
     }
     for (int laser_index = 0; laser_index < LASER_PER_FIRING; laser_index++) {
       if (firing_data.laserReturns[laser_index].distance < param_.epsilon) { continue; }
-      float azimuth;
-      float phi = azimuth100 * PI_DIV18000;
-      if (param_.useRadian) {
-        azimuth = phi;
-      } else {
-        azimuth = azimuth100 / 100.0f;
-      }
+      float    azimuth   = azimuth100 * PI_DIV18000;
       float    vertical  = verticals_.at(laser_index % maxNumLasers_);
       float    distance  = static_cast<float>(firing_data.laserReturns[laser_index].distance / 500.0f);
       uint8_t  intensity = firing_data.laserReturns[laser_index].intensity;
@@ -270,8 +256,8 @@ int PcapReader::parseDataPacket(const size_t             startFrameIndex,
         time = headerTime;
       }
       float rSinV = distance * sinVerticals_.at(id);
-      float x     = static_cast<float>(rSinV * cos(phi));
-      float y     = static_cast<float>(rSinV * sin(phi));
+      float x     = static_cast<float>(rSinV * cos(azimuth));
+      float y     = static_cast<float>(rSinV * sin(azimuth));
       float z     = static_cast<float>(distance * cosVerticals_.at(id));
       frameBuffer.back()->add(x, y, z, intensity, azimuth, vertical, distance, id, time);
     }

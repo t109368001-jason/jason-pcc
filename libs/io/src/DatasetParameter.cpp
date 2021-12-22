@@ -1,7 +1,5 @@
 #include <jpcc/io/DatasetParameter.h>
 
-#include <exception>
-
 namespace jpcc {
 namespace io {
 
@@ -19,21 +17,25 @@ using namespace po;
 #define HAVE_GPS_TIME_OPT DATASET_OPT_PREFIX ".haveGpsTime"
 
 DatasetParameter::DatasetParameter() :
-    sensor(""), type(""), folderPrefix("../"), folder(""), totalFiles(0), files(), frameCounts(), haveGpsTime(false) {}
-
-options_description DatasetParameter::getOpts() {
-  options_description opts("DatasetOptions");
-  opts.add_options()                                                                                    //
-      (SENSOR_OPT, value<string>(&sensor)->required(), "sensor")                                        //
-      (TYPE_OPT, value<string>(&type)->required(), "dataset type")                                      //
-      (FOLDER_PREFIX_OPT, value<string>(&folderPrefix)->default_value(folderPrefix), "dataset prefix")  //
-      (FOLDER_OPT, value<string>(&folder)->required(), "dataset folder")                                //
-      (TOTAL_FILES_OPT, value<size_t>(&totalFiles)->required(), "dataset folder")                       //
-      (FILES_OPT, value<vector<string>>(&files), "dataset files")                                       //
-      (FRAME_COUNTS_OPT, value<vector<size_t>>(&frameCounts), "dataset files")                          //
-      (HAVE_GPS_TIME_OPT, value<bool>(&haveGpsTime)->default_value(haveGpsTime), "have gps time")       //
+    Parameter(DATASET_OPT_PREFIX, "DatasetOptions"),
+    sensor(""),
+    type(""),
+    folderPrefix("../"),
+    folder(""),
+    totalFiles(0),
+    files(),
+    frameCounts(),
+    haveGpsTime(false) {
+  opts_.add_options()                                                                                          //
+      (SENSOR_OPT, value<string>(&sensor)->required(), "sensor")                                               //
+      (TYPE_OPT, value<string>(&type)->required(), "dataset type")                                             //
+      (FOLDER_PREFIX_OPT, value<string>(&folderPrefix)->default_value(folderPrefix), "dataset folder prefix")  //
+      (FOLDER_OPT, value<string>(&folder)->required(), "dataset folder")                                       //
+      (TOTAL_FILES_OPT, value<size_t>(&totalFiles)->required(), "dataset total files count")                   //
+      (FILES_OPT, value<vector<string>>(&files), "dataset files")                                              //
+      (FRAME_COUNTS_OPT, value<vector<size_t>>(&frameCounts), "dataset frame counts")                          //
+      (HAVE_GPS_TIME_OPT, value<bool>(&haveGpsTime)->default_value(haveGpsTime), "have gps time")              //
       ;
-  return opts;
 }
 
 vector<array<string, 2>> DatasetParameter::getDependencies() {
@@ -44,19 +46,14 @@ vector<array<string, 2>> DatasetParameter::getDependencies() {
 }
 
 void DatasetParameter::notify() {
-  if (totalFiles != files.size()) { throw runtime_error(TOTAL_FILES_OPT " not match number of " FILES_OPT); }
-  if (totalFiles != frameCounts.size()) {
-    throw runtime_error(TOTAL_FILES_OPT " not match number of " FRAME_COUNTS_OPT);
-  }
+  assert(totalFiles == files.size());
+  assert(totalFiles == frameCounts.size());
 }
 
-std::string DatasetParameter::getFilePath(const size_t index) const {
-  assert(index < files.size());
-  return folderPrefix + folder + files[index];
-}
+std::string DatasetParameter::getFilePath(const size_t index) const { return folderPrefix + folder + files.at(index); }
 
 ostream& operator<<(ostream& out, const DatasetParameter& obj) {
-  out << "DatasetParameter" << endl;
+  out << obj.caption_ << endl;
   out << "\t" TYPE_OPT "=" << obj.type << endl;
   out << "\t" FOLDER_PREFIX_OPT "=" << obj.folder << endl;
   out << "\t" FOLDER_OPT "=" << obj.folder << endl;
@@ -65,16 +62,18 @@ ostream& operator<<(ostream& out, const DatasetParameter& obj) {
   for (size_t i = 0; i < obj.files.size(); i++) {
     if (i == 0) { out << "["; }
     if (i != 0) { out << ", "; }
-    out << obj.files[i];
-    if (i == (obj.files.size() - 1)) { out << "]" << endl; }
+    out << obj.files.at(i);
+    if (i == (obj.files.size() - 1)) { out << "]"; }
   }
+  out << endl;
   out << "\t" FRAME_COUNTS_OPT "=";
   for (size_t i = 0; i < obj.frameCounts.size(); i++) {
     if (i == 0) { out << "["; }
     if (i != 0) { out << ", "; }
-    out << obj.frameCounts[i];
-    if (i == (obj.frameCounts.size() - 1)) { out << "]" << endl; }
+    out << obj.frameCounts.at(i);
+    if (i == (obj.frameCounts.size() - 1)) { out << "]"; }
   }
+  out << endl;
   out << "\t" HAVE_GPS_TIME_OPT "=" << obj.haveGpsTime << endl;
   return out;
 }
