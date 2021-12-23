@@ -5,8 +5,7 @@
 
 #include <jpcc/common/Common.h>
 
-namespace jpcc {
-namespace common {
+namespace jpcc::common {
 
 class Frame {
  public:
@@ -53,11 +52,11 @@ class Frame {
 
   void shrink_to_fit();
 
-  void reserve(const size_t size);
+  void reserve(size_t size);
 
-  void resize(const size_t size);
+  void resize(size_t size);
 
-  size_t size() const;
+  [[nodiscard]] size_t size() const;
 
   void addPoints();
 
@@ -73,42 +72,41 @@ class Frame {
 
   void addTimes();
 
-  bool isLoaded() const;
+  [[nodiscard]] bool isLoaded() const;
 
-  bool hasPoint() const;
+  [[nodiscard]] bool hasPoint() const;
 
-  bool hasAzimuth() const;
+  [[nodiscard]] bool hasAzimuth() const;
 
-  bool hasVertical() const;
+  [[nodiscard]] bool hasVertical() const;
 
-  bool hasDistance() const;
+  [[nodiscard]] bool hasDistance() const;
 
-  bool hasIntensity() const;
+  [[nodiscard]] bool hasIntensity() const;
 
-  bool hasId() const;
+  [[nodiscard]] bool hasId() const;
 
-  bool hasTime() const;
+  [[nodiscard]] bool hasTime() const;
 
-  int64_t getTimestamp();
+  [[nodiscard]] int64_t getTimestamp() const;
 
-  std::vector<Point>& getPoints();
+  [[nodiscard]] std::vector<Point>& getPoints();
 
-  std::vector<float>& getAzimuths();
+  [[nodiscard]] std::vector<float>& getAzimuths();
 
-  std::vector<float>& getVerticals();
+  [[nodiscard]] std::vector<float>& getVerticals();
 
-  std::vector<float>& getDistances();
+  [[nodiscard]] std::vector<float>& getDistances();
 
-  std::vector<unsigned char>& getIntensities();
+  [[nodiscard]] std::vector<unsigned char>& getIntensities();
 
-  std::vector<unsigned char>& getIds();
+  [[nodiscard]] std::vector<unsigned char>& getIds();
 
-  std::vector<int64_t>& getTimes();
+  [[nodiscard]] std::vector<int64_t>& getTimes();
 
   friend std::ostream& operator<<(std::ostream& out, Frame& obj);
 };
 
-}  // namespace common
-}  // namespace jpcc
+}  // namespace jpcc::common
 
 #endif  // JPCC_COMMON_FRAME_H_

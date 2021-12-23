@@ -27,6 +27,7 @@
 #include <string.h>
 #include <time.h>
 #include <cmath>
+#include <exception>
 
 #include "rapidxml/rapidxml.hpp"
 #include "rapidxml/rapidxml_utils.hpp"
@@ -379,11 +380,15 @@ int LvxFileHandle::parsePacketsOfFrameXYZ(
     memcpy(timestamp.stamp_bytes, eth_packet->timestamp, sizeof(timestamp));
     extrinsic = GetExtrinsicParameter(detail_packet->device_index);
 
-    assert(detail_packet->device_index < GetDeviceCount());
-    assert(data_type < kMaxPointDataType);
-    assert(eth_packet->timestamp_type == kTimestampTypeNoSync);
-    assert(eth_packet->version == 5);
-    assert(eth_packet->data_type == kCartesian);
+    if (detail_packet->device_index >= GetDeviceCount()) {
+      throw new std::logic_error("detail_packet->device_index >= GetDeviceCount() ");
+    }
+    if (data_type >= kMaxPointDataType) { throw new std::logic_error("data_type >= kMaxPointDataType"); }
+    if (eth_packet->timestamp_type != kTimestampTypeNoSync) {
+      throw new std::logic_error("eth_packet->timestamp_type != kTimestampTypeNoSync ");
+    }
+    if (eth_packet->version != 5) { throw new std::logic_error("eth_packet->version != 5 "); }
+    if (eth_packet->data_type != kCartesian) { throw new std::logic_error("eth_packet->data_type != kCartesian "); }
 
     uint32_t       points_per_packet = GetPointsPerPacket(eth_packet->data_type);
     LivoxRawPoint* raw_point         = reinterpret_cast<LivoxRawPoint*>(eth_packet->data);
@@ -395,7 +400,8 @@ int LvxFileHandle::parsePacketsOfFrameXYZ(
         float x_ = x;
         float y_ = y;
         float z_ = z;
-        x        = x_ * extrinsic.rotation[0][0] + y_ * extrinsic.rotation[0][1] + z_ * extrinsic.rotation[0][2] +
+
+        x = x_ * extrinsic.rotation[0][0] + y_ * extrinsic.rotation[0][1] + z_ * extrinsic.rotation[0][2] +
             extrinsic.trans[0];
         y = x_ * extrinsic.rotation[1][0] + y_ * extrinsic.rotation[1][1] + z_ * extrinsic.rotation[1][2] +
             extrinsic.trans[1];
@@ -410,6 +416,7 @@ int LvxFileHandle::parsePacketsOfFrameXYZ(
 
     data_offset += (GetEthPacketLen(eth_packet->data_type) + 1);
   }
+  return file_state;
 }
 
 void ParseExtrinsicXml(DeviceItem& item, LvxFileDeviceInfo& info) {

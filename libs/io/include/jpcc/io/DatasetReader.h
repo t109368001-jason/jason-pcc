@@ -5,34 +5,50 @@
 
 #include <jpcc/common/GroupOfFrame.h>
 #include <jpcc/io/DatasetParameter.h>
+#include <jpcc/io/ReaderParameterBase.h>
 
-namespace jpcc {
-namespace io {
+namespace jpcc::io {
 
+using Frame        = common::Frame;
 using GroupOfFrame = common::GroupOfFrame;
 
 class DatasetReader {
  protected:
-  const DatasetParameter& datasetParam_;
+  DatasetParameter                     datasetParam_;
+  std::vector<int>                     datasetIndices_;
+  std::vector<size_t>                  currentFrameIndices_;
+  std::vector<std::vector<Frame::Ptr>> frameBuffers_;
 
  public:
-  DatasetReader(const DatasetParameter& datasetParam);
+  DatasetReader(DatasetParameter datasetParam);
 
-  virtual void loadAll(std::vector<GroupOfFrame>& sources,
-                       const size_t               startFrameIndex,
-                       const size_t               groupOfFramesSize,
-                       const bool                 parallel = false);
+  ~DatasetReader();
 
-  virtual void load(const size_t  datasetIndex,
-                    GroupOfFrame& frames,
-                    const size_t  startFrameIndex,
-                    const size_t  groupOfFramesSize,
-                    const bool    parallel = false);
+  [[nodiscard]] bool isOpen();
 
-  const DatasetParameter& getDatasetParameter();
+  void loadAll(size_t                     startFrameIndex,
+               size_t                     groupOfFramesSize,
+               std::vector<GroupOfFrame>& sources,
+               bool                       parallel = false);
+
+  void load(size_t datasetIndex, size_t startFrameIndex, size_t groupOfFramesSize, GroupOfFrame& frames);
+
+  void close();
+
+ protected:
+  virtual void open_(size_t datasetIndex, size_t startFrameIndex);
+
+  [[nodiscard]] virtual bool isOpen_(size_t datasetIndex);
+
+  [[nodiscard]] virtual bool isEof_(size_t datasetIndex);
+
+  virtual void load_(size_t datasetIndex, size_t startFrameIndex, size_t groupOfFramesSize, GroupOfFrame& frames);
+
+  virtual void close_(size_t datasetIndex);
+
+  [[nodiscard]] const DatasetParameter& getDatasetParameter();
 };
 
-}  // namespace io
-}  // namespace jpcc
+}  // namespace jpcc::io
 
 #endif  // JPCC_IO_DATASET_READER_H_

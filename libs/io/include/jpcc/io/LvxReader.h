@@ -10,47 +10,31 @@
 #include <jpcc/io/DatasetReader.h>
 #include <jpcc/io/LvxReaderParameter.h>
 
-namespace jpcc {
-namespace io {
-
-using Frame        = common::Frame;
-using GroupOfFrame = common::GroupOfFrame;
+namespace jpcc::io {
 
 class LvxReader : public DatasetReader {
  protected:
-  const LvxReaderParameter& param_;
-  size_t                    capacity_;
-
-  std::vector<size_t>                               currentFrameIndices_;
+  LvxReaderParameter                                param_;
+  size_t                                            capacity_;
   std::vector<shared_ptr<livox_ros::LvxFileHandle>> lvxs_;
-  std::vector<std::vector<Frame::Ptr>>              frameBuffers_;
 
  public:
-  LvxReader(const DatasetParameter& datasetParam, const LvxReaderParameter& param);
+  LvxReader(LvxReaderParameter param, DatasetParameter datasetParam);
 
-  ~LvxReader();
-
-  void load(const size_t  datasetIndex,
-            GroupOfFrame& frames,
-            const size_t  startFrameIndex,
-            const size_t  groupOfFramesSize,
-            const bool    parallel = false) override;
-
-  const LvxReaderParameter& getLvxReaderParameter();
+  [[nodiscard]] const LvxReaderParameter& getLvxReaderParameter();
 
  protected:
-  void open(const size_t datasetIndex, const size_t startFrameIndex = 0);
+  void open_(size_t datasetIndex, size_t startFrameIndex) override;
 
-  void close(const size_t datasetIndex);
+  [[nodiscard]] bool isOpen_(size_t datasetIndex) override;
 
-  void load_(const size_t  datasetIndex,
-             GroupOfFrame& frames,
-             const size_t  startFrameIndex,
-             const size_t  groupOfFramesSize,
-             const bool    parallel = false);
+  [[nodiscard]] bool isEof_(size_t datasetIndex) override;
+
+  void load_(size_t datasetIndex, size_t startFrameIndex, size_t groupOfFramesSize, GroupOfFrame& frames) override;
+
+  void close_(size_t datasetIndex) override;
 };
 
-}  // namespace io
-}  // namespace jpcc
+}  // namespace jpcc::io
 
 #endif  // JPCC_IO_LVX_READER_H_

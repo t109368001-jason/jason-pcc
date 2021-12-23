@@ -1,7 +1,6 @@
 #include <jpcc/common/Frame.h>
 
-namespace jpcc {
-namespace common {
+namespace jpcc::common {
 
 using namespace std;
 
@@ -36,7 +35,7 @@ void Frame::addPointTypes(const set<string>& pointTypes) {
 void Frame::add(float x, float y, float z) {
   assert(!loaded_);
   assert(hasPoint());
-  points_.push_back(Point(x, y, z));
+  points_.emplace_back(x, y, z);
 }
 
 void Frame::add(float   x,
@@ -62,7 +61,7 @@ void Frame::add(float   x,
   { intensities_.push_back(intensity); }
   { ids_.push_back(id); }
   { times_.push_back(time); }
-  { points_.push_back(Point(x, y, z)); }
+  { points_.emplace_back(x, y, z); }
 }
 
 void Frame::setLoaded(bool loaded) {
@@ -145,21 +144,21 @@ bool Frame::hasId() const { return hasId_; }
 
 bool Frame::hasTime() const { return hasTime_; }
 
-int64_t Frame::getTimestamp() { return timestamp_; }
+int64_t Frame::getTimestamp() const { return timestamp_; }
 
-vector<Point>& Frame::getPoints() { return points_; };
+vector<Point>& Frame::getPoints() { return points_; }
 
-vector<float>& Frame::getAzimuths() { return azimuths_; };
+vector<float>& Frame::getAzimuths() { return azimuths_; }
 
-vector<float>& Frame::getVerticals() { return verticals_; };
+vector<float>& Frame::getVerticals() { return verticals_; }
 
-vector<float>& Frame::getDistances() { return distances_; };
+vector<float>& Frame::getDistances() { return distances_; }
 
-vector<unsigned char>& Frame::getIntensities() { return intensities_; };
+vector<unsigned char>& Frame::getIntensities() { return intensities_; }
 
-vector<unsigned char>& Frame::getIds() { return ids_; };
+vector<unsigned char>& Frame::getIds() { return ids_; }
 
-vector<int64_t>& Frame::getTimes() { return times_; };
+vector<int64_t>& Frame::getTimes() { return times_; }
 
 ostream& operator<<(ostream& out, Frame& obj) {
   out << "Frame(";
@@ -204,15 +203,11 @@ ostream& operator<<(ostream& out, Frame& obj) {
     out << "ids=" << obj.getIds().size();
   }
   if (obj.hasTime()) {
-    if (flag) {
-      out << ", ";
-      flag = true;
-    }
+    if (flag) { out << ", "; }
     out << "times=" << obj.getTimes().size();
   }
   out << ")";
   return out;
 }
 
-}  // namespace common
-}  // namespace jpcc
+}  // namespace jpcc::common

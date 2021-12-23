@@ -3,29 +3,30 @@
 
 #include <jpcc/common/Frame.h>
 
-namespace jpcc {
-namespace common {
+namespace jpcc::common {
 
 class GroupOfFrame {
+ public:
+  using Ptr = shared_ptr<GroupOfFrame>;
+
  protected:
   size_t                  startFrameIndex_;
   std::vector<Frame::Ptr> frames_;
 
  public:
-  Frame::Ptr& at(size_t index);
+  [[nodiscard]] Frame::Ptr& at(size_t index);
 
-  void resize(const size_t size);
+  void resize(size_t size);
 
-  size_t size();
+  [[nodiscard]] size_t size() const;
 
-  size_t getStartFrameIndex();
+  [[nodiscard]] size_t getStartFrameIndex() const;
 
-  void setStartFrameIndex(const size_t startFrameIndex);
+  void setStartFrameIndex(size_t startFrameIndex);
 
-  std::vector<Frame::Ptr>& getFrames();
+  [[nodiscard]] std::vector<Frame::Ptr>& getFrames();
 };
 
-}  // namespace common
-}  // namespace jpcc
+}  // namespace jpcc::common
 
 #endif  // JPCC_COMMON_GROUP_OF_CLOUD_H_

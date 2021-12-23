@@ -7,6 +7,8 @@
 
 #include <boost/program_options.hpp>
 
+#include <jpcc/common/Common.h>
+
 namespace jpcc {
 
 namespace po = boost::program_options;
@@ -20,13 +22,13 @@ class Parameter {
   po::options_description opts_;
 
  public:
-  Parameter(std::string prefix, std::string caption);
+  Parameter(std::string prefix, const std::string& caption);
 
-  virtual po::options_description& getOpts();
+  [[nodiscard]] virtual po::options_description& getOpts();
 
-  virtual std::vector<std::array<std::string, 2>> getConflicts();
+  [[nodiscard]] virtual std::vector<std::array<std::string, 2>> getConflicts() const;
 
-  virtual std::vector<std::array<std::string, 2>> getDependencies();
+  [[nodiscard]] virtual std::vector<std::array<std::string, 2>> getDependencies() const;
 
   virtual void notify();
 };

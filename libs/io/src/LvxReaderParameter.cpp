@@ -1,7 +1,6 @@
 #include <jpcc/io/LvxReaderParameter.h>
 
-namespace jpcc {
-namespace io {
+namespace jpcc::io {
 
 using namespace std;
 using namespace po;
@@ -25,11 +24,10 @@ void LvxReaderParameter::notify() {
 }
 
 ostream& operator<<(ostream& out, const LvxReaderParameter& obj) {
-  out << static_cast<ReaderParameterBase>(obj);
+  out << *(ReaderParameterBase*)(&obj);
   out << "\t" FREQUENCY_OPT "=" << obj.frequency << endl;
   out << "\tinterval=" << obj.interval << endl;
   return out;
 }
 
-}  // namespace io
-}  // namespace jpcc
+}  // namespace jpcc::io

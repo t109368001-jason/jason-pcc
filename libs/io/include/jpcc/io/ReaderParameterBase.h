@@ -8,8 +8,7 @@
 
 #include <jpcc/common/Parameter.h>
 
-namespace jpcc {
-namespace io {
+namespace jpcc::io {
 
 namespace po = boost::program_options;
 
@@ -21,14 +20,13 @@ class ReaderParameterBase : public jpcc::common::Parameter {
   std::set<std::string> pointTypes;
   float                 epsilon;
 
-  ReaderParameterBase(std::string prefix, std::string caption);
+  ReaderParameterBase(std::string prefix, const std::string& caption);
 
   void notify() override;
 
   friend std::ostream& operator<<(std::ostream& out, const ReaderParameterBase& obj);
 };
 
-}  // namespace io
-}  // namespace jpcc
+}  // namespace jpcc::io
 
 #endif  // JPCC_IO_READER_PARAMETER_BASE_H_

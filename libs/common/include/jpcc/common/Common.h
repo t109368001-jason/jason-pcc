@@ -1,10 +1,11 @@
 #ifndef JPCC_COMMON_COMMON_H_
 #define JPCC_COMMON_COMMON_H_
 
-#include <assert.h>
+#undef NDEBUG
+#include <cassert>
 #include <memory>
 
-#include <boost/current_function.hpp>
+#include <boost/throw_exception.hpp>
 
 #include <pcl/point_types.h>
 

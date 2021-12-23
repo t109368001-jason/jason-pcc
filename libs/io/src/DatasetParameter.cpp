@@ -1,7 +1,6 @@
 #include <jpcc/io/DatasetParameter.h>
 
-namespace jpcc {
-namespace io {
+namespace jpcc::io {
 
 using namespace std;
 using namespace po;
@@ -18,27 +17,24 @@ using namespace po;
 
 DatasetParameter::DatasetParameter() :
     Parameter(DATASET_OPT_PREFIX, "DatasetOptions"),
-    sensor(""),
-    type(""),
     folderPrefix("../"),
-    folder(""),
     totalFiles(0),
     files(),
     frameCounts(),
     haveGpsTime(false) {
   opts_.add_options()                                                                                          //
-      (SENSOR_OPT, value<string>(&sensor)->required(), "sensor")                                               //
-      (TYPE_OPT, value<string>(&type)->required(), "dataset type")                                             //
+      (SENSOR_OPT, value<string>(&sensor), "sensor")                                                           //
+      (TYPE_OPT, value<string>(&type), "dataset type")                                                         //
       (FOLDER_PREFIX_OPT, value<string>(&folderPrefix)->default_value(folderPrefix), "dataset folder prefix")  //
-      (FOLDER_OPT, value<string>(&folder)->required(), "dataset folder")                                       //
-      (TOTAL_FILES_OPT, value<size_t>(&totalFiles)->required(), "dataset total files count")                   //
+      (FOLDER_OPT, value<string>(&folder), "dataset folder")                                                   //
+      (TOTAL_FILES_OPT, value<size_t>(&totalFiles), "dataset total files count")                               //
       (FILES_OPT, value<vector<string>>(&files), "dataset files")                                              //
       (FRAME_COUNTS_OPT, value<vector<size_t>>(&frameCounts), "dataset frame counts")                          //
       (HAVE_GPS_TIME_OPT, value<bool>(&haveGpsTime)->default_value(haveGpsTime), "have gps time")              //
       ;
 }
 
-vector<array<string, 2>> DatasetParameter::getDependencies() {
+vector<array<string, 2>> DatasetParameter::getDependencies() const {
   return {
       {FILES_OPT, TOTAL_FILES_OPT},   //
       {FRAME_COUNTS_OPT, FILES_OPT},  //
@@ -46,6 +42,10 @@ vector<array<string, 2>> DatasetParameter::getDependencies() {
 }
 
 void DatasetParameter::notify() {
+  assert(!sensor.empty());
+  assert(!type.empty());
+  assert(!folder.empty());
+  assert(totalFiles != 0);
   assert(totalFiles == files.size());
   assert(totalFiles == frameCounts.size());
 }
@@ -78,5 +78,4 @@ ostream& operator<<(ostream& out, const DatasetParameter& obj) {
   return out;
 }
 
-}  // namespace io
-}  // namespace jpcc
+}  // namespace jpcc::io

@@ -9,8 +9,7 @@
 
 #include <jpcc/common/ParserParameter.h>
 
-namespace jpcc {
-namespace common {
+namespace jpcc::common {
 
 class ParameterParser {
  protected:
@@ -25,7 +24,7 @@ class ParameterParser {
 
   void add(Parameter& param);
 
-  bool parse(int argc, char* argv[]);
+  [[nodiscard]] bool parse(int argc, char* argv[]);
 
   void parseConfigs(const std::vector<std::string>& configs);
 
@@ -34,7 +33,6 @@ class ParameterParser {
   static void option_dependency(const po::variables_map& vm, const std::string& opt, const std::string& requiredOpt);
 };
 
-}  // namespace common
-}  // namespace jpcc
+}  // namespace jpcc::common
 
 #endif  // JPCC_COMMON_PARAMETER_PARSER_H_

@@ -7,8 +7,7 @@
 
 #include <jpcc/common/Parameter.h>
 
-namespace jpcc {
-namespace common {
+namespace jpcc::common {
 
 class ParserParameter : public Parameter {
  public:
@@ -17,12 +16,11 @@ class ParserParameter : public Parameter {
 
   ParserParameter();
 
-  std::string getConfigsOpt();
+  [[nodiscard]] static std::string getConfigsOpt();
 
   friend std::ostream& operator<<(std::ostream& out, const ParserParameter& obj);
 };
 
-}  // namespace common
-}  // namespace jpcc
+}  // namespace jpcc::common
 
 #endif  // JPCC_COMMON_PARSER_PARAMETER_H_

@@ -3,11 +3,7 @@
 #include <algorithm>
 #include <fstream>
 
-#include <boost/program_options/cmdline.hpp>
-#include <boost/program_options/config.hpp>
-
-namespace jpcc {
-namespace common {
+namespace jpcc::common {
 
 using namespace std;
 using namespace po;
@@ -90,5 +86,4 @@ void ParameterParser::option_dependency(const variables_map& vm, const string& o
       throw logic_error(string("Option '") + opt + "' requires option '" + requiredOpt + "'.");
 }
 
-}  // namespace common
-}  // namespace jpcc
+}  // namespace jpcc::common

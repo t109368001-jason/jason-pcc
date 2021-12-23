@@ -1,6 +1,5 @@
 #include <chrono>
 #include <execution>
-#include <filesystem>
 #include <iostream>
 #include <mutex>
 #include <thread>
@@ -50,33 +49,37 @@ void test(const DatasetParameter&         datasetParameter,
   std::queue<Frame::Ptr> queue;
 
   auto datasetLoading = [&] {
-    Reader                    reader(datasetParameter, readerParameter);
-    std::vector<GroupOfFrame> sources;
-    size_t                    groupOfFrameSize = 32;
-    size_t                    startFrameIndex  = 0;
-    while (run) {
-      clock.start();
-      reader.loadAll(sources, startFrameIndex, groupOfFrameSize, false);
-      clock.stop();
-      if (std::any_of(sources.begin(), sources.end(), [&](auto& frames) { return frames.size() < groupOfFrameSize; })) {
-        startFrameIndex = 0;
-        continue;
+    try {
+      Reader                    reader(readerParameter, datasetParameter);
+      std::vector<GroupOfFrame> sources;
+      size_t                    groupOfFramesSize = 32;
+      size_t                    startFrameIndex   = 0;
+      while (run) {
+        clock.start();
+        reader.loadAll(startFrameIndex, groupOfFramesSize, sources, false);
+        clock.stop();
+        if (std::any_of(sources.begin(), sources.end(),
+                        [&](auto& frames) { return frames.size() < groupOfFramesSize; })) {
+          startFrameIndex = 0;
+          continue;
+        }
+
+        pcl::PointCloud<Point>::Ptr _cloud(new pcl::PointCloud<Point>());
+
+        std::vector<Point>& points = sources.at(0).at(0)->getPoints();
+        _cloud->insert(_cloud->points.begin(), points.begin(), points.end());
+
+        std::lock_guard<std::mutex> lock(mutex);
+        cloud = _cloud;
+        std::this_thread::sleep_for(100ms);
+        startFrameIndex += groupOfFramesSize;
       }
-
-      pcl::PointCloud<Point>::Ptr _cloud(new pcl::PointCloud<Point>());
-
-      std::vector<Point>& points = sources.at(0).at(0)->getPoints();
-      _cloud->insert(_cloud->points.begin(), points.begin(), points.end());
-
-      std::lock_guard<std::mutex> lock(mutex);
-      cloud = _cloud;
-      std::this_thread::sleep_for(100ms);
-      startFrameIndex += groupOfFrameSize;
-    }
+    } catch (std::exception& e) { std::cerr << e.what() << std::endl; }
+    run = false;
   };
 
   shared_ptr<std::thread> thread(new std::thread(datasetLoading));
-  while (!viewer->wasStopped()) {
+  while (!viewer->wasStopped() && run) {
     viewer->spinOnce(100);
     // std::this_thread::sleep_for(100ms);
     pcl::PointCloud<Point>::Ptr cloud_;
@@ -123,9 +126,9 @@ int main(int argc, char* argv[]) {
     auto totalWall      = duration_cast<milliseconds>(clockWall.count()).count();
     auto totalUserSelf  = duration_cast<milliseconds>(clockUser.self.count()).count();
     auto totalUserChild = duration_cast<milliseconds>(clockUser.children.count()).count();
-    std::cout << "Processing time (wall): " << totalWall / 1000.0 << " s\n";
-    std::cout << "Processing time (user.self): " << totalUserSelf / 1000.0 << " s\n";
-    std::cout << "Processing time (user.children): " << totalUserChild / 1000.0 << " s\n";
+    std::cout << "Processing time (wall): " << (float)totalWall / 1000.0 << " s\n";
+    std::cout << "Processing time (user.self): " << (float)totalUserSelf / 1000.0 << " s\n";
+    std::cout << "Processing time (user.children): " << (float)totalUserChild / 1000.0 << " s\n";
     std::cout << "Peak memory: " << getPeakMemory() << " KB\n";
   } catch (std::exception& e) { std::cerr << e.what() << std::endl; }
 

@@ -19,15 +19,15 @@ if (VTK_VERSION VERSION_LESS "8.90.0")
     include(${VTK_USE_FILE})
     add_executable(${PROJECT_NAME} ${INCS} ${SRCS})
     target_link_libraries(${PROJECT_NAME} PRIVATE ${PCL_LIBRARIES} ${VTK_LIBRARIES} JPCC::pcc_common JPCC::common JPCC::lvx_common JPCC::io)
-else()
+else ()
     add_executable(${PROJECT_NAME} ${INCS} ${SRCS})
     target_link_libraries(${PROJECT_NAME} PRIVATE ${PCL_LIBRARIES} ${VTK_LIBRARIES} JPCC::pcc_common JPCC::common JPCC::lvx_common JPCC::io)
     vtk_module_autoinit(
-        TARGETS ${PROJECT_NAME}
-        MODULES ${VTK_LIBRARIES}
+            TARGETS ${PROJECT_NAME}
+            MODULES ${VTK_LIBRARIES}
     )
-endif()
+endif ()
 
-if(NOT WIN32)
+if (NOT WIN32)
     target_link_libraries(${PROJECT_NAME} PRIVATE pthread)
-endif(NOT WIN32)
+endif (NOT WIN32)

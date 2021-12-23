@@ -1,7 +1,8 @@
 #include <jpcc/io/ReaderParameterBase.h>
 
-namespace jpcc {
-namespace io {
+#include <utility>
+
+namespace jpcc::io {
 
 using namespace std;
 using namespace po;
@@ -9,11 +10,11 @@ using namespace po;
 #define POINT_TYPES_OPT ".pointTypes"
 #define EPSILON_OPT ".epsilon"
 
-ReaderParameterBase::ReaderParameterBase(string prefix, string caption) :
-    Parameter(prefix, caption), pointTypes(), epsilon(0.001) {
+ReaderParameterBase::ReaderParameterBase(string prefix, const string& caption) :
+    Parameter(std::move(prefix), caption), pointTypes(), epsilon(0.001) {
   opts_.add_options()                                                             //
       ((string(prefix_ + POINT_TYPES_OPT)).c_str(),                               //
-       value<vector<string>>(&pointTypes_)->required(),                           //
+       value<vector<string>>(&pointTypes_),                                       //
        "types to read: [xyz, intensity, azimuth, vertical, distance, id, time]")  //
       ((string(prefix_ + EPSILON_OPT)).c_str(),                                   //
        value<float>(&epsilon)->default_value(epsilon),                            //
@@ -23,13 +24,14 @@ ReaderParameterBase::ReaderParameterBase(string prefix, string caption) :
 
 void ReaderParameterBase::notify() {
   assert(epsilon >= 0);
+  assert(!pointTypes_.empty());
   for (string& pointType : pointTypes_) { pointTypes.insert(pointType); }
 }
 
 ostream& operator<<(ostream& out, const ReaderParameterBase& obj) {
   out << obj.caption_ << endl;
   out << "\t" << obj.prefix_ << POINT_TYPES_OPT "=";
-  size_t                i = 0;
+  size_t                i;
   set<string>::iterator it;
   for (i = 0, it = obj.pointTypes.begin(); i < obj.pointTypes.size(); i++, it++) {
     if (i == 0) { out << "["; }
@@ -42,5 +44,4 @@ ostream& operator<<(ostream& out, const ReaderParameterBase& obj) {
   return out;
 }
 
-}  // namespace io
-}  // namespace jpcc
+}  // namespace jpcc::io

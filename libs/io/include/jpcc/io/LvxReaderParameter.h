@@ -5,8 +5,7 @@
 
 #include <jpcc/io/ReaderParameterBase.h>
 
-namespace jpcc {
-namespace io {
+namespace jpcc::io {
 
 class LvxReaderParameter : public jpcc::io::ReaderParameterBase {
  public:
@@ -20,7 +19,6 @@ class LvxReaderParameter : public jpcc::io::ReaderParameterBase {
   friend std::ostream& operator<<(std::ostream& out, const LvxReaderParameter& obj);
 };
 
-}  // namespace io
-}  // namespace jpcc
+}  // namespace jpcc::io
 
 #endif  // JPCC_IO_LVX_READER_PARAMETER_H_

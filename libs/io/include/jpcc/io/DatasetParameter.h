@@ -7,8 +7,7 @@
 
 #include <jpcc/common/Parameter.h>
 
-namespace jpcc {
-namespace io {
+namespace jpcc::io {
 
 class DatasetParameter : public jpcc::common::Parameter {
  public:
@@ -23,16 +22,15 @@ class DatasetParameter : public jpcc::common::Parameter {
 
   DatasetParameter();
 
-  std::vector<std::array<std::string, 2>> getDependencies() override;
+  [[nodiscard]] std::vector<std::array<std::string, 2>> getDependencies() const override;
 
   void notify() override;
 
-  std::string getFilePath(const size_t index) const;
+  [[nodiscard]] std::string getFilePath(size_t index) const;
 
   friend std::ostream& operator<<(std::ostream& out, const DatasetParameter& obj);
 };
 
-}  // namespace io
-}  // namespace jpcc
+}  // namespace jpcc::io
 
 #endif  // JPCC_IO_DATASET_PARAMETER_H_
