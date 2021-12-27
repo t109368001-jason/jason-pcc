@@ -1,0 +1,6 @@
+version: '3.9'
+services:
+  jpcc-build:
+    image: jason/jason-pcc
+    build: .
+    command: cmake --build build --config Debug --target all -j 10 --
