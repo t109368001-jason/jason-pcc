@@ -1,6 +1,17 @@
 version: '3.9'
 services:
-  jpcc-build:
-    image: jason/jason-pcc
-    build: .
-    command: cmake --build build --config Debug --target all -j 10 --
+  build-test-release:
+    extends:
+      file: docker/templates.yml
+      service: build-test
+    container_name: build-test-release
+    environment:
+      - BUILD_TYPE=Release
+
+  build-test-debug:
+    extends:
+      file: docker/templates.yml
+      service: build-test
+    container_name: build-test-debug
+    environment:
+      - BUILD_TYPE=Debug

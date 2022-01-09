@@ -28,11 +28,13 @@ if (WIN32)
     add_definitions(-D_WIN32_WINNT=${WIN32_WINNT})
 endif (WIN32)
 
+MESSAGE(STATUS "Build type: " ${CMAKE_BUILD_TYPE})
+
 find_package(Boost 1.65.0 REQUIRED COMPONENTS program_options)
 
 find_package(PCAP REQUIRED)
 
-find_package(PCL 1.3 REQUIRED COMPONENTS common visualization)
+find_package(PCL 1.3 REQUIRED COMPONENTS common octree visualization)
 
 find_package(VTK 7.1 REQUIRED COMPONENTS vtkCommonCore)
 
@@ -43,3 +45,21 @@ add_subdirectory(libs/octree)
 add_subdirectory(libs/pcc_common)
 
 add_subdirectory(app/JPCCTest)
+
+# GoogleTest requires at least C++11
+set(CMAKE_CXX_STANDARD 11)
+
+include(FetchContent)
+FetchContent_Declare(
+  googletest
+  URL https://github.com/google/googletest/archive/609281088cfefc76f9d0ce82e1ff6c30cc3591e5.zip
+)
+# For Windows: Prevent overriding the parent project's compiler/linker settings
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
+
+enable_testing()
+
+include(CTest)
+
+add_subdirectory(tests)

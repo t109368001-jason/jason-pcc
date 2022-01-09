@@ -1,0 +1,12 @@
+version: '3.9'
+services:
+  build-test:
+    build: ..
+    entrypoint: [ "bash", "-c" ]
+    command:
+      - |
+        cmake -DCMAKE_BUILD_TYPE:STRING=$${BUILD_TYPE} -H. -B./build
+        cmake --build build --config $${BUILD_TYPE} --target all --
+        cd build && ctest -C $${BUILD_TYPE} -T test --output-on-failure -T memcheck
+    environment:
+      - BUILD_TYPE=Release
