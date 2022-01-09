@@ -25,6 +25,7 @@
 #include "lvx_file.h"
 
 #include <string.h>
+#include <inttypes.h>
 #include <time.h>
 #include <cmath>
 #include <exception>
@@ -160,7 +161,7 @@ int LvxFileHandle::Open(const char* filename, std::ios_base::openmode mode) {
 
     size_ = lvx_file_.tellg();
     lvx_file_.seekg(0, std::ios::beg);
-    printf("Filesize %llu\n", size_);
+    printf("Filesize %" PRId64 "\n", size_);
 
     if (size_ < MiniFileSize()) {
       state_ = kLvxFileSizeFault;
@@ -315,7 +316,7 @@ int LvxFileHandle::GetPacketsOfFrame(OutPacketBuffer* packets_of_frame) {
 
   uint64_t tmp_size = lvx_file_.tellg();
   if (tmp_size >= size_) {
-    printf("At the file end %llu\n", tmp_size);
+    printf("At the file end %" PRId64 "\n", tmp_size);
     state_ = kLvxFileAtEnd;
     return kLvxFileAtEnd;
   }
