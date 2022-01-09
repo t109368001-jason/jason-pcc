@@ -5,26 +5,23 @@
 using namespace jpcc::octree;
 
 TEST(OctreeNBufBranchNodeTest, newBySize) {
-  // given
-  uint8_t n = 11;
   // when
-  OctreeNBufBranchNode<> node(n);
+  OctreeNBufBranchNode<11> node;
   // then
-  EXPECT_EQ(node.getBufferSize(), n);
-  for (uint8_t b = 0; b < n; ++b) {
+  EXPECT_EQ(node.getBufferSize(), 11);
+  for (uint8_t b = 0; b < 11; ++b) {
     for (uint8_t i = 0; i < 8; ++i) { EXPECT_NO_THROW(node.getChildPtr(b, i)); }
   }
 }
 
 TEST(OctreeNBufBranchNodeTest, newByAnother) {
   // given
-  uint8_t                n = 11;
-  OctreeNBufBranchNode<> node_(n);
+  OctreeNBufBranchNode<11> node_;
   // when
-  OctreeNBufBranchNode<> node(node_);
+  OctreeNBufBranchNode<11> node(node_);
   // then
-  EXPECT_EQ(node.getBufferSize(), n);
-  for (uint8_t b = 0; b < n; ++b) {
+  EXPECT_EQ(node.getBufferSize(), 11);
+  for (uint8_t b = 0; b < 11; ++b) {
     for (uint8_t i = 0; i < 8; ++i) { EXPECT_NO_THROW(node.getChildPtr(b, i)); }
   }
 }

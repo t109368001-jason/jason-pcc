@@ -38,11 +38,13 @@
 
 #pragma once
 
+#include <cstdint>
+
 #include <pcl/octree/octree_nodes.h>
 
 namespace jpcc::octree {
 
-template <typename BranchContainerT = pcl::octree::OctreeContainerEmpty>
+template <uint8_t BUFFER_SIZE = 2, typename BranchContainerT = pcl::octree::OctreeContainerEmpty>
 class OctreeNBufBranchNode : public pcl::octree::OctreeNode {
  public:
   using BranchContainer = BranchContainerT;
@@ -51,12 +53,10 @@ class OctreeNBufBranchNode : public pcl::octree::OctreeNode {
  protected:
   BranchContainer container_;
 
-  uint8_t bufferSize_;
-
-  OctreeNode* (*childMatrix_)[8];
+  OctreeNode* childMatrix_[BUFFER_SIZE][8];
 
  public:
-  OctreeNBufBranchNode(const uint8_t bufferSize);
+  OctreeNBufBranchNode();
 
   OctreeNBufBranchNode(const OctreeNBufBranchNode& source);
 
@@ -74,7 +74,7 @@ class OctreeNBufBranchNode : public pcl::octree::OctreeNode {
 
   pcl::octree::node_type_t getNodeType() const override;
 
-  size_t getBufferSize() const;
+  uint8_t getBufferSize() const;
 
   void reset();
 
