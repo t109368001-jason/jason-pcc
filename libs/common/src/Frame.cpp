@@ -23,13 +23,13 @@ Frame::Frame() :
     points_() {}
 
 void Frame::addPointTypes(const set<string>& pointTypes) {
-  if (pointTypes.contains("xyz")) { addPoints(); }
-  if (pointTypes.contains("azimuth")) { addAzimuths(); }
-  if (pointTypes.contains("vertical")) { addVerticals(); }
-  if (pointTypes.contains("distance")) { addDistances(); }
-  if (pointTypes.contains("intensity")) { addIntensities(); }
-  if (pointTypes.contains("id")) { addIds(); }
-  if (pointTypes.contains("time")) { addTimes(); }
+  if (pointTypes.find("xyz") != pointTypes.end()) { addPoints(); }
+  if (pointTypes.find("azimuth") != pointTypes.end()) { addAzimuths(); }
+  if (pointTypes.find("vertical") != pointTypes.end()) { addVerticals(); }
+  if (pointTypes.find("distance") != pointTypes.end()) { addDistances(); }
+  if (pointTypes.find("intensity") != pointTypes.end()) { addIntensities(); }
+  if (pointTypes.find("id") != pointTypes.end()) { addIds(); }
+  if (pointTypes.find("time") != pointTypes.end()) { addTimes(); }
 }
 
 void Frame::add(float x, float y, float z) {

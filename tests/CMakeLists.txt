@@ -7,9 +7,11 @@ file(GLOB_RECURSE SRCS *.cpp)
 
 add_executable(${PROJECT_NAME} ${INCS} ${SRCS})
 
+target_include_directories(${PROJECT_NAME} PRIVATE JPCC::octree)
+
 target_link_libraries(${PROJECT_NAME} PRIVATE gtest_main JPCC::octree)
 
-target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_20)
+target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
 
 include(GoogleTest)
 

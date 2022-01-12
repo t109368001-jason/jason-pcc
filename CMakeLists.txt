@@ -4,7 +4,7 @@ set(JPCC_VERSION 0.1)
 
 project(jason-pcc VERSION ${JPCC_VERSION})
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -30,13 +30,13 @@ endif (WIN32)
 
 MESSAGE(STATUS "Build type: " ${CMAKE_BUILD_TYPE})
 
-find_package(Boost 1.65.0 REQUIRED COMPONENTS program_options)
+find_package(Boost 1.71 REQUIRED COMPONENTS program_options)
 
 find_package(PCAP REQUIRED)
 
-find_package(PCL 1.3 REQUIRED COMPONENTS common octree visualization)
+find_package(PCL 1.10 REQUIRED COMPONENTS common octree visualization)
 
-find_package(VTK 7.1 REQUIRED COMPONENTS vtkCommonCore)
+find_package(VTK 7.1.1 REQUIRED COMPONENTS vtkCommonCore)
 
 add_subdirectory(libs/common)
 add_subdirectory(libs/io)

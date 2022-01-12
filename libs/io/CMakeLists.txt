@@ -22,4 +22,4 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/s
 
 target_link_libraries(${PROJECT_NAME} PRIVATE Boost::program_options ${PCL_LIBRARIES} ${PCAP_LIBRARIES} JPCC::common JPCC::lvx_common)
 
-target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_20)
+target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)

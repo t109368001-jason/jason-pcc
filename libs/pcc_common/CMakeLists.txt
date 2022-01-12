@@ -32,4 +32,4 @@ if (NOT WIN32)
     target_link_libraries(${PROJECT_NAME} PRIVATE TBB::tbb)
 endif (NOT WIN32)
 
-target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_20)
+target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
