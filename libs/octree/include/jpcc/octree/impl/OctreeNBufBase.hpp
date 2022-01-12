@@ -227,20 +227,6 @@ void OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::deleteTree()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <uint8_t BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
-void OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::deletePreviousBuffer() {
-  treeCleanUpRecursive(root_node_);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <uint8_t BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
-void OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::deleteCurrentBuffer() {
-  buffer_selector_ = buffer_selector_ > 0 ? buffer_selector_-- : 0;
-  treeCleanUpRecursive(root_node_);
-  leaf_count_ = 0;
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <uint8_t BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
 void OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::switchBuffers(const uint8_t bufferSelector) {
   // FIXME
   // if (tree_dirty_flag_) {
@@ -537,16 +523,12 @@ template <uint8_t BUFFER_SIZE, typename LeafContainerT, typename BranchContainer
 void OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::deleteBranch(BranchNode& branch_arg) {
   // delete all branch node children
   for (char i = 0; i < 8; i++) {
-    if (branch_arg.getChildPtr(0, i) == branch_arg.getChildPtr(1, i)) {
-      // reference was copied - there is only one child instance to be deleted
-      deleteBranchChild(branch_arg, 0, i);
-
-      // remove pointers from both buffers
-      branch_arg.setChildPtr(0, i, nullptr);
-      branch_arg.setChildPtr(1, i, nullptr);
-    } else {
-      deleteBranchChild(branch_arg, 0, i);
-      deleteBranchChild(branch_arg, 1, i);
+    for (uint8_t b = 0; b < BUFFER_SIZE; ++b) {
+      if (branch_arg.getChildPtr(b, i)) {
+        deleteBranchChild(branch_arg, b, i);
+        for (uint8_t b_ = 0; b_ < BUFFER_SIZE; ++b_) { branch_arg.setChildPtr(b_, i, nullptr); }
+        break;
+      }
     }
   }
 }
@@ -621,22 +603,26 @@ OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::createLeafRecursi
     // if required branch does not exist
     if (!branch_arg->hasChild(buffer_selector_, child_idx)) {
       // check if we find a branch node reference in previous buffer
+      bool flag = false;
+      for (uint8_t b = 0; b < BUFFER_SIZE; ++b) {
+        if (b == buffer_selector_) { continue; }
+        if (branch_arg->hasChild(b, child_idx)) {
+          OctreeNode* child_node = branch_arg->getChildPtr(b, child_idx);
 
-      if (branch_arg->hasChild(!buffer_selector_, child_idx)) {
-        OctreeNode* child_node = branch_arg->getChildPtr(!buffer_selector_, child_idx);
+          if (child_node->getNodeType() == pcl::octree::BRANCH_NODE) {
+            child_branch = static_cast<BranchNode*>(child_node);
+            branch_arg->setChildPtr(buffer_selector_, child_idx, child_node);
+          } else {
+            // depth has changed.. child in preceding buffer is a leaf node.
+            deleteBranchChild(*branch_arg, b, child_idx);
+            child_branch = createBranchChild(*branch_arg, child_idx);
+          }
 
-        if (child_node->getNodeType() == pcl::octree::BRANCH_NODE) {
-          child_branch = static_cast<BranchNode*>(child_node);
-          branch_arg->setChildPtr(buffer_selector_, child_idx, child_node);
-        } else {
-          // depth has changed.. child in preceding buffer is a leaf node.
-          deleteBranchChild(*branch_arg, !buffer_selector_, child_idx);
-          child_branch = createBranchChild(*branch_arg, child_idx);
+          // take child branch from previous buffer
+          doNodeReset = true;  // reset the branch pointer array of stolen child node
         }
-
-        // take child branch from previous buffer
-        doNodeReset = true;  // reset the branch pointer array of stolen child node
-      } else {
+      }
+      if (!doNodeReset) {
         // if required branch does not exist -> create it
         child_branch = createBranchChild(*branch_arg, child_idx);
       }
@@ -652,25 +638,31 @@ OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::createLeafRecursi
                                doNodeReset);
   }
 
+  bool stolenChildNode = false;
   // branch childs are leaf nodes
   LeafNode* child_leaf;
   if (!branch_arg->hasChild(buffer_selector_, child_idx)) {
     // leaf node at child_idx does not exist
 
-    // check if we can take copy a reference from previous buffer
-    if (branch_arg->hasChild(!buffer_selector_, child_idx)) {
-      OctreeNode* child_node = branch_arg->getChildPtr(!buffer_selector_, child_idx);
-      if (child_node->getNodeType() == pcl::octree::LEAF_NODE) {
-        child_leaf                 = static_cast<LeafNode*>(child_node);
-        child_leaf->getContainer() = LeafContainer();  // Clear contents of leaf
-        branch_arg->setChildPtr(buffer_selector_, child_idx, child_node);
-      } else {
-        // depth has changed.. child in preceding buffer is a leaf node.
-        deleteBranchChild(*branch_arg, !buffer_selector_, child_idx);
-        child_leaf = createLeafChild(*branch_arg, child_idx);
+    for (uint8_t b = 0; b < BUFFER_SIZE; ++b) {
+      if (b == buffer_selector_) { continue; }
+      // check if we can take copy a reference from previous buffer
+      if (branch_arg->hasChild(b, child_idx)) {
+        OctreeNode* child_node = branch_arg->getChildPtr(b, child_idx);
+        if (child_node->getNodeType() == pcl::octree::LEAF_NODE) {
+          child_leaf                 = static_cast<LeafNode*>(child_node);
+          child_leaf->getContainer() = LeafContainer();  // Clear contents of leaf
+          branch_arg->setChildPtr(buffer_selector_, child_idx, child_node);
+        } else {
+          // depth has changed.. child in preceding buffer is a leaf node.
+          deleteBranchChild(*branch_arg, b, child_idx);
+          child_leaf = createLeafChild(*branch_arg, child_idx);
+        }
+        leaf_count_++;
+        stolenChildNode = true;
       }
-      leaf_count_++;
-    } else {
+    }
+    if (!stolenChildNode) {
       // if required leaf does not exist -> create it
       child_leaf = createLeafChild(*branch_arg, child_idx);
       leaf_count_++;
@@ -965,45 +957,6 @@ void OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::serializeTre
 template <uint8_t BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
 void OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::deserializeTreeCallback(LeafContainerT&,
                                                                                             const OctreeKey&) {}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <uint8_t BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
-void OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::treeCleanUpRecursive(BranchNode* branch_arg) {
-  // TODO
-  // occupancy bit pattern of branch node  (previous octree buffer)
-  char occupied_children_bit_pattern_prev_buffer = getBranchBitPattern(*branch_arg, !buffer_selector_);
-
-  // XOR of current and previous occupancy bit patterns
-  char node_XOR_bit_pattern = getBranchXORBitPattern(*branch_arg);
-
-  // bit pattern indicating unused octree nodes in previous branch
-  char unused_branches_bit_pattern = node_XOR_bit_pattern & occupied_children_bit_pattern_prev_buffer;
-
-  // iterate over all children
-  for (unsigned char child_idx = 0; child_idx < 8; child_idx++) {
-    if (branch_arg->hasChild(buffer_selector_, child_idx)) {
-      OctreeNode* child_node = branch_arg->getChildPtr(buffer_selector_, child_idx);
-
-      switch (child_node->getNodeType()) {
-        case pcl::octree::BRANCH_NODE: {
-          // recursively proceed with indexed child branch
-          treeCleanUpRecursive(static_cast<BranchNode*>(child_node));
-          break;
-        }
-        case pcl::octree::LEAF_NODE:
-          // leaf level - nothing to do..
-          break;
-        default: break;
-      }
-    }
-
-    // check for unused branches in previous buffer
-    if (unused_branches_bit_pattern & (1 << child_idx)) {
-      // delete branch, free memory
-      deleteBranchChild(*branch_arg, !buffer_selector_, child_idx);
-    }
-  }
-}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <uint8_t BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>

@@ -155,10 +155,6 @@ class OctreeNBufBase {
 
   void deleteTree();
 
-  void deletePreviousBuffer();
-
-  void deleteCurrentBuffer();
-
   void switchBuffers(const uint8_t bufferSelector);
 
   void serializeTree(std::vector<char>& binary_tree_out_arg, bool do_XOR_encoding_arg = false);
@@ -247,8 +243,6 @@ class OctreeNBufBase {
   virtual void serializeTreeCallback(LeafContainerT&, const OctreeKey&);
 
   virtual void deserializeTreeCallback(LeafContainerT&, const OctreeKey&);
-
-  void treeCleanUpRecursive(BranchNode* branch_arg);
 
   bool octreeCanResize();
 
