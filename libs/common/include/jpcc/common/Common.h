@@ -7,6 +7,7 @@
 
 #include <boost/throw_exception.hpp>
 
+#define PCL_NO_PRECOMPILE
 #include <pcl/point_types.h>
 
 namespace jpcc {

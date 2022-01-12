@@ -40,6 +40,7 @@
 
 #include <cstdint>
 
+#define PCL_NO_PRECOMPILE
 #include <pcl/octree/octree_nodes.h>
 
 namespace jpcc::octree {
@@ -97,4 +98,4 @@ class OctreeNBufBranchNode : public pcl::octree::OctreeNode {
 
 }  // namespace jpcc::octree
 
-#include "impl/OctreeNBufBranchNode.hpp"
+#include <jpcc/octree/impl/OctreeNBufBranchNode.hpp>
