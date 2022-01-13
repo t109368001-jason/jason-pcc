@@ -67,6 +67,9 @@ class OctreeNBufBase {
   using OctreeKey = pcl::octree::OctreeKey;
   using uindex_t  = unsigned int;
 
+  using BitPattern     = uint8_t;
+  using BitPatternList = Eigen::Matrix<uint8_t, BUFFER_SIZE, 1>;
+
   // public for research
   //  protected:
   std::size_t leaf_count_;
@@ -157,22 +160,6 @@ class OctreeNBufBase {
 
   void switchBuffers(const uint8_t bufferSelector);
 
-  void serializeTree(std::vector<char>& binary_tree_out_arg, bool do_XOR_encoding_arg = false);
-
-  void serializeTree(std::vector<char>&            binary_tree_out_arg,
-                     std::vector<LeafContainerT*>& leaf_container_vector_arg,
-                     bool                          do_XOR_encoding_arg = false);
-
-  void serializeLeafs(std::vector<LeafContainerT*>& leaf_container_vector_arg);
-
-  void serializeNewLeafs(std::vector<LeafContainerT*>& leaf_container_vector_arg);
-
-  void deserializeTree(std::vector<char>& binary_tree_in_arg, bool do_XOR_decoding_arg = false);
-
-  void deserializeTree(std::vector<char>&            binary_tree_in_arg,
-                       std::vector<LeafContainerT*>& leaf_container_vector_arg,
-                       bool                          do_XOR_decoding_arg = false);
-
   // public for research
   //  protected:
   pcl::octree::OctreeNode* getRootNode() const;
@@ -194,8 +181,6 @@ class OctreeNBufBase {
   uint8_t getBranchBitPattern(const BranchNode& branch_arg) const;
 
   uint8_t getBranchBitPattern(const BranchNode& branch_arg, uint8_t bufferSelector_arg) const;
-
-  uint8_t getBranchXORBitPattern(const BranchNode& branch_arg) const;
 
   bool hasBranchChanges(const BranchNode& branch_arg) const;
 
@@ -222,23 +207,6 @@ class OctreeNBufBase {
                          LeafContainerT*& result_arg) const;
 
   bool deleteLeafRecursive(const OctreeKey& key_arg, uindex_t depth_mask_arg, BranchNode* branch_arg);
-
-  void serializeTreeRecursive(BranchNode*                            branch_arg,
-                              OctreeKey&                             key_arg,
-                              std::vector<char>*                     binary_tree_out_arg,
-                              typename std::vector<LeafContainerT*>* leaf_container_vector_arg,
-                              bool                                   do_XOR_encoding_arg  = false,
-                              bool                                   new_leafs_filter_arg = false);
-
-  void deserializeTreeRecursive(BranchNode*                                            branch_arg,
-                                uindex_t                                               depth_mask_arg,
-                                OctreeKey&                                             key_arg,
-                                typename std::vector<char>::const_iterator&            binary_tree_in_it_arg,
-                                typename std::vector<char>::const_iterator&            binary_tree_in_it_end_arg,
-                                typename std::vector<LeafContainerT*>::const_iterator* leaf_container_vector_it_arg,
-                                typename std::vector<LeafContainerT*>::const_iterator* leaf_container_vector_it_end_arg,
-                                bool                                                   branch_reset_arg    = false,
-                                bool                                                   do_XOR_decoding_arg = false);
 
   virtual void serializeTreeCallback(LeafContainerT&, const OctreeKey&);
 
