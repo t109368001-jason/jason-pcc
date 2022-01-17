@@ -15,8 +15,11 @@ RUN apt-get update && \
     libpcl-dev \
     && rm -rf /var/lib/apt/lists/*
 
+###############################################################################
 FROM jpcc-u20-env as jpcc-u20-src
 
+COPY ./scripts/build.sh /jason-pcc/scripts/
+COPY ./scripts/test.sh /jason-pcc/scripts/
 COPY ./CMakeLists.txt /jason-pcc/
 COPY ./cmake /jason-pcc/cmake
 COPY ./libs /jason-pcc/libs
@@ -25,20 +28,16 @@ COPY ./tests /jason-pcc/tests
 
 RUN mkdir -p build
 
+###############################################################################
 FROM jpcc-u20-src as jpcc-u20-build-release
 
-ENV BUILD_TYPE="Release"
-
 WORKDIR /jason-pcc
 
-RUN cmake -DCMAKE_BUILD_TYPE:STRING=${BUILD_TYPE} -H. -B./build
-RUN cmake --build build --target all -j$(nproc) --
+RUN scripts/build.sh
 
+###############################################################################
 FROM jpcc-u20-src as jpcc-u20-build-debug
 
-ENV BUILD_TYPE="Debug"
-
 WORKDIR /jason-pcc
 
-RUN cmake -DCMAKE_BUILD_TYPE:STRING=${BUILD_TYPE} -H. -B./build
-RUN cmake --build build --target all -j$(nproc) --
+RUN scripts/build.sh

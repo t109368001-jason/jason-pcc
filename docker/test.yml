@@ -1,0 +1,12 @@
+version: '3.9'
+
+services:
+  jpcc-u20-test-release:
+    image: jpcc:u20-build-release
+    container_name: jpcc-u20-test-release
+    command: bash scripts/test.sh
+
+  jpcc-u20-test-debug:
+    image: jpcc:u20-build-debug
+    container_name: jpcc-u20-test-debug
+    command: bash scripts/test.sh

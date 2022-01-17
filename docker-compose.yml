@@ -8,18 +8,14 @@ services:
       target: jpcc-u20-env
     command: tail -f /dev/null
     restart: always
-  jpcc-u20-test-release:
+  jpcc-u20-build-release:
+    image: jpcc:u20-build-release
     build:
       context: .
       target: jpcc-u20-build-release
-    container_name: jpcc-u20-test-release
-    working_dir: /jason-pcc/build
-    command: ctest -j$$(nproc) -T test --output-on-failure -T memcheck
 
-  jpcc-u20-test-debug:
+  jpcc-u20-build-debug:
+    image: jpcc:u20-build-debug
     build:
       context: .
       target: jpcc-u20-build-debug
-    container_name: jpcc-u20-test-debug
-    working_dir: /jason-pcc/build
-    command: ctest -j$$(nproc) -T test --output-on-failure -T memcheck
