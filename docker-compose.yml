@@ -1,18 +1,27 @@
 version: '3.9'
 
 services:
-  build-test-release:
-    extends:
-      file: docker/templates.yml
-      service: build-test
-    container_name: build-test-release
-    environment:
-      - BUILD_TYPE=Release
+  jpcc-u20:
+    image: jpcc:u20
+    build:
+      context: .
+      target: jpcc-u20-env
+    restart: always
+  jpcc-u20-test-release:
+    build:
+      context: .
+      target: jpcc-u20-build-release
+    container_name: jpcc-u20-test-release
+    working_dir: /jason-pcc/build
+    command: ctest -j$$(nproc) -T test --output-on-failure -T memcheck
 
-  build-test-debug:
-    extends:
-      file: docker/templates.yml
-      service: build-test
-    container_name: build-test-debug
-    environment:
-      - BUILD_TYPE=Debug
+  jpcc-u20-test-debug:
+    build:
+      context: .
+      target: jpcc-u20-build-debug
+    container_name: jpcc-u20-test-debug
+    working_dir: /jason-pcc/build
+    command: ctest -j$$(nproc) -T test --output-on-failure -T memcheck
+
+volumes:
+  aptcacher-cache: null
