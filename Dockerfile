@@ -17,12 +17,11 @@ RUN apt-get update && \
 
 FROM jpcc-u20-env as jpcc-u20-src
 
-COPY ./app /jason-pcc/app
+COPY ./CMakeLists.txt /jason-pcc/
 COPY ./cmake /jason-pcc/cmake
 COPY ./libs /jason-pcc/libs
-COPY ./scripts /jason-pcc/scripts
+COPY ./app /jason-pcc/app
 COPY ./tests /jason-pcc/tests
-COPY ./CMakeLists.txt /jason-pcc/
 
 RUN mkdir -p build
 
@@ -32,7 +31,8 @@ ENV BUILD_TYPE="Release"
 
 WORKDIR /jason-pcc
 
-RUN bash scripts/jpcc-build.sh
+RUN cmake -DCMAKE_BUILD_TYPE:STRING=${BUILD_TYPE} -H. -B./build
+RUN cmake --build build --target all -j$(nproc) --
 
 FROM jpcc-u20-src as jpcc-u20-build-debug
 
@@ -40,4 +40,5 @@ ENV BUILD_TYPE="Debug"
 
 WORKDIR /jason-pcc
 
-RUN bash scripts/jpcc-build.sh
+RUN cmake -DCMAKE_BUILD_TYPE:STRING=${BUILD_TYPE} -H. -B./build
+RUN cmake --build build --target all -j$(nproc) --

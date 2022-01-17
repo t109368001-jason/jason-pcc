@@ -1,5 +1,10 @@
 #!/bin/bash
 
-rsync -avr --exclude 'bin/' --exclude 'build*/' --exclude 'lib/' --exclude '.vscode' ./* lab107:~/t109368001/git/jason-pcc
+REMOTE_HOST=lab107
+REMOTE_WORKING_DIR="~/t109368001/git/jason-pcc"
 
-ssh -t lab107 "cd t109368001/git/jason-pcc && docker-compose down && docker-compose up --build"
+ssh -t ${REMOTE_HOST} "rm ${REMOTE_WORKING_DIR} -rf"
+
+rsync -avr --exclude-from ".gitignore" ./* ${REMOTE_HOST}:${REMOTE_WORKING_DIR}
+
+ssh -t ${REMOTE_HOST} "cd ${REMOTE_WORKING_DIR} && bash scripts/deploy-local.sh"

@@ -6,6 +6,7 @@ services:
     build:
       context: .
       target: jpcc-u20-env
+    command: tail -f /dev/null
     restart: always
   jpcc-u20-test-release:
     build:
@@ -22,6 +23,3 @@ services:
     container_name: jpcc-u20-test-debug
     working_dir: /jason-pcc/build
     command: ctest -j$$(nproc) -T test --output-on-failure -T memcheck
-
-volumes:
-  aptcacher-cache: null
