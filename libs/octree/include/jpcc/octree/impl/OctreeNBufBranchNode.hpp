@@ -10,13 +10,14 @@ OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>::OctreeNBufBranchNode() : Oc
 
 template <uint8_t BUFFER_SIZE, typename BranchContainerT>
 OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>::OctreeNBufBranchNode(const OctreeNBufBranchNode& source) :
-    OctreeNBufBranchNode() {
+    OctreeNode(), childMatrix_() {
   *this = source;
 }
 
 template <uint8_t BUFFER_SIZE, typename BranchContainerT>
 OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>& OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>::operator=(
     const OctreeNBufBranchNode& src) {
+  if (this == &src) { return *this; }
   reset();
 
   for (uint8_t b = 0; b < BUFFER_SIZE; ++b) {
@@ -29,7 +30,7 @@ OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>& OctreeNBufBranchNode<BUFFER
 }
 
 template <uint8_t BUFFER_SIZE, typename BranchContainerT>
-OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>::~OctreeNBufBranchNode() {}
+OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>::~OctreeNBufBranchNode() = default;
 
 template <uint8_t BUFFER_SIZE, typename BranchContainerT>
 OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>* OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>::deepCopy()

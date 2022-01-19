@@ -63,19 +63,19 @@ class OctreeNBufBranchNode : public pcl::octree::OctreeNode {
 
   OctreeNBufBranchNode& operator=(const OctreeNBufBranchNode& src);
 
-  ~OctreeNBufBranchNode();
+  ~OctreeNBufBranchNode() override;
 
   OctreeNBufBranchNode* deepCopy() const override;
 
-  OctreeNode* getChildPtr(uint8_t bufferIndex, uint8_t childIndex) const;
+  [[nodiscard]] OctreeNode* getChildPtr(uint8_t bufferIndex, uint8_t childIndex) const;
 
   void setChildPtr(uint8_t bufferIndex, uint8_t childIndex, OctreeNode* node);
 
-  bool hasChild(uint8_t bufferIndex, uint8_t childIndex) const;
+  [[nodiscard]] bool hasChild(uint8_t bufferIndex, uint8_t childIndex) const;
 
-  pcl::octree::node_type_t getNodeType() const override;
+  [[nodiscard]] pcl::octree::node_type_t getNodeType() const override;
 
-  uint8_t getBufferSize() const;
+  [[nodiscard]] uint8_t getBufferSize() const;
 
   void reset();
 

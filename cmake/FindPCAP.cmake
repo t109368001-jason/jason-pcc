@@ -48,62 +48,62 @@
 #  PCAP_FOUND       - True if pcap found.
 
 
-IF(EXISTS $ENV{PCAPDIR})
-  FIND_PATH(PCAP_INCLUDE_DIR
-    NAMES
-    pcap/pcap.h
-    pcap.h
-    PATHS
-      $ENV{PCAPDIR}
-    NO_DEFAULT_PATH
-  )
+IF (EXISTS $ENV{PCAPDIR})
+    FIND_PATH(PCAP_INCLUDE_DIR
+            NAMES
+            pcap/pcap.h
+            pcap.h
+            PATHS
+            $ENV{PCAPDIR}
+            NO_DEFAULT_PATH
+            )
 
-  FIND_LIBRARY(PCAP_LIBRARY
-    NAMES
-      pcap
-    PATHS
-      $ENV{PCAPDIR}
-    NO_DEFAULT_PATH
-  )
+    FIND_LIBRARY(PCAP_LIBRARY
+            NAMES
+            pcap
+            PATHS
+            $ENV{PCAPDIR}
+            NO_DEFAULT_PATH
+            )
 
 
-ELSE(EXISTS $ENV{PCAPDIR})
+ELSE (EXISTS $ENV{PCAPDIR})
 
-  INCLUDE(FindWSWinLibs)
-  FindWSWinLibs("WpdPack" "PCAP_HINTS")
+    INCLUDE(FindWSWinLibs)
+    FindWSWinLibs("WpdPack" "PCAP_HINTS")
 
-  FIND_PATH(PCAP_INCLUDE_DIR
-    NAMES
-    pcap/pcap.h
-    pcap.h
-    HINTS
-      "${PCAP_HINTS}/include"
-  )
+    FIND_PATH(PCAP_INCLUDE_DIR
+            NAMES
+            pcap/pcap.h
+            pcap.h
+            HINTS
+            "${PCAP_HINTS}/include"
+            )
 
-  FIND_LIBRARY(PCAP_LIBRARY
-    NAMES
-      pcap
-      wpcap
-    HINTS
-      "${PCAP_HINTS}/lib"
-  )
+    FIND_LIBRARY(PCAP_LIBRARY
+            NAMES
+            pcap
+            wpcap
+            HINTS
+            "${PCAP_HINTS}/lib"
+            )
 
-ENDIF(EXISTS $ENV{PCAPDIR})
+ENDIF (EXISTS $ENV{PCAPDIR})
 
 SET(PCAP_INCLUDE_DIRS ${PCAP_INCLUDE_DIR})
 SET(PCAP_LIBRARIES ${PCAP_LIBRARY})
 
-IF(PCAP_INCLUDE_DIRS)
-  MESSAGE(STATUS "Pcap include dirs set to ${PCAP_INCLUDE_DIRS}")
-ELSE(PCAP_INCLUDE_DIRS)
-  MESSAGE(FATAL " Pcap include dirs cannot be found")
-ENDIF(PCAP_INCLUDE_DIRS)
+IF (PCAP_INCLUDE_DIRS)
+    MESSAGE(STATUS "Pcap include dirs set to ${PCAP_INCLUDE_DIRS}")
+ELSE (PCAP_INCLUDE_DIRS)
+    MESSAGE(FATAL " Pcap include dirs cannot be found")
+ENDIF (PCAP_INCLUDE_DIRS)
 
-IF(PCAP_LIBRARIES)
-  MESSAGE(STATUS "Pcap library set to  ${PCAP_LIBRARIES}")
-ELSE(PCAP_LIBRARIES)
-  MESSAGE(FATAL "Pcap library cannot be found")
-ENDIF(PCAP_LIBRARIES)
+IF (PCAP_LIBRARIES)
+    MESSAGE(STATUS "Pcap library set to  ${PCAP_LIBRARIES}")
+ELSE (PCAP_LIBRARIES)
+    MESSAGE(FATAL "Pcap library cannot be found")
+ENDIF (PCAP_LIBRARIES)
 
 #Functions
 INCLUDE(CheckFunctionExists)
@@ -118,6 +118,6 @@ INCLUDE(FindPackageHandleStandardArgs)
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(PCAP DEFAULT_MSG PCAP_INCLUDE_DIRS PCAP_LIBRARIES)
 
 MARK_AS_ADVANCED(
-  PCAP_LIBRARIES
-  PCAP_INCLUDE_DIRS
+        PCAP_LIBRARIES
+        PCAP_INCLUDE_DIRS
 )
