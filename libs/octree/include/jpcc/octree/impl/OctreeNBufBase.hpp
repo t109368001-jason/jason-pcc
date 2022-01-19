@@ -351,6 +351,22 @@ uint8_t OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::getBranch
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <uint8_t BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
+typename OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::BufferPattern
+OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::getBranchBufferPattern(
+    const OctreeNBufBase::BranchNode& branch_arg, uint8_t childrenIdx) const {
+  BufferPattern bufferPattern;
+
+  // create bit pattern
+  for (uint8_t b = 0; b < BUFFER_SIZE; b++) {
+    const OctreeNode* child = branch_arg.getChildPtr(b, childrenIdx);
+    bufferPattern[b]        = (child != nullptr);
+  }
+
+  return bufferPattern;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <uint8_t BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
 void OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::deleteBranchChild(BranchNode&   branch_arg,
                                                                                       unsigned char buffer_selector_arg,
                                                                                       unsigned char child_idx_arg) {

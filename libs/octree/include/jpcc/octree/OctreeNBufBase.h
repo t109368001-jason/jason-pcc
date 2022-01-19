@@ -177,6 +177,8 @@ class OctreeNBufBase {
 
   uint8_t getBranchBitPattern(const BranchNode& branch_arg, uint8_t bufferSelector_arg) const;
 
+  BufferPattern getBranchBufferPattern(const BranchNode& branch_arg, uint8_t childrenIdx) const;
+
   void deleteBranchChild(BranchNode& branch_arg, unsigned char buffer_selector_arg, unsigned char child_idx_arg);
 
   void deleteBranchChild(BranchNode& branch_arg, unsigned char child_idx_arg);
