@@ -6,7 +6,8 @@ services:
     build:
       context: .
       target: jpcc-u20-env
-    command: tail -f /dev/null
+    ports:
+      - "10022:22"
     restart: always
   jpcc-u20-build-release:
     image: jpcc:u20-build-release
