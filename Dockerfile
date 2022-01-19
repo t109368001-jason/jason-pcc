@@ -28,14 +28,14 @@ RUN apt-get update && \
     rsync \
     && rm -rf /var/lib/apt/lists/*
 
-RUN useradd -rm -d /home/ubuntu -s /bin/bash -g root -G sudo -u 1001 ubuntu
+RUN useradd -rm -d /home/jason -s /bin/bash -g root -G sudo -u 1001 jason
 RUN mkdir /var/run/sshd
-RUN echo 'ubuntu:ubuntu' | chpasswd
+RUN echo 'jason:jason' | chpasswd
 RUN echo 'root:root' | chpasswd
 RUN service ssh start
 
 RUN mkdir /home/ubuntu/.ssh
-RUN echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDoGyEMPMGVnD58XejnEYfPE+90/x6cRWyIZba6JY7m+eUGM/RBMK56Q+iBmitmAqVtrf5qWD5HmV88BGJtlDWyDnHac7bu/vpIqzdYJcBivEahtPqgk9EJpjA0SYVYqUU+xW4KPlndyFvOvg67W0vQPvb1y6NDmTGw//hzZnei8ycmLAADl6I0dfVwMsURbJr2gjfiCwjBenbofjhVIsB2dFstgz8PvO7ldXirE5IJvXNh+YzpTOMaQNg9fmpTR5CmMEMwnBLHv9Wr2/mcqAC2oJhtyK+S8XB/DnvfhErwqc5O9s1dCIJlaqC2bYSi/Z2sxMqTpkhQxRcjxRGA6VNUWkKJ19kWS/OOGGHE11j6KWRuqSPpKf1/0ZhOOcL1uIWSxUI6VOVE1HJ6a5YjvwbKkZQ1Ufh9NxV9fA4lMiYeFNavxOkNT2TQQUUmIuIS6WwPIrogJCTqtAYliKnXo/fsUDKqiwGuOxgUSekvNLBitQiuqeLsKUuZRAkUJSk3MJM= wesdx@XIAO-PC" > /home/ubuntu/.ssh/known_hosts
+RUN echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDoGyEMPMGVnD58XejnEYfPE+90/x6cRWyIZba6JY7m+eUGM/RBMK56Q+iBmitmAqVtrf5qWD5HmV88BGJtlDWyDnHac7bu/vpIqzdYJcBivEahtPqgk9EJpjA0SYVYqUU+xW4KPlndyFvOvg67W0vQPvb1y6NDmTGw//hzZnei8ycmLAADl6I0dfVwMsURbJr2gjfiCwjBenbofjhVIsB2dFstgz8PvO7ldXirE5IJvXNh+YzpTOMaQNg9fmpTR5CmMEMwnBLHv9Wr2/mcqAC2oJhtyK+S8XB/DnvfhErwqc5O9s1dCIJlaqC2bYSi/Z2sxMqTpkhQxRcjxRGA6VNUWkKJ19kWS/OOGGHE11j6KWRuqSPpKf1/0ZhOOcL1uIWSxUI6VOVE1HJ6a5YjvwbKkZQ1Ufh9NxV9fA4lMiYeFNavxOkNT2TQQUUmIuIS6WwPIrogJCTqtAYliKnXo/fsUDKqiwGuOxgUSekvNLBitQiuqeLsKUuZRAkUJSk3MJM= wesdx@XIAO-PC" > /home/ubuntu/.ssh/authorized_keys
 
 EXPOSE 22
 
