@@ -1,5 +1,4 @@
-#ifndef JPCC_IO_READER_PARAMETER_BASE_H_
-#define JPCC_IO_READER_PARAMETER_BASE_H_
+#pragma once
 
 #include <iostream>
 #include <set>
@@ -28,5 +27,3 @@ class ReaderParameterBase : public jpcc::common::Parameter {
 };
 
 }  // namespace jpcc::io
-
-#endif  // JPCC_IO_READER_PARAMETER_BASE_H_

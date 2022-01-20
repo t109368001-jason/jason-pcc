@@ -36,8 +36,6 @@
  * $Id$
  */
 
-#pragma clang diagnostic push
-#pragma ide diagnostic   ignored "OCUnusedGlobalDeclarationInspection"
 #pragma once
 
 #include <bitset>
@@ -54,7 +52,9 @@
 
 namespace jpcc::octree {
 
-template <uint8_t BUFFER_SIZE       = 2,
+using ChildrenPattern = std::bitset<8>;
+
+template <BufferSize BUFFER_SIZE    = 2,
           typename LeafContainerT   = pcl::octree::OctreeContainerPointIndices,
           typename BranchContainerT = pcl::octree::OctreeContainerEmpty>
 class OctreeNBufBase {
@@ -64,14 +64,13 @@ class OctreeNBufBase {
   using LeafNode   = pcl::octree::OctreeLeafNode<LeafContainerT>;
   using OctreeNode = pcl::octree::OctreeNode;
 
-  using BranchContainer = BranchContainerT;
-  using LeafContainer   = LeafContainerT;
+  using BranchContainer [[maybe_unused]] = BranchContainerT;
+  using LeafContainer [[maybe_unused]]   = LeafContainerT;
 
   using OctreeKey = pcl::octree::OctreeKey;
   using uindex_t  = unsigned int;
 
-  using BufferPattern     = std::bitset<BUFFER_SIZE>;
-  using BufferPatternList = Eigen::Matrix<BufferPattern, BUFFER_SIZE, 1>;
+  using BufferPattern = std::bitset<BUFFER_SIZE>;
 
   // public for research
   //  protected:
@@ -149,11 +148,11 @@ class OctreeNBufBase {
 
   [[nodiscard]] std::size_t getBranchCount() const;
 
-  [[nodiscard]] uint8_t getBufferSize() const;
+  [[nodiscard]] BufferSize getBufferSize() const;
 
   void deleteTree();
 
-  void switchBuffers(uint8_t bufferSelector);
+  void switchBuffers(BufferSize bufferSelector);
 
   // public for research
   //  protected:
@@ -173,11 +172,11 @@ class OctreeNBufBase {
 
   void setBranchChildPtr(BranchNode& branch_arg, unsigned char child_idx_arg, pcl::octree::OctreeNode* new_child_arg);
 
-  uint8_t getBranchBitPattern(const BranchNode& branch_arg) const;
+  ChildrenPattern getChildrenPattern(const BranchNode& branch_arg) const;
 
-  uint8_t getBranchBitPattern(const BranchNode& branch_arg, uint8_t bufferSelector_arg) const;
+  ChildrenPattern getChildrenPattern(const BranchNode& branch_arg, BufferSize bufferSelector_arg) const;
 
-  BufferPattern getBranchBufferPattern(const BranchNode& branch_arg, uint8_t childrenIdx) const;
+  BufferPattern getBufferPattern(const BranchNode& branch_arg, uint8_t childrenIdx) const;
 
   void deleteBranchChild(BranchNode& branch_arg, unsigned char buffer_selector_arg, unsigned char child_idx_arg);
 
@@ -215,5 +214,3 @@ class OctreeNBufBase {
 }  // namespace jpcc::octree
 
 #include <jpcc/octree/impl/OctreeNBufBase.hpp>
-
-#pragma clang diagnostic pop

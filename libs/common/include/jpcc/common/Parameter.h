@@ -1,5 +1,4 @@
-#ifndef JPCC_COMMON_PARAMETER_H_
-#define JPCC_COMMON_PARAMETER_H_
+#pragma once
 
 #include <array>
 #include <string>
@@ -35,5 +34,3 @@ class Parameter {
 
 }  // namespace common
 }  // namespace jpcc
-
-#endif  // JPCC_COMMON_PARAMETER_H_

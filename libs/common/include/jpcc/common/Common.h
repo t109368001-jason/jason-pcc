@@ -1,5 +1,4 @@
-#ifndef JPCC_COMMON_COMMON_H_
-#define JPCC_COMMON_COMMON_H_
+#pragma once
 
 #undef NDEBUG
 #include <cassert>
@@ -17,5 +16,3 @@ using std::shared_ptr;
 using Point = pcl::PointXYZ;
 
 }  // namespace jpcc
-
-#endif  // JPCC_COMMON_COMMON_H_

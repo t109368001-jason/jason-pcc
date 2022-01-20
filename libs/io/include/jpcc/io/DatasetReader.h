@@ -1,5 +1,4 @@
-#ifndef JPCC_IO_DATASET_READER_H_
-#define JPCC_IO_DATASET_READER_H_
+#pragma once
 
 #include <vector>
 
@@ -50,5 +49,3 @@ class DatasetReader {
 };
 
 }  // namespace jpcc::io
-
-#endif  // JPCC_IO_DATASET_READER_H_

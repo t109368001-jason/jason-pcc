@@ -170,7 +170,8 @@ void PcapReader::load_(const size_t  datasetIndex,
   uint16_t&           lastAzimuth       = lastAzimuth100s_.at(datasetIndex);
   vector<Frame::Ptr>& frameBuffer       = frameBuffers_.at(datasetIndex);
 
-  parseDataPacket(startFrameIndex, currentFrameIndex, pcap, lastAzimuth, frameBuffer);
+  const int ret = parseDataPacket(startFrameIndex, currentFrameIndex, pcap, lastAzimuth, frameBuffer);
+  assert(ret > 0);
 }
 
 void PcapReader::close_(const size_t datasetIndex) {

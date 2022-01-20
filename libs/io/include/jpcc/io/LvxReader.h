@@ -1,5 +1,4 @@
-#ifndef JPCC_IO_LVX_READER_H_
-#define JPCC_IO_LVX_READER_H_
+#pragma once
 
 #include <vector>
 
@@ -36,5 +35,3 @@ class LvxReader : public DatasetReader {
 };
 
 }  // namespace jpcc::io
-
-#endif  // JPCC_IO_LVX_READER_H_

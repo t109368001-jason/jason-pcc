@@ -1,5 +1,4 @@
-#ifndef JPCC_IO_PCAP_READER_PARAMETER_H_
-#define JPCC_IO_PCAP_READER_PARAMETER_H_
+#pragma once
 
 #include <jpcc/io/ReaderParameterBase.h>
 
@@ -11,5 +10,3 @@ class PcapReaderParameter : public jpcc::io::ReaderParameterBase {
 };
 
 }  // namespace jpcc::io
-
-#endif  // JPCC_IO_PCAP_READER_PARAMETER_H_

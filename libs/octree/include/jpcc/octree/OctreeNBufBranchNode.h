@@ -45,7 +45,9 @@
 
 namespace jpcc::octree {
 
-template <uint8_t BUFFER_SIZE = 2, typename BranchContainerT = pcl::octree::OctreeContainerEmpty>
+using BufferSize = uint8_t;
+
+template <BufferSize BUFFER_SIZE = 2, typename BranchContainerT = pcl::octree::OctreeContainerEmpty>
 class OctreeNBufBranchNode : public pcl::octree::OctreeNode {
  public:
   using BranchContainer = BranchContainerT;
@@ -67,15 +69,15 @@ class OctreeNBufBranchNode : public pcl::octree::OctreeNode {
 
   OctreeNBufBranchNode* deepCopy() const override;
 
-  [[nodiscard]] OctreeNode* getChildPtr(uint8_t bufferIndex, uint8_t childIndex) const;
+  [[nodiscard]] OctreeNode* getChildPtr(BufferSize bufferIndex, uint8_t childIndex) const;
 
-  void setChildPtr(uint8_t bufferIndex, uint8_t childIndex, OctreeNode* node);
+  void setChildPtr(BufferSize bufferIndex, uint8_t childIndex, OctreeNode* node);
 
-  [[nodiscard]] bool hasChild(uint8_t bufferIndex, uint8_t childIndex) const;
+  [[nodiscard]] bool hasChild(BufferSize bufferIndex, uint8_t childIndex) const;
 
   [[nodiscard]] pcl::octree::node_type_t getNodeType() const override;
 
-  [[nodiscard]] uint8_t getBufferSize() const;
+  [[nodiscard]] BufferSize getBufferSize() const;
 
   void reset();
 

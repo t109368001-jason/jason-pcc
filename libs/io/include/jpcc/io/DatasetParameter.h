@@ -1,5 +1,4 @@
-#ifndef JPCC_IO_DATASET_PARAMETER_H_
-#define JPCC_IO_DATASET_PARAMETER_H_
+#pragma once
 
 #include <iostream>
 #include <string>
@@ -32,5 +31,3 @@ class DatasetParameter : public jpcc::common::Parameter {
 };
 
 }  // namespace jpcc::io
-
-#endif  // JPCC_IO_DATASET_PARAMETER_H_

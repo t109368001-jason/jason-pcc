@@ -41,14 +41,14 @@ ColumnLimit: 120  # Set column limit to 120
 DerivePointerAlignment: false  # Don't attempt to detect pointer alignment from file
 PointerAlignment: Left  # foo &bar;
 SortUsingDeclarations: true
-SortIncludes: false  # Sorting includes is currently causing builds to break
-AlignConsecutiveDeclarations: true
-AlignConsecutiveAssignments: true
+SortIncludes: Never  # Sorting includes is currently causing builds to break
+AlignConsecutiveDeclarations: Consecutive
+AlignConsecutiveAssignments: Consecutive
 AlignOperands: true
 AlignTrailingComments: true
-AllowShortBlocksOnASingleLine: true
+AllowShortBlocksOnASingleLine: Always
 AllowShortCaseLabelsOnASingleLine: true
-AllowShortFunctionsOnASingleLine: true
+AllowShortFunctionsOnASingleLine: All
 AllowAllConstructorInitializersOnNextLine: true
 #PackConstructorInitializers: PCIS_NextLine 
 BreakConstructorInitializers: AfterColon

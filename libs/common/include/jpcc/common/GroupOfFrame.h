@@ -1,5 +1,4 @@
-#ifndef JPCC_COMMON_GROUP_OF_CLOUD_H_
-#define JPCC_COMMON_GROUP_OF_CLOUD_H_
+#pragma once
 
 #include <jpcc/common/Frame.h>
 
@@ -28,5 +27,3 @@ class GroupOfFrame {
 };
 
 }  // namespace jpcc::common
-
-#endif  // JPCC_COMMON_GROUP_OF_CLOUD_H_

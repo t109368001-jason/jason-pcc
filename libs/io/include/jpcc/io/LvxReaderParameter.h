@@ -1,5 +1,4 @@
-#ifndef JPCC_IO_LVX_READER_PARAMETER_H_
-#define JPCC_IO_LVX_READER_PARAMETER_H_
+#pragma once
 
 #include <iostream>
 
@@ -20,5 +19,3 @@ class LvxReaderParameter : public jpcc::io::ReaderParameterBase {
 };
 
 }  // namespace jpcc::io
-
-#endif  // JPCC_IO_LVX_READER_PARAMETER_H_

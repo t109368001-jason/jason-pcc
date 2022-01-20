@@ -7,7 +7,7 @@ file(GLOB_RECURSE SRCS *.cpp)
 
 add_executable(${PROJECT_NAME} ${INCS} ${SRCS})
 
-target_include_directories(${PROJECT_NAME} PRIVATE JPCC::octree)
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include JPCC::octree)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE gtest_main JPCC::octree)
 

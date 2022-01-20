@@ -1,5 +1,4 @@
-#ifndef JPCC_COMMON_PARAMETER_PARSER_H_
-#define JPCC_COMMON_PARAMETER_PARSER_H_
+#pragma once
 
 #include <set>
 #include <string>
@@ -34,5 +33,3 @@ class ParameterParser {
 };
 
 }  // namespace jpcc::common
-
-#endif  // JPCC_COMMON_PARAMETER_PARSER_H_

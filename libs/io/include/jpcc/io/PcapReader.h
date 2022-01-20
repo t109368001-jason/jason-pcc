@@ -1,5 +1,4 @@
-#ifndef JPCC_IO_PCAP_READER_H_
-#define JPCC_IO_PCAP_READER_H_
+#pragma once
 
 #include <vector>
 
@@ -46,5 +45,3 @@ class PcapReader : public DatasetReader {
 };
 
 }  // namespace jpcc::io
-
-#endif  // JPCC_IO_PCAP_READER_H_

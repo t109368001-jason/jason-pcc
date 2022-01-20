@@ -1,5 +1,4 @@
-#ifndef JPCC_COMMON_FRAME_H_
-#define JPCC_COMMON_FRAME_H_
+#pragma once
 
 #include <set>
 
@@ -108,5 +107,3 @@ class Frame {
 };
 
 }  // namespace jpcc::common
-
-#endif  // JPCC_COMMON_FRAME_H_
