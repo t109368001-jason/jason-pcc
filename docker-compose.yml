@@ -1,14 +1,6 @@
 version: '3.9'
 
 services:
-  jpcc-u20:
-    image: jpcc:u20
-    build:
-      context: .
-      target: jpcc-u20-env
-    ports:
-      - "10022:22"
-    restart: always
   jpcc-u20-build-release:
     image: jpcc:u20-build-release
     build:
