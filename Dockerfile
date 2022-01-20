@@ -34,11 +34,11 @@ FROM jpcc-u20-src as jpcc-u20-build-release
 
 WORKDIR /jason-pcc
 
-RUN scripts/build.sh
+RUN bash scripts/build.sh
 
 ###############################################################################
 FROM jpcc-u20-src as jpcc-u20-build-debug
 
 WORKDIR /jason-pcc
 
-RUN scripts/build.sh
+RUN bash scripts/build.sh
