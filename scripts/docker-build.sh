@@ -2,5 +2,4 @@
 set -x
 
 docker-compose down && \
-    docker-compose build && \
-    docker-compose run -d jpcc-u20
+    docker-compose build
