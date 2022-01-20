@@ -1,11 +1,9 @@
 #include <jpcc/io/PcapReaderParameter.h>
 
-namespace jpcc {
-namespace io {
+namespace jpcc::io {
 
 #define PCAP_READER_OPT_PREFIX "pcapReader"
 
 PcapReaderParameter::PcapReaderParameter() : ReaderParameterBase(PCAP_READER_OPT_PREFIX, "PcapReaderParameter") {}
 
-}  // namespace io
-}  // namespace jpcc
+}  // namespace jpcc::io

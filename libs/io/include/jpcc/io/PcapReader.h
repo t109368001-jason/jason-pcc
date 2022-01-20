@@ -27,7 +27,7 @@ class PcapReader : public DatasetReader {
   [[nodiscard]] const PcapReaderParameter& getPcapReaderParameter();
 
  protected:
-  void open_(size_t datasetIndex, size_t startFrameIndex);
+  void open_(size_t datasetIndex, size_t startFrameIndex) override;
 
   [[nodiscard]] bool isOpen_(size_t datasetIndex) override;
 

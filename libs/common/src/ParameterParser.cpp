@@ -37,7 +37,9 @@ bool ParameterParser::parse(int argc, char* argv[]) {
                           }));
     pOpts_.push_back(envOpts);
     store(envOpts, vm);
-    if (vm.count(param_.getConfigsOpt())) { parseConfigs(vm[param_.getConfigsOpt()].as<vector<string>>()); }
+    if (vm.count(ParserParameter::getConfigsOpt())) {
+      parseConfigs(vm[ParserParameter::getConfigsOpt()].as<vector<string>>());
+    }
 
     variables_map vm_final;
     for_each(pOpts_.begin(), pOpts_.end(), [&vm_final](auto& pOpts) { store(pOpts, vm_final); });
