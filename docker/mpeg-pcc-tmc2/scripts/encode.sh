@@ -34,7 +34,7 @@ function encode() {
     OLD_SHA256SUM="$(cat "${SHA256SUM_FILE}")"
     NEW_SHA256SUM="$(echo -n "${ARG_STR}" | sha256sum)"
     if [ "${OLD_SHA256SUM}" == "${NEW_SHA256SUM}" ]; then
-      exit 0
+      return
     fi
   fi
   "$@" && echo -n "${ARG_STR}" | sha256sum >"${SHA256SUM_FILE}"
@@ -48,7 +48,7 @@ function decode() {
     OLD_SHA256SUM="$(cat "${SHA256SUM_FILE}")"
     NEW_SHA256SUM="$(echo -n "${ARG_STR}" | sha256sum)"
     if [ "${OLD_SHA256SUM}" == "${NEW_SHA256SUM}" ]; then
-      exit 0
+      return
     fi
   fi
   "$@" && echo -n "${ARG_STR}" | sha256sum >"${SHA256SUM_FILE}"
