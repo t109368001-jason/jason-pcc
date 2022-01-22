@@ -1,5 +1,5 @@
 #!/bin/bash
-set -x
+set -ex
 
 DOCKER_FILE_ARG="--file docker/test.yml"
 

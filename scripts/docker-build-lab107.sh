@@ -1,5 +1,5 @@
 #!/bin/bash
-set -x
+set -ex
 
 REMOTE_HOST=lab107
 REMOTE_WORKING_DIR="~/git/jason-pcc"

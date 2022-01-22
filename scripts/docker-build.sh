@@ -1,5 +1,5 @@
 #!/bin/sh
-set -x
+set -ex
 
 docker-compose down && \
     docker-compose build
