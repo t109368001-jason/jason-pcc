@@ -4,8 +4,6 @@ x-base-service: &base-service
   image: mpeg-pcc-tmc2:15
   depends_on:
     - _build-image
-  volumes:
-    - "../../../../dataset:/dataset"
   deploy:
     resources:
       limits:
@@ -23,40 +21,47 @@ services:
   #    container_name: S22CWAI_queen
   #    command: [ "bash","S22CWAI_queen.sh" ]
   #    volumes:
+  #      - "../../../../dataset:/dataset"
   #      - "../../../../result/mpeg-pcc-tmc2/S22CWAI_queen:/mpeg-pcc-tmc2/S22CWAI_queen"
   S23CWAI_loot:
     <<: *base-service
     container_name: S23CWAI_loot
     command: [ "bash","S23CWAI_loot.sh" ]
     volumes:
+      - "../../../../dataset:/dataset"
       - "../../../../result/mpeg-pcc-tmc2/S23CWAI_loot:/mpeg-pcc-tmc2/S23CWAI_loot"
   S24CWAI_redandblack:
     <<: *base-service
     container_name: S24CWAI_redandblack
     command: [ "bash","S24CWAI_redandblack.sh" ]
     volumes:
+      - "../../../../dataset:/dataset"
       - "../../../../result/mpeg-pcc-tmc2/S24CWAI_redandblack:/mpeg-pcc-tmc2/S24CWAI_redandblack"
   S25CWAI_soldier:
     <<: *base-service
     container_name: S25CWAI_soldier
     command: [ "bash","S25CWAI_soldier.sh" ]
     volumes:
+      - "../../../../dataset:/dataset"
       - "../../../../result/mpeg-pcc-tmc2/S25CWAI_soldier:/mpeg-pcc-tmc2/S25CWAI_soldier"
   S26CWAI_longdress:
     <<: *base-service
     container_name: S26CWAI_longdress
     command: [ "bash","S26CWAI_longdress.sh" ]
     volumes:
+      - "../../../../dataset:/dataset"
       - "../../../../result/mpeg-pcc-tmc2/S26CWAI_longdress:/mpeg-pcc-tmc2/S26CWAI_longdress"
   #  S27CWAI_basketball:
   #    <<: *base-service
   #    container_name: S27CWAI_basketball
   #    command: [ "bash","S27CWAI_basketball.sh" ]
   #    volumes:
+  #      - "../../../../dataset:/dataset"
   #      - "../../../../result/mpeg-pcc-tmc2/S27CWAI_basketball:/mpeg-pcc-tmc2/S27CWAI_basketball"
   #  S28CWAI_dancer:
   #    <<: *base-service
   #    container_name: S28CWAI_dancer
   #    command: [ "bash","S28CWAI_dancer.sh" ]
   #    volumes:
+  #      - "../../../../dataset:/dataset"
   #      - "../../../../result/mpeg-pcc-tmc2/S28CWAI_dancer:/mpeg-pcc-tmc2/S28CWAI_dancer"
