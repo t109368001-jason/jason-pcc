@@ -4,6 +4,7 @@
 #include <exception>
 #include <execution>
 #include <functional>
+#include <utility>
 
 namespace jpcc::io {
 
@@ -11,7 +12,8 @@ using namespace std;
 using namespace std::placeholders;
 using namespace jpcc::common;
 
-DatasetReaderBase::DatasetReaderBase(DatasetParameter datasetParam) :
+DatasetReaderBase::DatasetReaderBase(DatasetReaderParameter param, DatasetParameter datasetParam) :
+    param_(std::move(param)),
     datasetParam_(std::move(datasetParam)),
     datasetIndices_(datasetParam_.totalFiles),
     currentFrameIndices_(datasetParam_.totalFiles),
@@ -21,6 +23,8 @@ DatasetReaderBase::DatasetReaderBase(DatasetParameter datasetParam) :
 }
 
 DatasetReaderBase::~DatasetReaderBase() { close(); }
+
+DatasetReaderParameter DatasetReaderBase::getReaderParameter() { return param_; }
 
 bool DatasetReaderBase::isOpen() {
   return any_of(datasetIndices_.begin(), datasetIndices_.end(),

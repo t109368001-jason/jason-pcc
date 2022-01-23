@@ -12,8 +12,8 @@ using namespace std::placeholders;
 using namespace livox_ros;
 using namespace jpcc::common;
 
-LvxReader::LvxReader(LvxReaderParameter param, DatasetParameter datasetParam) :
-    DatasetReaderBase(std::move(datasetParam)), param_(std::move(param)) {
+LvxReader::LvxReader(DatasetReaderParameter param, DatasetParameter datasetParam) :
+    DatasetReaderBase(std::move(param), std::move(datasetParam)) {
   assert(datasetParam_.type == "lvx");
   if (datasetParam_.sensor == "mid-100") {
     capacity_ = (size_t)((double)(100000 * 3) / param_.frequency * 1.05);
@@ -24,8 +24,6 @@ LvxReader::LvxReader(LvxReaderParameter param, DatasetParameter datasetParam) :
   for_each(datasetIndices_.begin(), datasetIndices_.end(),
            [this](auto&& PH1) { open_(std::forward<decltype(PH1)>(PH1), 0); });
 }
-
-const LvxReaderParameter& LvxReader::getLvxReaderParameter() { return param_; }
 
 void LvxReader::open_(const size_t datasetIndex, const size_t startFrameIndex) {
   if (lvxs_.at(datasetIndex) && currentFrameIndices_.at(datasetIndex) <= startFrameIndex) { return; }

@@ -9,12 +9,13 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     build-essential \
-    cmake \
     valgrind \
     libpcap-dev \
     libtbb-dev \
     libpcl-dev \
     && rm -rf /var/lib/apt/lists/*
+
+RUN wget -qO- "https://cmake.org/files/v3.17/cmake-3.17.5-Linux-x86_64.tar.gz" | tar --strip-components=1 -xz -C /usr/local
 
 ###############################################################################
 FROM jpcc-u20 as jpcc-u20-src

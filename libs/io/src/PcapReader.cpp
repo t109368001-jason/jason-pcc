@@ -91,8 +91,8 @@ struct DataPacket {
 };
 #pragma pack(pop)
 
-PcapReader::PcapReader(PcapReaderParameter param, DatasetParameter datasetParam) :
-    DatasetReaderBase(std::move(datasetParam)), param_(std::move(param)) {
+PcapReader::PcapReader(DatasetReaderParameter param, DatasetParameter datasetParam) :
+    DatasetReaderBase(std::move(param), std::move(datasetParam)) {
   assert(datasetParam_.type == "pcap");
   if (datasetParam_.sensor == "vlp16") {
     maxNumLasers_ = VLP16_MAX_NUM_LASERS;
@@ -125,8 +125,6 @@ PcapReader::PcapReader(PcapReaderParameter param, DatasetParameter datasetParam)
   for_each(datasetIndices_.begin(), datasetIndices_.end(),
            [this](auto&& PH1) { open_(std::forward<decltype(PH1)>(PH1), 0); });
 }
-
-const PcapReaderParameter& PcapReader::getPcapReaderParameter() { return param_; }
 
 void PcapReader::open_(const size_t datasetIndex, const size_t startFrameIndex) {
   if (pcaps_.at(datasetIndex) && currentFrameIndices_.at(datasetIndex) <= startFrameIndex) { return; }

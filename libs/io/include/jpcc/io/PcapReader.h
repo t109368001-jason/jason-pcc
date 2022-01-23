@@ -7,13 +7,11 @@
 #include <jpcc/common/Common.h>
 #include <jpcc/common/GroupOfFrame.h>
 #include <jpcc/io/DatasetReaderBase.h>
-#include <jpcc/io/PcapReaderParameter.h>
 
 namespace jpcc::io {
 
 class PcapReader : public DatasetReaderBase {
  protected:
-  PcapReaderParameter   param_;
   int                   maxNumLasers_;
   std::vector<float>    verticals_;
   std::vector<float>    sinVerticals_;
@@ -22,9 +20,7 @@ class PcapReader : public DatasetReaderBase {
   std::vector<uint16_t> lastAzimuth100s_;
 
  public:
-  PcapReader(PcapReaderParameter param, DatasetParameter datasetParam);
-
-  [[nodiscard]] const PcapReaderParameter& getPcapReaderParameter();
+  PcapReader(DatasetReaderParameter param, DatasetParameter datasetParam);
 
  protected:
   void open_(size_t datasetIndex, size_t startFrameIndex) override;

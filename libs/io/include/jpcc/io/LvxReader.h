@@ -7,20 +7,16 @@
 #include <jpcc/common/Common.h>
 #include <jpcc/common/GroupOfFrame.h>
 #include <jpcc/io/DatasetReaderBase.h>
-#include <jpcc/io/LvxReaderParameter.h>
 
 namespace jpcc::io {
 
 class LvxReader : public DatasetReaderBase {
  protected:
-  LvxReaderParameter                                param_;
   size_t                                            capacity_;
   std::vector<shared_ptr<livox_ros::LvxFileHandle>> lvxs_;
 
  public:
-  LvxReader(LvxReaderParameter param, DatasetParameter datasetParam);
-
-  [[nodiscard]] const LvxReaderParameter& getLvxReaderParameter();
+  LvxReader(DatasetReaderParameter param, DatasetParameter datasetParam);
 
  protected:
   void open_(size_t datasetIndex, size_t startFrameIndex) override;

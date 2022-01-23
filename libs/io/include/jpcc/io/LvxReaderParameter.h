@@ -2,11 +2,11 @@
 
 #include <iostream>
 
-#include <jpcc/io/ReaderParameterBase.h>
+#include <jpcc/common/Parameter.h>
 
 namespace jpcc::io {
 
-class LvxReaderParameter : public jpcc::io::ReaderParameterBase {
+class LvxReaderParameter : public virtual jpcc::common::Parameter {
  public:
   float frequency;
   float interval;  // ms

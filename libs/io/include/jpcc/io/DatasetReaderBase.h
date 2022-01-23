@@ -4,7 +4,7 @@
 
 #include <jpcc/common/GroupOfFrame.h>
 #include <jpcc/io/DatasetParameter.h>
-#include <jpcc/io/ReaderParameterBase.h>
+#include <jpcc/io/DatasetReaderParameter.h>
 
 namespace jpcc::io {
 
@@ -13,15 +13,18 @@ using GroupOfFrame = common::GroupOfFrame;
 
 class DatasetReaderBase {
  protected:
+  DatasetReaderParameter               param_;
   DatasetParameter                     datasetParam_;
   std::vector<int>                     datasetIndices_;
   std::vector<size_t>                  currentFrameIndices_;
   std::vector<std::vector<Frame::Ptr>> frameBuffers_;
 
  public:
-  DatasetReaderBase(DatasetParameter datasetParam);
+  DatasetReaderBase(DatasetReaderParameter param, DatasetParameter datasetParam);
 
   ~DatasetReaderBase();
+
+  [[nodiscard]] DatasetReaderParameter getReaderParameter();
 
   [[nodiscard]] bool isOpen();
 

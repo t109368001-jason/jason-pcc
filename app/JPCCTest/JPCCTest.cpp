@@ -11,13 +11,8 @@
 #include <pcl/point_cloud.h>
 #include <pcl/visualization/pcl_visualizer.h>
 
-#include <jpcc/common/Common.h>
 #include <jpcc/common/ParameterParser.h>
-#include <jpcc/io/DatasetParameter.h>
-#include <jpcc/io/PcapReaderParameter.h>
-#include <jpcc/io/PcapReader.h>
-#include <jpcc/io/LvxReaderParameter.h>
-#include <jpcc/io/LvxReader.h>
+#include <jpcc/io/DatasetReader.h>
 
 #include <PCCChrono.h>
 #include <PCCMemory.h>
@@ -28,11 +23,8 @@ using namespace jpcc;
 using namespace jpcc::common;
 using namespace jpcc::io;
 
-using ReaderParameter = LvxReaderParameter;
-using Reader          = LvxReader;
-
 void test(const DatasetParameter&         datasetParameter,
-          const ReaderParameter&          readerParameter,
+          const DatasetReaderParameter&   readerParameter,
           pcc::chrono::StopwatchUserTime& clock) {
   pcl::PointCloud<Point>::Ptr            cloud(new pcl::PointCloud<Point>());
   pcl::visualization::PCLVisualizer::Ptr viewer(new pcl::visualization::PCLVisualizer("3D Viewer"));
@@ -51,13 +43,13 @@ void test(const DatasetParameter&         datasetParameter,
 
   auto datasetLoading = [&] {
     try {
-      Reader                    reader(readerParameter, datasetParameter);
+      DatasetReader::Ptr        reader = newReader(readerParameter, datasetParameter);
       std::vector<GroupOfFrame> sources;
       size_t                    groupOfFramesSize = 32;
       size_t                    startFrameIndex   = 0;
       while (run) {
         clock.start();
-        reader.loadAll(startFrameIndex, groupOfFramesSize, sources, false);
+        reader->loadAll(startFrameIndex, groupOfFramesSize, sources, false);
         clock.stop();
         if (std::any_of(sources.begin(), sources.end(),
                         [&](auto& frames) { return frames.size() < groupOfFramesSize; })) {
@@ -100,8 +92,8 @@ int main(int argc, char* argv[]) {
 
   vtkObject::GlobalWarningDisplayOff();
 
-  DatasetParameter datasetParameter;
-  ReaderParameter  readerParameter;
+  DatasetParameter       datasetParameter;
+  DatasetReaderParameter readerParameter;
   try {
     ParameterParser pp;
     pp.add(datasetParameter);
