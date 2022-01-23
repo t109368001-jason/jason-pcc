@@ -8,6 +8,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 # requirements
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
+    wget \
     build-essential \
     valgrind \
     libpcap-dev \
