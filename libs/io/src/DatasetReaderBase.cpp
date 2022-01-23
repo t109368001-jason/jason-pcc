@@ -1,4 +1,4 @@
-#include <jpcc/io/DatasetReader.h>
+#include <jpcc/io/DatasetReaderBase.h>
 
 #include <algorithm>
 #include <exception>
@@ -11,7 +11,7 @@ using namespace std;
 using namespace std::placeholders;
 using namespace jpcc::common;
 
-DatasetReader::DatasetReader(DatasetParameter datasetParam) :
+DatasetReaderBase::DatasetReaderBase(DatasetParameter datasetParam) :
     datasetParam_(std::move(datasetParam)),
     datasetIndices_(datasetParam_.totalFiles),
     currentFrameIndices_(datasetParam_.totalFiles),
@@ -20,17 +20,17 @@ DatasetReader::DatasetReader(DatasetParameter datasetParam) :
   generate(datasetIndices_.begin(), datasetIndices_.end(), [n = 0]() mutable { return n++; });
 }
 
-DatasetReader::~DatasetReader() { close(); }
+DatasetReaderBase::~DatasetReaderBase() { close(); }
 
-bool DatasetReader::isOpen() {
+bool DatasetReaderBase::isOpen() {
   return any_of(datasetIndices_.begin(), datasetIndices_.end(),
                 [this](auto&& PH1) { return isOpen_(std::forward<decltype(PH1)>(PH1)); });
 }
 
-void DatasetReader::loadAll(const size_t          startFrameIndex,
-                            const size_t          groupOfFramesSize,
-                            vector<GroupOfFrame>& sources,
-                            const bool            parallel) {
+void DatasetReaderBase::loadAll(const size_t          startFrameIndex,
+                                const size_t          groupOfFramesSize,
+                                vector<GroupOfFrame>& sources,
+                                const bool            parallel) {
   assert(groupOfFramesSize > 0);
 
   for_each(datasetIndices_.begin(), datasetIndices_.end(),
@@ -48,10 +48,10 @@ void DatasetReader::loadAll(const size_t          startFrameIndex,
   }
 }
 
-void DatasetReader::load(const size_t  datasetIndex,
-                         const size_t  startFrameIndex,
-                         const size_t  groupOfFramesSize,
-                         GroupOfFrame& frames) {
+void DatasetReaderBase::load(const size_t  datasetIndex,
+                             const size_t  startFrameIndex,
+                             const size_t  groupOfFramesSize,
+                             GroupOfFrame& frames) {
   size_t              endFrameIndex     = startFrameIndex + groupOfFramesSize;
   size_t&             currentFrameIndex = currentFrameIndices_.at(datasetIndex);
   vector<Frame::Ptr>& frameBuffer       = frameBuffers_.at(datasetIndex);
@@ -81,36 +81,36 @@ void DatasetReader::load(const size_t  datasetIndex,
   }
 }
 
-void DatasetReader::close() {
+void DatasetReaderBase::close() {
   for_each(datasetIndices_.begin(), datasetIndices_.end(),
            [this](auto&& PH1) { close_(std::forward<decltype(PH1)>(PH1)); });
 }
 
-void DatasetReader::open_(const size_t datasetIndex, const size_t startFrameIndex) {
+void DatasetReaderBase::open_(const size_t datasetIndex, const size_t startFrameIndex) {
   if (isOpen_(datasetIndex) && currentFrameIndices_.at(datasetIndex) <= startFrameIndex) {
     return;
   } else if (isOpen_(datasetIndex)) {
   }
 }
 
-bool DatasetReader::isOpen_(const size_t datasetIndex) { return false; }
+bool DatasetReaderBase::isOpen_(const size_t datasetIndex) { return false; }
 
-bool DatasetReader::isEof_(const size_t datasetIndex) {
+bool DatasetReaderBase::isEof_(const size_t datasetIndex) {
   return !isOpen() || (currentFrameIndices_.at(datasetIndex) >= datasetParam_.frameCounts.at(datasetIndex));
 }
 
-void DatasetReader::load_(const size_t  datasetIndex,
-                          const size_t  startFrameIndex,
-                          const size_t  groupOfFramesSize,
-                          GroupOfFrame& frames) {
+void DatasetReaderBase::load_(const size_t  datasetIndex,
+                              const size_t  startFrameIndex,
+                              const size_t  groupOfFramesSize,
+                              GroupOfFrame& frames) {
   BOOST_THROW_EXCEPTION(logic_error(string("Not Implemented ")));
 }
 
-void DatasetReader::close_(const size_t datasetIndex) {
+void DatasetReaderBase::close_(const size_t datasetIndex) {
   currentFrameIndices_.at(datasetIndex) = 0;
   frameBuffers_.at(datasetIndex).clear();
 }
 
-const DatasetParameter& DatasetReader::getDatasetParameter() { return datasetParam_; }
+const DatasetParameter& DatasetReaderBase::getDatasetParameter() { return datasetParam_; }
 
 }  // namespace jpcc::io

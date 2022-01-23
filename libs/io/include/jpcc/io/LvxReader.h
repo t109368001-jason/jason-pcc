@@ -6,12 +6,12 @@
 
 #include <jpcc/common/Common.h>
 #include <jpcc/common/GroupOfFrame.h>
-#include <jpcc/io/DatasetReader.h>
+#include <jpcc/io/DatasetReaderBase.h>
 #include <jpcc/io/LvxReaderParameter.h>
 
 namespace jpcc::io {
 
-class LvxReader : public DatasetReader {
+class LvxReader : public DatasetReaderBase {
  protected:
   LvxReaderParameter                                param_;
   size_t                                            capacity_;

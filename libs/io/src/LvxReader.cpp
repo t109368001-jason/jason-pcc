@@ -13,7 +13,7 @@ using namespace livox_ros;
 using namespace jpcc::common;
 
 LvxReader::LvxReader(LvxReaderParameter param, DatasetParameter datasetParam) :
-    DatasetReader(std::move(datasetParam)), param_(std::move(param)) {
+    DatasetReaderBase(std::move(datasetParam)), param_(std::move(param)) {
   assert(datasetParam_.type == "lvx");
   if (datasetParam_.sensor == "mid-100") {
     capacity_ = (size_t)((double)(100000 * 3) / param_.frequency * 1.05);
@@ -43,7 +43,7 @@ void LvxReader::open_(const size_t datasetIndex, const size_t startFrameIndex) {
 bool LvxReader::isOpen_(const size_t datasetIndex) { return static_cast<bool>(lvxs_.at(datasetIndex)); }
 
 bool LvxReader::isEof_(const size_t datasetIndex) {
-  return DatasetReader::isEof_(datasetIndex) || lvxs_.at(datasetIndex)->Eof();
+  return DatasetReaderBase::isEof_(datasetIndex) || lvxs_.at(datasetIndex)->Eof();
 }
 
 void LvxReader::load_(const size_t  datasetIndex,
@@ -99,7 +99,7 @@ void LvxReader::load_(const size_t  datasetIndex,
 }
 
 void LvxReader::close_(const size_t datasetIndex) {
-  DatasetReader::close_(datasetIndex);
+  DatasetReaderBase::close_(datasetIndex);
   if (lvxs_.at(datasetIndex)) {
     lvxs_.at(datasetIndex)->CloseLvxFile();
     lvxs_.at(datasetIndex) = nullptr;

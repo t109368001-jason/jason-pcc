@@ -11,7 +11,7 @@ namespace jpcc::io {
 using Frame        = common::Frame;
 using GroupOfFrame = common::GroupOfFrame;
 
-class DatasetReader {
+class DatasetReaderBase {
  protected:
   DatasetParameter                     datasetParam_;
   std::vector<int>                     datasetIndices_;
@@ -19,9 +19,9 @@ class DatasetReader {
   std::vector<std::vector<Frame::Ptr>> frameBuffers_;
 
  public:
-  DatasetReader(DatasetParameter datasetParam);
+  DatasetReaderBase(DatasetParameter datasetParam);
 
-  ~DatasetReader();
+  ~DatasetReaderBase();
 
   [[nodiscard]] bool isOpen();
 

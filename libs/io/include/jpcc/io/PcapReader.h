@@ -6,12 +6,12 @@
 
 #include <jpcc/common/Common.h>
 #include <jpcc/common/GroupOfFrame.h>
-#include <jpcc/io/DatasetReader.h>
+#include <jpcc/io/DatasetReaderBase.h>
 #include <jpcc/io/PcapReaderParameter.h>
 
 namespace jpcc::io {
 
-class PcapReader : public DatasetReader {
+class PcapReader : public DatasetReaderBase {
  protected:
   PcapReaderParameter   param_;
   int                   maxNumLasers_;
