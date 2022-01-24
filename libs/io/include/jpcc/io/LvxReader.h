@@ -19,13 +19,13 @@ class LvxReader : public DatasetReaderBase {
   LvxReader(DatasetReaderParameter param, DatasetParameter datasetParam);
 
  protected:
-  void open_(size_t datasetIndex, size_t startFrameIndex) override;
+  void open_(size_t datasetIndex, size_t startFrameNumber) override;
 
   [[nodiscard]] bool isOpen_(size_t datasetIndex) override;
 
   [[nodiscard]] bool isEof_(size_t datasetIndex) override;
 
-  void load_(size_t datasetIndex, size_t startFrameIndex, size_t groupOfFramesSize, GroupOfFrame& frames) override;
+  void load_(size_t datasetIndex, size_t startFrameNumber, size_t groupOfFramesSize, GroupOfFrame& frames) override;
 
   void close_(size_t datasetIndex) override;
 };

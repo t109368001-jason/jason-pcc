@@ -19,7 +19,7 @@ class DatasetReaderBase {
   DatasetReaderParameter               param_;
   DatasetParameter                     datasetParam_;
   std::vector<int>                     datasetIndices_;
-  std::vector<size_t>                  currentFrameIndices_;
+  std::vector<size_t>                  currentFrameNumbers_;
   std::vector<std::vector<Frame::Ptr>> frameBuffers_;
 
  public:
@@ -31,23 +31,23 @@ class DatasetReaderBase {
 
   [[nodiscard]] bool isOpen();
 
-  void loadAll(size_t                     startFrameIndex,
+  void loadAll(size_t                     startFrameNumber,
                size_t                     groupOfFramesSize,
                std::vector<GroupOfFrame>& sources,
                bool                       parallel = false);
 
-  void load(size_t datasetIndex, size_t startFrameIndex, size_t groupOfFramesSize, GroupOfFrame& frames);
+  void load(size_t datasetIndex, size_t startFrameNumber, size_t groupOfFramesSize, GroupOfFrame& frames);
 
   void close();
 
  protected:
-  virtual void open_(size_t datasetIndex, size_t startFrameIndex);
+  virtual void open_(size_t datasetIndex, size_t startFrameNumber);
 
   [[nodiscard]] virtual bool isOpen_(size_t datasetIndex);
 
   [[nodiscard]] virtual bool isEof_(size_t datasetIndex);
 
-  virtual void load_(size_t datasetIndex, size_t startFrameIndex, size_t groupOfFramesSize, GroupOfFrame& frames);
+  virtual void load_(size_t datasetIndex, size_t startFrameNumber, size_t groupOfFramesSize, GroupOfFrame& frames);
 
   virtual void close_(size_t datasetIndex);
 

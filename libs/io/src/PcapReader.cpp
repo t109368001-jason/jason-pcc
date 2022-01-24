@@ -117,7 +117,7 @@ PcapReader::PcapReader(DatasetReaderParameter param, DatasetParameter datasetPar
   } else {
     throw logic_error("Not support dataset.sensor " + datasetParam_.sensor);
   }
-  currentFrameIndices_.resize(datasetParam_.totalFiles);
+  currentFrameNumbers_.resize(datasetParam_.totalFiles);
   pcaps_.resize(datasetParam_.totalFiles);
   lastAzimuth100s_.resize(datasetParam_.totalFiles);
   frameBuffers_.resize(datasetParam_.totalFiles);
@@ -126,8 +126,8 @@ PcapReader::PcapReader(DatasetReaderParameter param, DatasetParameter datasetPar
            [this](auto&& PH1) { open_(std::forward<decltype(PH1)>(PH1), 0); });
 }
 
-void PcapReader::open_(const size_t datasetIndex, const size_t startFrameIndex) {
-  if (pcaps_.at(datasetIndex) && currentFrameIndices_.at(datasetIndex) <= startFrameIndex) { return; }
+void PcapReader::open_(const size_t datasetIndex, const size_t startFrameNumber) {
+  if (pcaps_.at(datasetIndex) && currentFrameNumbers_.at(datasetIndex) <= startFrameNumber) { return; }
   if (pcaps_.at(datasetIndex)) { close_(datasetIndex); }
   string pcapPath = datasetParam_.getFilePath(datasetIndex);
 
@@ -159,16 +159,16 @@ bool PcapReader::isEof_(const size_t datasetIndex) {
 }
 
 void PcapReader::load_(const size_t  datasetIndex,
-                       const size_t  startFrameIndex,
+                       const size_t  startFrameNumber,
                        const size_t  groupOfFramesSize,
                        GroupOfFrame& frames) {
   assert(groupOfFramesSize > 0);
-  size_t&             currentFrameIndex = currentFrameIndices_.at(datasetIndex);
-  pcap_t*             pcap              = pcaps_.at(datasetIndex);
-  uint16_t&           lastAzimuth       = lastAzimuth100s_.at(datasetIndex);
-  vector<Frame::Ptr>& frameBuffer       = frameBuffers_.at(datasetIndex);
+  size_t&             currentFrameNumber = currentFrameNumbers_.at(datasetIndex);
+  pcap_t*             pcap               = pcaps_.at(datasetIndex);
+  uint16_t&           lastAzimuth        = lastAzimuth100s_.at(datasetIndex);
+  vector<Frame::Ptr>& frameBuffer        = frameBuffers_.at(datasetIndex);
 
-  const int ret = parseDataPacket(startFrameIndex, currentFrameIndex, pcap, lastAzimuth, frameBuffer);
+  const int ret = parseDataPacket(startFrameNumber, currentFrameNumber, pcap, lastAzimuth, frameBuffer);
   assert(ret > 0);
 }
 
@@ -181,8 +181,8 @@ void PcapReader::close_(const size_t datasetIndex) {
   lastAzimuth100s_.at(datasetIndex) = 0;
 }
 
-int PcapReader::parseDataPacket(const size_t             startFrameIndex,
-                                size_t&                  currentFrameIndex,
+int PcapReader::parseDataPacket(const size_t             startFrameNumber,
+                                size_t&                  currentFrameNumber,
                                 pcap_t*                  pcap,
                                 uint16_t&                lastAzimuth100,
                                 std::vector<Frame::Ptr>& frameBuffer) {
@@ -225,7 +225,7 @@ int PcapReader::parseDataPacket(const size_t             startFrameIndex,
       frame->reserve((size_t)size);
       frameBuffer.push_back(frame);
     }
-    if (currentFrameIndex + frameBuffer.size() < startFrameIndex) {
+    if (currentFrameNumber + frameBuffer.size() < startFrameNumber) {
       // Update Last Rotation Azimuth
       lastAzimuth100 = azimuth100;
       continue;

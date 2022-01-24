@@ -16,7 +16,7 @@ DatasetReaderBase::DatasetReaderBase(DatasetReaderParameter param, DatasetParame
     param_(std::move(param)),
     datasetParam_(std::move(datasetParam)),
     datasetIndices_(datasetParam_.totalFiles),
-    currentFrameIndices_(datasetParam_.totalFiles),
+    currentFrameNumbers_(datasetParam_.totalFiles),
     frameBuffers_(datasetParam_.totalFiles) {
   assert(datasetParam_.totalFiles > 0);
   generate(datasetIndices_.begin(), datasetIndices_.end(), [n = 0]() mutable { return n++; });
@@ -31,55 +31,55 @@ bool DatasetReaderBase::isOpen() {
                 [this](auto&& PH1) { return isOpen_(std::forward<decltype(PH1)>(PH1)); });
 }
 
-void DatasetReaderBase::loadAll(const size_t          startFrameIndex,
+void DatasetReaderBase::loadAll(const size_t          startFrameNumber,
                                 const size_t          groupOfFramesSize,
                                 vector<GroupOfFrame>& sources,
                                 const bool            parallel) {
   assert(groupOfFramesSize > 0);
 
   for_each(datasetIndices_.begin(), datasetIndices_.end(),
-           [this, startFrameIndex](auto&& PH1) { open_(std::forward<decltype(PH1)>(PH1), startFrameIndex); });
+           [this, startFrameNumber](auto&& PH1) { open_(std::forward<decltype(PH1)>(PH1), startFrameNumber); });
 
   sources.resize(datasetIndices_.size());
   if (parallel) {
     for_each(execution::par, datasetIndices_.begin(), datasetIndices_.end(), [&](size_t datasetIndex) {
-      load(datasetIndex, startFrameIndex, groupOfFramesSize, sources.at(datasetIndex));
+      load(datasetIndex, startFrameNumber, groupOfFramesSize, sources.at(datasetIndex));
     });
   } else {
     for_each(datasetIndices_.begin(), datasetIndices_.end(), [&](size_t datasetIndex) {
-      load(datasetIndex, startFrameIndex, groupOfFramesSize, sources.at(datasetIndex));
+      load(datasetIndex, startFrameNumber, groupOfFramesSize, sources.at(datasetIndex));
     });
   }
 }
 
 void DatasetReaderBase::load(const size_t  datasetIndex,
-                             const size_t  startFrameIndex,
+                             const size_t  startFrameNumber,
                              const size_t  groupOfFramesSize,
                              GroupOfFrame& frames) {
-  size_t              endFrameIndex     = startFrameIndex + groupOfFramesSize;
-  size_t&             currentFrameIndex = currentFrameIndices_.at(datasetIndex);
-  vector<Frame::Ptr>& frameBuffer       = frameBuffers_.at(datasetIndex);
+  size_t              endFrameNumber     = startFrameNumber + groupOfFramesSize;
+  size_t&             currentFrameNumber = currentFrameNumbers_.at(datasetIndex);
+  vector<Frame::Ptr>& frameBuffer        = frameBuffers_.at(datasetIndex);
 
-  open_(datasetIndex, startFrameIndex);
+  open_(datasetIndex, startFrameNumber);
   frames.resize(groupOfFramesSize);
 
-  while (!isEof_(datasetIndex) && currentFrameIndex < endFrameIndex) {
+  while (!isEof_(datasetIndex) && currentFrameNumber < endFrameNumber) {
     if (!frameBuffer.empty() && frameBuffer.front()->isLoaded()) {
-      if (currentFrameIndex < startFrameIndex) {
+      if (currentFrameNumber < startFrameNumber) {
         frameBuffer.erase(frameBuffer.begin());
-        currentFrameIndex++;
+        currentFrameNumber++;
         continue;
       }
-      frames.at(currentFrameIndex - startFrameIndex) = frameBuffer.front();
-      cout << datasetParam_.getFilePath(datasetIndex) << ":" << currentFrameIndex << " "
-           << *frames.at(currentFrameIndex - startFrameIndex) << endl;
+      frames.at(currentFrameNumber - startFrameNumber) = frameBuffer.front();
+      cout << datasetParam_.getFilePath(datasetIndex) << ":" << currentFrameNumber << " "
+           << *frames.at(currentFrameNumber - startFrameNumber) << endl;
       frameBuffer.erase(frameBuffer.begin());
-      currentFrameIndex++;
+      currentFrameNumber++;
     }
-    load_(datasetIndex, startFrameIndex, groupOfFramesSize, frames);
+    load_(datasetIndex, startFrameNumber, groupOfFramesSize, frames);
   }
-  if (currentFrameIndex >= startFrameIndex) {
-    frames.resize(currentFrameIndex - startFrameIndex);
+  if (currentFrameNumber >= startFrameNumber) {
+    frames.resize(currentFrameNumber - startFrameNumber);
   } else {
     frames.resize(0);
   }
@@ -90,8 +90,8 @@ void DatasetReaderBase::close() {
            [this](auto&& PH1) { close_(std::forward<decltype(PH1)>(PH1)); });
 }
 
-void DatasetReaderBase::open_(const size_t datasetIndex, const size_t startFrameIndex) {
-  if (isOpen_(datasetIndex) && currentFrameIndices_.at(datasetIndex) <= startFrameIndex) {
+void DatasetReaderBase::open_(const size_t datasetIndex, const size_t startFrameNumber) {
+  if (isOpen_(datasetIndex) && currentFrameNumbers_.at(datasetIndex) <= startFrameNumber) {
     return;
   } else if (isOpen_(datasetIndex)) {
   }
@@ -100,18 +100,18 @@ void DatasetReaderBase::open_(const size_t datasetIndex, const size_t startFrame
 bool DatasetReaderBase::isOpen_(const size_t datasetIndex) { return false; }
 
 bool DatasetReaderBase::isEof_(const size_t datasetIndex) {
-  return !isOpen() || (currentFrameIndices_.at(datasetIndex) >= datasetParam_.frameCounts.at(datasetIndex));
+  return !isOpen() || (currentFrameNumbers_.at(datasetIndex) >= datasetParam_.frameCounts.at(datasetIndex));
 }
 
 void DatasetReaderBase::load_(const size_t  datasetIndex,
-                              const size_t  startFrameIndex,
+                              const size_t  startFrameNumber,
                               const size_t  groupOfFramesSize,
                               GroupOfFrame& frames) {
   BOOST_THROW_EXCEPTION(logic_error(string("Not Implemented ")));
 }
 
 void DatasetReaderBase::close_(const size_t datasetIndex) {
-  currentFrameIndices_.at(datasetIndex) = 0;
+  currentFrameNumbers_.at(datasetIndex) = 0;
   frameBuffers_.at(datasetIndex).clear();
 }
 

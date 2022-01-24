@@ -46,14 +46,14 @@ void test(const DatasetParameter&         datasetParameter,
       DatasetReader::Ptr        reader = newReader(readerParameter, datasetParameter);
       std::vector<GroupOfFrame> sources;
       size_t                    groupOfFramesSize = 32;
-      size_t                    startFrameIndex   = 0;
+      size_t                    startFrameNumber  = 0;
       while (run) {
         clock.start();
-        reader->loadAll(startFrameIndex, groupOfFramesSize, sources, false);
+        reader->loadAll(startFrameNumber, groupOfFramesSize, sources, false);
         clock.stop();
         if (std::any_of(sources.begin(), sources.end(),
                         [&](auto& frames) { return frames.size() < groupOfFramesSize; })) {
-          startFrameIndex = 0;
+          startFrameNumber = 0;
           continue;
         }
 
@@ -65,7 +65,7 @@ void test(const DatasetParameter&         datasetParameter,
         std::lock_guard<std::mutex> lock(mutex);
         cloud = _cloud;
         std::this_thread::sleep_for(100ms);
-        startFrameIndex += groupOfFramesSize;
+        startFrameNumber += groupOfFramesSize;
       }
     } catch (std::exception& e) { std::cerr << e.what() << std::endl; }
     run = false;

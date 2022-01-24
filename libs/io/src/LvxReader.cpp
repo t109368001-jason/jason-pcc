@@ -25,8 +25,8 @@ LvxReader::LvxReader(DatasetReaderParameter param, DatasetParameter datasetParam
            [this](auto&& PH1) { open_(std::forward<decltype(PH1)>(PH1), 0); });
 }
 
-void LvxReader::open_(const size_t datasetIndex, const size_t startFrameIndex) {
-  if (lvxs_.at(datasetIndex) && currentFrameIndices_.at(datasetIndex) <= startFrameIndex) { return; }
+void LvxReader::open_(const size_t datasetIndex, const size_t startFrameNumber) {
+  if (lvxs_.at(datasetIndex) && currentFrameNumbers_.at(datasetIndex) <= startFrameNumber) { return; }
   if (lvxs_.at(datasetIndex)) { close_(datasetIndex); }
   string                    lvxPath = datasetParam_.getFilePath(datasetIndex);
   shared_ptr<LvxFileHandle> lvx(new LvxFileHandle());
@@ -45,13 +45,13 @@ bool LvxReader::isEof_(const size_t datasetIndex) {
 }
 
 void LvxReader::load_(const size_t  datasetIndex,
-                      const size_t  startFrameIndex,
+                      const size_t  startFrameNumber,
                       const size_t  groupOfFramesSize,
                       GroupOfFrame& frames) {
   assert(groupOfFramesSize > 0);
-  size_t&                   currentFrameIndex = currentFrameIndices_.at(datasetIndex);
-  shared_ptr<LvxFileHandle> lvx               = lvxs_.at(datasetIndex);
-  vector<Frame::Ptr>&       frameBuffer       = frameBuffers_.at(datasetIndex);
+  size_t&                   currentFrameNumber = currentFrameNumbers_.at(datasetIndex);
+  shared_ptr<LvxFileHandle> lvx                = lvxs_.at(datasetIndex);
+  vector<Frame::Ptr>&       frameBuffer        = frameBuffers_.at(datasetIndex);
 
   std::vector<int64_t> lastTimestamps(lvx->GetDeviceCount());
   int ret = lvx->parsePacketsOfFrameXYZ([&](int64_t timestampNS, uint8_t deviceIndex, float x, float y, float z) {

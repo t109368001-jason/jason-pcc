@@ -8,9 +8,9 @@ void GroupOfFrame::resize(const size_t size) { frames_.resize(size); }
 
 size_t GroupOfFrame::size() const { return frames_.size(); }
 
-size_t GroupOfFrame::getStartFrameIndex() const { return startFrameIndex_; }
+size_t GroupOfFrame::getStartFrameNumber() const { return startFrameNumber_; }
 
-void GroupOfFrame::setStartFrameIndex(const size_t startFrameIndex) { startFrameIndex_ = startFrameIndex; }
+void GroupOfFrame::setStartFrameNumber(const size_t startFrameNumber) { startFrameNumber_ = startFrameNumber; }
 
 std::vector<Frame::Ptr>& GroupOfFrame::getFrames() { return frames_; }
 

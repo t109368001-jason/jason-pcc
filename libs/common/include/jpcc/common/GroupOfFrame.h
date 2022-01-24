@@ -9,7 +9,7 @@ class GroupOfFrame {
   using Ptr = shared_ptr<GroupOfFrame>;
 
  protected:
-  size_t                  startFrameIndex_;
+  size_t                  startFrameNumber_;
   std::vector<Frame::Ptr> frames_;
 
  public:
@@ -19,9 +19,9 @@ class GroupOfFrame {
 
   [[nodiscard]] size_t size() const;
 
-  [[nodiscard]] size_t getStartFrameIndex() const;
+  [[nodiscard]] size_t getStartFrameNumber() const;
 
-  void setStartFrameIndex(size_t startFrameIndex);
+  void setStartFrameNumber(const size_t startFrameNumber);
 
   [[nodiscard]] std::vector<Frame::Ptr>& getFrames();
 };
