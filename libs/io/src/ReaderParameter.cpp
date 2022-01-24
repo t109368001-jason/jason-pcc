@@ -9,7 +9,7 @@ using namespace po;
 #define POINT_TYPES_OPT ".pointTypes"
 #define EPSILON_OPT ".epsilon"
 
-ReaderParameter::ReaderParameter() : ReaderParameter(READER_OPT_PREFIX, "ReaderParameter") {}
+ReaderParameter::ReaderParameter() : ReaderParameter(READER_OPT_PREFIX, __FUNCTION__) {}
 
 ReaderParameter::ReaderParameter(const std::string& prefix, const std::string& caption) :
     Parameter(prefix, caption), pointTypes(), epsilon(0.001) {

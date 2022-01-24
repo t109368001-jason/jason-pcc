@@ -8,7 +8,7 @@ using namespace po;
 #define LVX_READER_OPT_PREFIX "lvxReader"
 #define FREQUENCY_OPT ".frequency"
 
-LvxReaderParameter::LvxReaderParameter() : LvxReaderParameter(LVX_READER_OPT_PREFIX, "LvxReaderParameter") {}
+LvxReaderParameter::LvxReaderParameter() : LvxReaderParameter(LVX_READER_OPT_PREFIX, __FUNCTION__) {}
 
 LvxReaderParameter::LvxReaderParameter(const std::string& prefix, const std::string& caption) :
     Parameter(prefix, caption), frequency(10.0), interval(100.0) {

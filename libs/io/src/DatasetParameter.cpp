@@ -6,16 +6,16 @@ using namespace std;
 using namespace po;
 
 #define DATASET_OPT_PREFIX "dataset"
-#define SENSOR_OPT DATASET_OPT_PREFIX ".sensor"
-#define TYPE_OPT DATASET_OPT_PREFIX ".type"
-#define FOLDER_PREFIX_OPT DATASET_OPT_PREFIX ".folderPrefix"
-#define FOLDER_OPT DATASET_OPT_PREFIX ".folder"
-#define TOTAL_FILES_OPT DATASET_OPT_PREFIX ".totalFiles"
-#define FILES_OPT DATASET_OPT_PREFIX ".files"
-#define FRAME_COUNTS_OPT DATASET_OPT_PREFIX ".frameCounts"
-#define HAVE_GPS_TIME_OPT DATASET_OPT_PREFIX ".haveGpsTime"
+#define SENSOR_OPT ".sensor"
+#define TYPE_OPT ".type"
+#define FOLDER_PREFIX_OPT ".folderPrefix"
+#define FOLDER_OPT ".folder"
+#define TOTAL_FILES_OPT ".totalFiles"
+#define FILES_OPT ".files"
+#define FRAME_COUNTS_OPT ".frameCounts"
+#define HAVE_GPS_TIME_OPT ".haveGpsTime"
 
-DatasetParameter::DatasetParameter() : DatasetParameter(DATASET_OPT_PREFIX, "DatasetOptions") {}
+DatasetParameter::DatasetParameter() : DatasetParameter(DATASET_OPT_PREFIX, __FUNCTION__) {}
 
 DatasetParameter::DatasetParameter(const std::string& prefix, const std::string& caption) :
     Parameter(prefix, caption),
@@ -24,15 +24,17 @@ DatasetParameter::DatasetParameter(const std::string& prefix, const std::string&
     files(),
     frameCounts(),
     haveGpsTime(false) {
-  opts_.add_options()                                                                                          //
-      (SENSOR_OPT, value<string>(&sensor), "sensor")                                                           //
-      (TYPE_OPT, value<string>(&type), "dataset type")                                                         //
-      (FOLDER_PREFIX_OPT, value<string>(&folderPrefix)->default_value(folderPrefix), "dataset folder prefix")  //
-      (FOLDER_OPT, value<string>(&folder), "dataset folder")                                                   //
-      (TOTAL_FILES_OPT, value<size_t>(&totalFiles), "dataset total files count")                               //
-      (FILES_OPT, value<vector<string>>(&files), "dataset files")                                              //
-      (FRAME_COUNTS_OPT, value<vector<size_t>>(&frameCounts), "dataset frame counts")                          //
-      (HAVE_GPS_TIME_OPT, value<bool>(&haveGpsTime)->default_value(haveGpsTime), "have gps time")              //
+  opts_.add_options()                                                             //
+      (string(prefix_ + SENSOR_OPT).c_str(), value<string>(&sensor), "sensor")    //
+      (string(prefix_ + TYPE_OPT).c_str(), value<string>(&type), "dataset type")  //
+      (string(prefix_ + FOLDER_PREFIX_OPT).c_str(), value<string>(&folderPrefix)->default_value(folderPrefix),
+       "dataset folder prefix")                                                                                  //
+      (string(prefix_ + FOLDER_OPT).c_str(), value<string>(&folder), "dataset folder")                           //
+      (string(prefix_ + TOTAL_FILES_OPT).c_str(), value<size_t>(&totalFiles), "dataset total files count")       //
+      (string(prefix_ + FILES_OPT).c_str(), value<vector<string>>(&files), "dataset files")                      //
+      (string(prefix_ + FRAME_COUNTS_OPT).c_str(), value<vector<size_t>>(&frameCounts), "dataset frame counts")  //
+      (string(prefix_ + HAVE_GPS_TIME_OPT).c_str(), value<bool>(&haveGpsTime)->default_value(haveGpsTime),
+       "have gps time")  //
       ;
 }
 
@@ -56,11 +58,11 @@ std::string DatasetParameter::getFilePath(const size_t index) const { return fol
 
 ostream& operator<<(ostream& out, const DatasetParameter& obj) {
   out << obj.caption_ << endl;
-  out << "\t" TYPE_OPT "=" << obj.type << endl;
-  out << "\t" FOLDER_PREFIX_OPT "=" << obj.folder << endl;
-  out << "\t" FOLDER_OPT "=" << obj.folder << endl;
-  out << "\t" TOTAL_FILES_OPT "=" << obj.totalFiles << endl;
-  out << "\t" FILES_OPT "=";
+  out << "\t" << obj.prefix_ << TYPE_OPT "=" << obj.type << endl;
+  out << "\t" << obj.prefix_ << FOLDER_PREFIX_OPT "=" << obj.folder << endl;
+  out << "\t" << obj.prefix_ << FOLDER_OPT "=" << obj.folder << endl;
+  out << "\t" << obj.prefix_ << TOTAL_FILES_OPT "=" << obj.totalFiles << endl;
+  out << "\t" << obj.prefix_ << FILES_OPT "=";
   for (size_t i = 0; i < obj.files.size(); i++) {
     if (i == 0) { out << "["; }
     if (i != 0) { out << ", "; }
@@ -68,7 +70,7 @@ ostream& operator<<(ostream& out, const DatasetParameter& obj) {
     if (i == (obj.files.size() - 1)) { out << "]"; }
   }
   out << endl;
-  out << "\t" FRAME_COUNTS_OPT "=";
+  out << "\t" << obj.prefix_ << FRAME_COUNTS_OPT "=";
   for (size_t i = 0; i < obj.frameCounts.size(); i++) {
     if (i == 0) { out << "["; }
     if (i != 0) { out << ", "; }
@@ -76,7 +78,7 @@ ostream& operator<<(ostream& out, const DatasetParameter& obj) {
     if (i == (obj.frameCounts.size() - 1)) { out << "]"; }
   }
   out << endl;
-  out << "\t" HAVE_GPS_TIME_OPT "=" << obj.haveGpsTime << endl;
+  out << "\t" << obj.prefix_ << HAVE_GPS_TIME_OPT "=" << obj.haveGpsTime << endl;
   return out;
 }
 
