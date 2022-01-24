@@ -6,12 +6,14 @@ using namespace std;
 using namespace po;
 
 #define LVX_READER_OPT_PREFIX "lvxReader"
-#define FREQUENCY_OPT LVX_READER_OPT_PREFIX ".frequency"
+#define FREQUENCY_OPT ".frequency"
 
-LvxReaderParameter::LvxReaderParameter() :
-    Parameter(LVX_READER_OPT_PREFIX, "LvxReaderParameter"), frequency(10.0), interval(100.0) {
+LvxReaderParameter::LvxReaderParameter() : LvxReaderParameter(LVX_READER_OPT_PREFIX, "LvxReaderParameter") {}
+
+LvxReaderParameter::LvxReaderParameter(const std::string& prefix, const std::string& caption) :
+    Parameter(prefix, caption), frequency(10.0), interval(100.0) {
   opts_.add_options()                                       //
-      (FREQUENCY_OPT,                                       //
+      (string(prefix + FREQUENCY_OPT).c_str(),              //
        value<float>(&frequency)->default_value(frequency),  //
        "frame frequency")                                   //
       ;
@@ -23,7 +25,7 @@ void LvxReaderParameter::notify() {
 }
 
 ostream& operator<<(ostream& out, const LvxReaderParameter& obj) {
-  out << "\t" FREQUENCY_OPT "=" << obj.frequency << endl;
+  out << "\t" << obj.prefix_ << FREQUENCY_OPT "=" << obj.frequency << endl;
   out << "\tinterval=" << obj.interval << endl;
   return out;
 }

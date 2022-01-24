@@ -5,17 +5,19 @@ namespace jpcc::io {
 using namespace std;
 using namespace po;
 
-#define COMMON_READER_OPT_PREFIX "reader"
-#define POINT_TYPES_OPT COMMON_READER_OPT_PREFIX ".pointTypes"
-#define EPSILON_OPT COMMON_READER_OPT_PREFIX ".epsilon"
+#define READER_OPT_PREFIX "reader"
+#define POINT_TYPES_OPT ".pointTypes"
+#define EPSILON_OPT ".epsilon"
 
-ReaderParameter::ReaderParameter() :
-    Parameter(COMMON_READER_OPT_PREFIX, "ReaderParameter"), pointTypes(), epsilon(0.001) {
+ReaderParameter::ReaderParameter() : ReaderParameter(READER_OPT_PREFIX, "ReaderParameter") {}
+
+ReaderParameter::ReaderParameter(const std::string& prefix, const std::string& caption) :
+    Parameter(prefix, caption), pointTypes(), epsilon(0.001) {
   opts_.add_options()                                                             //
-      ((string(POINT_TYPES_OPT)).c_str(),                                         //
+      ((string(prefix_ + POINT_TYPES_OPT)).c_str(),                               //
        value<vector<string>>(&pointTypes_),                                       //
        "types to read: [xyz, intensity, azimuth, vertical, distance, id, time]")  //
-      ((string(EPSILON_OPT)).c_str(),                                             //
+      ((string(prefix_ + EPSILON_OPT)).c_str(),                                   //
        value<float>(&epsilon)->default_value(epsilon),                            //
        "epsilon, drop laser point if distance < epsilon")                         //
       ;
@@ -29,7 +31,7 @@ void ReaderParameter::notify() {
 
 ostream& operator<<(ostream& out, const ReaderParameter& obj) {
   out << obj.caption_ << endl;
-  out << "\t" << POINT_TYPES_OPT "=";
+  out << "\t" << obj.prefix_ << POINT_TYPES_OPT "=";
   size_t                i;
   set<string>::iterator it;
   for (i = 0, it = obj.pointTypes.begin(); i < obj.pointTypes.size(); i++, it++) {
@@ -39,7 +41,7 @@ ostream& operator<<(ostream& out, const ReaderParameter& obj) {
     if (i == (obj.pointTypes.size() - 1)) { out << "]"; }
   }
   out << endl;
-  out << "\t" << EPSILON_OPT "=" << obj.epsilon << endl;
+  out << "\t" << obj.prefix_ << EPSILON_OPT "=" << obj.epsilon << endl;
   return out;
 }
 

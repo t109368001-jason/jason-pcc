@@ -15,9 +15,11 @@ using namespace po;
 #define FRAME_COUNTS_OPT DATASET_OPT_PREFIX ".frameCounts"
 #define HAVE_GPS_TIME_OPT DATASET_OPT_PREFIX ".haveGpsTime"
 
-DatasetParameter::DatasetParameter() :
-    Parameter(DATASET_OPT_PREFIX, "DatasetOptions"),
-    folderPrefix("../"),
+DatasetParameter::DatasetParameter() : DatasetParameter(DATASET_OPT_PREFIX, "DatasetOptions") {}
+
+DatasetParameter::DatasetParameter(const std::string& prefix, const std::string& caption) :
+    Parameter(prefix, caption),
+    folderPrefix("../../dataset/"),
     totalFiles(0),
     files(),
     frameCounts(),

@@ -8,12 +8,15 @@ using namespace po;
 #define DISABLE_ENV_VAR_OPT "disableEnvVar"
 #define CONFIG_OPT "configs"
 
-ParserParameter::ParserParameter() : Parameter("", "ParserParameter"), disableEnvVar(false), configs() {
-  opts_.add_options()                                                             //
-      (DISABLE_ENV_VAR_OPT,                                                       //
-       value<bool>(&disableEnvVar)->default_value(disableEnvVar),                 //
-       "disable parse environment variable")                                      //
-      (CONFIG_OPT, value<vector<string>>(&configs)->composing(), "config files")  //
+ParserParameter::ParserParameter() : ParserParameter("", "ParserParameter") {}
+
+ParserParameter::ParserParameter(const std::string& prefix, const std::string& caption) :
+    Parameter(prefix, caption), disableEnvVar(false), configs() {
+  opts_.add_options()                                                                                       //
+      (string(prefix_ + DISABLE_ENV_VAR_OPT).c_str(),                                                       //
+       value<bool>(&disableEnvVar)->default_value(disableEnvVar),                                           //
+       "disable parse environment variable")                                                                //
+      (string(prefix_ + CONFIG_OPT).c_str(), value<vector<string>>(&configs)->composing(), "config files")  //
       ;
 }
 
@@ -21,8 +24,8 @@ string ParserParameter::getConfigsOpt() { return CONFIG_OPT; }
 
 ostream& operator<<(ostream& out, const ParserParameter& obj) {
   out << obj.caption_ << " (command line only)" << endl;
-  out << "\t" DISABLE_ENV_VAR_OPT "=" << (obj.disableEnvVar ? "true" : "false") << endl;
-  out << "\t" CONFIG_OPT "=";
+  out << "\t" << obj.prefix_ << DISABLE_ENV_VAR_OPT "=" << (obj.disableEnvVar ? "true" : "false") << endl;
+  out << "\t" << obj.prefix_ << CONFIG_OPT "=";
   for (size_t i = 0; i < obj.configs.size(); i++) {
     if (i == 0) { out << "["; }
     if (i != 0) { out << ", "; }

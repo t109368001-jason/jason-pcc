@@ -13,6 +13,8 @@ class LvxReaderParameter : public virtual jpcc::common::Parameter {
 
   LvxReaderParameter();
 
+  LvxReaderParameter(const std::string& prefix, const std::string& caption);
+
   void notify() override;
 
   friend std::ostream& operator<<(std::ostream& out, const LvxReaderParameter& obj);

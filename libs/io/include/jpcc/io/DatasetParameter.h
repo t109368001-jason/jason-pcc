@@ -8,7 +8,7 @@
 
 namespace jpcc::io {
 
-class DatasetParameter : public jpcc::common::Parameter {
+class DatasetParameter : public virtual jpcc::common::Parameter {
  public:
   std::string              sensor;
   std::string              type;
@@ -20,6 +20,8 @@ class DatasetParameter : public jpcc::common::Parameter {
   bool                     haveGpsTime;
 
   DatasetParameter();
+
+  DatasetParameter(const std::string& prefix, const std::string& caption);
 
   [[nodiscard]] std::vector<std::array<std::string, 2>> getDependencies() const override;
 

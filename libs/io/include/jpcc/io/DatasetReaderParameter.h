@@ -5,9 +5,11 @@
 
 namespace jpcc::io {
 
-class DatasetReaderParameter : public ReaderParameter, public LvxReaderParameter {
+class DatasetReaderParameter : public virtual ReaderParameter, public virtual LvxReaderParameter {
  public:
   DatasetReaderParameter();
+
+  DatasetReaderParameter(const std::string& prefix, const std::string& caption);
 
   void notify() override;
 

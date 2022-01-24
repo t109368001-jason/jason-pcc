@@ -12,6 +12,9 @@ using Frame        = common::Frame;
 using GroupOfFrame = common::GroupOfFrame;
 
 class DatasetReaderBase {
+ public:
+  using Ptr = shared_ptr<DatasetReaderBase>;
+
  protected:
   DatasetReaderParameter               param_;
   DatasetParameter                     datasetParam_;

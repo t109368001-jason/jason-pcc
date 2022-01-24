@@ -12,9 +12,6 @@ namespace jpcc::io {
 namespace po = boost::program_options;
 
 class ReaderParameter : public virtual jpcc::common::Parameter {
- public:
-  using Ptr = shared_ptr<ReaderParameter>;
-
  protected:
   std::vector<std::string> pointTypes_;
 
@@ -23,6 +20,8 @@ class ReaderParameter : public virtual jpcc::common::Parameter {
   float                 epsilon;
 
   ReaderParameter();
+
+  ReaderParameter(const std::string& prefix, const std::string& caption);
 
   void notify() override;
 

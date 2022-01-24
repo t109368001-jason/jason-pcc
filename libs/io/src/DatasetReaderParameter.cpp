@@ -5,11 +5,12 @@ namespace jpcc::io {
 using namespace std;
 using namespace po;
 
-#define DATASET_READER_OPT_PREFIX "datasetReader"
-#define FREQUENCY_OPT DATASET_READER_OPT_PREFIX ".frequency"
+#define READER_OPT_PREFIX "reader"
 
-DatasetReaderParameter::DatasetReaderParameter() :
-    ReaderParameter(), LvxReaderParameter(), Parameter(DATASET_READER_OPT_PREFIX, "DatasetReaderParameter") {}
+DatasetReaderParameter::DatasetReaderParameter() : DatasetReaderParameter(READER_OPT_PREFIX, __FUNCTION__) {}
+
+DatasetReaderParameter::DatasetReaderParameter(const std::string& prefix, const std::string& caption) :
+    ReaderParameter(prefix, caption), LvxReaderParameter(prefix, caption), Parameter(prefix, caption) {}
 
 void DatasetReaderParameter::notify() {
   ReaderParameter::notify();

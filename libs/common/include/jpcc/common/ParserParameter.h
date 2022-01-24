@@ -8,12 +8,14 @@
 
 namespace jpcc::common {
 
-class ParserParameter : public Parameter {
+class ParserParameter : public virtual Parameter {
  public:
   bool                     disableEnvVar;
   std::vector<std::string> configs;
 
   ParserParameter();
+
+  ParserParameter(const std::string& prefix, const std::string& caption);
 
   [[nodiscard]] static std::string getConfigsOpt();
 
