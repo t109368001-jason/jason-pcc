@@ -8,12 +8,13 @@ ARG DEBIAN_FRONTEND=noninteractive
 # requirements
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-    wget \
     build-essential \
-    valgrind \
+    ca-certificates \
     libpcap-dev \
     libtbb-dev \
     libpcl-dev \
+    valgrind \
+    wget \
     && rm -rf /var/lib/apt/lists/*
 
 RUN wget -qO- "https://cmake.org/files/v3.17/cmake-3.17.5-Linux-x86_64.tar.gz" | tar --strip-components=1 -xz -C /usr/local
