@@ -8,9 +8,6 @@
 
 namespace jpcc::io {
 
-using Frame        = common::Frame;
-using GroupOfFrame = common::GroupOfFrame;
-
 class DatasetReaderBase {
  public:
   using Ptr = shared_ptr<DatasetReaderBase>;
