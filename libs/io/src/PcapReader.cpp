@@ -7,7 +7,7 @@ namespace jpcc::io {
 
 using namespace std;
 using namespace std::placeholders;
-using namespace jpcc::common;
+using namespace jpcc;
 
 constexpr auto LASER_PER_FIRING = 32;
 constexpr auto FIRING_PER_PKT   = 12;
@@ -146,7 +146,6 @@ void PcapReader::open_(const size_t datasetIndex, const size_t startFrameNumber)
 
   // Push One Rotation Data to Queue
   Frame::Ptr frame(new Frame());
-  frame->addPointTypes(param_.pointTypes);
   frame->reserve(29200);  // VLP 16 10 Hz (600 rpm)
   frameBuffers_.at(datasetIndex).push_back(frame);
 }
@@ -214,11 +213,11 @@ int PcapReader::parseDataPacket(const size_t             startFrameNumber,
     uint16_t azimuth100 = firing_data.rotationalPosition;
     // Complete Retrieve Capture One Rotation Data
     if (lastAzimuth100 > azimuth100) {
-      frameBuffer.back()->setLoaded();
+      frameBuffer.back()->width  = static_cast<std::uint32_t>(frameBuffer.back()->points.size());
+      frameBuffer.back()->height = 1;
       // Push One Rotation Data to Queue
       Frame::Ptr frame(new Frame());
-      frame->addPointTypes(param_.pointTypes);
-      float size = static_cast<float>(packet->firingData[11].rotationalPosition) -
+      float      size = static_cast<float>(packet->firingData[11].rotationalPosition) -
                    static_cast<float>(packet->firingData[0].rotationalPosition);
       if (size < 0) { size += 36000.0; }
       size = TOTAL_POINTS_MULTIPLE_MAX_AZIMUTH_DIFF_OF_PACKET / size;
@@ -233,21 +232,22 @@ int PcapReader::parseDataPacket(const size_t             startFrameNumber,
     for (int laser_index = 0; laser_index < LASER_PER_FIRING; laser_index++) {
       float distance = static_cast<float>(firing_data.laserReturns[laser_index].distance) / 500.0f;
       if (distance < param_.epsilon) { continue; }
-      float   azimuth   = static_cast<float>(azimuth100) * PI_DIV18000;
-      float   vertical  = verticals_.at(laser_index % maxNumLasers_);
-      uint8_t intensity = firing_data.laserReturns[laser_index].intensity;
-      auto    id        = static_cast<uint8_t>(laser_index % maxNumLasers_);
+      float azimuth = static_cast<float>(azimuth100) * PI_DIV18000;
+      //      float   vertical  = verticals_.at(laser_index % maxNumLasers_);
+      //      uint8_t intensity = firing_data.laserReturns[laser_index].intensity;
+      auto    id = static_cast<uint8_t>(laser_index % maxNumLasers_);
       int64_t time;
       if (datasetParam_.haveGpsTime) {
         time = packet->gpsTimestamp;
       } else {
-        time = static_cast<int64_t>(header->ts.tv_sec) * 1000000 + header->ts.tv_usec;
+        time = static_cast<int64_t>(header->ts.tv_sec) * 1000 + header->ts.tv_usec / 1000;
       }
       float rSinV = distance * sinVerticals_.at(id);
       auto  x     = static_cast<float>(rSinV * cos(azimuth));
       auto  y     = static_cast<float>(rSinV * sin(azimuth));
       auto  z     = static_cast<float>(distance * cosVerticals_.at(id));
-      frameBuffer.back()->add(x, y, z, intensity, azimuth, vertical, distance, id, time);
+      if (frameBuffer.back()->header.stamp == 0) { frameBuffer.back()->header.stamp = time; }
+      frameBuffer.back()->points.emplace_back(x, y, z);
     }
     // Update Last Rotation Azimuth
     lastAzimuth100 = azimuth100;

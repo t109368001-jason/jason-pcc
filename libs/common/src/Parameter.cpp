@@ -2,7 +2,7 @@
 
 #include <utility>
 
-namespace jpcc::common {
+namespace jpcc {
 
 using namespace std;
 using namespace po;
@@ -18,4 +18,4 @@ vector<array<string, 2>> Parameter::getDependencies() const { return {}; }
 
 void Parameter::notify() {}
 
-}  // namespace jpcc::common
+}  // namespace jpcc

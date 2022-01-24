@@ -8,7 +8,7 @@
 
 namespace jpcc::io {
 
-class DatasetParameter : public virtual jpcc::common::Parameter {
+class DatasetParameter : public virtual Parameter {
  public:
   std::string              sensor;
   std::string              type;
@@ -17,6 +17,7 @@ class DatasetParameter : public virtual jpcc::common::Parameter {
   size_t                   totalFiles;
   std::vector<std::string> files;
   std::vector<size_t>      frameCounts;
+  std::vector<size_t>      startFrameNumbers;
   bool                     haveGpsTime;
 
   DatasetParameter();

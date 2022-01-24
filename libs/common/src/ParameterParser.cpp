@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <fstream>
 
-namespace jpcc::common {
+namespace jpcc {
 
 using namespace std;
 using namespace po;
@@ -88,4 +88,4 @@ void ParameterParser::option_dependency(const variables_map& vm, const string& o
       throw logic_error(string("Option '") + opt + "' requires option '" + requiredOpt + "'.");
 }
 
-}  // namespace jpcc::common
+}  // namespace jpcc

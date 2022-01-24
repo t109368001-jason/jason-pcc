@@ -11,7 +11,7 @@ namespace jpcc::io {
 
 namespace po = boost::program_options;
 
-class ReaderParameter : public virtual jpcc::common::Parameter {
+class ReaderParameter : public virtual Parameter {
  protected:
   std::vector<std::string> pointTypes_;
 

@@ -8,11 +8,14 @@
 
 #define PCL_NO_PRECOMPILE
 #include <pcl/point_types.h>
+#include <pcl/point_cloud.h>
 
 namespace jpcc {
 
 using std::shared_ptr;
 
 using Point = pcl::PointXYZ;
+
+using Frame = pcl::PointCloud<Point>;
 
 }  // namespace jpcc

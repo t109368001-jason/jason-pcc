@@ -1,8 +1,10 @@
 #pragma once
 
-#include <jpcc/common/Frame.h>
+#include <pcl/point_cloud.h>
 
-namespace jpcc::common {
+#include <jpcc/common/Common.h>
+
+namespace jpcc {
 
 class GroupOfFrame {
  public:
@@ -26,4 +28,4 @@ class GroupOfFrame {
   [[nodiscard]] std::vector<Frame::Ptr>& getFrames();
 };
 
-}  // namespace jpcc::common
+}  // namespace jpcc

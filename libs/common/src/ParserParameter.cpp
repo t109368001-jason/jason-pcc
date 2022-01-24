@@ -1,6 +1,6 @@
 #include <jpcc/common/ParserParameter.h>
 
-namespace jpcc::common {
+namespace jpcc {
 
 using namespace std;
 using namespace po;
@@ -36,4 +36,4 @@ ostream& operator<<(ostream& out, const ParserParameter& obj) {
   return out;
 }
 
-}  // namespace jpcc::common
+}  // namespace jpcc

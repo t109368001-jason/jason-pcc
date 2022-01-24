@@ -1,6 +1,6 @@
 #include <jpcc/common/GroupOfFrame.h>
 
-namespace jpcc::common {
+namespace jpcc {
 
 Frame::Ptr& GroupOfFrame::at(size_t index) { return frames_.at(index); }
 
@@ -14,4 +14,4 @@ void GroupOfFrame::setStartFrameNumber(const size_t startFrameNumber) { startFra
 
 std::vector<Frame::Ptr>& GroupOfFrame::getFrames() { return frames_; }
 
-}  // namespace jpcc::common
+}  // namespace jpcc

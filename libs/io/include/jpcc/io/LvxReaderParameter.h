@@ -6,7 +6,7 @@
 
 namespace jpcc::io {
 
-class LvxReaderParameter : public virtual jpcc::common::Parameter {
+class LvxReaderParameter : public virtual Parameter {
  public:
   float frequency;
   float interval;  // ms

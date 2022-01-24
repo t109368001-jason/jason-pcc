@@ -10,7 +10,7 @@ namespace jpcc::io {
 using namespace std;
 using namespace std::placeholders;
 using namespace livox_ros;
-using namespace jpcc::common;
+using namespace jpcc;
 
 LvxReader::LvxReader(DatasetReaderParameter param, DatasetParameter datasetParam) :
     DatasetReaderBase(std::move(param), std::move(datasetParam)) {
@@ -59,18 +59,16 @@ void LvxReader::load_(const size_t  datasetIndex,
     if (frameBuffer.empty()) {
       // new frame
       Frame::Ptr frame(new Frame());
-      frame->addPointTypes(param_.pointTypes);
-      frame->setTimestamp((int64_t)((float)timestamp / param_.interval * param_.interval));
+      frame->header.stamp = (int64_t)((float)timestamp / param_.interval * param_.interval);
       frame->reserve(capacity_);
       frameBuffer.push_back(frame);
     }
-    int64_t index = (timestamp - frameBuffer.front()->getTimestamp()) / (int64_t)param_.interval;
+    int64_t index = (timestamp - (int64_t)frameBuffer.front()->header.stamp) / (int64_t)param_.interval;
     if (index < 0) {
       for (int i = -1; i >= index; i--) {
         // new frame
         Frame::Ptr frame(new Frame());
-        frame->addPointTypes(param_.pointTypes);
-        frame->setTimestamp(frameBuffer.front()->getTimestamp() + (int64_t)(param_.interval * (float)i));
+        frame->header.stamp = frameBuffer.front()->header.stamp + (int64_t)(param_.interval * (float)i);
         frame->reserve(capacity_);
         frameBuffer.insert(frameBuffer.begin(), frame);
       }
@@ -79,20 +77,22 @@ void LvxReader::load_(const size_t  datasetIndex,
       for (size_t i = frameBuffer.size(); i <= index; i++) {
         // new frame
         Frame::Ptr frame(new Frame());
-        frame->addPointTypes(param_.pointTypes);
-        frame->setTimestamp(frameBuffer.front()->getTimestamp() + (int64_t)(param_.interval * (float)i));
+        frame->header.stamp = frameBuffer.front()->header.stamp + (int64_t)(param_.interval * (float)i);
         frame->reserve(capacity_);
         frameBuffer.push_back(frame);
       }
     }
-    if (x >= param_.epsilon || y >= param_.epsilon || z >= param_.epsilon) { frameBuffer.at(index)->add(x, y, z); }
+    if (x >= param_.epsilon || y >= param_.epsilon || z >= param_.epsilon) {
+      frameBuffer.at(index)->points.emplace_back(x, y, z);
+    }
     lastTimestamps.at(deviceIndex) = timestamp;
   });
   if (ret != 0) { assert(ret == kLvxFileAtEnd); }
   int64_t minLastTimestamp = *std::min_element(lastTimestamps.begin(), lastTimestamps.end());
   for (const Frame::Ptr& frame : frameBuffer) {
-    if ((frame->getTimestamp() + (int64_t)param_.interval) > minLastTimestamp) { break; }
-    frame->setLoaded();
+    if ((frame->header.stamp + (int64_t)param_.interval) > minLastTimestamp) { break; }
+    frame->width  = static_cast<std::uint32_t>(frame->points.size());
+    frame->height = 1;
   }
 }
 

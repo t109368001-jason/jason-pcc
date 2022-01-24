@@ -8,7 +8,7 @@
 
 #include <jpcc/common/ParserParameter.h>
 
-namespace jpcc::common {
+namespace jpcc {
 
 class ParameterParser {
  protected:
@@ -32,4 +32,4 @@ class ParameterParser {
   static void option_dependency(const po::variables_map& vm, const std::string& opt, const std::string& requiredOpt);
 };
 
-}  // namespace jpcc::common
+}  // namespace jpcc

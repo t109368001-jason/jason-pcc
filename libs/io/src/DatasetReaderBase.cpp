@@ -10,7 +10,7 @@ namespace jpcc::io {
 
 using namespace std;
 using namespace std::placeholders;
-using namespace jpcc::common;
+using namespace jpcc;
 
 DatasetReaderBase::DatasetReaderBase(DatasetReaderParameter param, DatasetParameter datasetParam) :
     param_(std::move(param)),
@@ -64,7 +64,7 @@ void DatasetReaderBase::load(const size_t  datasetIndex,
   frames.resize(groupOfFramesSize);
 
   while (!isEof_(datasetIndex) && currentFrameNumber < endFrameNumber) {
-    if (!frameBuffer.empty() && frameBuffer.front()->isLoaded()) {
+    if (!frameBuffer.empty() && frameBuffer.front()->width != 0) {
       if (currentFrameNumber < startFrameNumber) {
         frameBuffer.erase(frameBuffer.begin());
         currentFrameNumber++;

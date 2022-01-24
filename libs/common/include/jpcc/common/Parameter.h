@@ -12,8 +12,6 @@ namespace jpcc {
 
 namespace po = boost::program_options;
 
-namespace common {
-
 class Parameter {
  protected:
   std::string             prefix_;
@@ -32,5 +30,4 @@ class Parameter {
   virtual void notify();
 };
 
-}  // namespace common
 }  // namespace jpcc

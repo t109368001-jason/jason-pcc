@@ -6,7 +6,7 @@
 
 #include <jpcc/common/Parameter.h>
 
-namespace jpcc::common {
+namespace jpcc {
 
 class ParserParameter : public virtual Parameter {
  public:
@@ -22,4 +22,4 @@ class ParserParameter : public virtual Parameter {
   friend std::ostream& operator<<(std::ostream& out, const ParserParameter& obj);
 };
 
-}  // namespace jpcc::common
+}  // namespace jpcc
