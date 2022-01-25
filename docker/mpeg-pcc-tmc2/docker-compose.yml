@@ -14,7 +14,7 @@ services:
     container_name: CWAI
     command: [ "bash","CWAI.sh" ]
     volumes:
-      - "../../../../dataset:/dataset"
+      - "../../../../dataset:/dataset:ro"
       #      - "../../../../result/mpeg-pcc-tmc2/S22CWAI_queen:/mpeg-pcc-tmc2/S22CWAI_queen"
       - "../../../../result/mpeg-pcc-tmc2/S23CWAI_loot:/mpeg-pcc-tmc2/S23CWAI_loot"
       - "../../../../result/mpeg-pcc-tmc2/S24CWAI_redandblack:/mpeg-pcc-tmc2/S24CWAI_redandblack"
@@ -22,6 +22,25 @@ services:
       - "../../../../result/mpeg-pcc-tmc2/S26CWAI_longdress:/mpeg-pcc-tmc2/S26CWAI_longdress"
       #      - "../../../../result/mpeg-pcc-tmc2/S27CWAI_basketball:/mpeg-pcc-tmc2/S27CWAI_basketball"
       #      - "../../../../result/mpeg-pcc-tmc2/S28CWAI_dancer:/mpeg-pcc-tmc2/S28CWAI_dancer"
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+  CWLD:
+    image: mpeg-pcc-tmc2:15
+    depends_on:
+      - _build-image
+    container_name: CWLD
+    command: [ "bash","CWLD.sh" ]
+    volumes:
+      - "../../../../dataset:/dataset:ro"
+      #      - "../../../../result/mpeg-pcc-tmc2/S22CWLD_queen:/mpeg-pcc-tmc2/S22CWLD_queen"
+      - "../../../../result/mpeg-pcc-tmc2/S23CWLD_loot:/mpeg-pcc-tmc2/S23CWLD_loot"
+      - "../../../../result/mpeg-pcc-tmc2/S24CWLD_redandblack:/mpeg-pcc-tmc2/S24CWLD_redandblack"
+      - "../../../../result/mpeg-pcc-tmc2/S25CWLD_soldier:/mpeg-pcc-tmc2/S25CWLD_soldier"
+      - "../../../../result/mpeg-pcc-tmc2/S26CWLD_longdress:/mpeg-pcc-tmc2/S26CWLD_longdress"
+      #      - "../../../../result/mpeg-pcc-tmc2/S27CWLD_basketball:/mpeg-pcc-tmc2/S27CWLD_basketball"
+      #      - "../../../../result/mpeg-pcc-tmc2/S28CWLD_dancer:/mpeg-pcc-tmc2/S28CWLD_dancer"
     deploy:
       resources:
         limits:
