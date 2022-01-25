@@ -64,3 +64,23 @@ services:
       resources:
         limits:
           cpus: "1"
+
+  C2RA:
+    image: mpeg-pcc-tmc2:15
+    depends_on:
+      - _build-image
+    container_name: C2RA
+    command: [ "bash","C2RA.sh" ]
+    volumes:
+      - "../../../../dataset:/dataset:ro"
+      #      - "../../../../result/mpeg-pcc-tmc2/S22C2RA_queen:/mpeg-pcc-tmc2/S22C2RA_queen"
+      - "../../../../result/mpeg-pcc-tmc2/S23C2RA_loot:/mpeg-pcc-tmc2/S23C2RA_loot"
+      - "../../../../result/mpeg-pcc-tmc2/S24C2RA_redandblack:/mpeg-pcc-tmc2/S24C2RA_redandblack"
+      - "../../../../result/mpeg-pcc-tmc2/S25C2RA_soldier:/mpeg-pcc-tmc2/S25C2RA_soldier"
+      - "../../../../result/mpeg-pcc-tmc2/S26C2RA_longdress:/mpeg-pcc-tmc2/S26C2RA_longdress"
+      #      - "../../../../result/mpeg-pcc-tmc2/S27C2RA_basketball:/mpeg-pcc-tmc2/S27C2RA_basketball"
+      #      - "../../../../result/mpeg-pcc-tmc2/S28C2RA_dancer:/mpeg-pcc-tmc2/S28C2RA_dancer"
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
