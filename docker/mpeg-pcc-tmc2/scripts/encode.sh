@@ -28,8 +28,8 @@ DECODER="\
 
 function encode() {
   ARG_STR="'$@'"
-  RESULT_DIR="$(echo "${ARG_STR}" | grep -oP '(?<='--compressedStreamPath=')[^/]*')"
-  SHA256SUM_FILE="${RESULT_DIR}/sha256sum-encode"
+  RESULT_DIR="$(echo "${ARG_STR}" | grep -oP '(?<='--compressedStreamPath=')[^.]*')"
+  SHA256SUM_FILE="${RESULT_DIR}.sha256sum-encode"
   if [ -f "${SHA256SUM_FILE}" ]; then
     OLD_SHA256SUM="$(cat "${SHA256SUM_FILE}")"
     NEW_SHA256SUM="$(echo -n "${ARG_STR}" | sha256sum)"
@@ -42,8 +42,8 @@ function encode() {
 
 function decode() {
   ARG_STR="'$@'"
-  RESULT_DIR="$(echo "${ARG_STR}" | grep -oP '(?<='--compressedStreamPath=')[^/]*')"
-  SHA256SUM_FILE="${RESULT_DIR}/sha256sum-decode"
+  RESULT_DIR="$(echo "${ARG_STR}" | grep -oP '(?<='--compressedStreamPath=')[^.]*')"
+  SHA256SUM_FILE="${RESULT_DIR}.sha256sum-decode"
   if [ -f "${SHA256SUM_FILE}" ]; then
     OLD_SHA256SUM="$(cat "${SHA256SUM_FILE}")"
     NEW_SHA256SUM="$(echo -n "${ARG_STR}" | sha256sum)"

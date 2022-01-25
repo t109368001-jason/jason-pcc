@@ -45,3 +45,22 @@ services:
       resources:
         limits:
           cpus: "1"
+  C2AI:
+    image: mpeg-pcc-tmc2:15
+    depends_on:
+      - _build-image
+    container_name: C2AI
+    command: [ "bash","C2AI.sh" ]
+    volumes:
+      - "../../../../dataset:/dataset:ro"
+      #      - "../../../../result/mpeg-pcc-tmc2/S22C2AI_queen:/mpeg-pcc-tmc2/S22C2AI_queen"
+      - "../../../../result/mpeg-pcc-tmc2/S23C2AI_loot:/mpeg-pcc-tmc2/S23C2AI_loot"
+      - "../../../../result/mpeg-pcc-tmc2/S24C2AI_redandblack:/mpeg-pcc-tmc2/S24C2AI_redandblack"
+      - "../../../../result/mpeg-pcc-tmc2/S25C2AI_soldier:/mpeg-pcc-tmc2/S25C2AI_soldier"
+      - "../../../../result/mpeg-pcc-tmc2/S26C2AI_longdress:/mpeg-pcc-tmc2/S26C2AI_longdress"
+      #      - "../../../../result/mpeg-pcc-tmc2/S27C2AI_basketball:/mpeg-pcc-tmc2/S27C2AI_basketball"
+      #      - "../../../../result/mpeg-pcc-tmc2/S28C2AI_dancer:/mpeg-pcc-tmc2/S28C2AI_dancer"
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
