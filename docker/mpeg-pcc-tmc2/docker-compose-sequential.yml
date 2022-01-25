@@ -14,7 +14,7 @@ services:
     container_name: CTC
     command: [ "bash","CTC.sh" ]
     volumes:
-      - "../../../../dataset:/dataset:ro"
+      - "../../../../dataset/8i:/dataset/8i:ro"
       #      - "../../../../result/mpeg-pcc-tmc2/S22CWAI_queen:/mpeg-pcc-tmc2/S22CWAI_queen"
       - "../../../../result/mpeg-pcc-tmc2/S23CWAI_loot:/mpeg-pcc-tmc2/S23CWAI_loot"
       - "../../../../result/mpeg-pcc-tmc2/S24CWAI_redandblack:/mpeg-pcc-tmc2/S24CWAI_redandblack"

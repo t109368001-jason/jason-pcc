@@ -14,7 +14,7 @@ services:
     container_name: CWAI
     command: [ "bash","CWAI.sh" ]
     volumes:
-      - "../../../../dataset:/dataset:ro"
+      - "../../../../dataset/8i:/dataset/8i:ro"
       #      - "../../../../result/mpeg-pcc-tmc2/S22CWAI_queen:/mpeg-pcc-tmc2/S22CWAI_queen"
       - "../../../../result/mpeg-pcc-tmc2/S23CWAI_loot:/mpeg-pcc-tmc2/S23CWAI_loot"
       - "../../../../result/mpeg-pcc-tmc2/S24CWAI_redandblack:/mpeg-pcc-tmc2/S24CWAI_redandblack"
@@ -33,7 +33,7 @@ services:
     container_name: CWLD
     command: [ "bash","CWLD.sh" ]
     volumes:
-      - "../../../../dataset:/dataset:ro"
+      - "../../../../dataset/8i:/dataset/8i:ro"
       #      - "../../../../result/mpeg-pcc-tmc2/S22CWLD_queen:/mpeg-pcc-tmc2/S22CWLD_queen"
       - "../../../../result/mpeg-pcc-tmc2/S23CWLD_loot:/mpeg-pcc-tmc2/S23CWLD_loot"
       - "../../../../result/mpeg-pcc-tmc2/S24CWLD_redandblack:/mpeg-pcc-tmc2/S24CWLD_redandblack"
@@ -52,7 +52,7 @@ services:
     container_name: C2AI
     command: [ "bash","C2AI.sh" ]
     volumes:
-      - "../../../../dataset:/dataset:ro"
+      - "../../../../dataset/8i:/dataset/8i:ro"
       #      - "../../../../result/mpeg-pcc-tmc2/S22C2AI_queen:/mpeg-pcc-tmc2/S22C2AI_queen"
       - "../../../../result/mpeg-pcc-tmc2/S23C2AI_loot:/mpeg-pcc-tmc2/S23C2AI_loot"
       - "../../../../result/mpeg-pcc-tmc2/S24C2AI_redandblack:/mpeg-pcc-tmc2/S24C2AI_redandblack"
@@ -72,7 +72,7 @@ services:
     container_name: C2RA
     command: [ "bash","C2RA.sh" ]
     volumes:
-      - "../../../../dataset:/dataset:ro"
+      - "../../../../dataset/8i:/dataset/8i:ro"
       #      - "../../../../result/mpeg-pcc-tmc2/S22C2RA_queen:/mpeg-pcc-tmc2/S22C2RA_queen"
       - "../../../../result/mpeg-pcc-tmc2/S23C2RA_loot:/mpeg-pcc-tmc2/S23C2RA_loot"
       - "../../../../result/mpeg-pcc-tmc2/S24C2RA_redandblack:/mpeg-pcc-tmc2/S24C2RA_redandblack"
