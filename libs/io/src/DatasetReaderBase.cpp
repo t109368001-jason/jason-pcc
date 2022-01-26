@@ -33,6 +33,12 @@ bool DatasetReaderBase::isOpen() {
 
 void DatasetReaderBase::loadAll(const size_t          startFrameNumber,
                                 const size_t          groupOfFramesSize,
+                                vector<GroupOfFrame>& sources) {
+  loadAll(startFrameNumber, groupOfFramesSize, sources, false);
+}
+
+void DatasetReaderBase::loadAll(const size_t          startFrameNumber,
+                                const size_t          groupOfFramesSize,
                                 vector<GroupOfFrame>& sources,
                                 const bool            parallel) {
   assert(groupOfFramesSize > 0);

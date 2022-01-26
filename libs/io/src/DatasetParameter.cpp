@@ -21,24 +21,29 @@ DatasetParameter::DatasetParameter() : DatasetParameter(DATASET_OPT_PREFIX, __FU
 DatasetParameter::DatasetParameter(const std::string& prefix, const std::string& caption) :
     Parameter(prefix, caption),
     folderPrefix("../../dataset/"),
-    totalFiles(0),
+    totalFiles(1),
     files(),
     frameCounts(),
     startFrameNumbers(),
     haveGpsTime(false) {
-  opts_.add_options()                                                             //
-      (string(prefix_ + SENSOR_OPT).c_str(), value<string>(&sensor), "sensor")    //
-      (string(prefix_ + TYPE_OPT).c_str(), value<string>(&type), "dataset type")  //
-      (string(prefix_ + FOLDER_PREFIX_OPT).c_str(), value<string>(&folderPrefix)->default_value(folderPrefix),
+  opts_.add_options()                                                                                            //
+      (string(prefix_ + SENSOR_OPT).c_str(), value<string>(&sensor), "sensor")                                   //
+      (string(prefix_ + TYPE_OPT).c_str(), value<string>(&type), "dataset type")                                 //
+      (string(prefix_ + FOLDER_PREFIX_OPT).c_str(),                                                              //
+       value<string>(&folderPrefix)->default_value(folderPrefix),                                                //
        "dataset folder prefix")                                                                                  //
       (string(prefix_ + FOLDER_OPT).c_str(), value<string>(&folder), "dataset folder")                           //
-      (string(prefix_ + TOTAL_FILES_OPT).c_str(), value<size_t>(&totalFiles), "dataset total files count")       //
+      (string(prefix_ + TOTAL_FILES_OPT).c_str(),                                                                //
+       value<size_t>(&totalFiles)->default_value(totalFiles),                                                    //
+       "dataset total files count")                                                                              //
       (string(prefix_ + FILES_OPT).c_str(), value<vector<string>>(&files), "dataset files")                      //
       (string(prefix_ + FRAME_COUNTS_OPT).c_str(), value<vector<size_t>>(&frameCounts), "dataset frame counts")  //
-      (string(prefix_ + START_FRAME_NUMBERS_OPT).c_str(), value<vector<size_t>>(&startFrameNumbers),
-       "dataset start frame numbers")  //
-      (string(prefix_ + HAVE_GPS_TIME_OPT).c_str(), value<bool>(&haveGpsTime)->default_value(haveGpsTime),
-       "have gps time")  //
+      (string(prefix_ + START_FRAME_NUMBERS_OPT).c_str(),                                                        //
+       value<vector<size_t>>(&startFrameNumbers),                                                                //
+       "dataset start frame numbers")                                                                            //
+      (string(prefix_ + HAVE_GPS_TIME_OPT).c_str(),                                                              //
+       value<bool>(&haveGpsTime)->default_value(haveGpsTime),                                                    //
+       "have gps time")                                                                                          //
       ;
 }
 
@@ -50,7 +55,6 @@ vector<array<string, 2>> DatasetParameter::getDependencies() const {
 }
 
 void DatasetParameter::notify() {
-  assert(!sensor.empty());
   assert(!type.empty());
   assert(!folder.empty());
   assert(totalFiles != 0);
@@ -82,6 +86,7 @@ ostream& operator<<(ostream& out, const DatasetParameter& obj) {
     out << obj.frameCounts.at(i);
     if (i == (obj.frameCounts.size() - 1)) { out << "]"; }
   }
+  out << endl;
   out << "\t" << obj.prefix_ << START_FRAME_NUMBERS_OPT "=";
   for (size_t i = 0; i < obj.startFrameNumbers.size(); i++) {
     if (i == 0) { out << "["; }

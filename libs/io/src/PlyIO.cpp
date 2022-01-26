@@ -10,7 +10,7 @@ namespace jpcc::io {
 
 using namespace std;
 
-void load(
+void loadPly(
     GroupOfFrame& groupOfFrame, std::string filePath, size_t startFrameNumber, size_t endFrameNumber, bool parallel) {
   const size_t frameCount = endFrameNumber - startFrameNumber;
   groupOfFrame.clear();
@@ -35,7 +35,7 @@ void load(
   }
 }
 
-void save(const GroupOfFrame& groupOfFrame, std::string filePath, bool parallel) {
+void savePly(const GroupOfFrame& groupOfFrame, std::string filePath, bool parallel) {
   auto func = [&](const Frame::Ptr& frame) {
     char fileName[4096];
     sprintf(fileName, filePath.c_str(), frame->header.seq);

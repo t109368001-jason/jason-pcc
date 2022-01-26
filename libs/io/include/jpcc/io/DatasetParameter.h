@@ -14,7 +14,7 @@ class DatasetParameter : public virtual Parameter {
   std::string              type;
   std::string              folderPrefix;
   std::string              folder;
-  size_t                   totalFiles;
+  size_t                   totalFiles;  //  TODO remove
   std::vector<std::string> files;
   std::vector<size_t>      frameCounts;
   std::vector<size_t>      startFrameNumbers;

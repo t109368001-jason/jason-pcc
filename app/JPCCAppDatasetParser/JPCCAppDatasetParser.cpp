@@ -21,16 +21,14 @@ void parse(const AppParameter& appParameter, pcc::chrono::StopwatchUserTime& clo
   DatasetReader::Ptr reader = newReader(appParameter.inputDatasetReaderParameter, appParameter.inputDatasetParameter);
   std::vector<GroupOfFrame> sources;
   size_t                    groupOfFramesSize = 32;
-  size_t                    startFrameNumber  = 0;
-  while (true) {
+  size_t                    startFrameNumber  = appParameter.inputDatasetParameter.startFrameNumbers.at(0);
+  size_t                    endFrameNumber    = startFrameNumber + appParameter.inputDatasetParameter.frameCounts.at(0);
+  while (startFrameNumber < endFrameNumber) {
     clock.start();
-    reader->loadAll(startFrameNumber, groupOfFramesSize, sources, false);
+    reader->loadAll(startFrameNumber, groupOfFramesSize, sources, appParameter.parallel);
     clock.stop();
-    if (std::any_of(sources.begin(), sources.end(), [&](auto& frames) { return frames.size() < groupOfFramesSize; })) {
-      break;
-    }
 
-    save(sources.at(0), appParameter.outputDatasetParameter.getFilePath(0), appParameter.parallel);
+    savePly(sources.at(0), appParameter.outputDatasetParameter.getFilePath(0), appParameter.parallel);
 
     startFrameNumber += groupOfFramesSize;
   }

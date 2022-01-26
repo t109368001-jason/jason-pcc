@@ -5,12 +5,12 @@
 
 namespace jpcc::io {
 
-void load(GroupOfFrame& groupOfFrame,
-          std::string   filePath,
-          size_t        startFrameNumber,
-          size_t        endFrameNumber,
-          bool          parallel = false);
+void loadPly(GroupOfFrame& groupOfFrame,
+             std::string   filePath,
+             size_t        startFrameNumber,
+             size_t        endFrameNumber,
+             bool          parallel = false);
 
-void save(const GroupOfFrame& groupOfFrame, std::string filePath, bool parallel = false);
+void savePly(const GroupOfFrame& groupOfFrame, std::string filePath, bool parallel = false);
 
 }  // namespace jpcc::io

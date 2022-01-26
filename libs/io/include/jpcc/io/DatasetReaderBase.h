@@ -28,12 +28,16 @@ class DatasetReaderBase {
 
   [[nodiscard]] bool isOpen();
 
-  void loadAll(size_t                     startFrameNumber,
-               size_t                     groupOfFramesSize,
-               std::vector<GroupOfFrame>& sources,
-               bool                       parallel = false);
+  //  TODO change output std::vector<GroupOfFrame> to GroupOfFrame
+  virtual void loadAll(size_t startFrameNumber, size_t groupOfFramesSize, std::vector<GroupOfFrame>& sources);
 
-  void load(size_t datasetIndex, size_t startFrameNumber, size_t groupOfFramesSize, GroupOfFrame& frames);
+  //  TODO change output std::vector<GroupOfFrame> to GroupOfFrame
+  virtual void loadAll(size_t                     startFrameNumber,
+                       size_t                     groupOfFramesSize,
+                       std::vector<GroupOfFrame>& sources,
+                       bool                       parallel);
+
+  virtual void load(size_t datasetIndex, size_t startFrameNumber, size_t groupOfFramesSize, GroupOfFrame& frames);
 
   void close();
 

@@ -18,9 +18,9 @@ TEST(PlyIOTest, save_load) {
   frame->header.stamp = 111;
 
   // when
-  save(groupOfFrame, filePath);
+  savePly(groupOfFrame, filePath);
   GroupOfFrame result;
-  load(result, filePath, frameNumber, frameNumber + 1);
+  loadPly(result, filePath, frameNumber, frameNumber + 1);
 
   EXPECT_EQ(result.size(), groupOfFrame.size());
   EXPECT_EQ(result.at(0)->header.seq, groupOfFrame.at(0)->header.seq);
