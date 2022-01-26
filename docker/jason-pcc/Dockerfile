@@ -27,7 +27,7 @@ ARG JASON_PCC_GITHUB_TOKEN
 
 WORKDIR /
 
-RUN git clone --depth 1 --branch main https://${JASON_PCC_GITHUB_TOKEN}github.com/t109368001-jason/jason-pcc.git
+RUN git clone --depth 1 --branch main https://${JASON_PCC_GITHUB_TOKEN}@github.com/t109368001-jason/jason-pcc.git
 
 WORKDIR /jason-pcc
 
