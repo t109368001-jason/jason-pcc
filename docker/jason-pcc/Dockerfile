@@ -25,7 +25,7 @@ FROM jpcc-u20 as jpcc-u20-src
 
 WORKDIR /
 
-RUN git clone --depth 1 --branch main https://github.com/t109368001-jason/jason-pcc.git
+RUN git clone --depth 1 --branch main https://${JASON_PCC_GITHUB_TOKEN}github.com/t109368001-jason/jason-pcc.git
 
 WORKDIR /jason-pcc
 
