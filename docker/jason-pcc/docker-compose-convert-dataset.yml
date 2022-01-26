@@ -1,0 +1,7 @@
+version: '3.9'
+
+services:
+  jpcc-convert-dataset:
+    image: jpcc:u20-build-release
+    container_name: jpcc-convert-dataset
+    command: bash scripts/convert-dataset.sh

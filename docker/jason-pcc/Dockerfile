@@ -10,6 +10,7 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     build-essential \
     ca-certificates \
+    git \
     libpcap-dev \
     libtbb-dev \
     libpcl-dev \
@@ -22,26 +23,26 @@ RUN wget -qO- "https://cmake.org/files/v3.17/cmake-3.17.5-Linux-x86_64.tar.gz" |
 ###############################################################################
 FROM jpcc-u20 as jpcc-u20-src
 
-COPY ./scripts/build.sh /jason-pcc/scripts/
-COPY ./scripts/test.sh /jason-pcc/scripts/
-COPY ./CMakeLists.txt /jason-pcc/
-COPY ./cmake /jason-pcc/cmake
-COPY ./libs /jason-pcc/libs
-COPY ./app /jason-pcc/app
-COPY ./tests /jason-pcc/tests
+WORKDIR /
 
-RUN mkdir -p build
+RUN git clone --depth 1 --branch main https://github.com/t109368001-jason/jason-pcc.git
+
+WORKDIR /jason-pcc
 
 ###############################################################################
 FROM jpcc-u20-src as jpcc-u20-build-release
 
-WORKDIR /jason-pcc
+RUN mkdir -p build
 
-RUN bash scripts/build.sh
+RUN bash scripts/build-release.sh
+
+ADD ./scripts/*.sh /jason-pcc/
 
 ###############################################################################
 FROM jpcc-u20-src as jpcc-u20-build-debug
 
-WORKDIR /jason-pcc
+RUN mkdir -p build
 
-RUN bash scripts/build.sh
+RUN bash scripts/build-debug.sh
+
+ADD ./scripts/*.sh /jason-pcc/
