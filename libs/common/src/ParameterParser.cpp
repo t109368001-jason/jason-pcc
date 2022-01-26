@@ -67,13 +67,15 @@ void ParameterParser::parseConfigs(const vector<string>& configs) {
     // check if config parsed then return
     if (pCfgs_.find(config) != pCfgs_.end()) { return; }
     ifstream ifs(config.c_str());
-    if (!ifs.good()) { throw runtime_error(string("config: '") + config + "' not found"); }
+    if (!ifs.good()) { throw runtime_error(ParserParameter::getConfigsOpt() + ": '" + config + "' not found"); }
     const parsed_options cfgOpts = parse_config_file(ifs, opts_, true);
     variables_map        vm;
     store(cfgOpts, vm);
     pOpts_.push_back(cfgOpts);
     pCfgs_.insert(config);
-    if (vm.count("config")) { parseConfigs(vm["config"].as<vector<string>>()); }
+    if (vm.count(ParserParameter::getConfigsOpt())) {
+      parseConfigs(vm[ParserParameter::getConfigsOpt()].as<vector<string>>());
+    }
   }
 }
 
