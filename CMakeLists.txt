@@ -30,6 +30,13 @@ endif (WIN32)
 
 MESSAGE(STATUS "Build type: " ${CMAKE_BUILD_TYPE})
 
+if (NOT WIN32)
+    find_package(TBB REQUIRED)
+    if (NOT TBB_FOUND)
+        message(FATAL_ERROR "TBB not found")
+    endif (NOT TBB_FOUND)
+endif (NOT WIN32)
+
 find_package(Boost 1.71 REQUIRED COMPONENTS program_options)
 
 find_package(PCAP REQUIRED)

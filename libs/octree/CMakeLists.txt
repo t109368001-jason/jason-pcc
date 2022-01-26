@@ -20,6 +20,6 @@ add_library(JPCC::${FOLDER_NAME} ALIAS ${PROJECT_NAME})
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include JPCC::common)
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
-target_link_libraries(${PROJECT_NAME} ${PCL_LIBRARIES} JPCC::common)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${PCL_LIBRARIES} JPCC::common)
 
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)

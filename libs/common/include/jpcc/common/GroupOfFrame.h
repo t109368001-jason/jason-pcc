@@ -11,21 +11,22 @@ class GroupOfFrame {
   using Ptr = shared_ptr<GroupOfFrame>;
 
  protected:
-  size_t                  startFrameNumber_;
   std::vector<Frame::Ptr> frames_;
 
  public:
   [[nodiscard]] Frame::Ptr& at(size_t index);
 
+  [[nodiscard]] const Frame::Ptr& at(size_t index) const;
+
   void resize(size_t size);
+
+  void clear();
 
   [[nodiscard]] size_t size() const;
 
-  [[nodiscard]] size_t getStartFrameNumber() const;
-
-  void setStartFrameNumber(const size_t startFrameNumber);
-
   [[nodiscard]] std::vector<Frame::Ptr>& getFrames();
+
+  [[nodiscard]] const std::vector<Frame::Ptr>& getFrames() const;
 };
 
 }  // namespace jpcc

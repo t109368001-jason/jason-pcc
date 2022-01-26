@@ -70,6 +70,7 @@ void DatasetReaderBase::load(const size_t  datasetIndex,
         currentFrameNumber++;
         continue;
       }
+      frameBuffer.front()->header.seq                  = currentFrameNumber;
       frames.at(currentFrameNumber - startFrameNumber) = frameBuffer.front();
       cout << datasetParam_.getFilePath(datasetIndex) << ":" << currentFrameNumber << " "
            << *frames.at(currentFrameNumber - startFrameNumber) << endl;

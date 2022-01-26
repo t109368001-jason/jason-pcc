@@ -5,11 +5,17 @@ project(AllTests VERSION ${JPCC_VERSION})
 file(GLOB_RECURSE INCS *.h *.hpp)
 file(GLOB_RECURSE SRCS *.cpp)
 
+include_directories(${PCL_INCLUDE_DIRS})
+
+link_directories(${PCL_LIBRARY_DIRS})
+
+add_definitions(${PCL_DEFINITIONS})
+
 add_executable(${PROJECT_NAME} ${INCS} ${SRCS})
 
-target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include JPCC::octree)
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include JPCC::common JPCC::io JPCC::octree)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE gtest_main JPCC::octree)
+target_link_libraries(${PROJECT_NAME} PRIVATE gtest_main ${PCL_LIBRARIES} JPCC::common JPCC::io JPCC::octree)
 
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
 
