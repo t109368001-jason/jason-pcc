@@ -213,7 +213,7 @@ int PcapReader::parseDataPacket(const size_t             startFrameNumber,
     uint16_t azimuth100 = firing_data.rotationalPosition;
     // Complete Retrieve Capture One Rotation Data
     if (lastAzimuth100 > azimuth100) {
-      frameBuffer.back()->width  = static_cast<std::uint32_t>(frameBuffer.back()->points.size());
+      frameBuffer.back()->width  = static_cast<std::uint32_t>(frameBuffer.back()->size());
       frameBuffer.back()->height = 1;
       // Push One Rotation Data to Queue
       Frame::Ptr frame(new Frame());
@@ -247,6 +247,8 @@ int PcapReader::parseDataPacket(const size_t             startFrameNumber,
       auto  y     = static_cast<float>(rSinV * sin(azimuth));
       auto  z     = static_cast<float>(distance * cosVerticals_.at(id));
       if (frameBuffer.back()->header.stamp == 0) { frameBuffer.back()->header.stamp = time; }
+      // emplace_back points only, improve performance
+      // frameBuffer.back()->emplace_back(x, y, z);
       frameBuffer.back()->points.emplace_back(x, y, z);
     }
     // Update Last Rotation Azimuth

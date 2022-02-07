@@ -23,12 +23,13 @@ TEST(PlyIOTest, save_load) {
   loadPly(result, filePath, frameNumber, frameNumber + 1);
 
   EXPECT_EQ(result.size(), groupOfFrame.size());
-  EXPECT_EQ(result.at(0)->header.seq, groupOfFrame.at(0)->header.seq);
-  EXPECT_EQ(result.at(0)->points.size(), groupOfFrame.at(0)->points.size());
-  for (size_t i = 0; i < result.at(0)->points.size(); i++) {
-    EXPECT_EQ(result.at(0)->points.at(i).x, groupOfFrame.at(0)->points.at(i).x);
-    EXPECT_EQ(result.at(0)->points.at(i).y, groupOfFrame.at(0)->points.at(i).y);
-    EXPECT_EQ(result.at(0)->points.at(i).z, groupOfFrame.at(0)->points.at(i).z);
+  Frame::Ptr& resultFrame = result.at(0);
+  EXPECT_EQ(resultFrame->header.seq, frame->header.seq);
+  EXPECT_EQ(resultFrame->size(), frame->size());
+  for (size_t i = 0; i < resultFrame->size(); i++) {
+    EXPECT_EQ(resultFrame->at(i).x, frame->at(i).x);
+    EXPECT_EQ(resultFrame->at(i).y, frame->at(i).y);
+    EXPECT_EQ(resultFrame->at(i).z, frame->at(i).z);
   }
 }
 

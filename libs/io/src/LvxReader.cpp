@@ -83,6 +83,8 @@ void LvxReader::load_(const size_t  datasetIndex,
       }
     }
     if (x >= param_.epsilon || y >= param_.epsilon || z >= param_.epsilon) {
+      // emplace_back points only, improve performance
+      // frameBuffer.at(index)->emplace_back(x, y, z);
       frameBuffer.at(index)->points.emplace_back(x, y, z);
     }
     lastTimestamps.at(deviceIndex) = timestamp;
@@ -91,7 +93,7 @@ void LvxReader::load_(const size_t  datasetIndex,
   int64_t minLastTimestamp = *std::min_element(lastTimestamps.begin(), lastTimestamps.end());
   for (const Frame::Ptr& frame : frameBuffer) {
     if ((frame->header.stamp + (int64_t)param_.interval) > minLastTimestamp) { break; }
-    frame->width  = static_cast<std::uint32_t>(frame->points.size());
+    frame->width  = static_cast<std::uint32_t>(frame->size());
     frame->height = 1;
   }
 }

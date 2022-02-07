@@ -16,14 +16,14 @@ ChildrenPattern getTestChildrenPattern(BufferSize bufferSelector) {
 
 PointCloud<PointXYZ>::Ptr getTestCloud(BufferSize bufferSelector) {
   PointCloud<PointXYZ>::Ptr cloud(new PointCloud<PointXYZ>());
-  if (getTestChildrenPattern(bufferSelector)[7]) { cloud->points.emplace_back(0.5, 0.5, 0.5); }
-  if (getTestChildrenPattern(bufferSelector)[6]) { cloud->points.emplace_back(0.5, 0.5, 0.0); }
-  if (getTestChildrenPattern(bufferSelector)[5]) { cloud->points.emplace_back(0.5, 0.0, 0.5); }
-  if (getTestChildrenPattern(bufferSelector)[4]) { cloud->points.emplace_back(0.5, 0.0, 0.0); }
-  if (getTestChildrenPattern(bufferSelector)[3]) { cloud->points.emplace_back(0.0, 0.5, 0.5); }
-  if (getTestChildrenPattern(bufferSelector)[2]) { cloud->points.emplace_back(0.0, 0.5, 0.0); }
-  if (getTestChildrenPattern(bufferSelector)[1]) { cloud->points.emplace_back(0.0, 0.0, 0.5); }
-  if (getTestChildrenPattern(bufferSelector)[0]) { cloud->points.emplace_back(0.0, 0.0, 0.0); }
+  if (getTestChildrenPattern(bufferSelector)[7]) { cloud->emplace_back(0.5, 0.5, 0.5); }
+  if (getTestChildrenPattern(bufferSelector)[6]) { cloud->emplace_back(0.5, 0.5, 0.0); }
+  if (getTestChildrenPattern(bufferSelector)[5]) { cloud->emplace_back(0.5, 0.0, 0.5); }
+  if (getTestChildrenPattern(bufferSelector)[4]) { cloud->emplace_back(0.5, 0.0, 0.0); }
+  if (getTestChildrenPattern(bufferSelector)[3]) { cloud->emplace_back(0.0, 0.5, 0.5); }
+  if (getTestChildrenPattern(bufferSelector)[2]) { cloud->emplace_back(0.0, 0.5, 0.0); }
+  if (getTestChildrenPattern(bufferSelector)[1]) { cloud->emplace_back(0.0, 0.0, 0.5); }
+  if (getTestChildrenPattern(bufferSelector)[0]) { cloud->emplace_back(0.0, 0.0, 0.0); }
   return cloud;
 }
 

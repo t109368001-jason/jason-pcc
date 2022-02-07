@@ -14,13 +14,13 @@ void PlyReader::loadAll(size_t                     startFrameNumber,
                         std::vector<GroupOfFrame>& sources,
                         bool                       parallel) {
   sources.resize(1);
-  size_t endFrameNumber = min(startFrameNumber + groupOfFramesSize,
-                              datasetParam_.startFrameNumbers.at(0) + datasetParam_.frameCounts.at(0));
+  size_t endFrameNumber =
+      min(startFrameNumber + groupOfFramesSize, datasetParam_.getStartFrameNumbers() + datasetParam_.getFrameCounts());
   if (startFrameNumber >= endFrameNumber) { return; }
 
-  loadPly(sources.at(0), datasetParam_.getFilePath(0), startFrameNumber, endFrameNumber, parallel);
+  loadPly(sources.at(0), datasetParam_.getFilePath(), startFrameNumber, endFrameNumber, parallel);
   for (size_t i = startFrameNumber; i < endFrameNumber; i++) {
-    cout << datasetParam_.getFilePath(0) << ":" << i << " " << *sources.at(0).at(i - startFrameNumber) << endl;
+    cout << datasetParam_.getFilePath() << ":" << i << " " << *sources.at(0).at(i - startFrameNumber) << endl;
   }
 }
 

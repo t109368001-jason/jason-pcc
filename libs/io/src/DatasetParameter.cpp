@@ -65,6 +65,10 @@ void DatasetParameter::notify() {
 
 std::string DatasetParameter::getFilePath(const size_t index) const { return folderPrefix + folder + files.at(index); }
 
+size_t DatasetParameter::getFrameCounts(size_t index) const { return frameCounts.at(index); }
+
+size_t DatasetParameter::getStartFrameNumbers(size_t index) const { return startFrameNumbers.at(index); }
+
 ostream& operator<<(ostream& out, const DatasetParameter& obj) {
   out << obj.caption_ << endl;
   out << "\t" << obj.prefix_ << TYPE_OPT "=" << obj.type << endl;

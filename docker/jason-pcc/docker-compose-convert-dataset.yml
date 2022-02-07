@@ -4,7 +4,7 @@ services:
   jpcc-convert-dataset:
     image: jpcc:u20-build-release
     container_name: jpcc-convert-dataset
-    command: ["bash", "convert-dataset.sh"]
+    command: [ "bash", "convert-dataset.sh" ]
     volumes:
       - "../../../../dataset/8i:/dataset/8i:ro"
       - "../../../../dataset/ATS-20211214-Mid-100:/dataset/ATS-20211214-Mid-100:ro"

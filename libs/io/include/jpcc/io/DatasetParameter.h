@@ -28,7 +28,11 @@ class DatasetParameter : public virtual Parameter {
 
   void notify() override;
 
-  [[nodiscard]] std::string getFilePath(size_t index) const;
+  [[nodiscard]] std::string getFilePath(size_t index = 0) const;
+
+  [[nodiscard]] size_t getFrameCounts(size_t index = 0) const;
+
+  [[nodiscard]] size_t getStartFrameNumbers(size_t index = 0) const;
 
   friend std::ostream& operator<<(std::ostream& out, const DatasetParameter& obj);
 };
