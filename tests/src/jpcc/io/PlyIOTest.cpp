@@ -8,9 +8,9 @@ TEST(PlyIOTest, save_load) {
   //  given
   size_t       frameNumber = 123;
   const char*  filePath    = "PlyIOTest_save_load_%05d.ply";
-  GroupOfFrame groupOfFrame;
-  groupOfFrame.resize(1);
-  Frame::Ptr& frame = groupOfFrame.at(0);
+  GroupOfFrame frames;
+  frames.resize(1);
+  Frame::Ptr& frame = frames.at(0);
   frame.reset(new Frame());
   frame->emplace_back(0.0, 0.0, 0.0);
   frame->emplace_back(1.0, 1.0, 1.0);
@@ -18,11 +18,11 @@ TEST(PlyIOTest, save_load) {
   frame->header.stamp = 111;
 
   // when
-  savePly(groupOfFrame, filePath);
+  savePly(frames, filePath);
   GroupOfFrame result;
   loadPly(result, filePath, frameNumber, frameNumber + 1);
 
-  EXPECT_EQ(result.size(), groupOfFrame.size());
+  EXPECT_EQ(result.size(), frames.size());
   Frame::Ptr& resultFrame = result.at(0);
   EXPECT_EQ(resultFrame->header.seq, frame->header.seq);
   EXPECT_EQ(resultFrame->size(), frame->size());

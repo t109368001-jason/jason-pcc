@@ -14,7 +14,6 @@ class DatasetParameter : public virtual Parameter {
   std::string              type;
   std::string              folderPrefix;
   std::string              folder;
-  size_t                   totalFiles;  //  TODO remove
   std::vector<std::string> files;
   std::vector<size_t>      frameCounts;
   std::vector<size_t>      startFrameNumbers;
@@ -27,6 +26,8 @@ class DatasetParameter : public virtual Parameter {
   [[nodiscard]] std::vector<std::array<std::string, 2>> getDependencies() const override;
 
   void notify() override;
+
+  [[nodiscard]] size_t count() const;
 
   [[nodiscard]] std::string getFilePath(size_t index = 0) const;
 

@@ -11,16 +11,16 @@ namespace jpcc::io {
 using namespace std;
 
 void loadPly(
-    GroupOfFrame& groupOfFrame, std::string filePath, size_t startFrameNumber, size_t endFrameNumber, bool parallel) {
+    GroupOfFrame& frames, std::string filePath, size_t startFrameNumber, size_t endFrameNumber, bool parallel) {
   const size_t frameCount = endFrameNumber - startFrameNumber;
-  groupOfFrame.clear();
-  groupOfFrame.getFrames().resize(frameCount);
+  frames.clear();
+  frames.resize(frameCount);
   vector<size_t> frameNumbers;
   for (size_t i = startFrameNumber; i < endFrameNumber; i++) { frameNumbers.push_back(i); }
   auto func = [&](const size_t frameNumber) {
     char fileName[4096];
     sprintf(fileName, filePath.c_str(), frameNumber);
-    auto& frame = groupOfFrame.at(frameNumber - startFrameNumber);
+    auto& frame = frames.at(frameNumber - startFrameNumber);
     frame.reset(new Frame());
 
     int result = pcl::io::load(string(fileName), *frame);
@@ -35,7 +35,7 @@ void loadPly(
   }
 }
 
-void savePly(const GroupOfFrame& groupOfFrame, std::string filePath, bool parallel) {
+void savePly(const GroupOfFrame& frames, std::string filePath, bool parallel) {
   auto func = [&](const Frame::Ptr& frame) {
     char fileName[4096];
     sprintf(fileName, filePath.c_str(), frame->header.seq);
@@ -45,9 +45,9 @@ void savePly(const GroupOfFrame& groupOfFrame, std::string filePath, bool parall
   };
 
   if (parallel) {
-    for_each(execution::par, groupOfFrame.getFrames().begin(), groupOfFrame.getFrames().end(), func);
+    for_each(execution::par, frames.begin(), frames.end(), func);
   } else {
-    for_each(groupOfFrame.getFrames().begin(), groupOfFrame.getFrames().end(), func);
+    for_each(frames.begin(), frames.end(), func);
   }
 }
 

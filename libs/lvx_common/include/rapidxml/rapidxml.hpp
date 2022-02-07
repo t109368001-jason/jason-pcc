@@ -1357,7 +1357,6 @@ class xml_document : public xml_node<Ch>, public memory_pool<Ch> {
   static void insert_coded_character(Ch*& text, unsigned long code) {
     if (Flags & parse_no_utf8) {
       // Insert 8-bit ASCII character
-      // Todo: possibly verify that code is less than 256 and use replacement
       // char otherwise?
       text[0] = static_cast<unsigned char>(code);
       text += 1;

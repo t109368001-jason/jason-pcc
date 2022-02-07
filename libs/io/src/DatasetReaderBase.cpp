@@ -15,10 +15,10 @@ using namespace jpcc;
 DatasetReaderBase::DatasetReaderBase(DatasetReaderParameter param, DatasetParameter datasetParam) :
     param_(std::move(param)),
     datasetParam_(std::move(datasetParam)),
-    datasetIndices_(datasetParam_.totalFiles),
-    currentFrameNumbers_(datasetParam_.totalFiles),
-    frameBuffers_(datasetParam_.totalFiles) {
-  assert(datasetParam_.totalFiles > 0);
+    datasetIndices_(datasetParam_.count()),
+    currentFrameNumbers_(datasetParam_.count()),
+    frameBuffers_(datasetParam_.count()) {
+  assert(datasetParam_.count() > 0);
   generate(datasetIndices_.begin(), datasetIndices_.end(), [n = 0]() mutable { return n++; });
 }
 
@@ -26,26 +26,27 @@ DatasetReaderBase::~DatasetReaderBase() { close(); }
 
 DatasetReaderParameter DatasetReaderBase::getReaderParameter() { return param_; }
 
+DatasetParameter DatasetReaderBase::getDatasetParameter() { return datasetParam_; }
+
 bool DatasetReaderBase::isOpen() {
   return any_of(datasetIndices_.begin(), datasetIndices_.end(),
                 [this](auto&& PH1) { return isOpen_(std::forward<decltype(PH1)>(PH1)); });
 }
 
-void DatasetReaderBase::loadAll(const size_t          startFrameNumber,
-                                const size_t          groupOfFramesSize,
-                                vector<GroupOfFrame>& sources) {
-  loadAll(startFrameNumber, groupOfFramesSize, sources, false);
+void DatasetReaderBase::loadAll(const size_t startFrameNumber, const size_t groupOfFramesSize, GroupOfFrame& frames) {
+  loadAll(startFrameNumber, groupOfFramesSize, frames, false);
 }
 
-void DatasetReaderBase::loadAll(const size_t          startFrameNumber,
-                                const size_t          groupOfFramesSize,
-                                vector<GroupOfFrame>& sources,
-                                const bool            parallel) {
+void DatasetReaderBase::loadAll(const size_t  startFrameNumber,
+                                const size_t  groupOfFramesSize,
+                                GroupOfFrame& frames,
+                                const bool    parallel) {
   assert(groupOfFramesSize > 0);
 
   for_each(datasetIndices_.begin(), datasetIndices_.end(),
            [this, startFrameNumber](auto&& PH1) { open_(std::forward<decltype(PH1)>(PH1), startFrameNumber); });
 
+  vector<GroupOfFrame> sources;
   sources.resize(datasetIndices_.size());
   if (parallel) {
     for_each(execution::par, datasetIndices_.begin(), datasetIndices_.end(), [&](size_t datasetIndex) {
@@ -55,6 +56,23 @@ void DatasetReaderBase::loadAll(const size_t          startFrameNumber,
     for_each(datasetIndices_.begin(), datasetIndices_.end(), [&](size_t datasetIndex) {
       load(datasetIndex, startFrameNumber, groupOfFramesSize, sources.at(datasetIndex));
     });
+  }
+  size_t maxSize = max_element(sources.begin(), sources.end(), [](GroupOfFrame& a, GroupOfFrame& b) {
+                     return a.size() < b.size();
+                   })->size();
+  frames.resize(maxSize);
+  for (size_t i = 0; i < maxSize; i++) {
+    Frame::Ptr& frame = frames.at(i);
+    frame.reset(new Frame());
+    frame->header.seq = startFrameNumber + i;
+    for (size_t datasetIndex = 0; datasetIndex < datasetParam_.count(); datasetIndex++) {
+      if (i < sources.at(datasetIndex).size()) {
+        frame->insert(frame->end(), make_move_iterator(sources.at(datasetIndex).at(i)->begin()),
+                      make_move_iterator(sources.at(datasetIndex).at(i)->end()));
+      }
+    }
+    frame->width  = static_cast<std::uint32_t>(frame->size());
+    frame->height = 1;
   }
 }
 
@@ -121,7 +139,5 @@ void DatasetReaderBase::close_(const size_t datasetIndex) {
   currentFrameNumbers_.at(datasetIndex) = 0;
   frameBuffers_.at(datasetIndex).clear();
 }
-
-const DatasetParameter& DatasetReaderBase::getDatasetParameter() { return datasetParam_; }
 
 }  // namespace jpcc::io

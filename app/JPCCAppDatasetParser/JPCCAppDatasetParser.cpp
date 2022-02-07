@@ -1,5 +1,4 @@
 #include <chrono>
-#include <execution>
 #include <iostream>
 #include <vector>
 
@@ -19,16 +18,16 @@ using namespace jpcc::io;
 
 void parse(const AppParameter& appParameter, pcc::chrono::StopwatchUserTime& clock) {
   DatasetReader::Ptr reader = newReader(appParameter.inputDatasetReaderParameter, appParameter.inputDatasetParameter);
-  std::vector<GroupOfFrame> sources;
-  size_t                    groupOfFramesSize = 32;
-  size_t                    startFrameNumber  = appParameter.inputDatasetParameter.getStartFrameNumbers();
-  size_t                    endFrameNumber    = startFrameNumber + appParameter.inputDatasetParameter.getFrameCounts();
+  GroupOfFrame       frames;
+  size_t             groupOfFramesSize = 32;
+  size_t             startFrameNumber  = appParameter.inputDatasetParameter.getStartFrameNumbers();
+  size_t             endFrameNumber    = startFrameNumber + appParameter.inputDatasetParameter.getFrameCounts();
   while (startFrameNumber < endFrameNumber) {
     clock.start();
-    reader->loadAll(startFrameNumber, groupOfFramesSize, sources, appParameter.parallel);
+    reader->loadAll(startFrameNumber, groupOfFramesSize, frames, appParameter.parallel);
     clock.stop();
 
-    savePly(sources.at(0), appParameter.outputDatasetParameter.getFilePath(), appParameter.parallel);
+    savePly(frames, appParameter.outputDatasetParameter.getFilePath(), appParameter.parallel);
 
     startFrameNumber += groupOfFramesSize;
   }

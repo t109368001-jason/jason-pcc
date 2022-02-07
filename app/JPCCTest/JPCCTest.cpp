@@ -42,16 +42,15 @@ void test(const DatasetParameter&         datasetParameter,
 
   auto datasetLoading = [&] {
     try {
-      DatasetReader::Ptr        reader = newReader(readerParameter, datasetParameter);
-      std::vector<GroupOfFrame> sources;
-      size_t                    groupOfFramesSize = 32;
-      size_t                    startFrameNumber  = 0;
+      DatasetReader::Ptr reader = newReader(readerParameter, datasetParameter);
+      GroupOfFrame       frames;
+      size_t             groupOfFramesSize = 1;
+      size_t             startFrameNumber  = 0;
       while (run) {
         clock.start();
-        reader->loadAll(startFrameNumber, groupOfFramesSize, sources, false);
+        reader->loadAll(startFrameNumber, groupOfFramesSize, frames, false);
         clock.stop();
-        if (std::any_of(sources.begin(), sources.end(),
-                        [&](auto& frames) { return frames.size() < groupOfFramesSize; })) {
+        if (frames.size() < groupOfFramesSize) {
           startFrameNumber = 0;
           continue;
         }
@@ -59,7 +58,7 @@ void test(const DatasetParameter&         datasetParameter,
         pcl::PointCloud<Point>::Ptr _cloud(new pcl::PointCloud<Point>());
 
         std::lock_guard<std::mutex> lock(mutex);
-        cloud = sources.at(0).at(0);
+        cloud = frames.at(0);
         std::this_thread::sleep_for(100ms);
         startFrameNumber += groupOfFramesSize;
       }

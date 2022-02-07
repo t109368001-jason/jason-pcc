@@ -12,12 +12,7 @@ class PlyReader : public DatasetReaderBase {
  public:
   PlyReader(DatasetReaderParameter param, DatasetParameter datasetParam);
 
-  void loadAll(size_t                     startFrameNumber,
-               size_t                     groupOfFramesSize,
-               std::vector<GroupOfFrame>& sources,
-               bool                       parallel) override;
-
-  void load(size_t datasetIndex, size_t startFrameNumber, size_t groupOfFramesSize, GroupOfFrame& frames) override;
+  void loadAll(size_t startFrameNumber, size_t groupOfFramesSize, GroupOfFrame& frames, bool parallel) override;
 };
 
 }  // namespace jpcc::io

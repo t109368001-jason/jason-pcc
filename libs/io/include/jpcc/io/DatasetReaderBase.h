@@ -26,22 +26,19 @@ class DatasetReaderBase {
 
   [[nodiscard]] DatasetReaderParameter getReaderParameter();
 
+  [[nodiscard]] DatasetParameter getDatasetParameter();
+
   [[nodiscard]] bool isOpen();
 
-  //  TODO change output std::vector<GroupOfFrame> to GroupOfFrame
-  virtual void loadAll(size_t startFrameNumber, size_t groupOfFramesSize, std::vector<GroupOfFrame>& sources);
+  virtual void loadAll(size_t startFrameNumber, size_t groupOfFramesSize, GroupOfFrame& frames);
 
-  //  TODO change output std::vector<GroupOfFrame> to GroupOfFrame
-  virtual void loadAll(size_t                     startFrameNumber,
-                       size_t                     groupOfFramesSize,
-                       std::vector<GroupOfFrame>& sources,
-                       bool                       parallel);
-
-  virtual void load(size_t datasetIndex, size_t startFrameNumber, size_t groupOfFramesSize, GroupOfFrame& frames);
+  virtual void loadAll(size_t startFrameNumber, size_t groupOfFramesSize, GroupOfFrame& frames, bool parallel);
 
   void close();
 
  protected:
+  virtual void load(size_t datasetIndex, size_t startFrameNumber, size_t groupOfFramesSize, GroupOfFrame& frames);
+
   virtual void open_(size_t datasetIndex, size_t startFrameNumber);
 
   [[nodiscard]] virtual bool isOpen_(size_t datasetIndex);
@@ -51,8 +48,6 @@ class DatasetReaderBase {
   virtual void load_(size_t datasetIndex, size_t startFrameNumber, size_t groupOfFramesSize, GroupOfFrame& frames);
 
   virtual void close_(size_t datasetIndex);
-
-  [[nodiscard]] const DatasetParameter& getDatasetParameter();
 };
 
 }  // namespace jpcc::io

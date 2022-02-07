@@ -34,6 +34,7 @@
 #pragma once
 
 // #include "PCCCommon.h"
+#include <string.h>
 
 namespace pcc {
 

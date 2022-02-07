@@ -20,7 +20,7 @@ LvxReader::LvxReader(DatasetReaderParameter param, DatasetParameter datasetParam
   } else {
     throw logic_error("Not support dataset.sensor " + datasetParam_.sensor);
   }
-  lvxs_.resize(datasetParam_.totalFiles);
+  lvxs_.resize(datasetParam_.count());
   for_each(datasetIndices_.begin(), datasetIndices_.end(),
            [this](auto&& PH1) { open_(std::forward<decltype(PH1)>(PH1), 0); });
 }
@@ -83,6 +83,7 @@ void LvxReader::load_(const size_t  datasetIndex,
       }
     }
     if (x >= param_.epsilon || y >= param_.epsilon || z >= param_.epsilon) {
+      // TODO add transform
       // emplace_back points only, improve performance
       // frameBuffer.at(index)->emplace_back(x, y, z);
       frameBuffer.at(index)->points.emplace_back(x, y, z);

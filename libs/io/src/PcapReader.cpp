@@ -9,8 +9,10 @@ using namespace std;
 using namespace std::placeholders;
 using namespace jpcc;
 
-constexpr auto LASER_PER_FIRING = 32;
-constexpr auto FIRING_PER_PKT   = 12;
+#pragma clang diagnostic push
+#pragma ide diagnostic   ignored "OCUnusedGlobalDeclarationInspection"
+constexpr auto           LASER_PER_FIRING = 32;
+constexpr auto           FIRING_PER_PKT   = 12;
 
 constexpr float PI_DIV18000 = M_PI / 18000.0;
 constexpr float TOTAL_POINTS_MULTIPLE_MAX_AZIMUTH_DIFF_OF_PACKET =
@@ -90,6 +92,7 @@ struct DataPacket {
   uint8_t    sensorType;
 };
 #pragma pack(pop)
+#pragma clang diagnostic pop
 
 PcapReader::PcapReader(DatasetReaderParameter param, DatasetParameter datasetParam) :
     DatasetReaderBase(std::move(param), std::move(datasetParam)) {
@@ -117,10 +120,10 @@ PcapReader::PcapReader(DatasetReaderParameter param, DatasetParameter datasetPar
   } else {
     throw logic_error("Not support dataset.sensor " + datasetParam_.sensor);
   }
-  currentFrameNumbers_.resize(datasetParam_.totalFiles);
-  pcaps_.resize(datasetParam_.totalFiles);
-  lastAzimuth100s_.resize(datasetParam_.totalFiles);
-  frameBuffers_.resize(datasetParam_.totalFiles);
+  currentFrameNumbers_.resize(datasetParam_.count());
+  pcaps_.resize(datasetParam_.count());
+  lastAzimuth100s_.resize(datasetParam_.count());
+  frameBuffers_.resize(datasetParam_.count());
 
   for_each(datasetIndices_.begin(), datasetIndices_.end(),
            [this](auto&& PH1) { open_(std::forward<decltype(PH1)>(PH1), 0); });
@@ -152,10 +155,7 @@ void PcapReader::open_(const size_t datasetIndex, const size_t startFrameNumber)
 
 bool PcapReader::isOpen_(const size_t datasetIndex) { return static_cast<bool>(pcaps_.at(datasetIndex)); }
 
-bool PcapReader::isEof_(const size_t datasetIndex) {
-  // TODO
-  return DatasetReaderBase::isEof_(datasetIndex);
-}
+bool PcapReader::isEof_(const size_t datasetIndex) { return DatasetReaderBase::isEof_(datasetIndex); }
 
 void PcapReader::load_(const size_t  datasetIndex,
                        const size_t  startFrameNumber,
@@ -247,6 +247,7 @@ int PcapReader::parseDataPacket(const size_t             startFrameNumber,
       auto  y     = static_cast<float>(rSinV * sin(azimuth));
       auto  z     = static_cast<float>(distance * cosVerticals_.at(id));
       if (frameBuffer.back()->header.stamp == 0) { frameBuffer.back()->header.stamp = time; }
+      // TODO add transform
       // emplace_back points only, improve performance
       // frameBuffer.back()->emplace_back(x, y, z);
       frameBuffer.back()->points.emplace_back(x, y, z);
