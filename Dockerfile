@@ -23,8 +23,6 @@ RUN wget -qO- "https://cmake.org/files/v3.17/cmake-3.17.5-Linux-x86_64.tar.gz" |
 ###############################################################################
 FROM jpcc-u20 as jpcc-u20-src
 
-ARG JASON_PCC_GITHUB_TOKEN
-
 WORKDIR /
 
 ADD ./app /jason-pcc/app
