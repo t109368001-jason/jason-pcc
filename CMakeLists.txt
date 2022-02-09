@@ -51,8 +51,7 @@ add_subdirectory(libs/lvx_common)
 add_subdirectory(libs/octree)
 add_subdirectory(libs/pcc_common)
 
-add_subdirectory(app/JPCCTest)
-add_subdirectory(app/JPCCAppDatasetParser)
+add_subdirectory(app)
 
 # GoogleTest requires at least C++11
 set(CMAKE_CXX_STANDARD 11)

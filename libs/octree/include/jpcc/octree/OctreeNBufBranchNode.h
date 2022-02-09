@@ -40,7 +40,6 @@
 
 #include <cstdint>
 
-#define PCL_NO_PRECOMPILE
 #include <pcl/octree/octree_nodes.h>
 
 namespace jpcc::octree {

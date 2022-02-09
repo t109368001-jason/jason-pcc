@@ -6,7 +6,6 @@
 
 #include <boost/throw_exception.hpp>
 
-#define PCL_NO_PRECOMPILE
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 

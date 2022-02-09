@@ -41,7 +41,6 @@
 #include <bitset>
 #include <cstdint>
 
-#define PCL_NO_PRECOMPILE
 #include <pcl/octree/octree_container.h>
 #include <pcl/octree/octree_iterator.h>
 #include <pcl/octree/octree_key.h>
