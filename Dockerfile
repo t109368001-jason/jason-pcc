@@ -27,12 +27,12 @@ ARG JASON_PCC_GITHUB_TOKEN
 
 WORKDIR /
 
-ADD ../../app /jason-pcc/app
-ADD ../../cfg /jason-pcc/cfg
-ADD ../../cmake /jason-pcc/cmake
-ADD ../../libs /jason-pcc/libs
-ADD ../../tests /jason-pcc/tests
-ADD ../../CMakeLists.txt /jason-pcc/CMakeLists.txt
+ADD ./app /jason-pcc/app
+ADD ./cfg /jason-pcc/cfg
+ADD ./cmake /jason-pcc/cmake
+ADD ./libs /jason-pcc/libs
+ADD ./tests /jason-pcc/tests
+ADD ./CMakeLists.txt /jason-pcc/CMakeLists.txt
 
 WORKDIR /jason-pcc
 

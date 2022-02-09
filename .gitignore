@@ -5,6 +5,7 @@ bin/
 build*/
 cmake-build*/
 lib/
+Testing*/
 
 # Prerequisites
 *.d
