@@ -109,6 +109,7 @@ template <BufferSize BUFFER_SIZE, typename LeafContainerT, typename BranchContai
 OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>&
 OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::operator=(const OctreeNBufBase& source) {
   if (this == &source) { return *this; }
+  deleteTree();
   leaf_count_            = source.leaf_count_;
   branch_count_          = source.branch_count_;
   root_node_             = new (BranchNode)(*(source.root_node_));
