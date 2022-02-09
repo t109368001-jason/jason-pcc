@@ -47,7 +47,6 @@
 #include <pcl/octree/octree_iterator.h>
 #include <pcl/octree/octree_key.h>
 #include <pcl/octree/octree_nodes.h>
-#include <pcl/pcl_macros.h>
 
 #include <jpcc/octree/OctreeNBufBranchNode.h>
 
@@ -55,6 +54,7 @@ namespace jpcc::octree {
 
 using ChildrenPattern = std::bitset<8>;
 
+// TODO delete by bufferSelector
 template <BufferSize BUFFER_SIZE    = 2,
           typename LeafContainerT   = pcl::octree::OctreeContainerPointIndices,
           typename BranchContainerT = pcl::octree::OctreeContainerEmpty>
@@ -210,6 +210,12 @@ class OctreeNBufBase {
   bool octreeCanResize();
 
   void printBinary(char data_arg);
+
+  void getIndicesByFilter(std::function<bool(const BufferPattern& bufferPattern)> filter, pcl::Indices& indices);
+
+  void getIndicesByFilterRecursive(BranchNode*                                             branch_arg,
+                                   std::function<bool(const BufferPattern& bufferPattern)> filter,
+                                   pcl::Indices&                                           indices);
 };
 
 }  // namespace jpcc::octree

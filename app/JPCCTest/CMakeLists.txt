@@ -18,10 +18,10 @@ message(${VTK_USE_FILE})
 if (VTK_VERSION VERSION_LESS "8.90.0")
     include(${VTK_USE_FILE})
     add_executable(${PROJECT_NAME} ${INCS} ${SRCS})
-    target_link_libraries(${PROJECT_NAME} PRIVATE ${PCL_LIBRARIES} ${VTK_LIBRARIES} JPCC::pcc_common JPCC::common JPCC::lvx_common JPCC::io)
+    target_link_libraries(${PROJECT_NAME} PRIVATE ${PCL_LIBRARIES} ${VTK_LIBRARIES} JPCC::pcc_common JPCC::common JPCC::lvx_common JPCC::io JPCC::octree)
 else ()
     add_executable(${PROJECT_NAME} ${INCS} ${SRCS})
-    target_link_libraries(${PROJECT_NAME} PRIVATE ${PCL_LIBRARIES} ${VTK_LIBRARIES} JPCC::pcc_common JPCC::common JPCC::lvx_common JPCC::io)
+    target_link_libraries(${PROJECT_NAME} PRIVATE ${PCL_LIBRARIES} ${VTK_LIBRARIES} JPCC::pcc_common JPCC::common JPCC::lvx_common JPCC::io JPCC::octree)
     vtk_module_autoinit(
             TARGETS ${PROJECT_NAME}
             MODULES ${VTK_LIBRARIES}

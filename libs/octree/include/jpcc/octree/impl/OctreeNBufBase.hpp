@@ -620,4 +620,46 @@ void OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::printBinary(
   std::cout << std::endl;
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <BufferSize BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
+void OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::getIndicesByFilter(
+    std::function<bool(const BufferPattern& bufferPattern)> filter, pcl::Indices& indices) {
+  getIndicesByFilterRecursive(root_node_, filter, indices);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <BufferSize BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
+void OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::getIndicesByFilterRecursive(
+    BranchNode* branch_arg, std::function<bool(const BufferPattern& bufferPattern)> filter, pcl::Indices& indices) {
+  // iterate over all children
+  for (ChildrenIndex child_idx = 0; child_idx < 8; child_idx++) {
+    for (BufferSize b = 0; b < BUFFER_SIZE; b++) {
+      if (branch_arg->hasChild(b, child_idx)) {
+        OctreeNode* child_node = branch_arg->getChildPtr(b, child_idx);
+
+        switch (child_node->getNodeType()) {
+          case pcl::octree::BRANCH_NODE: {
+            // recursively proceed with indexed child branch
+            getIndicesByFilterRecursive(static_cast<BranchNode*>(child_node), filter, indices);
+            break;
+          }
+          case pcl::octree::LEAF_NODE: {
+            if (branch_arg->hasChild(buffer_selector_, child_idx)) {
+              LeafNode* child_leaf = static_cast<LeafNode*>(branch_arg->getChildPtr(buffer_selector_, child_idx));
+
+              if (filter(getBufferPattern(*branch_arg, child_idx))) {
+                child_leaf->getContainer().getPointIndices(indices);
+              }
+            }
+
+            break;
+          }
+          default: break;
+        }
+        break;
+      }
+    }
+  }
+}
+
 }  // namespace jpcc::octree
