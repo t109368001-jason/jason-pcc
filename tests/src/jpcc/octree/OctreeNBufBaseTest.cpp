@@ -29,7 +29,7 @@ TEST(OctreeNBufBaseTest, getBranchBufferPattern) {
                          OctreeNBufBase<BUFFER_SIZE, OctreeContainerPointIndices, OctreeContainerEmpty>>& octree =
       getTestOctree();
   // then
-  for (uint8_t i = 0; i < 8; i++) {
+  for (ChildrenIndex i = 0; i < 8; i++) {
     const OctreeNBufBase<BUFFER_SIZE, OctreeContainerPointIndices, OctreeContainerEmpty>::BufferPattern bufferPattern =
         octree.getBufferPattern(*octree.root_node_, i);
     for (BufferSize b = 0; b < octree.getBufferSize(); b++) {

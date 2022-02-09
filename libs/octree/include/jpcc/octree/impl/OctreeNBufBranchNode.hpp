@@ -20,7 +20,7 @@ OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>& OctreeNBufBranchNode<BUFFER
   reset();
 
   for (BufferSize b = 0; b < BUFFER_SIZE; ++b) {
-    for (uint8_t i = 0; i < 8; ++i) {
+    for (ChildrenIndex i = 0; i < 8; ++i) {
       if (src.childMatrix_[b][i]) childMatrix_[b][i] = src.childMatrix_[b][i]->deepCopy();
     }
   }
@@ -39,21 +39,23 @@ OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>* OctreeNBufBranchNode<BUFFER
 
 template <BufferSize BUFFER_SIZE, typename BranchContainerT>
 typename OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>::OctreeNode*
-OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>::getChildPtr(BufferSize bufferIndex, uint8_t childIndex) const {
+OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>::getChildPtr(BufferSize    bufferIndex,
+                                                                 ChildrenIndex childIndex) const {
   assert((bufferIndex < BUFFER_SIZE) && (childIndex < 8));
   return childMatrix_[bufferIndex][childIndex];
 }
 
 template <BufferSize BUFFER_SIZE, typename BranchContainerT>
-void OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>::setChildPtr(BufferSize  bufferIndex,
-                                                                      uint8_t     childIndex,
-                                                                      OctreeNode* node) {
+void OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>::setChildPtr(BufferSize    bufferIndex,
+                                                                      ChildrenIndex childIndex,
+                                                                      OctreeNode*   node) {
   assert((bufferIndex < BUFFER_SIZE) && (childIndex < 8));
   childMatrix_[bufferIndex][childIndex] = node;
 }
 
 template <BufferSize BUFFER_SIZE, typename BranchContainerT>
-bool OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>::hasChild(BufferSize bufferIndex, uint8_t childIndex) const {
+bool OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>::hasChild(BufferSize    bufferIndex,
+                                                                   ChildrenIndex childIndex) const {
   assert((bufferIndex < BUFFER_SIZE) && (childIndex < 8));
   return (childMatrix_[bufferIndex][childIndex] != nullptr);
 }

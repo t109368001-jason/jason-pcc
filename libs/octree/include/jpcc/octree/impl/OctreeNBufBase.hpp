@@ -294,7 +294,7 @@ void OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::removeLeaf(c
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <BufferSize BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
 bool OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::branchHasChild(const BranchNode& branch_arg,
-                                                                                   unsigned char child_idx_arg) const {
+                                                                                   ChildrenIndex child_idx_arg) const {
   // test occupancyByte for child existence
   return (branch_arg.getChildPtr(buffer_selector_, child_idx_arg) != nullptr);
 }
@@ -303,14 +303,14 @@ bool OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::branchHasChi
 template <BufferSize BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
 typename OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::OctreeNode*
 OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::getBranchChildPtr(const BranchNode& branch_arg,
-                                                                                 unsigned char child_idx_arg) const {
+                                                                                 ChildrenIndex child_idx_arg) const {
   return branch_arg.getChildPtr(buffer_selector_, child_idx_arg);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <BufferSize BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
 void OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::setBranchChildPtr(BranchNode&   branch_arg,
-                                                                                      unsigned char child_idx_arg,
+                                                                                      ChildrenIndex child_idx_arg,
                                                                                       OctreeNode*   new_child_arg) {
   branch_arg.setChildPtr(buffer_selector_, child_idx_arg, new_child_arg);
 }
@@ -321,7 +321,7 @@ ChildrenPattern OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::g
     const BranchNode& branch_arg) const {
   ChildrenPattern childrenPattern;
 
-  for (uint8_t i = 0; i < 8; i++) {
+  for (ChildrenIndex i = 0; i < 8; i++) {
     const OctreeNode* child = branch_arg.getChildPtr(buffer_selector_, i);
     childrenPattern         = (child != nullptr);
   }
@@ -335,7 +335,7 @@ ChildrenPattern OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::g
     const BranchNode& branch_arg, const BufferSize bufferSelector_arg) const {
   ChildrenPattern childrenPattern;
 
-  for (uint8_t i = 0; i < 8; i++) {
+  for (ChildrenIndex i = 0; i < 8; i++) {
     const OctreeNode* child = branch_arg.getChildPtr(bufferSelector_arg, i);
     childrenPattern[i]      = (child != nullptr);
   }
@@ -347,7 +347,7 @@ ChildrenPattern OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::g
 template <BufferSize BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
 typename OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::BufferPattern
 OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::getBufferPattern(
-    const OctreeNBufBase::BranchNode& branch_arg, uint8_t childrenIdx) const {
+    const OctreeNBufBase::BranchNode& branch_arg, ChildrenIndex childrenIdx) const {
   BufferPattern bufferPattern;
 
   // create bit pattern
@@ -362,8 +362,8 @@ OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::getBufferPattern(
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <BufferSize BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
 void OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::deleteBranchChild(BranchNode&   branch_arg,
-                                                                                      unsigned char buffer_selector_arg,
-                                                                                      unsigned char child_idx_arg) {
+                                                                                      BufferSize    buffer_selector_arg,
+                                                                                      ChildrenIndex child_idx_arg) {
   if (branch_arg.hasChild(buffer_selector_arg, child_idx_arg)) {
     OctreeNode* branchChild = branch_arg.getChildPtr(buffer_selector_arg, child_idx_arg);
 
@@ -393,7 +393,7 @@ void OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::deleteBranch
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <BufferSize BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
 void OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::deleteBranchChild(BranchNode&   branch_arg,
-                                                                                      unsigned char child_idx_arg) {
+                                                                                      ChildrenIndex child_idx_arg) {
   deleteBranchChild(branch_arg, buffer_selector_, child_idx_arg);
 }
 
@@ -416,7 +416,7 @@ void OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::deleteBranch
 template <BufferSize BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
 typename OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::BranchNode*
 OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::createBranchChild(BranchNode&   branch_arg,
-                                                                                 unsigned char child_idx_arg) {
+                                                                                 ChildrenIndex child_idx_arg) {
   auto* new_branch_child = new BranchNode();
 
   branch_arg.setChildPtr(buffer_selector_, child_idx_arg, static_cast<OctreeNode*>(new_branch_child));
@@ -428,7 +428,7 @@ OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::createBranchChild
 template <BufferSize BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
 typename OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::LeafNode*
 OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::createLeafChild(BranchNode&   branch_arg,
-                                                                               unsigned char child_idx_arg) {
+                                                                               ChildrenIndex child_idx_arg) {
   auto* new_leaf_child = new LeafNode();
 
   branch_arg.setChildPtr(buffer_selector_, child_idx_arg, new_leaf_child);
@@ -448,13 +448,13 @@ OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::createLeafRecursi
   // branch reset -> this branch has been taken from previous buffer
   if (branch_reset_arg) {
     // we can safely remove children references
-    for (unsigned char child_idx = 0; child_idx < 8; child_idx++) {
+    for (ChildrenIndex child_idx = 0; child_idx < 8; child_idx++) {
       branch_arg->setChildPtr(buffer_selector_, child_idx, nullptr);
     }
   }
 
   // find branch child from key
-  unsigned char child_idx = key_arg.getChildIdxWithDepthMask(depth_mask_arg);
+  ChildrenIndex child_idx = key_arg.getChildIdxWithDepthMask(depth_mask_arg);
 
   if (depth_mask_arg > 1) {
     // we have not reached maximum tree depth
@@ -467,7 +467,6 @@ OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::createLeafRecursi
     if (!branch_arg->hasChild(buffer_selector_, child_idx)) {
       // check if we find a branch node reference in previous buffer
       for (BufferSize b = 0; b < BUFFER_SIZE; ++b) {
-        if (b == buffer_selector_) { continue; }
         if (branch_arg->hasChild(b, child_idx)) {
           OctreeNode* child_node = branch_arg->getChildPtr(b, child_idx);
 
@@ -500,38 +499,13 @@ OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::createLeafRecursi
                                doNodeReset);
   }
 
-  bool stolenChildNode = false;
-  // branch childs are leaf nodes
-  LeafNode* child_leaf;
   if (!branch_arg->hasChild(buffer_selector_, child_idx)) {
     // leaf node at child_idx does not exist
 
-    for (BufferSize b = 0; b < BUFFER_SIZE; ++b) {
-      if (b == buffer_selector_) { continue; }
-      // check if we can take copy a reference from previous buffer
-      if (branch_arg->hasChild(b, child_idx)) {
-        OctreeNode* child_node = branch_arg->getChildPtr(b, child_idx);
-        if (child_node->getNodeType() == pcl::octree::LEAF_NODE) {
-          child_leaf                 = static_cast<LeafNode*>(child_node);
-          child_leaf->getContainer() = LeafContainerT();  // Clear contents of leaf
-          branch_arg->setChildPtr(buffer_selector_, child_idx, child_node);
-        } else {
-          // depth has changed.. child in preceding buffer is a leaf node.
-          deleteBranchChild(*branch_arg, b, child_idx);
-          child_leaf = createLeafChild(*branch_arg, child_idx);
-        }
-        leaf_count_++;
-        stolenChildNode = true;
-      }
-    }
-    if (!stolenChildNode) {
-      // if required leaf does not exist -> create it
-      child_leaf = createLeafChild(*branch_arg, child_idx);
-      leaf_count_++;
-    }
-
+    // if required leaf does not exist -> create it
     // return leaf node
-    return_leaf_arg    = child_leaf;
+    return_leaf_arg = createLeafChild(*branch_arg, child_idx);
+    leaf_count_++;
     parent_of_leaf_arg = branch_arg;
   } else {
     // leaf node already exist
@@ -547,7 +521,7 @@ template <BufferSize BUFFER_SIZE, typename LeafContainerT, typename BranchContai
 void OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::findLeafRecursive(
     const OctreeKey& key_arg, uindex_t depth_mask_arg, BranchNode* branch_arg, LeafContainerT*& result_arg) const {
   // return leaf node
-  unsigned char child_idx;
+  ChildrenIndex child_idx;
 
   // find branch child from key
   child_idx = key_arg.getChildIdxWithDepthMask(depth_mask_arg);
@@ -576,7 +550,7 @@ bool OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::deleteLeafRe
                                                                                         uindex_t         depth_mask_arg,
                                                                                         BranchNode*      branch_arg) {
   // index to branch child
-  unsigned char child_idx;
+  ChildrenIndex child_idx;
   // indicates if branch is empty and can be safely removed
   bool bNoChilds;
 
@@ -636,10 +610,10 @@ bool OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::octreeCanRes
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <BufferSize BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
 void OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::printBinary(char data_arg) {
-  unsigned char mask = 1;  // Bit mask
+  ChildrenIndex mask = 1;  // Bit mask
 
   // Extract the bits
-  for (int i = 0; i < 8; i++) {
+  for (ChildrenIndex i = 0; i < 8; i++) {
     // Mask each bit in the byte and print it
     std::cout << ((data_arg & (mask << i)) ? "1" : "0");
   }

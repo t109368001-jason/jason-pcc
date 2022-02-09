@@ -12,7 +12,7 @@ TEST(OctreeNBufBranchNodeTest, newBySize) {
   // then
   EXPECT_EQ(node.getBufferSize(), BUFFER_SIZE);
   for (BufferSize b = 0; b < BUFFER_SIZE; b++) {
-    for (uint8_t i = 0; i < 8; ++i) {
+    for (ChildrenIndex i = 0; i < 8; ++i) {
       OctreeNBufBranchNode<BUFFER_SIZE>::OctreeNode* childPtr = node.getChildPtr(b, i);
       EXPECT_EQ(childPtr, nullptr);
     }
@@ -27,7 +27,7 @@ TEST(OctreeNBufBranchNodeTest, newByAnother) {
   // then
   EXPECT_EQ(node.getBufferSize(), BUFFER_SIZE);
   for (BufferSize b = 0; b < BUFFER_SIZE; ++b) {
-    for (uint8_t i = 0; i < 8; ++i) {
+    for (ChildrenIndex i = 0; i < 8; ++i) {
       OctreeNBufBranchNode<BUFFER_SIZE>::OctreeNode* childPtr = node.getChildPtr(b, i);
       EXPECT_EQ(childPtr, nullptr);
     }

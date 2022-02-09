@@ -41,6 +41,8 @@
 #include <bitset>
 #include <cstdint>
 
+#include <pcl/pcl_macros.h>
+#include <pcl/pcl_base.h>
 #include <pcl/octree/octree_container.h>
 #include <pcl/octree/octree_iterator.h>
 #include <pcl/octree/octree_key.h>
@@ -83,7 +85,7 @@ class OctreeNBufBase {
 
   OctreeKey max_key_;
 
-  unsigned char buffer_selector_;
+  BufferSize buffer_selector_;
 
   bool tree_dirty_flag_;
 
@@ -165,27 +167,27 @@ class OctreeNBufBase {
 
   void removeLeaf(const OctreeKey& key_arg);
 
-  bool branchHasChild(const BranchNode& branch_arg, unsigned char child_idx_arg) const;
+  bool branchHasChild(const BranchNode& branch_arg, ChildrenIndex child_idx_arg) const;
 
-  pcl::octree::OctreeNode* getBranchChildPtr(const BranchNode& branch_arg, unsigned char child_idx_arg) const;
+  pcl::octree::OctreeNode* getBranchChildPtr(const BranchNode& branch_arg, ChildrenIndex child_idx_arg) const;
 
-  void setBranchChildPtr(BranchNode& branch_arg, unsigned char child_idx_arg, pcl::octree::OctreeNode* new_child_arg);
+  void setBranchChildPtr(BranchNode& branch_arg, ChildrenIndex child_idx_arg, pcl::octree::OctreeNode* new_child_arg);
 
   ChildrenPattern getChildrenPattern(const BranchNode& branch_arg) const;
 
   ChildrenPattern getChildrenPattern(const BranchNode& branch_arg, BufferSize bufferSelector_arg) const;
 
-  BufferPattern getBufferPattern(const BranchNode& branch_arg, uint8_t childrenIdx) const;
+  BufferPattern getBufferPattern(const BranchNode& branch_arg, ChildrenIndex childrenIdx) const;
 
-  void deleteBranchChild(BranchNode& branch_arg, unsigned char buffer_selector_arg, unsigned char child_idx_arg);
+  void deleteBranchChild(BranchNode& branch_arg, BufferSize buffer_selector_arg, ChildrenIndex child_idx_arg);
 
-  void deleteBranchChild(BranchNode& branch_arg, unsigned char child_idx_arg);
+  void deleteBranchChild(BranchNode& branch_arg, ChildrenIndex child_idx_arg);
 
   void deleteBranch(BranchNode& branch_arg);
 
-  BranchNode* createBranchChild(BranchNode& branch_arg, unsigned char child_idx_arg);
+  BranchNode* createBranchChild(BranchNode& branch_arg, ChildrenIndex child_idx_arg);
 
-  LeafNode* createLeafChild(BranchNode& branch_arg, unsigned char child_idx_arg);
+  LeafNode* createLeafChild(BranchNode& branch_arg, ChildrenIndex child_idx_arg);
 
   uindex_t createLeafRecursive(const OctreeKey& key_arg,
                                uindex_t         depth_mask_arg,
