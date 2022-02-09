@@ -6,11 +6,11 @@ services:
     container_name: jpcc-u20-test-release
     command: [ "bash", "test.sh" ]
     volumes:
-      - "logs:build/Testing-release"
+      - "./logs:build/Testing-release"
 
   jpcc-u20-test-debug:
     image: jpcc:u20-build-debug
     container_name: jpcc-u20-test-debug
     command: [ "bash", "test.sh" ]
     volumes:
-      - "logs:build/Testing-debug"
+      - "./logs:build/Testing-debug"
