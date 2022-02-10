@@ -107,27 +107,24 @@ class OctreeNBufBase {
   virtual ~OctreeNBufBase();
 
   using Iterator = pcl::octree::OctreeDepthFirstIterator<OctreeT>;
-  Iterator begin(uindex_t max_depth_arg = 0);
-  Iterator end();
+  [[nodiscard]] Iterator begin(uindex_t max_depth_arg = 0);
+  [[nodiscard]] Iterator end();
 
   using LeafNodeDepthFirstIterator = pcl::octree::OctreeLeafNodeDepthFirstIterator<OctreeT>;
-  LeafNodeDepthFirstIterator leaf_depth_begin(uindex_t max_depth_arg = 0);
-
-  LeafNodeDepthFirstIterator leaf_depth_end();
+  [[nodiscard]] LeafNodeDepthFirstIterator leaf_depth_begin(uindex_t max_depth_arg = 0);
+  [[nodiscard]] LeafNodeDepthFirstIterator leaf_depth_end();
 
   using DepthFirstIterator = pcl::octree::OctreeDepthFirstIterator<OctreeT>;
-  DepthFirstIterator depth_begin(uindex_t maxDepth_arg = 0);
-  DepthFirstIterator depth_end();
+  [[nodiscard]] DepthFirstIterator depth_begin(uindex_t maxDepth_arg = 0);
+  [[nodiscard]] DepthFirstIterator depth_end();
 
   using BreadthFirstIterator = pcl::octree::OctreeBreadthFirstIterator<OctreeT>;
-  BreadthFirstIterator breadth_begin(uindex_t max_depth_arg = 0);
-  BreadthFirstIterator breadth_end();
+  [[nodiscard]] BreadthFirstIterator breadth_begin(uindex_t max_depth_arg = 0);
+  [[nodiscard]] BreadthFirstIterator breadth_end();
 
   using LeafNodeBreadthIterator = pcl::octree::OctreeLeafNodeBreadthFirstIterator<OctreeT>;
-
-  LeafNodeBreadthIterator leaf_breadth_begin(uindex_t max_depth_arg = 0u);
-
-  LeafNodeBreadthIterator leaf_breadth_end();
+  [[nodiscard]] LeafNodeBreadthIterator leaf_breadth_begin(uindex_t max_depth_arg = 0u);
+  [[nodiscard]] LeafNodeBreadthIterator leaf_breadth_end();
 
   OctreeNBufBase& operator=(const OctreeNBufBase& source);
 
@@ -137,9 +134,11 @@ class OctreeNBufBase {
 
   [[nodiscard]] uindex_t getTreeDepth() const;
 
-  LeafContainerT* createLeaf(uindex_t idx_x_arg, uindex_t idx_y_arg, uindex_t idx_z_arg);
+  [[nodiscard]] LeafContainerT* createLeaf(uindex_t idx_x_arg, uindex_t idx_y_arg, uindex_t idx_z_arg);
 
-  LeafContainerT* findLeaf(uindex_t idx_x_arg, uindex_t idx_y_arg, uindex_t idx_z_arg);
+  [[nodiscard]] LeafContainerT* findLeaf(uindex_t idx_x_arg, uindex_t idx_y_arg, uindex_t idx_z_arg);
+
+  [[nodiscard]] const LeafContainerT* findLeaf(uindex_t idx_x_arg, uindex_t idx_y_arg, uindex_t idx_z_arg) const;
 
   [[nodiscard]] bool existLeaf(uindex_t idx_x_arg, uindex_t idx_y_arg, uindex_t idx_z_arg) const;
 
@@ -157,9 +156,13 @@ class OctreeNBufBase {
 
   // public for research
   //  protected:
-  [[nodiscard]] pcl::octree::OctreeNode* getRootNode() const;
+  [[nodiscard]] pcl::octree::OctreeNode* getRootNode();
 
-  LeafContainerT* findLeaf(const OctreeKey& key_arg) const;
+  [[nodiscard]] const pcl::octree::OctreeNode* getRootNode() const;
+
+  [[nodiscard]] LeafContainerT* findLeaf(const OctreeKey& key_arg);
+
+  [[nodiscard]] const LeafContainerT* findLeaf(const OctreeKey& key_arg) const;
 
   LeafContainerT* createLeaf(const OctreeKey& key_arg);
 
@@ -167,17 +170,20 @@ class OctreeNBufBase {
 
   void removeLeaf(const OctreeKey& key_arg);
 
-  bool branchHasChild(const BranchNode& branch_arg, ChildrenIndex child_idx_arg) const;
+  [[nodiscard]] bool branchHasChild(const BranchNode& branch_arg, ChildrenIndex child_idx_arg) const;
 
-  pcl::octree::OctreeNode* getBranchChildPtr(const BranchNode& branch_arg, ChildrenIndex child_idx_arg) const;
+  [[nodiscard]] pcl::octree::OctreeNode* getBranchChildPtr(const BranchNode& branch_arg, ChildrenIndex child_idx_arg);
+
+  [[nodiscard]] const pcl::octree::OctreeNode* getBranchChildPtr(const BranchNode& branch_arg,
+                                                                 ChildrenIndex     child_idx_arg) const;
 
   void setBranchChildPtr(BranchNode& branch_arg, ChildrenIndex child_idx_arg, pcl::octree::OctreeNode* new_child_arg);
 
-  ChildrenPattern getChildrenPattern(const BranchNode& branch_arg) const;
+  [[nodiscard]] ChildrenPattern getChildrenPattern(const BranchNode& branch_arg) const;
 
-  ChildrenPattern getChildrenPattern(const BranchNode& branch_arg, BufferSize bufferSelector_arg) const;
+  [[nodiscard]] ChildrenPattern getChildrenPattern(const BranchNode& branch_arg, BufferSize bufferSelector_arg) const;
 
-  BufferPattern getBufferPattern(const BranchNode& branch_arg, ChildrenIndex childrenIdx) const;
+  [[nodiscard]] BufferPattern getBufferPattern(const BranchNode& branch_arg, ChildrenIndex childrenIdx) const;
 
   void deleteBranchChild(BranchNode& branch_arg, BufferSize buffer_selector_arg, ChildrenIndex child_idx_arg);
 
@@ -207,15 +213,16 @@ class OctreeNBufBase {
 
   virtual void deserializeTreeCallback(LeafContainerT&, const OctreeKey&);
 
-  bool octreeCanResize();
+  bool octreeCanResize() const;
 
-  void printBinary(char data_arg);
+  void printBinary(char data_arg) const;
 
-  void getIndicesByFilter(std::function<bool(const BufferPattern& bufferPattern)> filter, pcl::Indices& indices);
+  void getIndicesByFilter(const std::function<bool(const BufferPattern& bufferPattern)>& filter,
+                          pcl::Indices&                                                  indices) const;
 
-  void getIndicesByFilterRecursive(BranchNode*                                             branch_arg,
-                                   std::function<bool(const BufferPattern& bufferPattern)> filter,
-                                   pcl::Indices&                                           indices);
+  void getIndicesByFilterRecursive(const BranchNode*                                              branch_arg,
+                                   const std::function<bool(const BufferPattern& bufferPattern)>& filter,
+                                   pcl::Indices&                                                  indices) const;
 };
 
 }  // namespace jpcc::octree
