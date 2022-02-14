@@ -7,18 +7,24 @@ template <BufferSize BUFFER_SIZE, typename LeafContainerT, typename BranchContai
 OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::OctreeNBufBase() :
     leaf_count_(0),
     branch_count_(1),
+    leaf_counts_(),
+    branch_counts_(),
     root_node_(new BranchNode()),
     depth_mask_(0),
     buffer_selector_(0),
     tree_dirty_flag_(false),
     octree_depth_(0),
-    dynamic_depth_enabled_(false) {}
+    dynamic_depth_enabled_(false) {
+  branch_counts_.fill(1);
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <BufferSize BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
 OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::OctreeNBufBase(const OctreeNBufBase& source) :
     leaf_count_(source.leaf_count_),
     branch_count_(source.branch_count_),
+    leaf_counts_(source.leaf_counts_),
+    branch_counts_(source.branch_counts_),
     root_node_(new BranchNode(*source.root_node_)),
     depth_mask_(source.depth_mask_),
     max_key_(source.max_key_),
@@ -112,6 +118,8 @@ OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::operator=(const O
   deleteTree();
   leaf_count_            = source.leaf_count_;
   branch_count_          = source.branch_count_;
+  leaf_counts_           = source.leaf_counts_;
+  branch_counts_         = source.branch_counts_;
   root_node_             = new (BranchNode)(*(source.root_node_));
   depth_mask_            = source.depth_mask_;
   max_key_               = source.max_key_;
@@ -243,6 +251,8 @@ void OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::deleteTree()
     deleteBranch(*root_node_);
     leaf_count_   = 0;
     branch_count_ = 1;
+    leaf_counts_.fill(0);
+    branch_counts_.fill(1);
 
     tree_dirty_flag_ = false;
     depth_mask_      = 0;
@@ -522,7 +532,7 @@ OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::createLeafRecursi
         child_branch = createBranchChild(*branch_arg, child_idx);
       }
 
-      branch_count_++;
+      branch_counts_.at(buffer_selector_)++;
     }
     // required branch node already exists - use it
     else
@@ -540,6 +550,7 @@ OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::createLeafRecursi
     // return leaf node
     return_leaf_arg = createLeafChild(*branch_arg, child_idx);
     leaf_count_++;
+    leaf_counts_.at(buffer_selector_)++;
     parent_of_leaf_arg = branch_arg;
   } else {
     // leaf node already exist
@@ -605,13 +616,14 @@ bool OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::deleteLeafRe
       if (!bBranchOccupied) {
         // child branch does not own any sub-child nodes anymore -> delete child branch
         deleteBranchChild(*branch_arg, buffer_selector_, child_idx);
-        branch_count_--;
+        branch_counts_.at(buffer_selector_)--;
       }
     }
   } else {
     // our child is a leaf node -> delete it
     deleteBranchChild(*branch_arg, buffer_selector_, child_idx);
     leaf_count_--;
+    leaf_counts_.at(buffer_selector_)--;
   }
 
   // check if current branch still owns childs

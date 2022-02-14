@@ -38,4 +38,23 @@ TEST(OctreeNBufBaseTest, getBranchBufferPattern) {
   }
 }
 
+TEST(OctreeNBufBaseTest, getIndicesByFilter) {
+  // given
+  OctreePointCloud<pcl::PointXYZ, OctreeContainerPointIndices, OctreeContainerEmpty,
+                   OctreeNBufBase<BUFFER_SIZE, OctreeContainerPointIndices, OctreeContainerEmpty>>
+       octree = getTestOctree();
+  auto filter = [](BufferSize b,
+                   const OctreeNBufBase<BUFFER_SIZE, OctreeContainerPointIndices, OctreeContainerEmpty>::BufferPattern&
+                       bufferPattern) { return bufferPattern.test(b); };
+  // then
+  for (BufferSize b = 0; b < octree.getBufferSize(); b++) {
+    pcl::Indices indices;
+    octree.switchBuffers(b);
+    octree.getIndicesByFilter(
+        [filter, b](auto&& bufferPattern) { return filter(b, std::forward<decltype(bufferPattern)>(bufferPattern)); },
+        indices);
+    EXPECT_EQ(indices.size(), getTestChildrenPattern(b).count());
+  }
+}
+
 }  // namespace jpcc::octree

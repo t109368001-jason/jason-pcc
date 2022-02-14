@@ -79,6 +79,10 @@ class OctreeNBufBase {
 
   std::size_t branch_count_;
 
+  std::array<std::size_t, BUFFER_SIZE> leaf_counts_;
+
+  std::array<std::size_t, BUFFER_SIZE> branch_counts_;
+
   BranchNode* root_node_;
 
   uindex_t depth_mask_;
@@ -213,7 +217,7 @@ class OctreeNBufBase {
 
   virtual void deserializeTreeCallback(LeafContainerT&, const OctreeKey&);
 
-  bool octreeCanResize() const;
+  [[nodiscard]] bool octreeCanResize() const;
 
   void printBinary(char data_arg) const;
 
