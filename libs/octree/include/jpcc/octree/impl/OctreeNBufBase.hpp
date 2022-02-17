@@ -448,8 +448,20 @@ void OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::deleteBranch
   for (char i = 0; i < 8; i++) {
     for (BufferSize b = 0; b < BUFFER_SIZE; ++b) {
       if (branch_arg.getChildPtr(b, i)) {
-        deleteBranchChild(branch_arg, b, i);
-        for (BufferSize b_ = 0; b_ < BUFFER_SIZE; ++b_) { branch_arg.setChildPtr(b_, i, nullptr); }
+        OctreeNode* child_node = branch_arg.getChildPtr(b, i);
+
+        switch (child_node->getNodeType()) {
+          case pcl::octree::BRANCH_NODE: {
+            deleteBranchChild(branch_arg, b, i);
+            for (BufferSize b_ = 0; b_ < BUFFER_SIZE; ++b_) { branch_arg.setChildPtr(b_, i, nullptr); }
+            break;
+          }
+          case pcl::octree::LEAF_NODE: {
+            for (BufferSize _b = 0; _b < BUFFER_SIZE; ++_b) { deleteBranchChild(branch_arg, _b, i); }
+            break;
+          }
+          default: break;
+        }
         break;
       }
     }
