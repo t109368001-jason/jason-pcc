@@ -2,115 +2,115 @@
 
 namespace jpcc::octree {
 
-template <BufferSize BUFFER_SIZE, typename BranchContainerT>
+template <BufferIndex BUFFER_SIZE, typename BranchContainerT>
 OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>::OctreeNBufBranchNode() : OctreeNode(), childMatrix_() {
   reset();
 }
 
-template <BufferSize BUFFER_SIZE, typename BranchContainerT>
+template <BufferIndex BUFFER_SIZE, typename BranchContainerT>
 OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>::OctreeNBufBranchNode(const OctreeNBufBranchNode& source) :
     OctreeNode(), childMatrix_() {
   *this = source;
 }
 
-template <BufferSize BUFFER_SIZE, typename BranchContainerT>
+template <BufferIndex BUFFER_SIZE, typename BranchContainerT>
 OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>& OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>::operator=(
-    const OctreeNBufBranchNode& src) {
-  if (this == &src) { return *this; }
+    const OctreeNBufBranchNode& source) {
+  if (this == &source) { return *this; }
   reset();
 
-  for (BufferSize b = 0; b < BUFFER_SIZE; ++b) {
-    for (ChildrenIndex i = 0; i < 8; ++i) {
-      if (src.childMatrix_[b][i]) childMatrix_[b][i] = src.childMatrix_[b][i]->deepCopy();
+  for (BufferIndex bufferIndex = 0; bufferIndex < BUFFER_SIZE; ++bufferIndex) {
+    for (ChildIndex childIndex = 0; childIndex < 8; ++childIndex) {
+      if (source.childMatrix_[bufferIndex][childIndex])
+        childMatrix_[bufferIndex][childIndex] = source.childMatrix_[bufferIndex][childIndex]->deepCopy();
     }
   }
 
   return (*this);
 }
 
-template <BufferSize BUFFER_SIZE, typename BranchContainerT>
+template <BufferIndex BUFFER_SIZE, typename BranchContainerT>
 OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>::~OctreeNBufBranchNode() = default;
 
-template <BufferSize BUFFER_SIZE, typename BranchContainerT>
+template <BufferIndex BUFFER_SIZE, typename BranchContainerT>
 OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>* OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>::deepCopy()
     const {
   return new OctreeNBufBranchNode(*this);
 }
 
-template <BufferSize BUFFER_SIZE, typename BranchContainerT>
+template <BufferIndex BUFFER_SIZE, typename BranchContainerT>
 typename OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>::OctreeNode*
-OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>::getChildPtr(BufferSize    bufferIndex,
-                                                                 ChildrenIndex childIndex) const {
+OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>::getChildPtr(BufferIndex bufferIndex, ChildIndex childIndex) const {
   assert((bufferIndex < BUFFER_SIZE) && (childIndex < 8));
   return childMatrix_[bufferIndex][childIndex];
 }
 
-template <BufferSize BUFFER_SIZE, typename BranchContainerT>
-void OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>::setChildPtr(BufferSize    bufferIndex,
-                                                                      ChildrenIndex childIndex,
-                                                                      OctreeNode*   node) {
+template <BufferIndex BUFFER_SIZE, typename BranchContainerT>
+void OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>::setChildPtr(BufferIndex bufferIndex,
+                                                                      ChildIndex  childIndex,
+                                                                      OctreeNode* node) {
   assert((bufferIndex < BUFFER_SIZE) && (childIndex < 8));
   childMatrix_[bufferIndex][childIndex] = node;
 }
 
-template <BufferSize BUFFER_SIZE, typename BranchContainerT>
-bool OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>::hasChild(BufferSize    bufferIndex,
-                                                                   ChildrenIndex childIndex) const {
+template <BufferIndex BUFFER_SIZE, typename BranchContainerT>
+bool OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>::hasChild(BufferIndex bufferIndex,
+                                                                   ChildIndex  childIndex) const {
   assert((bufferIndex < BUFFER_SIZE) && (childIndex < 8));
   return (childMatrix_[bufferIndex][childIndex] != nullptr);
 }
 
-template <BufferSize BUFFER_SIZE, typename BranchContainerT>
+template <BufferIndex BUFFER_SIZE, typename BranchContainerT>
 pcl::octree::node_type_t OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>::getNodeType() const {
   return pcl::octree::BRANCH_NODE;
 }
 
-template <BufferSize BUFFER_SIZE, typename BranchContainerT>
-BufferSize OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>::getBufferSize() const {
+template <BufferIndex BUFFER_SIZE, typename BranchContainerT>
+BufferIndex OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>::getBufferSize() const {
   return BUFFER_SIZE;
 }
 
-template <BufferSize BUFFER_SIZE, typename BranchContainerT>
+template <BufferIndex BUFFER_SIZE, typename BranchContainerT>
 void OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>::reset() {
   memset(childMatrix_, 0, sizeof(OctreeNode*) * BUFFER_SIZE * 8);
 }
 
-template <BufferSize BUFFER_SIZE, typename BranchContainerT>
+template <BufferIndex BUFFER_SIZE, typename BranchContainerT>
 const BranchContainerT* OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>::operator->() const {
   return &container_;
 }
 
-template <BufferSize BUFFER_SIZE, typename BranchContainerT>
+template <BufferIndex BUFFER_SIZE, typename BranchContainerT>
 BranchContainerT* OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>::operator->() {
   return &container_;
 }
 
-template <BufferSize BUFFER_SIZE, typename BranchContainerT>
+template <BufferIndex BUFFER_SIZE, typename BranchContainerT>
 const BranchContainerT& OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>::operator*() const {
   return container_;
 }
 
-template <BufferSize BUFFER_SIZE, typename BranchContainerT>
+template <BufferIndex BUFFER_SIZE, typename BranchContainerT>
 BranchContainerT& OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>::operator*() {
   return container_;
 }
 
-template <BufferSize BUFFER_SIZE, typename BranchContainerT>
+template <BufferIndex BUFFER_SIZE, typename BranchContainerT>
 const BranchContainerT& OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>::getContainer() const {
   return container_;
 }
 
-template <BufferSize BUFFER_SIZE, typename BranchContainerT>
+template <BufferIndex BUFFER_SIZE, typename BranchContainerT>
 BranchContainerT& OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>::getContainer() {
   return container_;
 }
 
-template <BufferSize BUFFER_SIZE, typename BranchContainerT>
+template <BufferIndex BUFFER_SIZE, typename BranchContainerT>
 const BranchContainerT* OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>::getContainerPtr() const {
   return &container_;
 }
 
-template <BufferSize BUFFER_SIZE, typename BranchContainerT>
+template <BufferIndex BUFFER_SIZE, typename BranchContainerT>
 BranchContainerT* OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>::getContainerPtr() {
   return &container_;
 }

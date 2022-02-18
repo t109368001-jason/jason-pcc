@@ -9,8 +9,8 @@
 
 namespace jpcc::octree {
 
-ChildrenPattern getTestChildrenPattern(BufferSize bufferSelector);
+ChildPattern getTestChildPattern(BufferIndex bufferSelector);
 
-pcl::PointCloud<pcl::PointXYZ>::Ptr getTestCloud(BufferSize bufferSelector);
+pcl::PointCloud<pcl::PointXYZ>::Ptr getTestCloud(BufferIndex bufferSelector);
 
 }  // namespace jpcc::octree

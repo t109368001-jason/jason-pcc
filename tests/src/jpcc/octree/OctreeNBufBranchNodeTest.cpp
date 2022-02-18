@@ -11,10 +11,10 @@ TEST(OctreeNBufBranchNodeTest, newBySize) {
   OctreeNBufBranchNode<BUFFER_SIZE> node;
   // then
   EXPECT_EQ(node.getBufferSize(), BUFFER_SIZE);
-  for (BufferSize b = 0; b < BUFFER_SIZE; b++) {
-    for (ChildrenIndex i = 0; i < 8; ++i) {
-      OctreeNBufBranchNode<BUFFER_SIZE>::OctreeNode* childPtr = node.getChildPtr(b, i);
-      EXPECT_EQ(childPtr, nullptr);
+  for (BufferIndex bufferIndex = 0; bufferIndex < BUFFER_SIZE; bufferIndex++) {
+    for (ChildIndex childIndex = 0; childIndex < 8; ++childIndex) {
+      OctreeNBufBranchNode<BUFFER_SIZE>::OctreeNode* childNode = node.getChildPtr(bufferIndex, childIndex);
+      EXPECT_EQ(childNode, nullptr);
     }
   }
 }
@@ -26,10 +26,10 @@ TEST(OctreeNBufBranchNodeTest, newByAnother) {
   OctreeNBufBranchNode<BUFFER_SIZE> node(node_);
   // then
   EXPECT_EQ(node.getBufferSize(), BUFFER_SIZE);
-  for (BufferSize b = 0; b < BUFFER_SIZE; ++b) {
-    for (ChildrenIndex i = 0; i < 8; ++i) {
-      OctreeNBufBranchNode<BUFFER_SIZE>::OctreeNode* childPtr = node.getChildPtr(b, i);
-      EXPECT_EQ(childPtr, nullptr);
+  for (BufferIndex bufferIndex = 0; bufferIndex < BUFFER_SIZE; ++bufferIndex) {
+    for (ChildIndex childIndex = 0; childIndex < 8; ++childIndex) {
+      OctreeNBufBranchNode<BUFFER_SIZE>::OctreeNode* childNode = node.getChildPtr(bufferIndex, childIndex);
+      EXPECT_EQ(childNode, nullptr);
     }
   }
 }

@@ -17,9 +17,9 @@ TEST(OctreeNBufBaseTest, getBranchBitPattern) {
   EXPECT_EQ(octree.getBufferSize(), BUFFER_SIZE);
   EXPECT_EQ(octree.getTreeDepth(), 1);
 
-  for (BufferSize b = 0; b < BUFFER_SIZE; ++b) {
-    const ChildrenPattern& childrenPattern = octree.getChildrenPattern(*octree.root_node_, b);
-    EXPECT_EQ(childrenPattern.to_string(), getTestChildrenPattern(b).to_string());
+  for (BufferIndex bufferIndex = 0; bufferIndex < BUFFER_SIZE; ++bufferIndex) {
+    const ChildPattern& childPattern = octree.getChildPattern(*octree.root_node_, bufferIndex);
+    EXPECT_EQ(childPattern.to_string(), getTestChildPattern(bufferIndex).to_string());
   }
 }
 
@@ -29,11 +29,11 @@ TEST(OctreeNBufBaseTest, getBranchBufferPattern) {
                          OctreeNBufBase<BUFFER_SIZE, OctreeContainerPointIndices, OctreeContainerEmpty>>& octree =
       getTestOctree();
   // then
-  for (ChildrenIndex i = 0; i < 8; i++) {
+  for (ChildIndex childIndex = 0; childIndex < 8; childIndex++) {
     const OctreeNBufBase<BUFFER_SIZE, OctreeContainerPointIndices, OctreeContainerEmpty>::BufferPattern bufferPattern =
-        octree.getBufferPattern(*octree.root_node_, i);
-    for (BufferSize b = 0; b < octree.getBufferSize(); b++) {
-      EXPECT_EQ(bufferPattern[b], getTestChildrenPattern(b)[i]);
+        octree.getBufferPattern(*octree.root_node_, childIndex);
+    for (BufferIndex bufferIndex = 0; bufferIndex < octree.getBufferSize(); bufferIndex++) {
+      EXPECT_EQ(bufferPattern[bufferIndex], getTestChildPattern(bufferIndex)[childIndex]);
     }
   }
 }
@@ -43,17 +43,19 @@ TEST(OctreeNBufBaseTest, getIndicesByFilter) {
   OctreePointCloud<pcl::PointXYZ, OctreeContainerPointIndices, OctreeContainerEmpty,
                    OctreeNBufBase<BUFFER_SIZE, OctreeContainerPointIndices, OctreeContainerEmpty>>
        octree = getTestOctree();
-  auto filter = [](BufferSize b,
+  auto filter = [](BufferIndex b,
                    const OctreeNBufBase<BUFFER_SIZE, OctreeContainerPointIndices, OctreeContainerEmpty>::BufferPattern&
                        bufferPattern) { return bufferPattern.test(b); };
   // then
-  for (BufferSize b = 0; b < octree.getBufferSize(); b++) {
+  for (BufferIndex bufferIndex = 0; bufferIndex < octree.getBufferSize(); bufferIndex++) {
     pcl::Indices indices;
-    octree.switchBuffers(b);
+    octree.switchBuffers(bufferIndex);
     octree.getIndicesByFilter(
-        [filter, b](auto&& bufferPattern) { return filter(b, std::forward<decltype(bufferPattern)>(bufferPattern)); },
+        [filter, bufferIndex](auto&& bufferPattern) {
+          return filter(bufferIndex, std::forward<decltype(bufferPattern)>(bufferPattern));
+        },
         indices);
-    EXPECT_EQ(indices.size(), getTestChildrenPattern(b).count());
+    EXPECT_EQ(indices.size(), getTestChildPattern(bufferIndex).count());
   }
 }
 

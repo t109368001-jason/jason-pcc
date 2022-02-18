@@ -13,9 +13,9 @@ getTestOctree() {
                    OctreeNBufBase<BUFFER_SIZE, OctreeContainerPointIndices, OctreeContainerEmpty>>
       octree(RESOLUTION);
   octree.defineBoundingBox(BOUNDING_BOX);
-  for (BufferSize b = 0; b < BUFFER_SIZE; ++b) {
-    octree.switchBuffers(b);
-    octree.setInputCloud(getTestCloud(b));
+  for (BufferIndex bufferIndex = 0; bufferIndex < BUFFER_SIZE; ++bufferIndex) {
+    octree.switchBuffers(bufferIndex);
+    octree.setInputCloud(getTestCloud(bufferIndex));
     octree.addPointsFromInputCloud();
   }
   return octree;
