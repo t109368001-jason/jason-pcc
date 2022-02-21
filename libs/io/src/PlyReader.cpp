@@ -1,5 +1,7 @@
 #include <jpcc/io/PlyReader.h>
 
+#include <pcl/console/print.h>
+
 #include <jpcc/io/PlyIO.h>
 
 namespace jpcc::io {
@@ -7,7 +9,9 @@ namespace jpcc::io {
 using namespace std;
 
 PlyReader::PlyReader(DatasetReaderParameter param, DatasetParameter datasetParam) :
-    DatasetReaderBase(std::move(param), std::move(datasetParam)) {}
+    DatasetReaderBase(std::move(param), std::move(datasetParam)) {
+  pcl::console::setVerbosityLevel(pcl::console::L_ERROR);
+}
 
 void PlyReader::loadAll(size_t startFrameNumber, size_t groupOfFramesSize, GroupOfFrame& sources, bool parallel) {
   size_t endFrameNumber =
