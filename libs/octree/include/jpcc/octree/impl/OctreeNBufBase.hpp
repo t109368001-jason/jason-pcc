@@ -549,6 +549,7 @@ OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::createLeafRecursi
         childBranch = createBranchChild(*branchNode, childIndex);
       }
 
+      branch_count_++;
       branch_counts_.at(bufferIndex_)++;
     }
     // required branch node already exists - use it
@@ -716,6 +717,58 @@ void OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::getIndicesBy
       }
     }
   }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <BufferIndex BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
+bool OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::deleteBuffer(BufferIndex bufferIndex) {
+  return deleteBufferRecursive(*static_cast<BranchNode*>(root_node_), bufferIndex);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <BufferIndex BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
+bool OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::deleteBufferRecursive(
+    OctreeNBufBase::BranchNode& branchNode, BufferIndex bufferIndex) {
+  // delete all branch node children
+  for (ChildIndex childIndex = 0; childIndex < 8; childIndex++) {
+    if (branchNode.getChildPtr(bufferIndex, childIndex)) {
+      OctreeNode* childNode = branchNode.getChildPtr(bufferIndex, childIndex);
+
+      switch (childNode->getNodeType()) {
+        case pcl::octree::BRANCH_NODE: {
+          bool noChild = deleteBufferRecursive(*static_cast<BranchNode*>(childNode), bufferIndex);
+          branchNode.setChildPtr(bufferIndex, childIndex, nullptr);
+
+          if (noChild) {
+            delete (childNode);
+            branch_count_--;
+            branch_counts_.at(bufferIndex)--;
+          }
+          break;
+        }
+        case pcl::octree::LEAF_NODE: {
+          delete (childNode);
+          branchNode.setChildPtr(bufferIndex, childIndex, nullptr);
+          leaf_count_--;
+          leaf_counts_.at(bufferIndex)--;
+          break;
+        }
+        default: break;
+      }
+    }
+  }
+
+  bool noChild = true;
+  for (ChildIndex childIndex = 0; childIndex < 8; childIndex++) {
+    for (BufferIndex _bufferIndex = 0; _bufferIndex < BUFFER_SIZE; ++_bufferIndex) {
+      if (branchNode.hasChild(_bufferIndex, childIndex)) {
+        noChild = false;
+        break;
+      }
+    }
+    if (!noChild) { break; }
+  }
+  return noChild;
 }
 
 }  // namespace jpcc::octree

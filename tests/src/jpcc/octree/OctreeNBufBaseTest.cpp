@@ -59,4 +59,54 @@ TEST(OctreeNBufBaseTest, getIndicesByFilter) {
   }
 }
 
+TEST(OctreeNBufBaseTest, deleteBuffer) {
+  // given
+  OctreePointCloud<pcl::PointXYZ, OctreeContainerPointIndices, OctreeContainerEmpty,
+                   OctreeNBufBase<BUFFER_SIZE, OctreeContainerPointIndices, OctreeContainerEmpty>>
+      octree = getTestOctree();
+
+  // then
+  for (BufferIndex bufferIndex = 0; bufferIndex < octree.getBufferSize(); bufferIndex++) {
+    pcl::Indices indices;
+    octree.deleteBuffer(bufferIndex);
+    EXPECT_EQ(octree.leaf_counts_.at(bufferIndex), 0);
+    EXPECT_EQ(octree.branch_counts_.at(bufferIndex), 1);
+  }
+}
+
+TEST(OctreeNBufBaseTest, reuseBuffer) {
+  // given
+  OctreePointCloud<pcl::PointXYZ, OctreeContainerPointIndices, OctreeContainerEmpty,
+                   OctreeNBufBase<BUFFER_SIZE, OctreeContainerPointIndices, OctreeContainerEmpty>>
+       octree = getTestOctree();
+  auto filter = [](BufferIndex b,
+                   const OctreeNBufBase<BUFFER_SIZE, OctreeContainerPointIndices, OctreeContainerEmpty>::BufferPattern&
+                       bufferPattern) { return bufferPattern.test(b); };
+  // then
+  for (BufferIndex bufferIndex = 0; bufferIndex < octree.getBufferSize(); bufferIndex++) {
+    octree.switchBuffers(bufferIndex);
+    {
+      pcl::Indices indices;
+      octree.getIndicesByFilter(
+          [filter, bufferIndex](auto&& bufferPattern) {
+            return filter(bufferIndex, std::forward<decltype(bufferPattern)>(bufferPattern));
+          },
+          indices);
+      EXPECT_EQ(indices.size(), getTestChildPattern(bufferIndex).count());
+    }
+    {
+      pcl::Indices indices;
+      octree.deleteBuffer(bufferIndex);
+      octree.setInputCloud(getTestCloud(0));
+      octree.addPointsFromInputCloud();
+      octree.getIndicesByFilter(
+          [filter, bufferIndex](auto&& bufferPattern) {
+            return filter(bufferIndex, std::forward<decltype(bufferPattern)>(bufferPattern));
+          },
+          indices);
+      EXPECT_EQ(indices.size(), getTestChildPattern(0).count());
+    }
+  }
+}
+
 }  // namespace jpcc::octree

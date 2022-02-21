@@ -229,6 +229,10 @@ class OctreeNBufBase {
   void getIndicesByFilterRecursive(const BranchNode*                                              branchNode,
                                    const std::function<bool(const BufferPattern& bufferPattern)>& filter,
                                    pcl::Indices&                                                  indices) const;
+
+  bool deleteBuffer(BufferIndex bufferIndex);
+
+  bool deleteBufferRecursive(BranchNode& branchNode, BufferIndex bufferIndex);
 };
 
 }  // namespace jpcc::octree
