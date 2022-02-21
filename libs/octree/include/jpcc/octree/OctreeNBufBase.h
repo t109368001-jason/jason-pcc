@@ -184,12 +184,6 @@ class OctreeNBufBase {
 
   void setBranchChildPtr(BranchNode& branchNode, ChildIndex childIndex, pcl::octree::OctreeNode* newChild);
 
-  [[nodiscard]] ChildPattern getChildPattern(const BranchNode& branchNode) const;
-
-  [[nodiscard]] ChildPattern getChildPattern(const BranchNode& branchNode, BufferIndex bufferIndex) const;
-
-  [[nodiscard]] BufferPattern getBufferPattern(const BranchNode& branchNode, ChildIndex childIndex) const;
-
   void deleteBranchChild(BranchNode& branchNode, BufferIndex bufferIndex, ChildIndex childIndex);
 
   void deleteBranchChild(BranchNode& branchNode, ChildIndex childIndex);
@@ -223,12 +217,20 @@ class OctreeNBufBase {
   void printBinary(ChildPattern childPattern) const;
 
  public:
+  [[nodiscard]] ChildPattern getChildPattern(const BranchNode& branchNode) const;
+
+  [[nodiscard]] ChildPattern getChildPattern(const BranchNode& branchNode, BufferIndex bufferIndex) const;
+
+  [[nodiscard]] BufferPattern getBufferPattern(const BranchNode& branchNode, ChildIndex childIndex) const;
+
   void getIndicesByFilter(const std::function<bool(const BufferPattern& bufferPattern)>& filter,
                           pcl::Indices&                                                  indices) const;
 
   void getIndicesByFilterRecursive(const BranchNode*                                              branchNode,
                                    const std::function<bool(const BufferPattern& bufferPattern)>& filter,
                                    pcl::Indices&                                                  indices) const;
+
+  bool deleteBuffer();
 
   bool deleteBuffer(BufferIndex bufferIndex);
 
