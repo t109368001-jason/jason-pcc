@@ -67,7 +67,7 @@ void test(const DatasetParameter&         datasetParameter,
         ne.setSearchMethod(tree);
         ne.setRadiusSearch(1);
 
-        for (BufferIndex _bufferIndex = 1; (size_t)_bufferIndex < frames.size(); _bufferIndex++) {
+        for (BufferIndex i = 1; i < bufferSize; i++) {
           clock.start();
           reader->loadAll(startFrameNumber, 1, frames, true);
           clock.stop();
