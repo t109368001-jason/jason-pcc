@@ -1,4 +1,4 @@
-#include <jpcc/io/PlyIO.h>
+#pragma once
 
 #include <algorithm>
 #include <execution>
@@ -10,8 +10,9 @@ namespace jpcc::io {
 
 using namespace std;
 
+template <typename PointT>
 void loadPly(
-    GroupOfFrame& frames, std::string filePath, size_t startFrameNumber, size_t endFrameNumber, bool parallel) {
+    GroupOfFrame<PointT>& frames, std::string filePath, size_t startFrameNumber, size_t endFrameNumber, bool parallel) {
   const size_t frameCount = endFrameNumber - startFrameNumber;
   frames.clear();
   frames.resize(frameCount);
@@ -21,7 +22,7 @@ void loadPly(
     char fileName[4096];
     sprintf(fileName, filePath.c_str(), frameNumber);
     auto& frame = frames.at(frameNumber - startFrameNumber);
-    frame.reset(new Frame());
+    frame.reset(new Frame<PointT>());
 
     int result = pcl::io::load(string(fileName), *frame);
     assert(result != -1);
@@ -35,8 +36,9 @@ void loadPly(
   }
 }
 
-void savePly(const GroupOfFrame& frames, std::string filePath, bool parallel) {
-  auto func = [&](const Frame::Ptr& frame) {
+template <typename PointT>
+void savePly(const GroupOfFrame<PointT>& frames, std::string filePath, bool parallel) {
+  auto func = [&](const FramePtr<PointT>& frame) {
     char fileName[4096];
     sprintf(fileName, filePath.c_str(), frame->header.seq);
 

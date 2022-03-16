@@ -8,16 +8,17 @@
 
 namespace jpcc::io {
 
+template <typename PointT = Point>
 class DatasetReaderBase {
  public:
   using Ptr = shared_ptr<DatasetReaderBase>;
 
  protected:
-  DatasetReaderParameter               param_;
-  DatasetParameter                     datasetParam_;
-  std::vector<int>                     datasetIndices_;
-  std::vector<size_t>                  currentFrameNumbers_;
-  std::vector<std::vector<Frame::Ptr>> frameBuffers_;
+  DatasetReaderParameter            param_;
+  DatasetParameter                  datasetParam_;
+  std::vector<int>                  datasetIndices_;
+  std::vector<size_t>               currentFrameNumbers_;
+  std::vector<GroupOfFrame<PointT>> frameBuffers_;
 
  public:
   DatasetReaderBase(DatasetReaderParameter param, DatasetParameter datasetParam);
@@ -30,14 +31,17 @@ class DatasetReaderBase {
 
   [[nodiscard]] bool isOpen();
 
-  virtual void loadAll(size_t startFrameNumber, size_t groupOfFramesSize, GroupOfFrame& frames);
+  virtual void loadAll(size_t startFrameNumber, size_t groupOfFramesSize, GroupOfFrame<PointT>& frames);
 
-  virtual void loadAll(size_t startFrameNumber, size_t groupOfFramesSize, GroupOfFrame& frames, bool parallel);
+  virtual void loadAll(size_t startFrameNumber, size_t groupOfFramesSize, GroupOfFrame<PointT>& frames, bool parallel);
 
   void close();
 
  protected:
-  virtual void load(size_t datasetIndex, size_t startFrameNumber, size_t groupOfFramesSize, GroupOfFrame& frames);
+  virtual void load(size_t                datasetIndex,
+                    size_t                startFrameNumber,
+                    size_t                groupOfFramesSize,
+                    GroupOfFrame<PointT>& frames);
 
   virtual void open_(size_t datasetIndex, size_t startFrameNumber);
 
@@ -45,9 +49,14 @@ class DatasetReaderBase {
 
   [[nodiscard]] virtual bool isEof_(size_t datasetIndex);
 
-  virtual void load_(size_t datasetIndex, size_t startFrameNumber, size_t groupOfFramesSize, GroupOfFrame& frames);
+  virtual void load_(size_t                datasetIndex,
+                     size_t                startFrameNumber,
+                     size_t                groupOfFramesSize,
+                     GroupOfFrame<PointT>& frames);
 
   virtual void close_(size_t datasetIndex);
 };
 
 }  // namespace jpcc::io
+
+#include <jpcc/io/impl/DatasetReaderBase.hpp>

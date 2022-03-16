@@ -6,7 +6,8 @@
 
 namespace jpcc {
 
-class GroupOfFrame : public std::vector<Frame::Ptr> {
+template <typename PointT = Point>
+class GroupOfFrame : public std::vector<FramePtr<PointT>> {
  public:
   using Ptr = shared_ptr<GroupOfFrame>;
 };

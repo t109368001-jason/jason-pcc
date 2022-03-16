@@ -8,7 +8,6 @@
 
 #include <vtkObject.h>
 
-#include <pcl/point_cloud.h>
 #include <pcl/visualization/pcl_visualizer.h>
 
 #include <jpcc/common/ParameterParser.h>
@@ -25,7 +24,7 @@ using namespace jpcc::io;
 void process(const DatasetParameter&         datasetParameter,
              const DatasetReaderParameter&   readerParameter,
              pcc::chrono::StopwatchUserTime& clock) {
-  pcl::PointCloud<Point>::Ptr            cloud(new pcl::PointCloud<Point>());
+  FramePtr<>                             cloud(new Frame<>());
   pcl::visualization::PCLVisualizer::Ptr viewer(new pcl::visualization::PCLVisualizer("3D Viewer"));
 
   viewer->initCameraParameters();
@@ -38,14 +37,14 @@ void process(const DatasetParameter&         datasetParameter,
 
   std::atomic_bool       run(true);
   std::mutex             mutex;
-  std::queue<Frame::Ptr> queue;
+  std::queue<FramePtr<>> queue;
 
   auto datasetLoading = [&] {
     try {
-      DatasetReader::Ptr reader = newReader(readerParameter, datasetParameter);
-      GroupOfFrame       frames;
-      size_t             groupOfFramesSize = 1;
-      size_t             startFrameNumber  = 0;
+      DatasetReader<>::Ptr reader = newReader(readerParameter, datasetParameter);
+      GroupOfFrame<>       frames;
+      size_t               groupOfFramesSize = 1;
+      size_t               startFrameNumber  = 0;
       while (run) {
         clock.start();
         reader->loadAll(startFrameNumber, groupOfFramesSize, frames, false);
@@ -55,7 +54,7 @@ void process(const DatasetParameter&         datasetParameter,
           continue;
         }
 
-        pcl::PointCloud<Point>::Ptr _cloud(new pcl::PointCloud<Point>());
+        FramePtr<> _cloud(new Frame<>());
 
         std::lock_guard<std::mutex> lock(mutex);
         cloud = frames.at(0);
@@ -70,7 +69,7 @@ void process(const DatasetParameter&         datasetParameter,
   while (!viewer->wasStopped() && run) {
     viewer->spinOnce(100);
     // std::this_thread::sleep_for(100ms);
-    pcl::PointCloud<Point>::Ptr cloud_;
+    FramePtr<> cloud_;
     {
       std::lock_guard<std::mutex> lock(mutex);
       cloud_ = cloud;

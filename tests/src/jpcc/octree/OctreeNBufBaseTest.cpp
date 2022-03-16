@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "jpcc/octree/OctreeNBufBase.h"
+#include <jpcc/octree/OctreeNBufBase.h>
 
 #include "test_data/octree/TestOctree.h"
 

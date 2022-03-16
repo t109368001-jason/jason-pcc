@@ -10,7 +10,8 @@
 
 namespace jpcc::io {
 
-class LvxReader : public DatasetReaderBase {
+template <typename PointT = Point>
+class LvxReader : public DatasetReaderBase<PointT> {
  protected:
   size_t                                            capacity_;
   std::vector<shared_ptr<livox_ros::LvxFileHandle>> lvxs_;
@@ -25,9 +26,14 @@ class LvxReader : public DatasetReaderBase {
 
   [[nodiscard]] bool isEof_(size_t datasetIndex) override;
 
-  void load_(size_t datasetIndex, size_t startFrameNumber, size_t groupOfFramesSize, GroupOfFrame& frames) override;
+  void load_(size_t                datasetIndex,
+             size_t                startFrameNumber,
+             size_t                groupOfFramesSize,
+             GroupOfFrame<PointT>& frames) override;
 
   void close_(size_t datasetIndex) override;
 };
 
 }  // namespace jpcc::io
+
+#include <jpcc/io/impl/LvxReader.hpp>

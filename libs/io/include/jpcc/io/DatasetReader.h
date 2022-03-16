@@ -4,8 +4,15 @@
 
 namespace jpcc::io {
 
-using DatasetReader = DatasetReaderBase;
+template <typename PointT = Point>
+using DatasetReader = DatasetReaderBase<PointT>;
 
-DatasetReader::Ptr newReader(const DatasetReaderParameter& param, const DatasetParameter& datasetParam);
+template <typename PointT = Point>
+using DatasetReaderPtr = typename DatasetReaderBase<PointT>::Ptr;
+
+template <typename PointT = Point>
+DatasetReaderPtr<PointT> newReader(const DatasetReaderParameter& param, const DatasetParameter& datasetParam);
 
 }  // namespace jpcc::io
+
+#include <jpcc/io/impl/DatasetReader.hpp>

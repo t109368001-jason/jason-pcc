@@ -10,8 +10,8 @@ TEST(PlyIOTest, save_load) {
   const char*  filePath    = "PlyIOTest_save_load_%05d.ply";
   GroupOfFrame frames;
   frames.resize(1);
-  Frame::Ptr& frame = frames.at(0);
-  frame.reset(new Frame());
+  FramePtr<>& frame = frames.at(0);
+  frame.reset(new Frame<>());
   frame->emplace_back(0.0, 0.0, 0.0);
   frame->emplace_back(1.0, 1.0, 1.0);
   frame->header.seq   = frameNumber;
@@ -19,11 +19,11 @@ TEST(PlyIOTest, save_load) {
 
   // when
   savePly(frames, filePath);
-  GroupOfFrame result;
+  GroupOfFrame<> result;
   loadPly(result, filePath, frameNumber, frameNumber + 1);
 
   EXPECT_EQ(result.size(), frames.size());
-  Frame::Ptr& resultFrame = result.at(0);
+  FramePtr<>& resultFrame = result.at(0);
   EXPECT_EQ(resultFrame->header.seq, frame->header.seq);
   EXPECT_EQ(resultFrame->size(), frame->size());
   for (size_t i = 0; i < resultFrame->size(); i++) {
