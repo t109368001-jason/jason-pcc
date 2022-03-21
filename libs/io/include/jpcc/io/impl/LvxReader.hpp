@@ -18,6 +18,8 @@ LvxReader<PointT>::LvxReader(DatasetReaderParameter param, DatasetParameter data
   assert(DatasetReaderBase<PointT>::datasetParam_.type == "lvx");
   if (DatasetReaderBase<PointT>::datasetParam_.sensor == "mid-100") {
     capacity_ = (size_t)((double)(100000 * 3) / DatasetReaderBase<PointT>::param_.frequency * 1.05);
+  } else if (DatasetReaderBase<PointT>::datasetParam_.sensor == "mid-70") {
+    capacity_ = (size_t)((double)(100000) / DatasetReaderBase<PointT>::param_.frequency * 1.05);
   } else {
     throw logic_error("Not support dataset.sensor " + DatasetReaderBase<PointT>::datasetParam_.sensor);
   }

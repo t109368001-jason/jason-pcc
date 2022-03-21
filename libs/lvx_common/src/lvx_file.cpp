@@ -389,7 +389,11 @@ int LvxFileHandle::parsePacketsOfFrameXYZ(
       throw new std::logic_error("eth_packet->timestamp_type != kTimestampTypeNoSync ");
     }
     if (eth_packet->version != 5) { throw new std::logic_error("eth_packet->version != 5 "); }
-    if (eth_packet->data_type != kCartesian) { throw new std::logic_error("eth_packet->data_type != kCartesian "); }
+    switch (eth_packet->data_type) {
+      case kCartesian:
+      case kExtendCartesian: break;
+      default: throw new std::logic_error("eth_packet->data_type != kCartesian "); break;
+    }
 
     uint32_t       points_per_packet = GetPointsPerPacket(eth_packet->data_type);
     LivoxRawPoint* raw_point         = reinterpret_cast<LivoxRawPoint*>(eth_packet->data);
