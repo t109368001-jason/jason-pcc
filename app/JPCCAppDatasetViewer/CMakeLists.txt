@@ -14,7 +14,6 @@ link_directories(${PCL_LIBRARY_DIRS})
 
 add_definitions(${PCL_DEFINITIONS})
 
-message(${VTK_USE_FILE})
 if (VTK_VERSION VERSION_LESS "8.90.0")
     include(${VTK_USE_FILE})
     add_executable(${PROJECT_NAME} ${INCS} ${SRCS})
