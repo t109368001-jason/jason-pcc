@@ -11,10 +11,12 @@
 namespace jpcc {
 
 class AppParameter : public Parameter {
+ protected:
+  std::string cameraPosition_;
+
  public:
   bool                       parallel;
-  std::string                cameraPosition;
-  std::array<double, 9>      cameraPosition_;
+  std::array<double, 9>      cameraPosition;
   io::DatasetParameter       datasetParameter;
   io::DatasetReaderParameter readerParameter;
 
