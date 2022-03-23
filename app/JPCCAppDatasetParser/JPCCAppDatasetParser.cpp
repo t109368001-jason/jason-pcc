@@ -2,12 +2,12 @@
 #include <iostream>
 #include <vector>
 
-#include <PCCChrono.h>
-#include <PCCMemory.h>
-
 #include <jpcc/common/ParameterParser.h>
 #include <jpcc/io/DatasetReader.h>
 #include <jpcc/io/PlyIO.h>
+
+#include <PCCChrono.h>
+#include <PCCMemory.h>
 
 #include "AppParameter.h"
 
