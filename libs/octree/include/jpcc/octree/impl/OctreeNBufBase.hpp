@@ -483,6 +483,7 @@ OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::createLeafRecursi
 
           // take child branch from previous buffer
           doNodeReset = true;  // reset the branch pointer array of stolen child node
+          break;
         }
       }
       if (!doNodeReset) {
@@ -663,29 +664,73 @@ void OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::getIndicesBy
     pcl::Indices&                                                  indices) const {
   // iterate over all children
   for (ChildIndex childIndex = 0; childIndex < 8; childIndex++) {
-    for (BufferIndex b = 0; b < BUFFER_SIZE; b++) {
-      if (branchNode->hasChild(b, childIndex)) {
-        const OctreeNode* childNode = branchNode->getChildPtr(b, childIndex);
+    if (branchNode->hasChild(bufferIndex_, childIndex)) {
+      const OctreeNode* childNode = branchNode->getChildPtr(bufferIndex_, childIndex);
 
-        switch (childNode->getNodeType()) {
-          case pcl::octree::BRANCH_NODE: {
-            // recursively proceed with indexed child branchNode
-            getIndicesByFilterRecursive(static_cast<const BranchNode*>(childNode), filter, indices);
-            break;
-          }
-          case pcl::octree::LEAF_NODE: {
-            if (branchNode->hasChild(bufferIndex_, childIndex)) {
-              const auto childLeaf = static_cast<LeafNode*>(branchNode->getChildPtr(bufferIndex_, childIndex));
-
-              if (filter(getBufferPattern(*branchNode, childIndex))) {
-                childLeaf->getContainer().getPointIndices(indices);
-              }
-            }
-            break;
-          }
-          default: break;
+      switch (childNode->getNodeType()) {
+        case pcl::octree::BRANCH_NODE: {
+          // recursively proceed with indexed child branchNode
+          getIndicesByFilterRecursive(static_cast<const BranchNode*>(childNode), filter, indices);
+          break;
         }
-        break;
+        case pcl::octree::LEAF_NODE: {
+          const auto childLeaf = static_cast<LeafNode*>(branchNode->getChildPtr(bufferIndex_, childIndex));
+
+          if (filter(getBufferPattern(*branchNode, childIndex))) { childLeaf->getContainer().getPointIndices(indices); }
+          break;
+        }
+        default: break;
+      }
+    }
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <BufferIndex BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
+void OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::process(
+    const std::function<bool(const BufferIndex                   bufferIndex,
+                             const BufferPattern&                bufferPattern,
+                             const std::array<int, BUFFER_SIZE>& bufferIndices)>& func,
+    pcl::Indices&                                                                 indices) const {
+  processRecursive(root_node_, func, indices);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <BufferIndex BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
+void OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::processRecursive(
+    const BranchNode*                                                             branchNode,
+    const std::function<bool(const BufferIndex                   bufferIndex,
+                             const BufferPattern&                bufferPattern,
+                             const std::array<int, BUFFER_SIZE>& bufferIndices)>& func,
+    pcl::Indices&                                                                 indices) const {
+  for (ChildIndex childIndex = 0; childIndex < 8; childIndex++) {
+    if (branchNode->hasChild(bufferIndex_, childIndex)) {
+      const OctreeNode* childNode = branchNode->getChildPtr(bufferIndex_, childIndex);
+
+      switch (childNode->getNodeType()) {
+        case pcl::octree::BRANCH_NODE: {
+          // recursively proceed with indexed child branchNode
+          processRecursive(static_cast<const BranchNode*>(childNode), func, indices);
+          break;
+        }
+        case pcl::octree::LEAF_NODE: {
+          std::array<int, BUFFER_SIZE> bufferIndices;
+
+          for (BufferIndex b = 0; b < BUFFER_SIZE; b++) {
+            if (branchNode->hasChild(b, childIndex)) {
+              const auto childLeaf = static_cast<LeafNode*>(branchNode->getChildPtr(b, childIndex));
+
+              bufferIndices.at(b) = childLeaf->getContainer().getPointIndex();
+            }
+          }
+
+          if (func(bufferIndex_, getBufferPattern(*branchNode, childIndex), bufferIndices)) {
+            const auto childLeaf = static_cast<LeafNode*>(branchNode->getChildPtr(bufferIndex_, childIndex));
+            childLeaf->getContainer().getPointIndices(indices);
+          }
+          break;
+        }
+        default: break;
       }
     }
   }
@@ -719,6 +764,7 @@ bool OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::deleteBuffer
 
           if (noChild) {
             delete (childNode);
+            branchNode.setChildPtr(bufferIndex, childIndex, nullptr);
             if (bufferIndex == bufferIndex_) { branch_count_--; }
             branch_counts_.at(bufferIndex)--;
           }

@@ -38,6 +38,7 @@
 
 #pragma once
 
+#include <array>
 #include <bitset>
 #include <cstdint>
 
@@ -229,6 +230,17 @@ class OctreeNBufBase {
   void getIndicesByFilterRecursive(const BranchNode*                                              branchNode,
                                    const std::function<bool(const BufferPattern& bufferPattern)>& filter,
                                    pcl::Indices&                                                  indices) const;
+
+  void process(const std::function<bool(const BufferIndex                   bufferIndex,
+                                        const BufferPattern&                bufferPattern,
+                                        const std::array<int, BUFFER_SIZE>& bufferIndices)>& func,
+               pcl::Indices&                                                                 indices) const;
+
+  void processRecursive(const BranchNode*                                                             branchNode,
+                        const std::function<bool(const BufferIndex                   bufferIndex,
+                                                 const BufferPattern&                bufferPattern,
+                                                 const std::array<int, BUFFER_SIZE>& bufferIndices)>& func,
+                        pcl::Indices&                                                                 indices) const;
 
   bool deleteBuffer();
 
