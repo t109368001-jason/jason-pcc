@@ -244,8 +244,7 @@ int PcapReader<PointT>::parseDataPacket(const size_t          startFrameNumber,
     }
     for (int laser_index = 0; laser_index < LASER_PER_FIRING; laser_index++) {
       float distance = static_cast<float>(firing_data.laserReturns[laser_index].distance) / 500.0f;
-      if (distance < DatasetReaderBase<PointT>::param_.epsilon) { continue; }
-      float azimuth = static_cast<float>(azimuth100) * PI_DIV18000;
+      float azimuth  = static_cast<float>(azimuth100) * PI_DIV18000;
       //      float   vertical  = verticals_.at(laser_index % maxNumLasers_);
       //      uint8_t intensity = firing_data.laserReturns[laser_index].intensity;
       auto    id = static_cast<uint8_t>(laser_index % maxNumLasers_);

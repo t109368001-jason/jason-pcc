@@ -97,13 +97,10 @@ void LvxReader<PointT>::load_(const size_t          datasetIndex,
         frameBuffer.push_back(frame);
       }
     }
-    if (x >= DatasetReaderBase<PointT>::param_.epsilon || y >= DatasetReaderBase<PointT>::param_.epsilon ||
-        z >= DatasetReaderBase<PointT>::param_.epsilon) {
-      // TODO add transform
-      // emplace_back points only, improve performance
-      // frameBuffer.at(index)->emplace_back(x, y, z);
-      frameBuffer.at(index)->points.emplace_back(x, y, z);
-    }
+    // TODO add transform
+    // emplace_back points only, improve performance
+    // frameBuffer.at(index)->emplace_back(x, y, z);
+    frameBuffer.at(index)->points.emplace_back(x, y, z);
     lastTimestamps.at(deviceIndex) = timestamp;
   });
   assert(ret == 0 || ret == kLvxFileAtEnd);

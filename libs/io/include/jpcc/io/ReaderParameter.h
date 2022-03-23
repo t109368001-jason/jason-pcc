@@ -12,13 +12,7 @@ namespace jpcc::io {
 namespace po = boost::program_options;
 
 class ReaderParameter : public virtual Parameter {
- protected:
-  std::vector<std::string> pointTypes_;
-
  public:
-  std::set<std::string> pointTypes;
-  float                 epsilon;
-
   ReaderParameter();
 
   ReaderParameter(const std::string& prefix, const std::string& caption);
