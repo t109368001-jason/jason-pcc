@@ -51,7 +51,7 @@ bool LvxReader<PointT>::isOpen_(const size_t datasetIndex) {
 
 template <typename PointT>
 bool LvxReader<PointT>::isEof_(const size_t datasetIndex) {
-  return DatasetReaderBase<PointT>::isEof_(datasetIndex) || lvxs_.at(datasetIndex)->Eof();
+  return DatasetReaderBase<PointT>::isEof_(datasetIndex) || lvxs_.at(datasetIndex)->GetFileState() == kLvxFileAtEnd;
 }
 
 template <typename PointT>
@@ -106,12 +106,20 @@ void LvxReader<PointT>::load_(const size_t          datasetIndex,
     }
     lastTimestamps.at(deviceIndex) = timestamp;
   });
-  if (ret != 0) { assert(ret == kLvxFileAtEnd); }
-  int64_t minLastTimestamp = *std::min_element(lastTimestamps.begin(), lastTimestamps.end());
-  for (const FramePtr<PointT>& frame : frameBuffer) {
-    if ((frame->header.stamp + (int64_t)DatasetReaderBase<PointT>::param_.interval) > minLastTimestamp) { break; }
-    frame->width  = static_cast<std::uint32_t>(frame->size());
-    frame->height = 1;
+  assert(ret == 0 || ret == kLvxFileAtEnd);
+
+  if (ret == kLvxFileAtEnd) {
+    for (const FramePtr<PointT>& frame : frameBuffer) {
+      frame->width  = static_cast<std::uint32_t>(frame->size());
+      frame->height = 1;
+    }
+  } else {
+    int64_t minLastTimestamp = *std::min_element(lastTimestamps.begin(), lastTimestamps.end());
+    for (const FramePtr<PointT>& frame : frameBuffer) {
+      if ((frame->header.stamp + (int64_t)DatasetReaderBase<PointT>::param_.interval) > minLastTimestamp) { break; }
+      frame->width  = static_cast<std::uint32_t>(frame->size());
+      frame->height = 1;
+    }
   }
 }
 

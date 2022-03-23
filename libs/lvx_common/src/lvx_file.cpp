@@ -415,7 +415,13 @@ int LvxFileHandle::parsePacketsOfFrameXYZ(
       }
       pointCallback(timestamp.stamp, detail_packet->device_index, x, y, z);
 
-      ++raw_point;
+      switch (eth_packet->data_type) {
+        case kCartesian: ++raw_point; break;
+        case kExtendCartesian:
+          raw_point = reinterpret_cast<LivoxRawPoint*>(reinterpret_cast<LivoxExtendRawPoint*>(raw_point) + 1);
+          break;
+        default: throw new std::logic_error("eth_packet->data_type != kCartesian "); break;
+      }
       --points_per_packet;
     }
 
