@@ -24,7 +24,8 @@ using namespace jpcc::io;
 
 void process(const AppParameter& parameter, pcc::chrono::StopwatchUserTime& clock) {
   FramePtr<>                             cloud(new Frame<>());
-  pcl::visualization::PCLVisualizer::Ptr viewer(new pcl::visualization::PCLVisualizer("JPCC Dataset Viewer 0"));
+  pcl::visualization::PCLVisualizer::Ptr viewer(
+      new pcl::visualization::PCLVisualizer("JPCC Dataset Viewer " + parameter.datasetParameter.name + " 0"));
 
   std::atomic_bool       run(true);
   std::mutex             mutex;
@@ -46,7 +47,8 @@ void process(const AppParameter& parameter, pcc::chrono::StopwatchUserTime& cloc
     std::lock_guard<std::mutex> lock(mutex);
     cloud = queue.front();
     queue.pop();
-    viewer->setWindowName("JPCC Dataset Viewer " + std::to_string(cloud->header.seq));
+    viewer->setWindowName("JPCC Dataset Viewer " + parameter.datasetParameter.name + " " +
+                          std::to_string(cloud->header.seq));
     pcl::visualization::PointCloudColorHandlerGenericField<pcl::PointXYZ> zColor(cloud, "z");
     viewer->updatePointCloud(cloud, zColor, "cloud");
     viewer->updateText(" frame: " + std::to_string(cloud->header.seq), 5, 40, 16, 1.0, 1.0, 1.0, "frame");
@@ -73,7 +75,6 @@ void process(const AppParameter& parameter, pcc::chrono::StopwatchUserTime& cloc
         reader->loadAll(startFrameNumber, groupOfFramesSize, frames, parameter.parallel);
         clock.stop();
 
-        FramePtr<> _cloud(new Frame<>());
         do {
           {
             std::lock_guard<std::mutex> lock(mutex);

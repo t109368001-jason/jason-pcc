@@ -6,6 +6,7 @@ using namespace std;
 using namespace po;
 
 #define DATASET_OPT_PREFIX "dataset"
+#define NAME_OPT ".name"
 #define SENSOR_OPT ".sensor"
 #define TYPE_OPT ".type"
 #define FOLDER_PREFIX_OPT ".folderPrefix"
@@ -25,6 +26,7 @@ DatasetParameter::DatasetParameter(const std::string& prefix, const std::string&
     startFrameNumbers(),
     haveGpsTime(false) {
   opts_.add_options()                                                                                            //
+      (string(prefix_ + NAME_OPT).c_str(), value<string>(&name), "name")                                         //
       (string(prefix_ + SENSOR_OPT).c_str(), value<string>(&sensor), "sensor")                                   //
       (string(prefix_ + TYPE_OPT).c_str(), value<string>(&type), "dataset type")                                 //
       (string(prefix_ + FOLDER_PREFIX_OPT).c_str(),                                                              //
@@ -49,6 +51,7 @@ vector<array<string, 2>> DatasetParameter::getDependencies() const {
 }
 
 void DatasetParameter::notify() {
+  assert(!name.empty());
   assert(!type.empty());
   assert(!folder.empty());
   assert(frameCounts.size() == files.size());
@@ -65,6 +68,8 @@ size_t DatasetParameter::getStartFrameNumbers(size_t index) const { return start
 
 ostream& operator<<(ostream& out, const DatasetParameter& obj) {
   out << obj.caption_ << endl;
+  out << "\t" << obj.prefix_ << NAME_OPT "=" << obj.name << endl;
+  out << "\t" << obj.prefix_ << SENSOR_OPT "=" << obj.sensor << endl;
   out << "\t" << obj.prefix_ << TYPE_OPT "=" << obj.type << endl;
   out << "\t" << obj.prefix_ << FOLDER_PREFIX_OPT "=" << obj.folderPrefix << endl;
   out << "\t" << obj.prefix_ << FOLDER_OPT "=" << obj.folder << endl;

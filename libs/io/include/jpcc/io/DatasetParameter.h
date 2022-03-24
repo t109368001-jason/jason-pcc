@@ -10,6 +10,7 @@ namespace jpcc::io {
 
 class DatasetParameter : public virtual Parameter {
  public:
+  std::string              name;
   std::string              sensor;
   std::string              type;
   std::string              folderPrefix;
