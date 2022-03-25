@@ -50,6 +50,7 @@ add_subdirectory(libs/io)
 add_subdirectory(libs/lvx_common)
 add_subdirectory(libs/octree)
 add_subdirectory(libs/pcc_common)
+add_subdirectory(libs/process)
 
 add_subdirectory(app)
 

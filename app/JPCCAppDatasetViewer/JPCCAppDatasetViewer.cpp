@@ -11,6 +11,7 @@
 
 #include <jpcc/common/ParameterParser.h>
 #include <jpcc/io/DatasetReader.h>
+#include <jpcc/process/PreProcessor.h>
 
 #include <PCCChrono.h>
 #include <PCCMemory.h>
@@ -21,8 +22,9 @@ using namespace std::chrono;
 using namespace pcc;
 using namespace jpcc;
 using namespace jpcc::io;
+using namespace jpcc::process;
 
-void process(const AppParameter& parameter, pcc::chrono::StopwatchUserTime& clock) {
+void main_(const AppParameter& parameter, pcc::chrono::StopwatchUserTime& clock) {
   FramePtr<>                             cloud(new Frame<>());
   pcl::visualization::PCLVisualizer::Ptr viewer(
       new pcl::visualization::PCLVisualizer("JPCC Dataset Viewer " + parameter.datasetParameter.name + " 0"));
@@ -30,6 +32,7 @@ void process(const AppParameter& parameter, pcc::chrono::StopwatchUserTime& cloc
   std::atomic_bool       run(true);
   std::mutex             mutex;
   std::queue<FramePtr<>> queue;
+  std::queue<FramePtr<>> removedQueue;
 
   viewer->initCameraParameters();
   parameter.applyCameraPosition([&](double pos_x, double pos_y, double pos_z, double view_x, double view_y,
@@ -39,20 +42,25 @@ void process(const AppParameter& parameter, pcc::chrono::StopwatchUserTime& cloc
   viewer->setBackgroundColor(0, 0, 0);
   viewer->addCoordinateSystem(3.0, "coordinate");
 
-  viewer->addPointCloud<Point>(cloud, "cloud");
-  viewer->addText("", 5, 40, 16, 1.0, 1.0, 1.0, "frame");
-  viewer->addText("", 5, 20, 16, 1.0, 1.0, 1.0, "points");
-  viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "sample cloud");
   auto updateViewer = [&] {
     std::lock_guard<std::mutex> lock(mutex);
+    if (queue.empty()) { return; }
     cloud = queue.front();
     queue.pop();
     viewer->setWindowName("JPCC Dataset Viewer " + parameter.datasetParameter.name + " " +
                           std::to_string(cloud->header.seq));
     pcl::visualization::PointCloudColorHandlerGenericField<pcl::PointXYZ> zColor(cloud, "z");
-    viewer->updatePointCloud(cloud, zColor, "cloud");
-    viewer->updateText(" frame: " + std::to_string(cloud->header.seq), 5, 40, 16, 1.0, 1.0, 1.0, "frame");
-    viewer->updateText("points: " + std::to_string(cloud->size()), 5, 20, 16, 1.0, 1.0, 1.0, "points");
+    if (!viewer->updatePointCloud(cloud, zColor, "cloud")) {
+      viewer->addPointCloud<Point>(cloud, zColor, "cloud");
+      viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "sample cloud");
+    }
+
+    if (!viewer->updateText(" frame: " + std::to_string(cloud->header.seq), 5, 40, 16, 1.0, 1.0, 1.0, "frame")) {
+      viewer->addText(" frame: " + std::to_string(cloud->header.seq), 5, 40, 16, 1.0, 1.0, 1.0, "frame");
+    }
+    if (!viewer->updateText("points: " + std::to_string(cloud->size()), 5, 20, 16, 1.0, 1.0, 1.0, "points")) {
+      viewer->addText("points: " + std::to_string(cloud->size()), 5, 20, 16, 1.0, 1.0, 1.0, "points");
+    }
   };
   viewer->registerKeyboardCallback([&](auto& event) {
     if (event.getKeyCode() == ' ' && event.keyDown()) { updateViewer(); }
@@ -61,10 +69,14 @@ void process(const AppParameter& parameter, pcc::chrono::StopwatchUserTime& cloc
   auto datasetLoading = [&] {
     try {
       DatasetReader<>::Ptr reader = newReader(parameter.readerParameter, parameter.datasetParameter);
-      GroupOfFrame<>       frames;
-      size_t               groupOfFramesSize = 32;
-      size_t               startFrameNumber  = 1;
+      PreProcessor<>       preProcessor(parameter.preProcessParameter);
+
+      GroupOfFrame<>                     frames;
+      PreProcessor<>::GroupOfFrameMapPtr removed(new PreProcessor<>::GroupOfFrameMap());
+      size_t                             groupOfFramesSize = 32;
+      size_t                             startFrameNumber  = 1;
       reader->loadAll(0, 1, frames, false);
+      preProcessor.process(frames, nullptr, parameter.parallel);
       {
         std::lock_guard<std::mutex> lock(mutex);
         queue.push(frames.at(0));
@@ -73,6 +85,7 @@ void process(const AppParameter& parameter, pcc::chrono::StopwatchUserTime& cloc
       while (run) {
         clock.start();
         reader->loadAll(startFrameNumber, groupOfFramesSize, frames, parameter.parallel);
+        preProcessor.process(frames, removed, parameter.parallel);
         clock.stop();
 
         do {
@@ -113,8 +126,6 @@ int main(int argc, char* argv[]) {
   try {
     ParameterParser pp;
     pp.add(parameter);
-    pp.add(parameter.datasetParameter);
-    pp.add(parameter.readerParameter);
     if (!pp.parse(argc, argv)) { return 1; }
     std::cout << parameter << std::endl;
   } catch (std::exception& e) {
@@ -129,7 +140,7 @@ int main(int argc, char* argv[]) {
     pcc::chrono::StopwatchUserTime       clockUser;
 
     clockWall.start();
-    process(parameter, clockUser);
+    main_(parameter, clockUser);
     clockWall.stop();
 
     auto totalWall      = duration_cast<milliseconds>(clockWall.count()).count();

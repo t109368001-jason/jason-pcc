@@ -7,6 +7,7 @@
 #include <jpcc/common/Parameter.h>
 #include <jpcc/io/DatasetParameter.h>
 #include <jpcc/io/DatasetReaderParameter.h>
+#include <jpcc/process/PreProcessParameter.h>
 
 namespace jpcc {
 
@@ -15,10 +16,11 @@ class AppParameter : public Parameter {
   std::string cameraPosition_;
 
  public:
-  bool                       parallel;
-  std::array<double, 9>      cameraPosition;
-  io::DatasetParameter       datasetParameter;
-  io::DatasetReaderParameter readerParameter;
+  bool                         parallel;
+  std::array<double, 9>        cameraPosition;
+  io::DatasetParameter         datasetParameter;
+  io::DatasetReaderParameter   readerParameter;
+  process::PreProcessParameter preProcessParameter;
 
   AppParameter();
 
