@@ -9,13 +9,15 @@ namespace jpcc {
 class AppParameter : public Parameter {
  public:
   bool                       parallel;
-  io::DatasetParameter       inputDatasetParameter;
-  io::DatasetReaderParameter inputDatasetReaderParameter;
-  io::DatasetParameter       outputDatasetParameter;
+  io::DatasetParameter       inputDataset;
+  io::DatasetReaderParameter inputReader;
+  io::DatasetParameter       outputDataset;
 
   AppParameter();
 
   void notify() override;
+
+  friend std::ostream& operator<<(std::ostream& out, const AppParameter& obj);
 };
 
 }  // namespace jpcc

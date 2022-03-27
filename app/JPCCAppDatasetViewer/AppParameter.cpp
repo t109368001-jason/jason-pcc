@@ -12,11 +12,7 @@ using namespace po;
 #define CAMERA_POSITION_OPT_PREFIX ".cameraPosition"
 
 AppParameter::AppParameter() :
-    Parameter(APP_OPT_PREFIX, __FUNCTION__),
-    parallel(false),
-    datasetParameter(),
-    readerParameter(),
-    preProcessParameter() {
+    Parameter(APP_OPT_PREFIX, __FUNCTION__), parallel(false), dataset(), reader(), preProcess() {
   cameraPosition.fill(0.0);
   opts_.add_options()                                                    //
       (string(prefix_ + PARALLEL_OPT_PREFIX).c_str(),                    //
@@ -26,9 +22,9 @@ AppParameter::AppParameter() :
        value<string>(&cameraPosition_)->default_value(cameraPosition_),  //
        "cameraPosition")                                                 //
       ;
-  opts_.add(datasetParameter.getOpts());
-  opts_.add(readerParameter.getOpts());
-  opts_.add(preProcessParameter.getOpts());
+  opts_.add(dataset.getOpts());
+  opts_.add(reader.getOpts());
+  opts_.add(preProcess.getOpts());
 }
 
 void AppParameter::notify() {
@@ -36,18 +32,18 @@ void AppParameter::notify() {
   boost::algorithm::split(ss, cameraPosition_, boost::is_any_of(","));
   assert(ss.size() == cameraPosition.size());
   transform(ss.begin(), ss.end(), cameraPosition.begin(), [](auto&& s) { return stod(s); });
-  datasetParameter.notify();
-  readerParameter.notify();
-  preProcessParameter.notify();
+  dataset.notify();
+  reader.notify();
+  preProcess.notify();
 }
 
 ostream& operator<<(ostream& out, const AppParameter& obj) {
   out << obj.caption_ << endl;
   out << "\t" << obj.prefix_ << PARALLEL_OPT_PREFIX "=" << obj.parallel << endl;
   out << "\t" << obj.prefix_ << CAMERA_POSITION_OPT_PREFIX "=" << obj.cameraPosition_ << endl;
-  out << obj.datasetParameter;
-  out << obj.readerParameter;
-  out << obj.preProcessParameter;
+  out << obj.dataset;
+  out << obj.reader;
+  out << obj.preProcess;
   return out;
 }
 

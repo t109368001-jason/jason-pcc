@@ -18,9 +18,9 @@ class AppParameter : public Parameter {
  public:
   bool                         parallel;
   std::array<double, 9>        cameraPosition;
-  io::DatasetParameter         datasetParameter;
-  io::DatasetReaderParameter   readerParameter;
-  process::PreProcessParameter preProcessParameter;
+  io::DatasetParameter         dataset;
+  io::DatasetReaderParameter   reader;
+  process::PreProcessParameter preProcess;
 
   AppParameter();
 

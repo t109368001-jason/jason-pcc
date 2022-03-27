@@ -16,19 +16,18 @@ using namespace pcc;
 using namespace jpcc;
 using namespace jpcc::io;
 
-void parse(const AppParameter& appParameter, pcc::chrono::StopwatchUserTime& clock) {
-  DatasetReader<>::Ptr reader =
-      newReader<>(appParameter.inputDatasetReaderParameter, appParameter.inputDatasetParameter);
-  GroupOfFrame<> frames;
-  size_t         groupOfFramesSize = 32;
-  size_t         startFrameNumber  = appParameter.inputDatasetParameter.getStartFrameNumbers();
-  size_t         endFrameNumber    = startFrameNumber + appParameter.inputDatasetParameter.getFrameCounts();
+void parse(const AppParameter& parameter, pcc::chrono::StopwatchUserTime& clock) {
+  DatasetReader<>::Ptr reader = newReader<>(parameter.inputReader, parameter.inputDataset);
+  GroupOfFrame<>       frames;
+  size_t               groupOfFramesSize = 32;
+  size_t               startFrameNumber  = parameter.inputDataset.getStartFrameNumbers();
+  size_t               endFrameNumber    = startFrameNumber + parameter.inputDataset.getFrameCounts();
   while (startFrameNumber < endFrameNumber) {
     clock.start();
-    reader->loadAll(startFrameNumber, groupOfFramesSize, frames, appParameter.parallel);
+    reader->loadAll(startFrameNumber, groupOfFramesSize, frames, parameter.parallel);
     clock.stop();
 
-    savePly(frames, appParameter.outputDatasetParameter.getFilePath(), appParameter.parallel);
+    savePly(frames, parameter.outputDataset.getFilePath(), parameter.parallel);
 
     startFrameNumber += groupOfFramesSize;
   }
@@ -37,17 +36,12 @@ void parse(const AppParameter& appParameter, pcc::chrono::StopwatchUserTime& clo
 int main(int argc, char* argv[]) {
   std::cout << "JPCC App Dataset Parser Start" << std::endl;
 
-  AppParameter appParameter;
+  AppParameter parameter;
   try {
     ParameterParser pp;
-    pp.add(appParameter);
-    pp.add(appParameter.inputDatasetParameter);
-    pp.add(appParameter.inputDatasetReaderParameter);
-    pp.add(appParameter.outputDatasetParameter);
+    pp.add(parameter);
     if (!pp.parse(argc, argv)) { return 1; }
-    std::cout << appParameter.inputDatasetParameter << std::endl;
-    std::cout << appParameter.inputDatasetReaderParameter << std::endl;
-    std::cout << appParameter.outputDatasetParameter << std::endl;
+    std::cout << parameter << std::endl;
   } catch (std::exception& e) {
     std::cerr << e.what() << std::endl;
     return 1;
@@ -59,7 +53,7 @@ int main(int argc, char* argv[]) {
     pcc::chrono::StopwatchUserTime       clockUser;
 
     clockWall.start();
-    parse(appParameter, clockUser);
+    parse(parameter, clockUser);
     clockWall.stop();
 
     auto totalWall      = duration_cast<milliseconds>(clockWall.count()).count();
