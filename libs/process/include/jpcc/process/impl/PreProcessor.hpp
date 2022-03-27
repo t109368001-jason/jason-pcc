@@ -19,7 +19,14 @@ template <class PointT>
 void PreProcessor<PointT>::process(GroupOfFrame& groupOfFrame, GroupOfFrameMapPtr removed, bool parallel) {
   for (const string& algorithm : param_.order) {
     if (boost::iequals(algorithm, RADIUS_OUTLIER_REMOVAL_OPT_PREFIX)) {
-      radiusOutlierRemoval(groupOfFrame, removed, parallel);
+      GroupOfFramePtr groupOfFramePtr;
+      if (removed) {
+        groupOfFramePtr.reset(new GroupOfFrame());
+        groupOfFramePtr->resize(groupOfFrame.size());
+        for (auto& frame : *groupOfFramePtr) { frame.reset(new Frame()); }
+      }
+      radiusOutlierRemoval(groupOfFrame, groupOfFramePtr, parallel);
+      if (removed) { removed->insert_or_assign(RADIUS_OUTLIER_REMOVAL_OPT_PREFIX, groupOfFramePtr); }
     }
   }
 }
@@ -40,18 +47,24 @@ void PreProcessor<PointT>::radiusOutlierRemoval(FramePtr& frame, FramePtr remove
     pcl::ExtractIndices<PointT> extractIndices;
     extractIndices.setInputCloud(frame);
     extractIndices.setIndices(indices);
+    extractIndices.setNegative(true);
     extractIndices.filter(*removed);
+    extractIndices.setNegative(false);
+    extractIndices.filter(*frame);
   }
 }
 
 template <class PointT>
-void PreProcessor<PointT>::radiusOutlierRemoval(GroupOfFrame& groupOfFrame, GroupOfFrameMapPtr removed, bool parallel) {
+void PreProcessor<PointT>::radiusOutlierRemoval(GroupOfFrame& groupOfFrame, GroupOfFramePtr removed, bool parallel) {
   auto range = boost::counting_range<size_t>(0, groupOfFrame.size());
   if (parallel) {
-    std::for_each(std::execution::par_unseq, range.begin(), range.end(),
-                  [&](size_t i) { radiusOutlierRemoval(groupOfFrame.at(i), nullptr); });
+    std::for_each(std::execution::par_unseq, range.begin(), range.end(), [&](size_t i) {
+      radiusOutlierRemoval(groupOfFrame.at(i), removed != nullptr ? removed->at(i) : nullptr);
+    });
   } else {
-    std::for_each(range.begin(), range.end(), [&](size_t i) { radiusOutlierRemoval(groupOfFrame.at(i), nullptr); });
+    std::for_each(range.begin(), range.end(), [&](size_t i) {
+      radiusOutlierRemoval(groupOfFrame.at(i), removed != nullptr ? removed->at(i) : nullptr);
+    });
   }
 }
 

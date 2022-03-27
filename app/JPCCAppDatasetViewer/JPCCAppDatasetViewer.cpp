@@ -26,6 +26,7 @@ using namespace jpcc::process;
 
 void main_(const AppParameter& parameter, pcc::chrono::StopwatchUserTime& clock) {
   FramePtr<>                             cloud(new Frame<>());
+  FramePtr<>                             removedCloud(new Frame<>());
   pcl::visualization::PCLVisualizer::Ptr viewer(
       new pcl::visualization::PCLVisualizer("JPCC Dataset Viewer " + parameter.datasetParameter.name + " 0"));
 
@@ -43,16 +44,25 @@ void main_(const AppParameter& parameter, pcc::chrono::StopwatchUserTime& clock)
   viewer->addCoordinateSystem(3.0, "coordinate");
 
   auto updateViewer = [&] {
-    std::lock_guard<std::mutex> lock(mutex);
-    if (queue.empty()) { return; }
-    cloud = queue.front();
-    queue.pop();
+    {
+      std::lock_guard<std::mutex> lock(mutex);
+      if (queue.empty() || removedQueue.empty()) { return; }
+      cloud = queue.front();
+      queue.pop();
+      removedCloud = removedQueue.front();
+      removedQueue.pop();
+    }
     viewer->setWindowName("JPCC Dataset Viewer " + parameter.datasetParameter.name + " " +
                           std::to_string(cloud->header.seq));
     pcl::visualization::PointCloudColorHandlerGenericField<pcl::PointXYZ> zColor(cloud, "z");
     if (!viewer->updatePointCloud(cloud, zColor, "cloud")) {
       viewer->addPointCloud<Point>(cloud, zColor, "cloud");
-      viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "sample cloud");
+      //      viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "cloud");
+    }
+    if (!viewer->updatePointCloud(removedCloud, "removedCloud")) {
+      viewer->addPointCloud<Point>(removedCloud, "removedCloud");
+      //      viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1,
+      //      "removedCloud");
     }
 
     if (!viewer->updateText(" frame: " + std::to_string(cloud->header.seq), 5, 40, 16, 1.0, 1.0, 1.0, "frame")) {
@@ -65,6 +75,11 @@ void main_(const AppParameter& parameter, pcc::chrono::StopwatchUserTime& clock)
   viewer->registerKeyboardCallback([&](auto& event) {
     if (event.getKeyCode() == ' ' && event.keyDown()) { updateViewer(); }
   });
+  viewer->registerPointPickingCallback([](auto& event) {
+    Point point;
+    event.getPoint(point.x, point.y, point.z);
+    std::cout << "picked point=" << point << std::endl;
+  });
 
   auto datasetLoading = [&] {
     try {
@@ -75,11 +90,12 @@ void main_(const AppParameter& parameter, pcc::chrono::StopwatchUserTime& clock)
       PreProcessor<>::GroupOfFrameMapPtr removed(new PreProcessor<>::GroupOfFrameMap());
       size_t                             groupOfFramesSize = 32;
       size_t                             startFrameNumber  = 1;
-      reader->loadAll(0, 1, frames, false);
-      preProcessor.process(frames, nullptr, parameter.parallel);
+      reader->loadAll(0, 1, frames, parameter.parallel);
+      preProcessor.process(frames, removed, parameter.parallel);
       {
         std::lock_guard<std::mutex> lock(mutex);
         queue.push(frames.at(0));
+        removedQueue.push(((*removed)[RADIUS_OUTLIER_REMOVAL_OPT_PREFIX])->at(0));
       }
       updateViewer();
       while (run) {
@@ -93,6 +109,7 @@ void main_(const AppParameter& parameter, pcc::chrono::StopwatchUserTime& clock)
             std::lock_guard<std::mutex> lock(mutex);
             if (queue.size() < groupOfFramesSize) {
               for (auto& frame : frames) { queue.push(frame); }
+              for (auto& frame : *((*removed)[RADIUS_OUTLIER_REMOVAL_OPT_PREFIX])) { removedQueue.push(frame); }
               break;
             }
           }

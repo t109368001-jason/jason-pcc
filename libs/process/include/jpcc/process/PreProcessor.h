@@ -14,7 +14,8 @@ class PreProcessor {
   using Frame              = Frame<PointT>;
   using FramePtr           = typename Frame::Ptr;
   using GroupOfFrame       = GroupOfFrame<PointT>;
-  using GroupOfFrameMap    = std::map<std::string, GroupOfFrame>;
+  using GroupOfFramePtr    = shared_ptr<GroupOfFrame>;
+  using GroupOfFrameMap    = std::map<std::string, GroupOfFramePtr>;
   using GroupOfFrameMapPtr = shared_ptr<GroupOfFrameMap>;
 
  protected:
@@ -27,7 +28,7 @@ class PreProcessor {
 
   void radiusOutlierRemoval(FramePtr& frame, FramePtr removed = nullptr);
 
-  void radiusOutlierRemoval(GroupOfFrame& groupOfFrame, GroupOfFrameMapPtr removed = nullptr, bool parallel = false);
+  void radiusOutlierRemoval(GroupOfFrame& groupOfFrame, GroupOfFramePtr removed = nullptr, bool parallel = false);
 };
 
 }  // namespace jpcc::process
