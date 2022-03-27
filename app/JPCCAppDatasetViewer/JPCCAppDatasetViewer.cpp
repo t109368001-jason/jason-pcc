@@ -28,7 +28,7 @@ void main_(const AppParameter& parameter, pcc::chrono::StopwatchUserTime& clock)
   FramePtr<>                             cloud(new Frame<>());
   FramePtr<>                             removedCloud(new Frame<>());
   pcl::visualization::PCLVisualizer::Ptr viewer(
-      new pcl::visualization::PCLVisualizer("JPCC Dataset Viewer " + parameter.datasetParameter.name + " 0"));
+      new pcl::visualization::PCLVisualizer("JPCC Dataset Viewer " + parameter.dataset.name + " 0"));
 
   std::atomic_bool       run(true);
   std::mutex             mutex;
@@ -52,8 +52,7 @@ void main_(const AppParameter& parameter, pcc::chrono::StopwatchUserTime& clock)
       removedCloud = removedQueue.front();
       removedQueue.pop();
     }
-    viewer->setWindowName("JPCC Dataset Viewer " + parameter.datasetParameter.name + " " +
-                          std::to_string(cloud->header.seq));
+    viewer->setWindowName("JPCC Dataset Viewer " + parameter.dataset.name + " " + std::to_string(cloud->header.seq));
     pcl::visualization::PointCloudColorHandlerGenericField<pcl::PointXYZ> zColor(cloud, "z");
     if (!viewer->updatePointCloud(cloud, zColor, "cloud")) {
       viewer->addPointCloud<Point>(cloud, zColor, "cloud");
@@ -83,8 +82,8 @@ void main_(const AppParameter& parameter, pcc::chrono::StopwatchUserTime& clock)
 
   auto datasetLoading = [&] {
     try {
-      DatasetReader<>::Ptr reader = newReader(parameter.readerParameter, parameter.datasetParameter);
-      PreProcessor<>       preProcessor(parameter.preProcessParameter);
+      DatasetReader<>::Ptr reader = newReader(parameter.reader, parameter.dataset);
+      PreProcessor<>       preProcessor(parameter.preProcess);
 
       GroupOfFrame<>                     frames;
       PreProcessor<>::GroupOfFrameMapPtr removed(new PreProcessor<>::GroupOfFrameMap());
