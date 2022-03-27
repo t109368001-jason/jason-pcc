@@ -55,21 +55,21 @@ bool LvxReader<PointT>::isEof_(const size_t datasetIndex) {
 }
 
 template <typename PointT>
-void LvxReader<PointT>::load_(const size_t          datasetIndex,
-                              const size_t          startFrameNumber,
-                              const size_t          groupOfFramesSize,
-                              GroupOfFrame<PointT>& frames) {
+void LvxReader<PointT>::load_(const size_t  datasetIndex,
+                              const size_t  startFrameNumber,
+                              const size_t  groupOfFramesSize,
+                              GroupOfFrame& frames) {
   assert(groupOfFramesSize > 0);
   size_t&                   currentFrameNumber = DatasetReaderBase<PointT>::currentFrameNumbers_.at(datasetIndex);
   shared_ptr<LvxFileHandle> lvx                = lvxs_.at(datasetIndex);
-  vector<FramePtr<PointT>>& frameBuffer        = DatasetReaderBase<PointT>::frameBuffers_.at(datasetIndex);
+  vector<FramePtr>&         frameBuffer        = DatasetReaderBase<PointT>::frameBuffers_.at(datasetIndex);
 
   std::vector<int64_t> lastTimestamps(lvx->GetDeviceCount());
   int ret = lvx->parsePacketsOfFrameXYZ([&](int64_t timestampNS, uint8_t deviceIndex, float x, float y, float z) {
     int64_t timestamp = timestampNS / 1000000;
     if (frameBuffer.empty()) {
       // new frame
-      FramePtr<PointT> frame(new Frame<PointT>());
+      FramePtr frame(new Frame());
       frame->header.stamp = (int64_t)((float)timestamp / DatasetReaderBase<PointT>::param_.interval *
                                       DatasetReaderBase<PointT>::param_.interval);
       frame->reserve(capacity_);
@@ -80,7 +80,7 @@ void LvxReader<PointT>::load_(const size_t          datasetIndex,
     if (index < 0) {
       for (int i = -1; i >= index; i--) {
         // new frame
-        FramePtr<PointT> frame(new Frame<PointT>());
+        FramePtr frame(new Frame());
         frame->header.stamp =
             frameBuffer.front()->header.stamp + (int64_t)(DatasetReaderBase<PointT>::param_.interval * (float)i);
         frame->reserve(capacity_);
@@ -90,7 +90,7 @@ void LvxReader<PointT>::load_(const size_t          datasetIndex,
     } else if (index >= frameBuffer.size()) {
       for (size_t i = frameBuffer.size(); i <= index; i++) {
         // new frame
-        FramePtr<PointT> frame(new Frame<PointT>());
+        FramePtr frame(new Frame());
         frame->header.stamp =
             frameBuffer.front()->header.stamp + (int64_t)(DatasetReaderBase<PointT>::param_.interval * (float)i);
         frame->reserve(capacity_);
@@ -106,13 +106,13 @@ void LvxReader<PointT>::load_(const size_t          datasetIndex,
   assert(ret == 0 || ret == kLvxFileAtEnd);
 
   if (ret == kLvxFileAtEnd) {
-    for (const FramePtr<PointT>& frame : frameBuffer) {
+    for (const FramePtr& frame : frameBuffer) {
       frame->width  = static_cast<std::uint32_t>(frame->size());
       frame->height = 1;
     }
   } else {
     int64_t minLastTimestamp = *std::min_element(lastTimestamps.begin(), lastTimestamps.end());
-    for (const FramePtr<PointT>& frame : frameBuffer) {
+    for (const FramePtr& frame : frameBuffer) {
       if ((frame->header.stamp + (int64_t)DatasetReaderBase<PointT>::param_.interval) > minLastTimestamp) { break; }
       frame->width  = static_cast<std::uint32_t>(frame->size());
       frame->height = 1;

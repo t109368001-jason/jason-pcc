@@ -44,23 +44,23 @@ bool DatasetReaderBase<PointT>::isOpen() {
 }
 
 template <typename PointT>
-void DatasetReaderBase<PointT>::loadAll(const size_t          startFrameNumber,
-                                        const size_t          groupOfFramesSize,
-                                        GroupOfFrame<PointT>& frames) {
+void DatasetReaderBase<PointT>::loadAll(const size_t  startFrameNumber,
+                                        const size_t  groupOfFramesSize,
+                                        GroupOfFrame& frames) {
   loadAll(startFrameNumber, groupOfFramesSize, frames, false);
 }
 
 template <typename PointT>
-void DatasetReaderBase<PointT>::loadAll(const size_t          startFrameNumber,
-                                        const size_t          groupOfFramesSize,
-                                        GroupOfFrame<PointT>& frames,
-                                        const bool            parallel) {
+void DatasetReaderBase<PointT>::loadAll(const size_t  startFrameNumber,
+                                        const size_t  groupOfFramesSize,
+                                        GroupOfFrame& frames,
+                                        const bool    parallel) {
   assert(groupOfFramesSize > 0);
 
   for_each(datasetIndices_.begin(), datasetIndices_.end(),
            [this, startFrameNumber](auto&& PH1) { open_(std::forward<decltype(PH1)>(PH1), startFrameNumber); });
 
-  vector<GroupOfFrame<PointT>> sources;
+  vector<GroupOfFrame> sources;
   sources.resize(datasetIndices_.size());
   if (parallel) {
     for_each(execution::par, datasetIndices_.begin(), datasetIndices_.end(), [&](size_t datasetIndex) {
@@ -71,13 +71,13 @@ void DatasetReaderBase<PointT>::loadAll(const size_t          startFrameNumber,
       load(datasetIndex, startFrameNumber, groupOfFramesSize, sources.at(datasetIndex));
     });
   }
-  size_t maxSize = max_element(sources.begin(), sources.end(), [](GroupOfFrame<PointT>& a, GroupOfFrame<PointT>& b) {
+  size_t maxSize = max_element(sources.begin(), sources.end(), [](GroupOfFrame& a, GroupOfFrame& b) {
                      return a.size() < b.size();
                    })->size();
   frames.resize(maxSize);
   for (size_t i = 0; i < maxSize; i++) {
-    FramePtr<PointT>& frame = frames.at(i);
-    frame.reset(new Frame<PointT>());
+    FramePtr& frame = frames.at(i);
+    frame.reset(new Frame());
     frame->header.seq = startFrameNumber + i;
     for (size_t datasetIndex = 0; datasetIndex < datasetParam_.count(); datasetIndex++) {
       if (i < sources.at(datasetIndex).size()) {
@@ -91,13 +91,13 @@ void DatasetReaderBase<PointT>::loadAll(const size_t          startFrameNumber,
 }
 
 template <typename PointT>
-void DatasetReaderBase<PointT>::load(const size_t          datasetIndex,
-                                     const size_t          startFrameNumber,
-                                     const size_t          groupOfFramesSize,
-                                     GroupOfFrame<PointT>& frames) {
-  size_t                endFrameNumber     = startFrameNumber + groupOfFramesSize;
-  size_t&               currentFrameNumber = currentFrameNumbers_.at(datasetIndex);
-  GroupOfFrame<PointT>& frameBuffer        = frameBuffers_.at(datasetIndex);
+void DatasetReaderBase<PointT>::load(const size_t  datasetIndex,
+                                     const size_t  startFrameNumber,
+                                     const size_t  groupOfFramesSize,
+                                     GroupOfFrame& frames) {
+  size_t        endFrameNumber     = startFrameNumber + groupOfFramesSize;
+  size_t&       currentFrameNumber = currentFrameNumbers_.at(datasetIndex);
+  GroupOfFrame& frameBuffer        = frameBuffers_.at(datasetIndex);
 
   open_(datasetIndex, startFrameNumber);
   frames.resize(groupOfFramesSize);
@@ -150,10 +150,10 @@ bool DatasetReaderBase<PointT>::isEof_(const size_t datasetIndex) {
 }
 
 template <typename PointT>
-void DatasetReaderBase<PointT>::load_(const size_t          datasetIndex,
-                                      const size_t          startFrameNumber,
-                                      const size_t          groupOfFramesSize,
-                                      GroupOfFrame<PointT>& frames) {
+void DatasetReaderBase<PointT>::load_(const size_t  datasetIndex,
+                                      const size_t  startFrameNumber,
+                                      const size_t  groupOfFramesSize,
+                                      GroupOfFrame& frames) {
   BOOST_THROW_EXCEPTION(logic_error(string("Not Implemented ")));
 }
 

@@ -11,9 +11,9 @@ template <class PointT = Point>
 class PreProcessor {
  public:
   using Ptr                = shared_ptr<PreProcessor>;
-  using Frame              = Frame<PointT>;
+  using Frame              = jpcc::Frame<PointT>;
   using FramePtr           = typename Frame::Ptr;
-  using GroupOfFrame       = GroupOfFrame<PointT>;
+  using GroupOfFrame       = jpcc::GroupOfFrame<PointT>;
   using GroupOfFramePtr    = shared_ptr<GroupOfFrame>;
   using GroupOfFrameMap    = std::map<std::string, GroupOfFramePtr>;
   using GroupOfFrameMapPtr = shared_ptr<GroupOfFrameMap>;

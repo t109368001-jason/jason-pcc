@@ -15,10 +15,10 @@ PlyReader<PointT>::PlyReader(DatasetReaderParameter param, DatasetParameter data
 }
 
 template <typename PointT>
-void PlyReader<PointT>::loadAll(size_t                startFrameNumber,
-                                size_t                groupOfFramesSize,
-                                GroupOfFrame<PointT>& sources,
-                                bool                  parallel) {
+void PlyReader<PointT>::loadAll(size_t        startFrameNumber,
+                                size_t        groupOfFramesSize,
+                                GroupOfFrame& sources,
+                                bool          parallel) {
   size_t endFrameNumber =
       min(startFrameNumber + groupOfFramesSize, DatasetReaderBase<PointT>::datasetParam_.getStartFrameNumbers() +
                                                     DatasetReaderBase<PointT>::datasetParam_.getFrameCounts());

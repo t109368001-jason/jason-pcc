@@ -152,7 +152,7 @@ void PcapReader<PointT>::open_(const size_t datasetIndex, const size_t startFram
   pcaps_.at(datasetIndex) = pcap;
 
   // Push One Rotation Data to Queue
-  FramePtr<PointT> frame(new Frame<PointT>());
+  FramePtr frame(new Frame());
   frame->reserve(29200);  // VLP 16 10 Hz (600 rpm)
   DatasetReaderBase<PointT>::frameBuffers_.at(datasetIndex).push_back(frame);
 }
@@ -168,15 +168,15 @@ bool PcapReader<PointT>::isEof_(const size_t datasetIndex) {
 }
 
 template <typename PointT>
-void PcapReader<PointT>::load_(const size_t          datasetIndex,
-                               const size_t          startFrameNumber,
-                               const size_t          groupOfFramesSize,
-                               GroupOfFrame<PointT>& frames) {
+void PcapReader<PointT>::load_(const size_t  datasetIndex,
+                               const size_t  startFrameNumber,
+                               const size_t  groupOfFramesSize,
+                               GroupOfFrame& frames) {
   assert(groupOfFramesSize > 0);
-  size_t&               currentFrameNumber = DatasetReaderBase<PointT>::currentFrameNumbers_.at(datasetIndex);
-  pcap_t*               pcap               = pcaps_.at(datasetIndex);
-  uint16_t&             lastAzimuth        = lastAzimuth100s_.at(datasetIndex);
-  GroupOfFrame<PointT>& frameBuffer        = DatasetReaderBase<PointT>::frameBuffers_.at(datasetIndex);
+  size_t&       currentFrameNumber = DatasetReaderBase<PointT>::currentFrameNumbers_.at(datasetIndex);
+  pcap_t*       pcap               = pcaps_.at(datasetIndex);
+  uint16_t&     lastAzimuth        = lastAzimuth100s_.at(datasetIndex);
+  GroupOfFrame& frameBuffer        = DatasetReaderBase<PointT>::frameBuffers_.at(datasetIndex);
 
   const int ret = parseDataPacket(startFrameNumber, currentFrameNumber, pcap, lastAzimuth, frameBuffer);
   assert(ret > 0);
@@ -193,11 +193,11 @@ void PcapReader<PointT>::close_(const size_t datasetIndex) {
 }
 
 template <typename PointT>
-int PcapReader<PointT>::parseDataPacket(const size_t          startFrameNumber,
-                                        size_t&               currentFrameNumber,
-                                        pcap_t*               pcap,
-                                        uint16_t&             lastAzimuth100,
-                                        GroupOfFrame<PointT>& frameBuffer) {
+int PcapReader<PointT>::parseDataPacket(const size_t  startFrameNumber,
+                                        size_t&       currentFrameNumber,
+                                        pcap_t*       pcap,
+                                        uint16_t&     lastAzimuth100,
+                                        GroupOfFrame& frameBuffer) {
   // Retrieve Header and Data from PCAP
   struct pcap_pkthdr*  header;
   const unsigned char* data;
@@ -229,8 +229,8 @@ int PcapReader<PointT>::parseDataPacket(const size_t          startFrameNumber,
       frameBuffer.back()->width  = static_cast<std::uint32_t>(frameBuffer.back()->size());
       frameBuffer.back()->height = 1;
       // Push One Rotation Data to Queue
-      FramePtr<PointT> frame(new Frame<PointT>());
-      float            size = static_cast<float>(packet->firingData[11].rotationalPosition) -
+      FramePtr frame(new Frame());
+      float    size = static_cast<float>(packet->firingData[11].rotationalPosition) -
                    static_cast<float>(packet->firingData[0].rotationalPosition);
       if (size < 0) { size += 36000.0; }
       size = TOTAL_POINTS_MULTIPLE_MAX_AZIMUTH_DIFF_OF_PACKET / size;

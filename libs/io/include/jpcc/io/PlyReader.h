@@ -11,9 +11,12 @@ namespace jpcc::io {
 template <typename PointT = Point>
 class PlyReader : public DatasetReaderBase<PointT> {
  public:
+  using GroupOfFrame = jpcc::GroupOfFrame<PointT>;
+
+ public:
   PlyReader(DatasetReaderParameter param, DatasetParameter datasetParam);
 
-  void loadAll(size_t startFrameNumber, size_t groupOfFramesSize, GroupOfFrame<PointT>& frames, bool parallel) override;
+  void loadAll(size_t startFrameNumber, size_t groupOfFramesSize, GroupOfFrame& frames, bool parallel) override;
 };
 
 }  // namespace jpcc::io

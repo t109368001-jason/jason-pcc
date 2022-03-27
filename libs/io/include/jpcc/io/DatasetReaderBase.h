@@ -11,14 +11,17 @@ namespace jpcc::io {
 template <typename PointT = Point>
 class DatasetReaderBase {
  public:
-  using Ptr = shared_ptr<DatasetReaderBase>;
+  using Ptr          = shared_ptr<DatasetReaderBase>;
+  using Frame        = jpcc::Frame<PointT>;
+  using FramePtr     = typename Frame::Ptr;
+  using GroupOfFrame = jpcc::GroupOfFrame<PointT>;
 
  protected:
-  DatasetReaderParameter            param_;
-  DatasetParameter                  datasetParam_;
-  std::vector<int>                  datasetIndices_;
-  std::vector<size_t>               currentFrameNumbers_;
-  std::vector<GroupOfFrame<PointT>> frameBuffers_;
+  DatasetReaderParameter    param_;
+  DatasetParameter          datasetParam_;
+  std::vector<int>          datasetIndices_;
+  std::vector<size_t>       currentFrameNumbers_;
+  std::vector<GroupOfFrame> frameBuffers_;
 
  public:
   DatasetReaderBase(DatasetReaderParameter param, DatasetParameter datasetParam);
@@ -31,17 +34,14 @@ class DatasetReaderBase {
 
   [[nodiscard]] bool isOpen();
 
-  virtual void loadAll(size_t startFrameNumber, size_t groupOfFramesSize, GroupOfFrame<PointT>& frames);
+  virtual void loadAll(size_t startFrameNumber, size_t groupOfFramesSize, GroupOfFrame& frames);
 
-  virtual void loadAll(size_t startFrameNumber, size_t groupOfFramesSize, GroupOfFrame<PointT>& frames, bool parallel);
+  virtual void loadAll(size_t startFrameNumber, size_t groupOfFramesSize, GroupOfFrame& frames, bool parallel);
 
   void close();
 
  protected:
-  virtual void load(size_t                datasetIndex,
-                    size_t                startFrameNumber,
-                    size_t                groupOfFramesSize,
-                    GroupOfFrame<PointT>& frames);
+  virtual void load(size_t datasetIndex, size_t startFrameNumber, size_t groupOfFramesSize, GroupOfFrame& frames);
 
   virtual void open_(size_t datasetIndex, size_t startFrameNumber);
 
@@ -49,10 +49,7 @@ class DatasetReaderBase {
 
   [[nodiscard]] virtual bool isEof_(size_t datasetIndex);
 
-  virtual void load_(size_t                datasetIndex,
-                     size_t                startFrameNumber,
-                     size_t                groupOfFramesSize,
-                     GroupOfFrame<PointT>& frames);
+  virtual void load_(size_t datasetIndex, size_t startFrameNumber, size_t groupOfFramesSize, GroupOfFrame& frames);
 
   virtual void close_(size_t datasetIndex);
 };
