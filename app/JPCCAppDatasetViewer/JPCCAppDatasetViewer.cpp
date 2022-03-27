@@ -26,14 +26,16 @@ using namespace jpcc::process;
 
 void main_(const AppParameter& parameter, pcc::chrono::StopwatchUserTime& clock) {
   FramePtr<>                             cloud(new Frame<>());
-  FramePtr<>                             removedCloud(new Frame<>());
+  FramePtr<>                             radiusRemovedCloud(new Frame<>());
+  FramePtr<>                             statisticalRemovedCloud(new Frame<>());
   pcl::visualization::PCLVisualizer::Ptr viewer(
       new pcl::visualization::PCLVisualizer("JPCC Dataset Viewer " + parameter.dataset.name + " 0"));
 
   std::atomic_bool       run(true);
   std::mutex             mutex;
   std::queue<FramePtr<>> queue;
-  std::queue<FramePtr<>> removedQueue;
+  std::queue<FramePtr<>> radiusRemovedQueue;
+  std::queue<FramePtr<>> statisticalRemovedQueue;
 
   viewer->initCameraParameters();
   parameter.applyCameraPosition([&](double pos_x, double pos_y, double pos_z, double view_x, double view_y,
@@ -46,29 +48,54 @@ void main_(const AppParameter& parameter, pcc::chrono::StopwatchUserTime& clock)
   auto updateViewer = [&] {
     {
       std::lock_guard<std::mutex> lock(mutex);
-      if (queue.empty() || removedQueue.empty()) { return; }
+      if (queue.empty() || radiusRemovedQueue.empty() || statisticalRemovedQueue.empty()) { return; }
       cloud = queue.front();
       queue.pop();
-      removedCloud = removedQueue.front();
-      removedQueue.pop();
+      radiusRemovedCloud = radiusRemovedQueue.front();
+      radiusRemovedQueue.pop();
+      statisticalRemovedCloud = statisticalRemovedQueue.front();
+      statisticalRemovedQueue.pop();
     }
+
     viewer->setWindowName("JPCC Dataset Viewer " + parameter.dataset.name + " " + std::to_string(cloud->header.seq));
-    pcl::visualization::PointCloudColorHandlerGenericField<pcl::PointXYZ> zColor(cloud, "z");
+
+    if (!viewer->updateText("frame: " + std::to_string(cloud->header.seq), 5, 80, 16, 1.0, 1.0, 1.0, "frame")) {
+      viewer->addText("frame: " + std::to_string(cloud->header.seq), 5, 80, 16, 1.0, 1.0, 1.0, "frame");
+    }
+
+    if (!viewer->updateText("points: " + std::to_string(cloud->size()), 5, 60, 16, 1.0, 1.0, 1.0, "points")) {
+      viewer->addText("points: " + std::to_string(cloud->size()), 5, 60, 16, 1.0, 1.0, 1.0, "points");
+    }
+
+    pcl::visualization::PointCloudColorHandlerGenericField<Point> zColor(cloud, "z");
     if (!viewer->updatePointCloud(cloud, zColor, "cloud")) {
       viewer->addPointCloud<Point>(cloud, zColor, "cloud");
       //      viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "cloud");
     }
-    if (!viewer->updatePointCloud(removedCloud, "removedCloud")) {
-      viewer->addPointCloud<Point>(removedCloud, "removedCloud");
+
+    pcl::visualization::PointCloudColorHandlerCustom<Point> radiusRemovedColor(radiusRemovedCloud, 255.0, 255.0, 255.0);
+    if (!viewer->updatePointCloud(radiusRemovedCloud, radiusRemovedColor, "radiusRemovedCloud")) {
+      viewer->addPointCloud<Point>(radiusRemovedCloud, radiusRemovedColor, "radiusRemovedCloud");
       //      viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1,
-      //      "removedCloud");
+      //      "radiusRemovedCloud");
+    }
+    if (!viewer->updateText("radiusRemovedCloud: " + std::to_string(radiusRemovedCloud->size()), 5, 40, 16, 1.0, 1.0,
+                            1.0, "radiusRemovedCloudText")) {
+      viewer->addText("radiusRemovedCloud: " + std::to_string(radiusRemovedCloud->size()), 5, 40, 16, 1.0, 1.0, 1.0,
+                      "radiusRemovedCloudText");
     }
 
-    if (!viewer->updateText(" frame: " + std::to_string(cloud->header.seq), 5, 40, 16, 1.0, 1.0, 1.0, "frame")) {
-      viewer->addText(" frame: " + std::to_string(cloud->header.seq), 5, 40, 16, 1.0, 1.0, 1.0, "frame");
+    pcl::visualization::PointCloudColorHandlerCustom<Point> statisticalRemovedColor(statisticalRemovedCloud, 255.0, 0.0,
+                                                                                    255.0);
+    if (!viewer->updatePointCloud(statisticalRemovedCloud, statisticalRemovedColor, "statisticalRemovedCloud")) {
+      viewer->addPointCloud<Point>(statisticalRemovedCloud, statisticalRemovedColor, "statisticalRemovedCloud");
+      //      viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1,
+      //      "radiusRemovedCloud");
     }
-    if (!viewer->updateText("points: " + std::to_string(cloud->size()), 5, 20, 16, 1.0, 1.0, 1.0, "points")) {
-      viewer->addText("points: " + std::to_string(cloud->size()), 5, 20, 16, 1.0, 1.0, 1.0, "points");
+    if (!viewer->updateText("statisticalRemovedCloud: " + std::to_string(statisticalRemovedCloud->size()), 5, 20, 16,
+                            1.0, 0.0, 1.0, "statisticalRemovedCloudText")) {
+      viewer->addText("statisticalRemovedCloud: " + std::to_string(statisticalRemovedCloud->size()), 5, 20, 16, 1.0,
+                      0.0, 1.0, "statisticalRemovedCloudText");
     }
   };
   viewer->registerKeyboardCallback([&](auto& event) {
@@ -94,7 +121,8 @@ void main_(const AppParameter& parameter, pcc::chrono::StopwatchUserTime& clock)
       {
         std::lock_guard<std::mutex> lock(mutex);
         queue.push(frames.at(0));
-        removedQueue.push(((*removed)[RADIUS_OUTLIER_REMOVAL_OPT_PREFIX])->at(0));
+        radiusRemovedQueue.push(((*removed)[RADIUS_OUTLIER_REMOVAL_OPT_PREFIX])->at(0));
+        statisticalRemovedQueue.push(((*removed)[STATISTICAL_OUTLIER_REMOVAL_OPT_PREFIX])->at(0));
       }
       updateViewer();
       while (run) {
@@ -108,7 +136,10 @@ void main_(const AppParameter& parameter, pcc::chrono::StopwatchUserTime& clock)
             std::lock_guard<std::mutex> lock(mutex);
             if (queue.size() < groupOfFramesSize) {
               for (auto& frame : frames) { queue.push(frame); }
-              for (auto& frame : *((*removed)[RADIUS_OUTLIER_REMOVAL_OPT_PREFIX])) { removedQueue.push(frame); }
+              for (auto& frame : *((*removed)[RADIUS_OUTLIER_REMOVAL_OPT_PREFIX])) { radiusRemovedQueue.push(frame); }
+              for (auto& frame : *((*removed)[STATISTICAL_OUTLIER_REMOVAL_OPT_PREFIX])) {
+                statisticalRemovedQueue.push(frame);
+              }
               break;
             }
           }

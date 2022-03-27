@@ -22,13 +22,17 @@ class PreProcessor {
   PreProcessParameter param_;
 
  public:
-  PreProcessor(const PreProcessParameter& param);
+  PreProcessor(PreProcessParameter param);
 
   void process(GroupOfFrame& groupOfFrame, GroupOfFrameMapPtr removed = nullptr, bool parallel = false);
 
   void radiusOutlierRemoval(FramePtr& frame, FramePtr removed = nullptr);
 
   void radiusOutlierRemoval(GroupOfFrame& groupOfFrame, GroupOfFramePtr removed = nullptr, bool parallel = false);
+
+  void statisticalOutlierRemoval(FramePtr& frame, FramePtr removed = nullptr);
+
+  void statisticalOutlierRemoval(GroupOfFrame& groupOfFrame, GroupOfFramePtr removed = nullptr, bool parallel = false);
 };
 
 }  // namespace jpcc::process

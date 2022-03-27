@@ -5,6 +5,7 @@
 
 #include <jpcc/common/Parameter.h>
 #include <jpcc/process/RadiusOutlierRemovalParameter.h>
+#include <jpcc/process/StatisticalOutlierRemovalParameter.h>
 
 namespace jpcc::process {
 
@@ -13,8 +14,9 @@ class PreProcessParameter : public virtual Parameter {
   std::string order_;
 
  public:
-  std::vector<std::string>      order;
-  RadiusOutlierRemovalParameter radiusOutlierRemoval;
+  std::vector<std::string>           order;
+  RadiusOutlierRemovalParameter      radiusOutlierRemoval;
+  StatisticalOutlierRemovalParameter statisticalOutlierRemoval;
 
   PreProcessParameter();
 
