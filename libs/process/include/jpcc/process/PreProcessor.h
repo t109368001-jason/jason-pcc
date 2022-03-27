@@ -2,6 +2,9 @@
 
 #include <map>
 
+#define PCL_NO_PRECOMPILE
+#include <pcl/filters/filter_indices.h>
+
 #include <jpcc/common/GroupOfFrame.h>
 #include <jpcc/process/PreProcessParameter.h>
 
@@ -17,6 +20,8 @@ class PreProcessor {
   using GroupOfFramePtr    = shared_ptr<GroupOfFrame>;
   using GroupOfFrameMap    = std::map<std::string, GroupOfFramePtr>;
   using GroupOfFrameMapPtr = shared_ptr<GroupOfFrameMap>;
+  using Filter             = pcl::FilterIndices<PointT>;
+  using FilterPtr          = typename pcl::FilterIndices<PointT>::Ptr;
 
  protected:
   PreProcessParameter param_;
@@ -26,13 +31,14 @@ class PreProcessor {
 
   void process(GroupOfFrame& groupOfFrame, GroupOfFrameMapPtr removed = nullptr, bool parallel = false);
 
-  void radiusOutlierRemoval(FramePtr& frame, FramePtr removed = nullptr);
+  FilterPtr buildFilter(const std::string& algorithm);
 
-  void radiusOutlierRemoval(GroupOfFrame& groupOfFrame, GroupOfFramePtr removed = nullptr, bool parallel = false);
+  void applyAlgorithm(const std::string& algorithm,
+                      GroupOfFrame&      groupOfFrame,
+                      GroupOfFramePtr    removed  = nullptr,
+                      bool               parallel = false);
 
-  void statisticalOutlierRemoval(FramePtr& frame, FramePtr removed = nullptr);
-
-  void statisticalOutlierRemoval(GroupOfFrame& groupOfFrame, GroupOfFramePtr removed = nullptr, bool parallel = false);
+  void applyAlgorithm(const std::string& algorithm, FramePtr frame, FramePtr removed = nullptr);
 };
 
 }  // namespace jpcc::process

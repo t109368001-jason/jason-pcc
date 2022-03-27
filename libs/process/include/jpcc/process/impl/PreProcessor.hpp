@@ -1,8 +1,9 @@
 #include <jpcc/process/PreProcessor.h>
 
+#include <utility>
+
 #include <boost/algorithm/string.hpp>
 #include <boost/range/counting_range.hpp>
-#include <utility>
 
 #define PCL_NO_PRECOMPILE
 #include <pcl/filters/extract_indices.h>
@@ -20,42 +21,61 @@ PreProcessor<PointT>::PreProcessor(PreProcessParameter param) : param_(std::move
 template <class PointT>
 void PreProcessor<PointT>::process(GroupOfFrame& groupOfFrame, GroupOfFrameMapPtr removed, bool parallel) {
   for (const string& algorithm : param_.order) {
-    if (boost::iequals(algorithm, RADIUS_OUTLIER_REMOVAL_OPT_PREFIX)) {
-      GroupOfFramePtr groupOfFramePtr;
-      if (removed) {
-        groupOfFramePtr.reset(new GroupOfFrame());
-        groupOfFramePtr->resize(groupOfFrame.size());
-        for (auto& frame : *groupOfFramePtr) { frame.reset(new Frame()); }
-      }
-      radiusOutlierRemoval(groupOfFrame, groupOfFramePtr, parallel);
-      if (removed) { removed->insert_or_assign(RADIUS_OUTLIER_REMOVAL_OPT_PREFIX, groupOfFramePtr); }
+    GroupOfFramePtr groupOfFramePtr;
+    if (removed) {
+      groupOfFramePtr.reset(new GroupOfFrame());
+      groupOfFramePtr->resize(groupOfFrame.size());
+      for (auto& frame : *groupOfFramePtr) { frame.reset(new Frame()); }
     }
-    if (boost::iequals(algorithm, STATISTICAL_OUTLIER_REMOVAL_OPT_PREFIX)) {
-      GroupOfFramePtr groupOfFramePtr;
-      if (removed) {
-        groupOfFramePtr.reset(new GroupOfFrame());
-        groupOfFramePtr->resize(groupOfFrame.size());
-        for (auto& frame : *groupOfFramePtr) { frame.reset(new Frame()); }
-      }
-      statisticalOutlierRemoval(groupOfFrame, groupOfFramePtr, parallel);
-      if (removed) { removed->insert_or_assign(STATISTICAL_OUTLIER_REMOVAL_OPT_PREFIX, groupOfFramePtr); }
-    }
+    applyAlgorithm(algorithm, groupOfFrame, groupOfFramePtr, parallel);
+    if (removed) { removed->insert_or_assign(algorithm, groupOfFramePtr); }
   }
 }
 
 template <class PointT>
-void PreProcessor<PointT>::radiusOutlierRemoval(FramePtr& frame, FramePtr removed) {
-  pcl::RadiusOutlierRemoval<PointT> radiusOutlierRemoval;
-  radiusOutlierRemoval.setRadiusSearch(param_.radiusOutlierRemoval.radius);
-  radiusOutlierRemoval.setMinNeighborsInRadius(param_.radiusOutlierRemoval.minNeighborsInRadius);
-  //  radiusOutlierRemoval.setKeepOrganized(true);
-  radiusOutlierRemoval.setInputCloud(frame);
+typename PreProcessor<PointT>::FilterPtr PreProcessor<PointT>::buildFilter(const string& algorithm) {
+  FilterPtr filter;
+  if (algorithm == RADIUS_OUTLIER_REMOVAL_OPT_PREFIX) {
+    typename pcl::RadiusOutlierRemoval<PointT>::Ptr radiusOutlierRemoval(new pcl::RadiusOutlierRemoval<PointT>());
+    radiusOutlierRemoval->setRadiusSearch(param_.radiusOutlierRemoval.radius);
+    radiusOutlierRemoval->setMinNeighborsInRadius(param_.radiusOutlierRemoval.minNeighborsInRadius);
+    filter = radiusOutlierRemoval;
+  } else if (algorithm == STATISTICAL_OUTLIER_REMOVAL_OPT_PREFIX) {
+    typename pcl::StatisticalOutlierRemoval<PointT>::Ptr statisticalOutlierRemoval(
+        new pcl::StatisticalOutlierRemoval<PointT>());
+    statisticalOutlierRemoval->setMeanK(param_.statisticalOutlierRemoval.meanK);
+    statisticalOutlierRemoval->setStddevMulThresh(param_.statisticalOutlierRemoval.stddevMulThresh);
+    filter = statisticalOutlierRemoval;
+  } else {
+    BOOST_THROW_EXCEPTION(logic_error("not support algorithm: " + algorithm));
+  }
+  return filter;
+}
+
+template <class PointT>
+void PreProcessor<PointT>::applyAlgorithm(const string&                 algorithm,
+                                          GroupOfFrame&                 groupOfFrame,
+                                          PreProcessor::GroupOfFramePtr removed,
+                                          bool                          parallel) {
+  auto func  = [&](size_t i) { this->applyAlgorithm(algorithm, groupOfFrame.at(i), removed->at(i)); };
+  auto range = boost::counting_range<size_t>(0, groupOfFrame.size());
+  if (parallel) {
+    std::for_each(std::execution::par_unseq, range.begin(), range.end(), func);
+  } else {
+    std::for_each(range.begin(), range.end(), func);
+  }
+}
+
+template <class PointT>
+void PreProcessor<PointT>::applyAlgorithm(const string& algorithm, FramePtr frame, FramePtr removed) {
+  FilterPtr filter = buildFilter(algorithm);
+  filter->setInputCloud(frame);
   if (!removed) {
-    radiusOutlierRemoval.filter(*frame);
+    filter->filter(*frame);
   } else {
     removed->clear();
     shared_ptr<pcl::Indices> indices(new pcl::Indices());
-    radiusOutlierRemoval.filter(*indices);
+    filter->filter(*indices);
     pcl::ExtractIndices<PointT> extractIndices;
     extractIndices.setInputCloud(frame);
     extractIndices.setIndices(indices);
@@ -63,59 +83,6 @@ void PreProcessor<PointT>::radiusOutlierRemoval(FramePtr& frame, FramePtr remove
     extractIndices.filter(*removed);
     extractIndices.setNegative(false);
     extractIndices.filter(*frame);
-  }
-}
-
-template <class PointT>
-void PreProcessor<PointT>::radiusOutlierRemoval(GroupOfFrame& groupOfFrame, GroupOfFramePtr removed, bool parallel) {
-  auto range = boost::counting_range<size_t>(0, groupOfFrame.size());
-  if (parallel) {
-    std::for_each(std::execution::par_unseq, range.begin(), range.end(), [&](size_t i) {
-      radiusOutlierRemoval(groupOfFrame.at(i), removed != nullptr ? removed->at(i) : nullptr);
-    });
-  } else {
-    std::for_each(range.begin(), range.end(), [&](size_t i) {
-      radiusOutlierRemoval(groupOfFrame.at(i), removed != nullptr ? removed->at(i) : nullptr);
-    });
-  }
-}
-
-template <class PointT>
-void PreProcessor<PointT>::statisticalOutlierRemoval(FramePtr& frame, FramePtr removed) {
-  pcl::StatisticalOutlierRemoval<PointT> statisticalOutlierRemoval;
-  statisticalOutlierRemoval.setMeanK(param_.statisticalOutlierRemoval.meanK);
-  statisticalOutlierRemoval.setStddevMulThresh(param_.statisticalOutlierRemoval.stddevMulThresh);
-  //  radiusOutlierRemoval.setKeepOrganized(true);
-  statisticalOutlierRemoval.setInputCloud(frame);
-  if (!removed) {
-    statisticalOutlierRemoval.filter(*frame);
-  } else {
-    removed->clear();
-    shared_ptr<pcl::Indices> indices(new pcl::Indices());
-    statisticalOutlierRemoval.filter(*indices);
-    pcl::ExtractIndices<PointT> extractIndices;
-    extractIndices.setInputCloud(frame);
-    extractIndices.setIndices(indices);
-    extractIndices.setNegative(true);
-    extractIndices.filter(*removed);
-    extractIndices.setNegative(false);
-    extractIndices.filter(*frame);
-  }
-}
-
-template <class PointT>
-void PreProcessor<PointT>::statisticalOutlierRemoval(GroupOfFrame&                 groupOfFrame,
-                                                     PreProcessor::GroupOfFramePtr removed,
-                                                     bool                          parallel) {
-  auto range = boost::counting_range<size_t>(0, groupOfFrame.size());
-  if (parallel) {
-    std::for_each(std::execution::par_unseq, range.begin(), range.end(), [&](size_t i) {
-      statisticalOutlierRemoval(groupOfFrame.at(i), removed != nullptr ? removed->at(i) : nullptr);
-    });
-  } else {
-    std::for_each(range.begin(), range.end(), [&](size_t i) {
-      statisticalOutlierRemoval(groupOfFrame.at(i), removed != nullptr ? removed->at(i) : nullptr);
-    });
   }
 }
 
