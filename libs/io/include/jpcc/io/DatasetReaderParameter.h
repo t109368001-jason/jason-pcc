@@ -1,11 +1,10 @@
 #pragma once
 
-#include <jpcc/io/ReaderParameter.h>
 #include <jpcc/io/LvxReaderParameter.h>
 
 namespace jpcc::io {
 
-class DatasetReaderParameter : public virtual ReaderParameter, public virtual LvxReaderParameter {
+class DatasetReaderParameter : public virtual LvxReaderParameter {
  public:
   DatasetReaderParameter();
 
