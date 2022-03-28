@@ -73,6 +73,10 @@ class OctreeNBufBase {
   using uindex_t  = unsigned int;
 
   using BufferPattern = std::bitset<BUFFER_SIZE>;
+  using BufferIndices = std::array<int, BUFFER_SIZE>;
+  using Filter1       = std::function<bool(const BufferPattern& bufferPattern)>;
+  using Filter3       = std::function<bool(
+      const BufferIndex bufferIndex, const BufferPattern& bufferPattern, const BufferIndices& bufferIndices)>;
 
   using Iterator                   = pcl::octree::OctreeDepthFirstIterator<OctreeT>;
   using LeafNodeDepthFirstIterator = pcl::octree::OctreeLeafNodeDepthFirstIterator<OctreeT>;
@@ -224,23 +228,13 @@ class OctreeNBufBase {
 
   [[nodiscard]] BufferPattern getBufferPattern(const BranchNode& branchNode, ChildIndex childIndex) const;
 
-  void getIndicesByFilter(const std::function<bool(const BufferPattern& bufferPattern)>& filter,
-                          pcl::Indices&                                                  indices) const;
+  void getIndicesByFilter(const Filter1& filter, pcl::Indices& indices) const;
 
-  void getIndicesByFilterRecursive(const BranchNode*                                              branchNode,
-                                   const std::function<bool(const BufferPattern& bufferPattern)>& filter,
-                                   pcl::Indices&                                                  indices) const;
+  void getIndicesByFilterRecursive(const BranchNode* branchNode, const Filter1& filter, pcl::Indices& indices) const;
 
-  void process(const std::function<bool(const BufferIndex                   bufferIndex,
-                                        const BufferPattern&                bufferPattern,
-                                        const std::array<int, BUFFER_SIZE>& bufferIndices)>& func,
-               pcl::Indices&                                                                 indices) const;
+  void process(const Filter3& func, pcl::Indices& indices) const;
 
-  void processRecursive(const BranchNode*                                                             branchNode,
-                        const std::function<bool(const BufferIndex                   bufferIndex,
-                                                 const BufferPattern&                bufferPattern,
-                                                 const std::array<int, BUFFER_SIZE>& bufferIndices)>& func,
-                        pcl::Indices&                                                                 indices) const;
+  void processRecursive(const BranchNode* branchNode, const Filter3& func, pcl::Indices& indices) const;
 
   bool deleteBuffer();
 

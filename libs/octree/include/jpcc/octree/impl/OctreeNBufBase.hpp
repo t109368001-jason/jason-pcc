@@ -651,17 +651,15 @@ OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::getBufferPattern(
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <BufferIndex BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
-void OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::getIndicesByFilter(
-    const std::function<bool(const BufferPattern& bufferPattern)>& filter, pcl::Indices& indices) const {
+void OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::getIndicesByFilter(const Filter1& filter,
+                                                                                       pcl::Indices&  indices) const {
   getIndicesByFilterRecursive(root_node_, filter, indices);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <BufferIndex BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
 void OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::getIndicesByFilterRecursive(
-    const BranchNode*                                              branchNode,
-    const std::function<bool(const BufferPattern& bufferPattern)>& filter,
-    pcl::Indices&                                                  indices) const {
+    const BranchNode* branchNode, const Filter1& filter, pcl::Indices& indices) const {
   // iterate over all children
   for (ChildIndex childIndex = 0; childIndex < 8; childIndex++) {
     if (branchNode->hasChild(bufferIndex_, childIndex)) {
@@ -687,22 +685,16 @@ void OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::getIndicesBy
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <BufferIndex BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
-void OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::process(
-    const std::function<bool(const BufferIndex                   bufferIndex,
-                             const BufferPattern&                bufferPattern,
-                             const std::array<int, BUFFER_SIZE>& bufferIndices)>& func,
-    pcl::Indices&                                                                 indices) const {
+void OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::process(const Filter3& func,
+                                                                            pcl::Indices&  indices) const {
   processRecursive(root_node_, func, indices);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <BufferIndex BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
-void OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::processRecursive(
-    const BranchNode*                                                             branchNode,
-    const std::function<bool(const BufferIndex                   bufferIndex,
-                             const BufferPattern&                bufferPattern,
-                             const std::array<int, BUFFER_SIZE>& bufferIndices)>& func,
-    pcl::Indices&                                                                 indices) const {
+void OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::processRecursive(const BranchNode* branchNode,
+                                                                                     const Filter3&    func,
+                                                                                     pcl::Indices&     indices) const {
   for (ChildIndex childIndex = 0; childIndex < 8; childIndex++) {
     if (branchNode->hasChild(bufferIndex_, childIndex)) {
       const OctreeNode* childNode = branchNode->getChildPtr(bufferIndex_, childIndex);
@@ -714,7 +706,7 @@ void OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::processRecur
           break;
         }
         case pcl::octree::LEAF_NODE: {
-          std::array<int, BUFFER_SIZE> bufferIndices;
+          BufferIndices bufferIndices;
 
           for (BufferIndex b = 0; b < BUFFER_SIZE; b++) {
             if (branchNode->hasChild(b, childIndex)) {

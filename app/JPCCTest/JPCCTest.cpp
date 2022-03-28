@@ -2,7 +2,6 @@
 #include <array>
 #include <chrono>
 #include <execution>
-#include <future>
 #include <iostream>
 #include <mutex>
 #include <queue>
@@ -31,7 +30,7 @@
 
 #include "AppParameter.h"
 
-#define BUFFER_SIZE 10
+#define BUFFER_SIZE 8
 
 using namespace std::chrono;
 using namespace pcc;
@@ -40,65 +39,103 @@ using namespace jpcc::io;
 using namespace jpcc::octree;
 using namespace jpcc::process;
 
+using PointT = PointNormal;
+using OctreeNBufBaseT =
+    OctreeNBufBase<BUFFER_SIZE, pcl::octree::OctreeContainerPointIndices, pcl::octree::OctreeContainerEmpty>;
+using OctreePointCloudT = pcl::octree::OctreePointCloud<PointT,
+                                                        pcl::octree::OctreeContainerPointIndices,
+                                                        pcl::octree::OctreeContainerEmpty,
+                                                        OctreeNBufBaseT>;
+
 void test(const AppParameter& parameter, pcc::chrono::StopwatchUserTime& clock) {
-  FramePtr<PointNormal>             staticCloud(new Frame<PointNormal>());
-  FramePtr<PointNormal>             dynamicCloud(new Frame<PointNormal>());
-  std::atomic_bool                  run(true);
-  std::mutex                        mutex;
-  std::queue<FramePtr<PointNormal>> queue;
+  FramePtr<PointT>             staticCloud(new Frame<PointT>());
+  FramePtr<PointT>             dynamicCloud(new Frame<PointT>());
+  std::atomic_bool             run(true);
+  std::mutex                   mutex;
+  std::queue<FramePtr<PointT>> staticQueue;
+  std::queue<FramePtr<PointT>> dynamicQueue;
 
   std::atomic_bool hasFirstFrame(false);
+
+  pcl::visualization::PCLVisualizer::Ptr viewer(new pcl::visualization::PCLVisualizer("3D Viewer"));
+
+  viewer->initCameraParameters();
+  parameter.applyCameraPosition([&](double pos_x, double pos_y, double pos_z, double view_x, double view_y,
+                                    double view_z, double up_x, double up_y, double up_z) {
+    viewer->setCameraPosition(pos_x, pos_y, pos_z, view_x, view_y, view_z, up_x, up_y, up_z);
+  });
+  viewer->setBackgroundColor(0, 0, 0);
+  viewer->addCoordinateSystem(3.0, "coordinate");
+  viewer->addText("processing", 5, 80, 16, 1.0, 1.0, 1.0, "frame");
+
+  auto updateViewer = [&] {
+    {
+      if (staticQueue.empty() || dynamicQueue.empty()) { return; }
+      std::lock_guard<std::mutex> lock(mutex);
+      staticCloud = staticQueue.front();
+      staticQueue.pop();
+      dynamicCloud = dynamicQueue.front();
+      dynamicQueue.pop();
+    }
+
+    if (!viewer->updateText("frame: " + std::to_string(staticCloud->header.seq), 5, 80, 16, 1.0, 1.0, 1.0, "frame")) {
+      viewer->addText("frame: " + std::to_string(staticCloud->header.seq), 5, 80, 16, 1.0, 1.0, 1.0, "frame");
+    }
+
+    pcl::visualization::PointCloudColorHandlerGenericField<PointT> staticColor(staticCloud, "z");
+    if (!viewer->updatePointCloud(staticCloud, staticColor, "staticCloud")) {
+      viewer->addPointCloud<PointT>(staticCloud, staticColor, "staticCloud");
+    }
+    if (!viewer->updateText("staticCloud points: " + std::to_string(staticCloud->size()), 5, 60, 16, 1.0, 1.0, 1.0,
+                            "staticCloud points")) {
+      viewer->addText("staticCloud points: " + std::to_string(staticCloud->size()), 5, 60, 16, 1.0, 1.0, 1.0,
+                      "staticCloud points");
+    }
+
+    pcl::visualization::PointCloudColorHandlerCustom<PointT> dynamicColor(dynamicCloud, 255.0, 0.0, 255.0);
+    if (!viewer->updatePointCloud(dynamicCloud, dynamicColor, "dynamicCloud")) {
+      viewer->addPointCloud<PointT>(dynamicCloud, dynamicColor, "dynamicCloud");
+    }
+    if (!viewer->updateText("dynamicCloud points: " + std::to_string(dynamicCloud->size()), 5, 40, 16, 1.0, 0.0, 1.0,
+                            "dynamicCloud points")) {
+      viewer->addText("dynamicCloud points: " + std::to_string(dynamicCloud->size()), 5, 40, 16, 1.0, 0.0, 1.0,
+                      "dynamicCloud points");
+    }
+  };
+  viewer->registerKeyboardCallback([&](auto& event) {
+    if (event.getKeyCode() == ' ' && event.keyDown()) { updateViewer(); }
+  });
 
   auto datasetLoading = [&] {
     try {
       while (run) {
-        DatasetReaderPtr<PointNormal> reader = newReader<PointNormal>(parameter.reader, parameter.dataset);
-        PreProcessor<PointNormal>     preProcessor(parameter.preProcess);
+        DatasetReaderPtr<PointT> reader = newReader<PointT>(parameter.reader, parameter.dataset);
+        PreProcessor<PointT>     preProcessor(parameter.preProcess);
 
-        GroupOfFrame<PointNormal> frames;
-        size_t                    startFrameNumber = parameter.dataset.getStartFrameNumbers();
-        size_t                    endFrameNumber   = startFrameNumber + parameter.dataset.getFrameCounts();
+        GroupOfFrame<PointT> frames;
+        size_t               startFrameNumber = parameter.dataset.getStartFrameNumbers();
+        size_t               endFrameNumber   = startFrameNumber + parameter.dataset.getFrameCounts();
 
         BufferIndex bufferIndex = 0;
 
-        std::array<FramePtr<PointNormal>, BUFFER_SIZE> clouds;
+        std::array<FramePtr<PointT>, BUFFER_SIZE> clouds;
 
-        std::function<bool(const BufferIndex                                                       bufferIndex,
-                           const OctreeNBufBase<BUFFER_SIZE, pcl::octree::OctreeContainerPointIndices,
-                                                pcl::octree::OctreeContainerEmpty>::BufferPattern& bufferPattern,
-                           const std::array<int, BUFFER_SIZE>&                                     bufferIndices)>
-            func = [&](const BufferIndex                                                       _bufferIndex,
-                       const OctreeNBufBase<BUFFER_SIZE, pcl::octree::OctreeContainerPointIndices,
-                                            pcl::octree::OctreeContainerEmpty>::BufferPattern& bufferPattern,
-                       const std::array<int, BUFFER_SIZE>&                                     bufferIndices) {
-              if ((float)bufferPattern.count() > BUFFER_SIZE * parameter.float3) { return true; }
-              auto normal = clouds.at(_bufferIndex)->at(bufferIndices.at(_bufferIndex)).getNormalVector3fMap();
-              Eigen::Matrix3Xf matrix(3, bufferPattern.count());
-              int              i = 0;
-              for (BufferIndex ii = 0; ii < BUFFER_SIZE; ii++) {
-                if (bufferPattern.test(ii)) {
-                  matrix.col(i++) = clouds.at(ii)->at(bufferIndices.at(ii)).getNormalVector3fMap();
-                }
-              }
-              float e = (float)((matrix.transpose() * normal).array().acos().mean() / M_PI * 180.0);
-              return e < parameter.float2;
-            };
-        std::function<bool(const BufferIndex                                                       bufferIndex,
-                           const OctreeNBufBase<BUFFER_SIZE, pcl::octree::OctreeContainerPointIndices,
-                                                pcl::octree::OctreeContainerEmpty>::BufferPattern& bufferPattern,
-                           const std::array<int, BUFFER_SIZE>&                                     bufferIndices)>
-            notFunc = [&](const BufferIndex                                                       _bufferIndex,
-                          const OctreeNBufBase<BUFFER_SIZE, pcl::octree::OctreeContainerPointIndices,
-                                               pcl::octree::OctreeContainerEmpty>::BufferPattern& bufferPattern,
-                          const std::array<int, BUFFER_SIZE>&                                     bufferIndices) {
-              bool result = func(_bufferIndex, bufferPattern, bufferIndices);
-              return !result;
-            };
-
-        pcl::octree::OctreePointCloud<
-            PointNormal, pcl::octree::OctreeContainerPointIndices, pcl::octree::OctreeContainerEmpty,
-            OctreeNBufBase<BUFFER_SIZE, pcl::octree::OctreeContainerPointIndices, pcl::octree::OctreeContainerEmpty>>
-            octree(0.1);
+        OctreeNBufBaseT::Filter3 func = [&](const BufferIndex                     _bufferIndex,
+                                            const OctreeNBufBaseT::BufferPattern& bufferPattern,
+                                            const OctreeNBufBaseT::BufferIndices& bufferIndices) {
+          if ((float)bufferPattern.count() > BUFFER_SIZE * parameter.float3) { return true; }
+          auto             normal = clouds.at(_bufferIndex)->at(bufferIndices.at(_bufferIndex)).getNormalVector3fMap();
+          Eigen::Matrix3Xf matrix(3, bufferPattern.count());
+          int              i = 0;
+          for (BufferIndex ii = 0; ii < BUFFER_SIZE; ii++) {
+            if (bufferPattern.test(ii)) {
+              matrix.col(i++) = clouds.at(ii)->at(bufferIndices.at(ii)).getNormalVector3fMap();
+            }
+          }
+          float e = (float)((matrix.transpose() * normal).array().acos().mean() / M_PI * 180.0);
+          return e < parameter.float2;
+        };
+        OctreePointCloudT octree(0.1);
         octree.defineBoundingBox(octree.getResolution() * 2);
 
         clock.start();
@@ -106,7 +143,7 @@ void test(const AppParameter& parameter, pcc::chrono::StopwatchUserTime& clock) 
         preProcessor.process(frames, nullptr, parameter.parallel);
         clock.stop();
 
-        auto outlierRemoval = [&](const PointNormal& point) {
+        auto outlierRemoval = [&](const PointT& point) {
           float distance = point.getVector3fMap().norm();
           return distance > 100.0;
         };
@@ -122,7 +159,7 @@ void test(const AppParameter& parameter, pcc::chrono::StopwatchUserTime& clock) 
         auto calcNormal = [&](size_t i) {
           clouds.at(i) = frames.at(i);
 
-          pcl::NormalEstimation<PointNormal, PointNormal> ne;
+          pcl::NormalEstimation<PointT, PointT> ne;
           ne.setRadiusSearch(parameter.float1);
           ne.setInputCloud(clouds.at(i));
           ne.compute(*clouds.at(i));
@@ -154,7 +191,7 @@ void test(const AppParameter& parameter, pcc::chrono::StopwatchUserTime& clock) 
 
           clouds.at(bufferIndex) = frames.at(0);
 
-          pcl::NormalEstimation<PointNormal, PointNormal> ne;
+          pcl::NormalEstimation<PointT, PointT> ne;
           ne.setRadiusSearch(0.1);
           ne.setInputCloud(clouds.at(bufferIndex));
           ne.compute(*clouds.at(bufferIndex));
@@ -165,45 +202,39 @@ void test(const AppParameter& parameter, pcc::chrono::StopwatchUserTime& clock) 
           octree.addPointsFromInputCloud();
 
           {
-            pcl::Indices          indices;
-            FramePtr<PointNormal> cloud(new Frame<PointNormal>());
-            octree.process(func, indices);
+            shared_ptr<pcl::Indices> indices(new pcl::Indices());
+            FramePtr<PointT>         staticCloud_(new Frame<PointT>());
+            FramePtr<PointT>         dynamicCloud_(new Frame<PointT>());
+            octree.process(func, *indices);
 
-            cloud->clear();
-            cloud->resize(indices.size());
-            std::for_each(indices.begin(), indices.end(), [&, i = 0](auto index_) mutable {
-              cloud->at(i) = frames.at(0)->at(index_);
-              i++;
-            });
-
-            std::lock_guard<std::mutex> lock(mutex);
-            staticCloud = cloud;
-          }
-          {
-            pcl::Indices          indices;
-            FramePtr<PointNormal> cloud(new Frame<PointNormal>());
-            octree.process(notFunc, indices);
-
-            cloud->clear();
-            cloud->resize(indices.size());
-            std::for_each(indices.begin(), indices.end(), [&, i = 0](auto index_) mutable {
-              cloud->at(i) = frames.at(0)->at(index_);
-              i++;
-            });
+            pcl::ExtractIndices<PointT> extractIndices;
+            extractIndices.setInputCloud(frames.at(0));
+            extractIndices.setIndices(indices);
+            extractIndices.setNegative(true);
+            extractIndices.filter(*dynamicCloud_);
+            extractIndices.setNegative(false);
+            extractIndices.filter(*staticCloud_);
 
             std::lock_guard<std::mutex> lock(mutex);
-            dynamicCloud = cloud;
-          }
-          {
-            std::lock_guard<std::mutex> lock(mutex);
+            staticQueue.push(staticCloud_);
+            dynamicQueue.push(dynamicCloud_);
             std::cout << "staticCloud=" << *staticCloud << std::endl;
             std::cout << "dynamicCloud=" << *dynamicCloud << std::endl;
           }
 
+          do {
+            {
+              std::lock_guard<std::mutex> lock(mutex);
+              if (staticQueue.size() < BUFFER_SIZE) { break; }
+            }
+            std::this_thread::sleep_for(100ms);
+          } while (run);
+          if (!hasFirstFrame) {
+            updateViewer();
+            hasFirstFrame = true;
+          }
           startFrameNumber += 1;
-          bufferIndex   = (bufferIndex + 1) % BUFFER_SIZE;
-          hasFirstFrame = true;
-          while (run) { std::this_thread::sleep_for(100ms); }
+          bufferIndex = (bufferIndex + 1) % BUFFER_SIZE;
         }
       }
     } catch (std::exception& e) { std::cerr << e.what() << std::endl; }
@@ -212,37 +243,9 @@ void test(const AppParameter& parameter, pcc::chrono::StopwatchUserTime& clock) 
 
   shared_ptr<std::thread> thread(new std::thread(datasetLoading));
 
-  while (!hasFirstFrame && run) { std::this_thread::sleep_for(100ms); }
-
-  pcl::visualization::PCLVisualizer::Ptr viewer(new pcl::visualization::PCLVisualizer("3D Viewer"));
-
-  viewer->initCameraParameters();
-  //  viewer->setCameraPosition(0.0, 0.0, 200.0, 0.0, 0.0, -1.0, 0.0, 1.0, 0.0);
-  viewer->setCameraPosition(-10, 0.0, 0.0,  //
-                            1.0, 0.0, 0.0,  //
-                            0.0, 0.0, 1.0);
-  viewer->setBackgroundColor(0, 0, 0);
-  //  viewer->addCoordinateSystem(3.0, "coordinate");
-
-  viewer->addPointCloud<PointNormal>(staticCloud, "staticCloud");
-  viewer->addPointCloud<PointNormal>(dynamicCloud, "dynamicCloud");
-  viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "staticCloud");
-  viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "dynamicCloud");
-
   while (!viewer->wasStopped() && run) {
     viewer->spinOnce(100);
     // std::this_thread::sleep_for(100ms);
-    FramePtr<PointNormal> staticCloud_;
-    FramePtr<PointNormal> dynamicCloud_;
-    {
-      std::lock_guard<std::mutex> lock(mutex);
-      staticCloud_  = staticCloud;
-      dynamicCloud_ = dynamicCloud;
-    }
-    pcl::visualization::PointCloudColorHandlerCustom<PointNormal> staticColor(staticCloud_, 255.0, 0.0, 0.0);
-    pcl::visualization::PointCloudColorHandlerCustom<PointNormal> dynamicColor(dynamicCloud_, 0.0, 0.0, 255.0);
-    viewer->updatePointCloud(staticCloud_, staticColor, "staticCloud");
-    viewer->updatePointCloud(dynamicCloud_, dynamicColor, "dynamicCloud");
   }
   run = false;
   if (thread && thread->joinable()) { thread->join(); }
