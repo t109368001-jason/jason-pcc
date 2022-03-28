@@ -24,6 +24,7 @@
 #include <jpcc/common/ParameterParser.h>
 #include <jpcc/io/DatasetReader.h>
 #include <jpcc/octree/OctreeNBufBase.h>
+#include <jpcc/process/PreProcessor.h>
 
 #include <PCCChrono.h>
 #include <PCCMemory.h>
@@ -37,11 +38,9 @@ using namespace pcc;
 using namespace jpcc;
 using namespace jpcc::io;
 using namespace jpcc::octree;
+using namespace jpcc::process;
 
-void test(const AppParameter&             appParameter,
-          const DatasetParameter&         datasetParameter,
-          const DatasetReaderParameter&   readerParameter,
-          pcc::chrono::StopwatchUserTime& clock) {
+void test(const AppParameter& parameter, pcc::chrono::StopwatchUserTime& clock) {
   FramePtr<PointNormal>             staticCloud(new Frame<PointNormal>());
   FramePtr<PointNormal>             dynamicCloud(new Frame<PointNormal>());
   std::atomic_bool                  run(true);
@@ -53,10 +52,12 @@ void test(const AppParameter&             appParameter,
   auto datasetLoading = [&] {
     try {
       while (run) {
-        DatasetReaderPtr<PointNormal> reader = newReader<PointNormal>(readerParameter, datasetParameter);
-        GroupOfFrame<PointNormal>     frames;
-        size_t                        startFrameNumber = datasetParameter.getStartFrameNumbers();
-        size_t                        endFrameNumber   = startFrameNumber + datasetParameter.getFrameCounts();
+        DatasetReaderPtr<PointNormal> reader = newReader<PointNormal>(parameter.reader, parameter.dataset);
+        PreProcessor<PointNormal>     preProcessor(parameter.preProcess);
+
+        GroupOfFrame<PointNormal> frames;
+        size_t                    startFrameNumber = parameter.dataset.getStartFrameNumbers();
+        size_t                    endFrameNumber   = startFrameNumber + parameter.dataset.getFrameCounts();
 
         BufferIndex bufferIndex = 0;
 
@@ -70,7 +71,7 @@ void test(const AppParameter&             appParameter,
                        const OctreeNBufBase<BUFFER_SIZE, pcl::octree::OctreeContainerPointIndices,
                                             pcl::octree::OctreeContainerEmpty>::BufferPattern& bufferPattern,
                        const std::array<int, BUFFER_SIZE>&                                     bufferIndices) {
-              if ((float)bufferPattern.count() > BUFFER_SIZE * appParameter.float3) { return true; }
+              if ((float)bufferPattern.count() > BUFFER_SIZE * parameter.float3) { return true; }
               auto normal = clouds.at(_bufferIndex)->at(bufferIndices.at(_bufferIndex)).getNormalVector3fMap();
               Eigen::Matrix3Xf matrix(3, bufferPattern.count());
               int              i = 0;
@@ -80,7 +81,7 @@ void test(const AppParameter&             appParameter,
                 }
               }
               float e = (float)((matrix.transpose() * normal).array().acos().mean() / M_PI * 180.0);
-              return e < appParameter.float2;
+              return e < parameter.float2;
             };
         std::function<bool(const BufferIndex                                                       bufferIndex,
                            const OctreeNBufBase<BUFFER_SIZE, pcl::octree::OctreeContainerPointIndices,
@@ -101,7 +102,8 @@ void test(const AppParameter&             appParameter,
         octree.defineBoundingBox(octree.getResolution() * 2);
 
         clock.start();
-        reader->loadAll(startFrameNumber, BUFFER_SIZE - 1, frames, appParameter.parallel);
+        reader->loadAll(startFrameNumber, BUFFER_SIZE - 1, frames, parameter.parallel);
+        preProcessor.process(frames, nullptr, parameter.parallel);
         clock.stop();
 
         auto outlierRemoval = [&](const PointNormal& point) {
@@ -109,7 +111,7 @@ void test(const AppParameter&             appParameter,
           return distance > 100.0;
         };
         for (auto& frame : frames) {
-          if (appParameter.parallel) {
+          if (parameter.parallel) {
             frame->erase(std::remove_if(std::execution::par_unseq, frame->begin(), frame->end(), outlierRemoval));
           } else {
             frame->erase(std::remove_if(frame->begin(), frame->end(), outlierRemoval));
@@ -121,12 +123,12 @@ void test(const AppParameter&             appParameter,
           clouds.at(i) = frames.at(i);
 
           pcl::NormalEstimation<PointNormal, PointNormal> ne;
-          ne.setRadiusSearch(appParameter.float1);
+          ne.setRadiusSearch(parameter.float1);
           ne.setInputCloud(clouds.at(i));
           ne.compute(*clouds.at(i));
         };
 
-        if (appParameter.parallel) {
+        if (parameter.parallel) {
           std::for_each(std::execution::par_unseq, range.begin(), range.end(), calcNormal);
         } else {
           std::for_each(range.begin(), range.end(), calcNormal);
@@ -146,7 +148,8 @@ void test(const AppParameter&             appParameter,
 
         while (run && startFrameNumber < endFrameNumber) {
           clock.start();
-          reader->loadAll(startFrameNumber, 1, frames, appParameter.parallel);
+          reader->loadAll(startFrameNumber, 1, frames, parameter.parallel);
+          preProcessor.process(frames, nullptr, parameter.parallel);
           clock.stop();
 
           clouds.at(bufferIndex) = frames.at(0);
@@ -250,17 +253,12 @@ int main(int argc, char* argv[]) {
 
   vtkObject::GlobalWarningDisplayOff();
 
-  AppParameter           appParameter;
-  DatasetParameter       datasetParameter;
-  DatasetReaderParameter readerParameter;
+  AppParameter parameter;
   try {
     ParameterParser pp;
-    pp.add(appParameter);
-    pp.add(datasetParameter);
-    pp.add(readerParameter);
+    pp.add(parameter);
     if (!pp.parse(argc, argv)) { return 1; }
-    std::cout << datasetParameter << std::endl;
-    std::cout << readerParameter << std::endl;
+    std::cout << parameter << std::endl;
   } catch (std::exception& e) {
     std::cerr << e.what() << std::endl;
     return 1;
@@ -272,7 +270,7 @@ int main(int argc, char* argv[]) {
   pcc::chrono::StopwatchUserTime       clockUser;
 
   clockWall.start();
-  test(appParameter, datasetParameter, readerParameter, clockUser);
+  test(parameter, clockUser);
   clockWall.stop();
 
   auto totalWall      = duration_cast<milliseconds>(clockWall.count()).count();

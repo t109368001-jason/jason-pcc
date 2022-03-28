@@ -1,6 +1,6 @@
 #include "AppParameter.h"
 
-#include <filesystem>
+#include <boost/algorithm/string.hpp>
 
 namespace jpcc {
 
@@ -9,6 +9,7 @@ using namespace po;
 
 #define APP_OPT_PREFIX "app"
 #define PARALLEL_OPT_PREFIX ".parallel"
+#define CAMERA_POSITION_OPT_PREFIX ".cameraPosition"
 #define BOOL1_OPT_PREFIX ".bool1"
 #define BOOL2_OPT_PREFIX ".bool2"
 #define BOOL3_OPT_PREFIX ".bool3"
@@ -25,6 +26,9 @@ using namespace po;
 AppParameter::AppParameter() :
     Parameter(APP_OPT_PREFIX, __FUNCTION__),
     parallel(false),
+    dataset(),
+    reader(),
+    preProcess(),
     bool1(false),
     bool2(false),
     bool3(false),
@@ -36,6 +40,9 @@ AppParameter::AppParameter() :
     float3(NAN) {
   opts_.add_options()                                                                                               //
       (string(prefix_ + PARALLEL_OPT_PREFIX).c_str(), value<bool>(&parallel)->default_value(parallel), "parallel")  //
+      (string(prefix_ + CAMERA_POSITION_OPT_PREFIX).c_str(),                                                        //
+       value<string>(&cameraPosition_)->default_value(cameraPosition_),                                             //
+       "cameraPosition")                                                                                            //
       (string(prefix_ + BOOL1_OPT_PREFIX).c_str(), value<bool>(&bool1)->default_value(bool1), "bool1")              //
       (string(prefix_ + BOOL2_OPT_PREFIX).c_str(), value<bool>(&bool2)->default_value(bool2), "bool2")              //
       (string(prefix_ + BOOL3_OPT_PREFIX).c_str(), value<bool>(&bool3)->default_value(bool3), "bool3")              //
@@ -49,6 +56,43 @@ AppParameter::AppParameter() :
       (string(prefix_ + STRING2_OPT_PREFIX).c_str(), value<string>(&string2)->default_value(string2), "string2")    //
       (string(prefix_ + STRING3_OPT_PREFIX).c_str(), value<string>(&string3)->default_value(string3), "string3")    //
       ;
+  opts_.add(dataset.getOpts());
+  opts_.add(reader.getOpts());
+  opts_.add(preProcess.getOpts());
+}
+
+void AppParameter::notify() {
+  vector<string> ss;
+  boost::algorithm::split(ss, cameraPosition_, boost::is_any_of(","));
+  assert(ss.size() == cameraPosition.size());
+  transform(ss.begin(), ss.end(), cameraPosition.begin(), [](auto&& s) { return stod(s); });
+  dataset.notify();
+  reader.notify();
+  preProcess.notify();
+}
+
+ostream& operator<<(ostream& out, const AppParameter& obj) {
+  out << obj.caption_ << endl;
+  out << "\t" << obj.prefix_ << PARALLEL_OPT_PREFIX "=" << obj.parallel << endl;
+  out << "\t" << obj.prefix_ << CAMERA_POSITION_OPT_PREFIX "=" << obj.cameraPosition_ << endl;
+  out << obj.dataset;
+  out << obj.reader;
+  out << obj.preProcess;
+  out << "\t" << obj.prefix_ << BOOL1_OPT_PREFIX "=" << obj.bool1 << endl;
+  return out;
+}
+
+void AppParameter::applyCameraPosition(const function<void(double pos_x,
+                                                           double pos_y,
+                                                           double pos_z,
+                                                           double view_x,
+                                                           double view_y,
+                                                           double view_z,
+                                                           double up_x,
+                                                           double up_y,
+                                                           double up_z)>& func) const {
+  func(cameraPosition[0], cameraPosition[1], cameraPosition[2], cameraPosition[3], cameraPosition[4], cameraPosition[5],
+       cameraPosition[6], cameraPosition[7], cameraPosition[8]);
 }
 
 }  // namespace jpcc
