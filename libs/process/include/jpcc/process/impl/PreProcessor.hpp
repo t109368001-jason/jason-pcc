@@ -57,7 +57,9 @@ void PreProcessor<PointT>::applyAlgorithm(const string&                 algorith
                                           GroupOfFrame&                 groupOfFrame,
                                           PreProcessor::GroupOfFramePtr removed,
                                           bool                          parallel) {
-  auto func  = [&](size_t i) { this->applyAlgorithm(algorithm, groupOfFrame.at(i), removed->at(i)); };
+  auto func = [&](size_t i) {
+    this->applyAlgorithm(algorithm, groupOfFrame.at(i), removed ? removed->at(i) : nullptr);
+  };
   auto range = boost::counting_range<size_t>(0, groupOfFrame.size());
   if (parallel) {
     std::for_each(std::execution::par_unseq, range.begin(), range.end(), func);

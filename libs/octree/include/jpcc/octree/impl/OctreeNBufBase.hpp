@@ -378,7 +378,7 @@ void OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::deleteBranch
         // set branch child pointer to 0
         branchNode.setChildPtr(bufferIndex, childIndex, nullptr);
         branch_count_--;
-        branch_counts_.at(bufferIndex_)--;
+        branch_counts_.at(bufferIndex)--;
         break;
       }
 
@@ -388,7 +388,7 @@ void OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::deleteBranch
         // set branch child pointer to 0
         branchNode.setChildPtr(bufferIndex, childIndex, nullptr);
         leaf_count_--;
-        leaf_counts_.at(bufferIndex_)--;
+        leaf_counts_.at(bufferIndex)--;
         break;
       }
       default: break;
