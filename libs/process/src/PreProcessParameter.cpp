@@ -46,7 +46,7 @@ void PreProcessParameter::notify() {
     assert(boost::icontains(order_, STATISTICAL_OUTLIER_REMOVAL_OPT_PREFIX));
     algorithmCount++;
   }
-  boost::algorithm::split(order, order_, boost::is_any_of(","));
+  if (!order_.empty()) { boost::algorithm::split(order, order_, boost::is_any_of(",")); }
   assert(order.size() == algorithmCount);
 }
 
