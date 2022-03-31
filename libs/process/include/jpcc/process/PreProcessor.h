@@ -17,8 +17,7 @@ class PreProcessor {
   using Frame              = jpcc::Frame<PointT>;
   using FramePtr           = typename Frame::Ptr;
   using GroupOfFrame       = jpcc::GroupOfFrame<PointT>;
-  using GroupOfFramePtr    = shared_ptr<GroupOfFrame>;
-  using GroupOfFrameMap    = std::map<std::string, GroupOfFramePtr>;
+  using GroupOfFrameMap    = std::map<std::string, GroupOfFrame>;
   using GroupOfFrameMapPtr = shared_ptr<GroupOfFrameMap>;
   using Filter             = pcl::FilterIndices<PointT>;
   using FilterPtr          = typename pcl::FilterIndices<PointT>::Ptr;
@@ -29,13 +28,13 @@ class PreProcessor {
  public:
   PreProcessor(PreProcessParameter param);
 
-  void process(GroupOfFrame& groupOfFrame, GroupOfFrameMapPtr removed = nullptr, bool parallel = false);
+  void process(GroupOfFrame& groupOfFrame, GroupOfFrameMapPtr removedMap = nullptr, bool parallel = false);
 
   FilterPtr buildFilter(const std::string& algorithm);
 
   void applyAlgorithm(const std::string& algorithm,
                       GroupOfFrame&      groupOfFrame,
-                      GroupOfFramePtr    removed  = nullptr,
+                      GroupOfFrame&      removed  = nullptr,
                       bool               parallel = false);
 
   void applyAlgorithm(const std::string& algorithm, FramePtr frame, FramePtr removed = nullptr);

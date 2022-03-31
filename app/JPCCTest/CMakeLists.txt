@@ -20,7 +20,7 @@ endif ()
 
 add_executable(${PROJECT_NAME} ${INCS} ${SRCS})
 target_link_libraries(${PROJECT_NAME} PRIVATE ${PCL_LIBRARIES} ${VTK_LIBRARIES}
-        JPCC::pcc_common JPCC::common JPCC::lvx_common JPCC::io JPCC::octree JPCC::process)
+        JPCC::pcc_common JPCC::common JPCC::lvx_common JPCC::io JPCC::octree JPCC::process JPCC::visualization)
 #vtk_module_autoinit(
 #        TARGETS ${PROJECT_NAME}
 #        MODULES ${VTK_LIBRARIES}

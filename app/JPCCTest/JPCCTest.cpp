@@ -4,7 +4,6 @@
 #include <execution>
 #include <iostream>
 #include <mutex>
-#include <queue>
 #include <thread>
 #include <vector>
 
@@ -18,12 +17,12 @@
 #include <pcl/point_cloud.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/octree/octree_pointcloud.h>
-#include <pcl/visualization/pcl_visualizer.h>
 
 #include <jpcc/common/ParameterParser.h>
 #include <jpcc/io/DatasetReader.h>
 #include <jpcc/octree/OctreeNBufBase.h>
 #include <jpcc/process/PreProcessor.h>
+#include <jpcc/visualization/JPCCVisualizer.h>
 
 #include <PCCChrono.h>
 #include <PCCMemory.h>
@@ -32,79 +31,34 @@
 
 #define BUFFER_SIZE 8
 
+using namespace std;
 using namespace std::chrono;
+using namespace Eigen;
+using namespace pcl;
+using namespace pcl::octree;
 using namespace pcc;
+using namespace pcc::chrono;
 using namespace jpcc;
 using namespace jpcc::io;
 using namespace jpcc::octree;
 using namespace jpcc::process;
+using namespace jpcc::visualization;
 
-using PointT = PointNormal;
-using OctreeNBufBaseT =
-    OctreeNBufBase<BUFFER_SIZE, pcl::octree::OctreeContainerPointIndices, pcl::octree::OctreeContainerEmpty>;
-using OctreePointCloudT = pcl::octree::OctreePointCloud<PointT,
-                                                        pcl::octree::OctreeContainerPointIndices,
-                                                        pcl::octree::OctreeContainerEmpty,
-                                                        OctreeNBufBaseT>;
+using PointT            = jpcc::PointNormal;
+using OctreeNBufBaseT   = OctreeNBufBase<BUFFER_SIZE, OctreeContainerPointIndices, OctreeContainerEmpty>;
+using OctreePointCloudT = OctreePointCloud<PointT, OctreeContainerPointIndices, OctreeContainerEmpty, OctreeNBufBaseT>;
 
-void test(const AppParameter& parameter, pcc::chrono::StopwatchUserTime& clock) {
-  FramePtr<PointT>             staticCloud(new Frame<PointT>());
-  FramePtr<PointT>             dynamicCloud(new Frame<PointT>());
-  std::atomic_bool             run(true);
-  std::mutex                   mutex;
-  std::queue<FramePtr<PointT>> staticQueue;
-  std::queue<FramePtr<PointT>> dynamicQueue;
+void test(const AppParameter& parameter, StopwatchUserTime& clock) {
+  JPCCVisualizer<PointT>::Ptr viewer(
+      new JPCCVisualizer<PointT>("JPCC Dataset Viewer " + parameter.dataset.name, parameter.visualizerParameter));
 
-  std::atomic_bool hasFirstFrame(false);
-
-  pcl::visualization::PCLVisualizer::Ptr viewer(new pcl::visualization::PCLVisualizer("3D Viewer"));
-
-  viewer->initCameraParameters();
-  parameter.applyCameraPosition([&](double pos_x, double pos_y, double pos_z, double view_x, double view_y,
-                                    double view_z, double up_x, double up_y, double up_z) {
-    viewer->setCameraPosition(pos_x, pos_y, pos_z, view_x, view_y, view_z, up_x, up_y, up_z);
-  });
-  viewer->setBackgroundColor(0, 0, 0);
-  viewer->addCoordinateSystem(3.0, "coordinate");
-  viewer->addText("processing", 5, 80, 16, 1.0, 1.0, 1.0, "frame");
-
-  auto updateViewer = [&] {
-    {
-      if (staticQueue.empty() || dynamicQueue.empty()) { return; }
-      std::lock_guard<std::mutex> lock(mutex);
-      staticCloud = staticQueue.front();
-      staticQueue.pop();
-      dynamicCloud = dynamicQueue.front();
-      dynamicQueue.pop();
-    }
-
-    if (!viewer->updateText("frame: " + std::to_string(staticCloud->header.seq), 5, 80, 16, 1.0, 1.0, 1.0, "frame")) {
-      viewer->addText("frame: " + std::to_string(staticCloud->header.seq), 5, 80, 16, 1.0, 1.0, 1.0, "frame");
-    }
-
-    pcl::visualization::PointCloudColorHandlerGenericField<PointT> staticColor(staticCloud, "z");
-    if (!viewer->updatePointCloud(staticCloud, staticColor, "staticCloud")) {
-      viewer->addPointCloud<PointT>(staticCloud, staticColor, "staticCloud");
-    }
-    if (!viewer->updateText("staticCloud points: " + std::to_string(staticCloud->size()), 5, 60, 16, 1.0, 1.0, 1.0,
-                            "staticCloud points")) {
-      viewer->addText("staticCloud points: " + std::to_string(staticCloud->size()), 5, 60, 16, 1.0, 1.0, 1.0,
-                      "staticCloud points");
-    }
-
-    pcl::visualization::PointCloudColorHandlerCustom<PointT> dynamicColor(dynamicCloud, 255.0, 0.0, 255.0);
-    if (!viewer->updatePointCloud(dynamicCloud, dynamicColor, "dynamicCloud")) {
-      viewer->addPointCloud<PointT>(dynamicCloud, dynamicColor, "dynamicCloud");
-    }
-    if (!viewer->updateText("dynamicCloud points: " + std::to_string(dynamicCloud->size()), 5, 40, 16, 1.0, 0.0, 1.0,
-                            "dynamicCloud points")) {
-      viewer->addText("dynamicCloud points: " + std::to_string(dynamicCloud->size()), 5, 40, 16, 1.0, 0.0, 1.0,
-                      "dynamicCloud points");
-    }
-  };
-  viewer->registerKeyboardCallback([&](auto& event) {
-    if (event.getKeyCode() == ' ' && event.keyDown()) { updateViewer(); }
-  });
+  atomic_bool  run(true);
+  atomic_bool  hasFirstFrame(false);
+  const string primaryId = "static";
+  viewer->setPrimaryId(primaryId);
+  viewer->setColor(primaryId, "z");
+  viewer->setColor(RADIUS_OUTLIER_REMOVAL_OPT_PREFIX, 1.0, 1.0, 1.0);
+  viewer->setColor(STATISTICAL_OUTLIER_REMOVAL_OPT_PREFIX, 1.0, 0.0, 1.0);
 
   auto datasetLoading = [&] {
     try {
@@ -112,21 +66,23 @@ void test(const AppParameter& parameter, pcc::chrono::StopwatchUserTime& clock) 
         DatasetReaderPtr<PointT> reader = newReader<PointT>(parameter.reader, parameter.dataset);
         PreProcessor<PointT>     preProcessor(parameter.preProcess);
 
-        GroupOfFrame<PointT> frames;
-        size_t               startFrameNumber = parameter.dataset.getStartFrameNumbers();
-        size_t               endFrameNumber   = startFrameNumber + parameter.dataset.getFrameCounts();
+        GroupOfFrame<PointT>                              frames;
+        typename PreProcessor<PointT>::GroupOfFrameMapPtr map(new JPCCVisualizer<PointT>::GroupOfFrameMap());
+
+        size_t startFrameNumber = parameter.dataset.getStartFrameNumbers();
+        size_t endFrameNumber   = startFrameNumber + parameter.dataset.getFrameCounts();
 
         BufferIndex bufferIndex = 0;
 
-        std::array<FramePtr<PointT>, BUFFER_SIZE> clouds;
+        array<FramePtr<PointT>, BUFFER_SIZE> clouds;
 
         OctreeNBufBaseT::Filter3 func = [&](const BufferIndex                     _bufferIndex,
                                             const OctreeNBufBaseT::BufferPattern& bufferPattern,
                                             const OctreeNBufBaseT::BufferIndices& bufferIndices) {
           if ((float)bufferPattern.count() > BUFFER_SIZE * parameter.float3) { return true; }
-          auto             normal = clouds.at(_bufferIndex)->at(bufferIndices.at(_bufferIndex)).getNormalVector3fMap();
-          Eigen::Matrix3Xf matrix(3, bufferPattern.count());
-          int              i = 0;
+          auto      normal = clouds.at(_bufferIndex)->at(bufferIndices.at(_bufferIndex)).getNormalVector3fMap();
+          Matrix3Xf matrix(3, bufferPattern.count());
+          int       i = 0;
           for (BufferIndex ii = 0; ii < BUFFER_SIZE; ii++) {
             if (bufferPattern.test(ii)) {
               matrix.col(i++) = clouds.at(ii)->at(bufferIndices.at(ii)).getNormalVector3fMap();
@@ -149,9 +105,9 @@ void test(const AppParameter& parameter, pcc::chrono::StopwatchUserTime& clock) 
         };
         for (auto& frame : frames) {
           if (parameter.parallel) {
-            frame->erase(std::remove_if(std::execution::par_unseq, frame->begin(), frame->end(), outlierRemoval));
+            frame->erase(remove_if(execution::par_unseq, frame->begin(), frame->end(), outlierRemoval));
           } else {
-            frame->erase(std::remove_if(frame->begin(), frame->end(), outlierRemoval));
+            frame->erase(remove_if(frame->begin(), frame->end(), outlierRemoval));
           }
         }
 
@@ -159,16 +115,16 @@ void test(const AppParameter& parameter, pcc::chrono::StopwatchUserTime& clock) 
         auto calcNormal = [&](size_t i) {
           clouds.at(i) = frames.at(i);
 
-          pcl::NormalEstimation<PointT, PointT> ne;
+          NormalEstimation<PointT, PointT> ne;
           ne.setRadiusSearch(parameter.float1);
           ne.setInputCloud(clouds.at(i));
           ne.compute(*clouds.at(i));
         };
 
         if (parameter.parallel) {
-          std::for_each(std::execution::par_unseq, range.begin(), range.end(), calcNormal);
+          for_each(execution::par_unseq, range.begin(), range.end(), calcNormal);
         } else {
-          std::for_each(range.begin(), range.end(), calcNormal);
+          for_each(range.begin(), range.end(), calcNormal);
         }
 
         for (size_t i = 0; i < frames.size(); i++) {
@@ -180,18 +136,18 @@ void test(const AppParameter& parameter, pcc::chrono::StopwatchUserTime& clock) 
 
             startFrameNumber += 1;
             bufferIndex = (bufferIndex + 1) % BUFFER_SIZE;
-          } catch (std::exception& e) { std::cerr << e.what() << std::endl; }
+          } catch (exception& e) { cerr << e.what() << endl; }
         }
 
         while (run && startFrameNumber < endFrameNumber) {
           clock.start();
           reader->loadAll(startFrameNumber, 1, frames, parameter.parallel);
-          preProcessor.process(frames, nullptr, parameter.parallel);
+          preProcessor.process(frames, map, parameter.parallel);
           clock.stop();
 
           clouds.at(bufferIndex) = frames.at(0);
 
-          pcl::NormalEstimation<PointT, PointT> ne;
+          NormalEstimation<PointT, PointT> ne;
           ne.setRadiusSearch(0.1);
           ne.setInputCloud(clouds.at(bufferIndex));
           ne.compute(*clouds.at(bufferIndex));
@@ -202,12 +158,12 @@ void test(const AppParameter& parameter, pcc::chrono::StopwatchUserTime& clock) 
           octree.addPointsFromInputCloud();
 
           {
-            shared_ptr<pcl::Indices> indices(new pcl::Indices());
-            FramePtr<PointT>         staticCloud_(new Frame<PointT>());
-            FramePtr<PointT>         dynamicCloud_(new Frame<PointT>());
+            shared_ptr<Indices> indices(new Indices());
+            FramePtr<PointT>    staticCloud_(new Frame<PointT>());
+            FramePtr<PointT>    dynamicCloud_(new Frame<PointT>());
             octree.process(func, *indices);
 
-            pcl::ExtractIndices<PointT> extractIndices;
+            ExtractIndices<PointT> extractIndices;
             extractIndices.setInputCloud(frames.at(0));
             extractIndices.setIndices(indices);
             extractIndices.setNegative(true);
@@ -215,44 +171,38 @@ void test(const AppParameter& parameter, pcc::chrono::StopwatchUserTime& clock) 
             extractIndices.setNegative(false);
             extractIndices.filter(*staticCloud_);
 
-            std::lock_guard<std::mutex> lock(mutex);
-            staticQueue.push(staticCloud_);
-            dynamicQueue.push(dynamicCloud_);
-            std::cout << "staticCloud=" << *staticCloud << std::endl;
-            std::cout << "dynamicCloud=" << *dynamicCloud << std::endl;
+            map->insert_or_assign("static", GroupOfFrame<PointT>{staticCloud_});
+            map->insert_or_assign("dynamic", GroupOfFrame<PointT>{dynamicCloud_});
+
+            viewer->enqueue(*map);
           }
 
-          do {
-            {
-              std::lock_guard<std::mutex> lock(mutex);
-              if (staticQueue.size() < BUFFER_SIZE) { break; }
-            }
-            std::this_thread::sleep_for(100ms);
-          } while (run);
+          while (run && viewer->isFull()) { this_thread::sleep_for(100ms); }
+
           if (!hasFirstFrame) {
-            updateViewer();
+            viewer->nextFrame();
             hasFirstFrame = true;
           }
           startFrameNumber += 1;
           bufferIndex = (bufferIndex + 1) % BUFFER_SIZE;
         }
       }
-    } catch (std::exception& e) { std::cerr << e.what() << std::endl; }
+    } catch (exception& e) { cerr << e.what() << endl; }
     run = false;
   };
 
-  shared_ptr<std::thread> thread(new std::thread(datasetLoading));
+  shared_ptr<thread> datasetLoadingThread(new thread(datasetLoading));
 
   while (!viewer->wasStopped() && run) {
     viewer->spinOnce(100);
-    // std::this_thread::sleep_for(100ms);
+    // this_thread::sleep_for(100ms);
   }
   run = false;
-  if (thread && thread->joinable()) { thread->join(); }
+  if (datasetLoadingThread && datasetLoadingThread->joinable()) { datasetLoadingThread->join(); }
 }
 
 int main(int argc, char* argv[]) {
-  std::cout << "JPCC Test App Start" << std::endl;
+  cout << "JPCC Test App Start" << endl;
 
   vtkObject::GlobalWarningDisplayOff();
 
@@ -261,16 +211,16 @@ int main(int argc, char* argv[]) {
     ParameterParser pp;
     pp.add(parameter);
     if (!pp.parse(argc, argv)) { return 1; }
-    std::cout << parameter << std::endl;
-  } catch (std::exception& e) {
-    std::cerr << e.what() << std::endl;
+    cout << parameter << endl;
+  } catch (exception& e) {
+    cerr << e.what() << endl;
     return 1;
   }
 
   ParameterParser pp;
   // Timers to count elapsed wall/user time
-  pcc::chrono::Stopwatch<steady_clock> clockWall;
-  pcc::chrono::StopwatchUserTime       clockUser;
+  Stopwatch<steady_clock> clockWall;
+  StopwatchUserTime       clockUser;
 
   clockWall.start();
   test(parameter, clockUser);
@@ -279,11 +229,11 @@ int main(int argc, char* argv[]) {
   auto totalWall      = duration_cast<milliseconds>(clockWall.count()).count();
   auto totalUserSelf  = duration_cast<milliseconds>(clockUser.self.count()).count();
   auto totalUserChild = duration_cast<milliseconds>(clockUser.children.count()).count();
-  std::cout << "Processing time (wall): " << (float)totalWall / 1000.0 << " s\n";
-  std::cout << "Processing time (user.self): " << (float)totalUserSelf / 1000.0 << " s\n";
-  std::cout << "Processing time (user.children): " << (float)totalUserChild / 1000.0 << " s\n";
-  std::cout << "Peak memory: " << getPeakMemory() << " KB\n";
+  cout << "Processing time (wall): " << (float)totalWall / 1000.0 << " s\n";
+  cout << "Processing time (user.self): " << (float)totalUserSelf / 1000.0 << " s\n";
+  cout << "Processing time (user.children): " << (float)totalUserChild / 1000.0 << " s\n";
+  cout << "Peak memory: " << getPeakMemory() << " KB\n";
 
-  std::cout << "JPCC Test App End" << std::endl;
+  cout << "JPCC Test App End" << endl;
   return 0;
 }

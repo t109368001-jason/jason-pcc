@@ -19,16 +19,15 @@ template <class PointT>
 PreProcessor<PointT>::PreProcessor(PreProcessParameter param) : param_(std::move(param)) {}
 
 template <class PointT>
-void PreProcessor<PointT>::process(GroupOfFrame& groupOfFrame, GroupOfFrameMapPtr removed, bool parallel) {
+void PreProcessor<PointT>::process(GroupOfFrame& groupOfFrame, GroupOfFrameMapPtr removedMap, bool parallel) {
   for (const string& algorithm : param_.order) {
-    GroupOfFramePtr groupOfFramePtr;
-    if (removed) {
-      groupOfFramePtr.reset(new GroupOfFrame());
-      groupOfFramePtr->resize(groupOfFrame.size());
-      for (auto& frame : *groupOfFramePtr) { frame.reset(new Frame()); }
+    GroupOfFrame removed;
+    if (removedMap) {
+      removed.resize(groupOfFrame.size());
+      for (auto& frame : removed) { frame.reset(new Frame()); }
     }
-    applyAlgorithm(algorithm, groupOfFrame, groupOfFramePtr, parallel);
-    if (removed) { removed->insert_or_assign(algorithm, groupOfFramePtr); }
+    applyAlgorithm(algorithm, groupOfFrame, removed, parallel);
+    if (removedMap) { removedMap->insert_or_assign(algorithm, removed); }
   }
 }
 
@@ -53,12 +52,12 @@ typename PreProcessor<PointT>::FilterPtr PreProcessor<PointT>::buildFilter(const
 }
 
 template <class PointT>
-void PreProcessor<PointT>::applyAlgorithm(const string&                 algorithm,
-                                          GroupOfFrame&                 groupOfFrame,
-                                          PreProcessor::GroupOfFramePtr removed,
-                                          bool                          parallel) {
+void PreProcessor<PointT>::applyAlgorithm(const string& algorithm,
+                                          GroupOfFrame& groupOfFrame,
+                                          GroupOfFrame& removed,
+                                          bool          parallel) {
   auto func = [&](size_t i) {
-    this->applyAlgorithm(algorithm, groupOfFrame.at(i), removed ? removed->at(i) : nullptr);
+    this->applyAlgorithm(algorithm, groupOfFrame.at(i), removed.empty() ? nullptr : removed.at(i));
   };
   auto range = boost::counting_range<size_t>(0, groupOfFrame.size());
   if (parallel) {

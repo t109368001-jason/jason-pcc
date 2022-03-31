@@ -1,111 +1,40 @@
 #include <chrono>
 #include <iostream>
 #include <mutex>
-#include <queue>
 #include <thread>
 #include <vector>
 
 #include <vtkObject.h>
 
-#include <pcl/visualization/pcl_visualizer.h>
-
 #include <jpcc/common/ParameterParser.h>
 #include <jpcc/io/DatasetReader.h>
 #include <jpcc/process/PreProcessor.h>
+#include <jpcc/visualization/JPCCVisualizer.h>
 
 #include <PCCChrono.h>
 #include <PCCMemory.h>
 
 #include "AppParameter.h"
 
+using namespace std;
 using namespace std::chrono;
 using namespace pcc;
+using namespace pcc::chrono;
 using namespace jpcc;
 using namespace jpcc::io;
 using namespace jpcc::process;
+using namespace jpcc::visualization;
 
-void main_(const AppParameter& parameter, pcc::chrono::StopwatchUserTime& clock) {
-  FramePtr<>                             cloud(new Frame<>());
-  FramePtr<>                             radiusRemovedCloud(new Frame<>());
-  FramePtr<>                             statisticalRemovedCloud(new Frame<>());
-  pcl::visualization::PCLVisualizer::Ptr viewer(
-      new pcl::visualization::PCLVisualizer("JPCC Dataset Viewer " + parameter.dataset.name + " 0"));
+void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
+  JPCCVisualizer<>::Ptr viewer(
+      new JPCCVisualizer<>("JPCC Dataset Viewer " + parameter.dataset.name, parameter.visualizerParameter));
 
-  std::atomic_bool       run(true);
-  std::mutex             mutex;
-  std::queue<FramePtr<>> queue;
-  std::queue<FramePtr<>> radiusRemovedQueue;
-  std::queue<FramePtr<>> statisticalRemovedQueue;
-
-  viewer->initCameraParameters();
-  parameter.applyCameraPosition([&](double pos_x, double pos_y, double pos_z, double view_x, double view_y,
-                                    double view_z, double up_x, double up_y, double up_z) {
-    viewer->setCameraPosition(pos_x, pos_y, pos_z, view_x, view_y, view_z, up_x, up_y, up_z);
-  });
-  viewer->setBackgroundColor(0, 0, 0);
-  viewer->addCoordinateSystem(3.0, "coordinate");
-
-  auto updateViewer = [&] {
-    {
-      std::lock_guard<std::mutex> lock(mutex);
-      if (queue.empty() || radiusRemovedQueue.empty() || statisticalRemovedQueue.empty()) { return; }
-      cloud = queue.front();
-      queue.pop();
-      radiusRemovedCloud = radiusRemovedQueue.front();
-      radiusRemovedQueue.pop();
-      statisticalRemovedCloud = statisticalRemovedQueue.front();
-      statisticalRemovedQueue.pop();
-    }
-
-    viewer->setWindowName("JPCC Dataset Viewer " + parameter.dataset.name + " " + std::to_string(cloud->header.seq));
-
-    if (!viewer->updateText("frame: " + std::to_string(cloud->header.seq), 5, 80, 16, 1.0, 1.0, 1.0, "frame")) {
-      viewer->addText("frame: " + std::to_string(cloud->header.seq), 5, 80, 16, 1.0, 1.0, 1.0, "frame");
-    }
-
-    if (!viewer->updateText("points: " + std::to_string(cloud->size()), 5, 60, 16, 1.0, 1.0, 1.0, "points")) {
-      viewer->addText("points: " + std::to_string(cloud->size()), 5, 60, 16, 1.0, 1.0, 1.0, "points");
-    }
-
-    pcl::visualization::PointCloudColorHandlerGenericField<Point> zColor(cloud, "z");
-    if (!viewer->updatePointCloud(cloud, zColor, "cloud")) {
-      viewer->addPointCloud<Point>(cloud, zColor, "cloud");
-      //      viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "cloud");
-    }
-
-    pcl::visualization::PointCloudColorHandlerCustom<Point> radiusRemovedColor(radiusRemovedCloud, 255.0, 255.0, 255.0);
-    if (!viewer->updatePointCloud(radiusRemovedCloud, radiusRemovedColor, "radiusRemovedCloud")) {
-      viewer->addPointCloud<Point>(radiusRemovedCloud, radiusRemovedColor, "radiusRemovedCloud");
-      //      viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1,
-      //      "radiusRemovedCloud");
-    }
-    if (!viewer->updateText("radiusRemovedCloud: " + std::to_string(radiusRemovedCloud->size()), 5, 40, 16, 1.0, 1.0,
-                            1.0, "radiusRemovedCloudText")) {
-      viewer->addText("radiusRemovedCloud: " + std::to_string(radiusRemovedCloud->size()), 5, 40, 16, 1.0, 1.0, 1.0,
-                      "radiusRemovedCloudText");
-    }
-
-    pcl::visualization::PointCloudColorHandlerCustom<Point> statisticalRemovedColor(statisticalRemovedCloud, 255.0, 0.0,
-                                                                                    255.0);
-    if (!viewer->updatePointCloud(statisticalRemovedCloud, statisticalRemovedColor, "statisticalRemovedCloud")) {
-      viewer->addPointCloud<Point>(statisticalRemovedCloud, statisticalRemovedColor, "statisticalRemovedCloud");
-      //      viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1,
-      //      "radiusRemovedCloud");
-    }
-    if (!viewer->updateText("statisticalRemovedCloud: " + std::to_string(statisticalRemovedCloud->size()), 5, 20, 16,
-                            1.0, 0.0, 1.0, "statisticalRemovedCloudText")) {
-      viewer->addText("statisticalRemovedCloud: " + std::to_string(statisticalRemovedCloud->size()), 5, 20, 16, 1.0,
-                      0.0, 1.0, "statisticalRemovedCloudText");
-    }
-  };
-  viewer->registerKeyboardCallback([&](auto& event) {
-    if (event.getKeyCode() == ' ' && event.keyDown()) { updateViewer(); }
-  });
-  viewer->registerPointPickingCallback([](auto& event) {
-    Point point;
-    event.getPoint(point.x, point.y, point.z);
-    std::cout << "picked point=" << point << std::endl;
-  });
+  atomic_bool  run(true);
+  const string primaryId = "cloud";
+  viewer->setPrimaryId(primaryId);
+  viewer->setColor(primaryId, "z");
+  viewer->setColor(RADIUS_OUTLIER_REMOVAL_OPT_PREFIX, 1.0, 1.0, 1.0);
+  viewer->setColor(STATISTICAL_OUTLIER_REMOVAL_OPT_PREFIX, 1.0, 0.0, 1.0);
 
   auto datasetLoading = [&] {
     try {
@@ -118,54 +47,41 @@ void main_(const AppParameter& parameter, pcc::chrono::StopwatchUserTime& clock)
       size_t                             startFrameNumber  = 1;
       reader->loadAll(0, 1, frames, parameter.parallel);
       preProcessor.process(frames, removed, parameter.parallel);
-      {
-        std::lock_guard<std::mutex> lock(mutex);
-        queue.push(frames.at(0));
-        radiusRemovedQueue.push(((*removed)[RADIUS_OUTLIER_REMOVAL_OPT_PREFIX])->at(0));
-        statisticalRemovedQueue.push(((*removed)[STATISTICAL_OUTLIER_REMOVAL_OPT_PREFIX])->at(0));
-      }
-      updateViewer();
+      (*removed)[primaryId] = frames;
+      viewer->enqueue(*removed);
+      viewer->nextFrame();
       while (run) {
         clock.start();
         reader->loadAll(startFrameNumber, groupOfFramesSize, frames, parameter.parallel);
         preProcessor.process(frames, removed, parameter.parallel);
         clock.stop();
 
-        do {
-          {
-            std::lock_guard<std::mutex> lock(mutex);
-            if (queue.size() < groupOfFramesSize) {
-              for (auto& frame : frames) { queue.push(frame); }
-              for (auto& frame : *((*removed)[RADIUS_OUTLIER_REMOVAL_OPT_PREFIX])) { radiusRemovedQueue.push(frame); }
-              for (auto& frame : *((*removed)[STATISTICAL_OUTLIER_REMOVAL_OPT_PREFIX])) {
-                statisticalRemovedQueue.push(frame);
-              }
-              break;
-            }
-          }
-          std::this_thread::sleep_for(100ms);
-        } while (run);
+        while (run && viewer->isFull()) { this_thread::sleep_for(100ms); }
+
+        (*removed)[primaryId] = frames;
+        viewer->enqueue(*removed);
+
         if (frames.size() < groupOfFramesSize) {
           startFrameNumber = 0;
           continue;
         }
         startFrameNumber += groupOfFramesSize;
       }
-    } catch (std::exception& e) { std::cerr << e.what() << std::endl; }
+    } catch (exception& e) { cerr << e.what() << endl; }
     run = false;
   };
 
-  shared_ptr<std::thread> thread(new std::thread(datasetLoading));
+  shared_ptr<thread> datasetLoadingThread(new thread(datasetLoading));
   while (!viewer->wasStopped() && run) {
     viewer->spinOnce(100);
-    // std::this_thread::sleep_for(100ms);
+    // this_thread::sleep_for(100ms);
   }
   run = false;
-  if (thread && thread->joinable()) { thread->join(); }
+  if (datasetLoadingThread && datasetLoadingThread->joinable()) { datasetLoadingThread->join(); }
 }
 
 int main(int argc, char* argv[]) {
-  std::cout << "JPCC App Dataset Viewer Start" << std::endl;
+  cout << "JPCC App Dataset Viewer Start" << endl;
 
   vtkObject::GlobalWarningDisplayOff();
 
@@ -174,17 +90,17 @@ int main(int argc, char* argv[]) {
     ParameterParser pp;
     pp.add(parameter);
     if (!pp.parse(argc, argv)) { return 1; }
-    std::cout << parameter << std::endl;
-  } catch (std::exception& e) {
-    std::cerr << e.what() << std::endl;
+    cout << parameter << endl;
+  } catch (exception& e) {
+    cerr << e.what() << endl;
     return 1;
   }
 
   try {
     ParameterParser pp;
     // Timers to count elapsed wall/user time
-    pcc::chrono::Stopwatch<steady_clock> clockWall;
-    pcc::chrono::StopwatchUserTime       clockUser;
+    Stopwatch<steady_clock> clockWall;
+    StopwatchUserTime       clockUser;
 
     clockWall.start();
     main_(parameter, clockUser);
@@ -193,12 +109,12 @@ int main(int argc, char* argv[]) {
     auto totalWall      = duration_cast<milliseconds>(clockWall.count()).count();
     auto totalUserSelf  = duration_cast<milliseconds>(clockUser.self.count()).count();
     auto totalUserChild = duration_cast<milliseconds>(clockUser.children.count()).count();
-    std::cout << "Processing time (wall): " << (float)totalWall / 1000.0 << " s\n";
-    std::cout << "Processing time (user.self): " << (float)totalUserSelf / 1000.0 << " s\n";
-    std::cout << "Processing time (user.children): " << (float)totalUserChild / 1000.0 << " s\n";
-    std::cout << "Peak memory: " << getPeakMemory() << " KB\n";
-  } catch (std::exception& e) { std::cerr << e.what() << std::endl; }
+    cout << "Processing time (wall): " << (float)totalWall / 1000.0 << " s\n";
+    cout << "Processing time (user.self): " << (float)totalUserSelf / 1000.0 << " s\n";
+    cout << "Processing time (user.children): " << (float)totalUserChild / 1000.0 << " s\n";
+    cout << "Peak memory: " << getPeakMemory() << " KB\n";
+  } catch (exception& e) { cerr << e.what() << endl; }
 
-  std::cout << "JPCC App Dataset Viewer End" << std::endl;
+  cout << "JPCC App Dataset Viewer End" << endl;
   return 0;
 }
