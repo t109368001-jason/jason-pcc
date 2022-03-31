@@ -1,35 +1,42 @@
 #include <gtest/gtest.h>
 
+#include <filesystem>
+
 #include <jpcc/io/PlyIO.h>
 
 namespace jpcc::io {
 
 TEST(PlyIOTest, save_load) {
   //  given
-  size_t       frameNumber = 123;
-  const char*  filePath    = "PlyIOTest_save_load_%05d.ply";
-  GroupOfFrame frames;
-  frames.resize(1);
-  FramePtr<>& frame = frames.at(0);
-  frame.reset(new Frame<>());
-  frame->emplace_back(0.0, 0.0, 0.0);
-  frame->emplace_back(1.0, 1.0, 1.0);
-  frame->header.seq   = frameNumber;
-  frame->header.stamp = 111;
+  size_t         frameCount       = 3;
+  size_t         startFrameNumber = 123;
+  const char*    filePath         = "PlyIOTest_save_load_%05d.ply";
+  GroupOfFrame<> frames;
+  size_t         ii = 1;
+  for (size_t i = 0; i < frameCount; i++) {
+    frames.emplace_back(new Frame<>());
+    frames.at(i)->header.seq = startFrameNumber + i;
+    for (size_t j = 0; j < i + 1; j++, ii++) { frames.at(i)->emplace_back(ii * 1.1, ii * 2.2, ii * 3.3); }
+  }
 
   // when
   savePly(frames, filePath);
-  GroupOfFrame<> result;
-  loadPly(result, filePath, frameNumber, frameNumber + 1);
+  GroupOfFrame<> results;
+  loadPly(results, filePath, startFrameNumber, startFrameNumber + frameCount);
+  std::filesystem::remove(filePath);
 
-  EXPECT_EQ(result.size(), frames.size());
-  FramePtr<>& resultFrame = result.at(0);
-  EXPECT_EQ(resultFrame->header.seq, frame->header.seq);
-  EXPECT_EQ(resultFrame->size(), frame->size());
-  for (size_t i = 0; i < resultFrame->size(); i++) {
-    EXPECT_EQ(resultFrame->at(i).x, frame->at(i).x);
-    EXPECT_EQ(resultFrame->at(i).y, frame->at(i).y);
-    EXPECT_EQ(resultFrame->at(i).z, frame->at(i).z);
+  EXPECT_EQ(results.size(), frameCount);
+  EXPECT_EQ(results.size(), frames.size());
+  for (size_t i = 0; i < frameCount; i++) {
+    const FramePtr<>& result = results.at(i);
+    const FramePtr<>& frame  = frames.at(i);
+    EXPECT_EQ(result->header.seq, frame->header.seq);
+    EXPECT_EQ(result->size(), frame->size());
+    for (size_t j = 0; j < frame->size(); j++) {
+      EXPECT_EQ(result->at(j).x, frame->at(j).x);
+      EXPECT_EQ(result->at(j).y, frame->at(j).y);
+      EXPECT_EQ(result->at(j).z, frame->at(j).z);
+    }
   }
 }
 
