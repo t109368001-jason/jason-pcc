@@ -26,7 +26,7 @@ using namespace jpcc::process;
 using namespace jpcc::visualization;
 
 void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
-  JPCCVisualizer<>::Ptr viewer(
+  const JPCCVisualizer<>::Ptr viewer(
       new JPCCVisualizer<>("JPCC Dataset Viewer " + parameter.dataset.name, parameter.visualizerParameter));
 
   atomic_bool  run(true);
@@ -38,13 +38,13 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
 
   auto datasetLoading = [&] {
     try {
-      DatasetReader<>::Ptr reader = newReader(parameter.reader, parameter.dataset);
-      PreProcessor<>       preProcessor(parameter.preProcess);
+      const DatasetReader<>::Ptr reader = newReader(parameter.reader, parameter.dataset);
+      PreProcessor<>             preProcessor(parameter.preProcess);
 
-      GroupOfFrame<>                     frames;
-      PreProcessor<>::GroupOfFrameMapPtr removed(new PreProcessor<>::GroupOfFrameMap());
-      size_t                             groupOfFramesSize = 32;
-      size_t                             startFrameNumber  = 1;
+      GroupOfFrame<>                           frames;
+      const PreProcessor<>::GroupOfFrameMapPtr removed(new PreProcessor<>::GroupOfFrameMap());
+      const size_t                             groupOfFramesSize = 32;
+      size_t                                   startFrameNumber  = 1;
       reader->loadAll(0, 1, frames, parameter.parallel);
       preProcessor.process(frames, removed, parameter.parallel);
       (*removed)[primaryId] = frames;

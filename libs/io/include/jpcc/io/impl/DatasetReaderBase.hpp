@@ -11,6 +11,7 @@ namespace jpcc::io {
 using namespace std;
 using namespace std::placeholders;
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 DatasetReaderBase<PointT>::DatasetReaderBase(DatasetReaderParameter param, DatasetParameter datasetParam) :
     param_(std::move(param)),
@@ -22,27 +23,32 @@ DatasetReaderBase<PointT>::DatasetReaderBase(DatasetReaderParameter param, Datas
   generate(datasetIndices_.begin(), datasetIndices_.end(), [n = 0]() mutable { return n++; });
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 DatasetReaderBase<PointT>::~DatasetReaderBase() {
   close();
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-DatasetReaderParameter DatasetReaderBase<PointT>::getReaderParameter() {
+const DatasetReaderParameter& DatasetReaderBase<PointT>::getReaderParameter() const {
   return param_;
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-DatasetParameter DatasetReaderBase<PointT>::getDatasetParameter() {
+const DatasetParameter& DatasetReaderBase<PointT>::getDatasetParameter() const {
   return datasetParam_;
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-bool DatasetReaderBase<PointT>::isOpen() {
+bool DatasetReaderBase<PointT>::isOpen() const {
   return any_of(datasetIndices_.begin(), datasetIndices_.end(),
                 [this](auto&& PH1) { return isOpen_(std::forward<decltype(PH1)>(PH1)); });
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void DatasetReaderBase<PointT>::loadAll(const size_t  startFrameNumber,
                                         const size_t  groupOfFramesSize,
@@ -50,6 +56,7 @@ void DatasetReaderBase<PointT>::loadAll(const size_t  startFrameNumber,
   loadAll(startFrameNumber, groupOfFramesSize, frames, false);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void DatasetReaderBase<PointT>::loadAll(const size_t  startFrameNumber,
                                         const size_t  groupOfFramesSize,
@@ -71,9 +78,9 @@ void DatasetReaderBase<PointT>::loadAll(const size_t  startFrameNumber,
       load(datasetIndex, startFrameNumber, groupOfFramesSize, sources.at(datasetIndex));
     });
   }
-  size_t maxSize = max_element(sources.begin(), sources.end(), [](GroupOfFrame& a, GroupOfFrame& b) {
-                     return a.size() < b.size();
-                   })->size();
+  const size_t maxSize = max_element(sources.begin(), sources.end(), [](const GroupOfFrame& a, const GroupOfFrame& b) {
+                           return a.size() < b.size();
+                         })->size();
   frames.resize(maxSize);
   for (size_t i = 0; i < maxSize; i++) {
     FramePtr& frame = frames.at(i);
@@ -90,12 +97,20 @@ void DatasetReaderBase<PointT>::loadAll(const size_t  startFrameNumber,
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT>
+void DatasetReaderBase<PointT>::close() {
+  for_each(datasetIndices_.begin(), datasetIndices_.end(),
+           [this](auto&& PH1) { close_(std::forward<decltype(PH1)>(PH1)); });
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void DatasetReaderBase<PointT>::load(const size_t  datasetIndex,
                                      const size_t  startFrameNumber,
                                      const size_t  groupOfFramesSize,
                                      GroupOfFrame& frames) {
-  size_t        endFrameNumber     = startFrameNumber + groupOfFramesSize;
+  const size_t  endFrameNumber     = startFrameNumber + groupOfFramesSize;
   size_t&       currentFrameNumber = currentFrameNumbers_.at(datasetIndex);
   GroupOfFrame& frameBuffer        = frameBuffers_.at(datasetIndex);
 
@@ -125,12 +140,7 @@ void DatasetReaderBase<PointT>::load(const size_t  datasetIndex,
   }
 }
 
-template <typename PointT>
-void DatasetReaderBase<PointT>::close() {
-  for_each(datasetIndices_.begin(), datasetIndices_.end(),
-           [this](auto&& PH1) { close_(std::forward<decltype(PH1)>(PH1)); });
-}
-
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void DatasetReaderBase<PointT>::open_(const size_t datasetIndex, const size_t startFrameNumber) {
   if (isOpen_(datasetIndex) && currentFrameNumbers_.at(datasetIndex) <= startFrameNumber) {
@@ -139,16 +149,19 @@ void DatasetReaderBase<PointT>::open_(const size_t datasetIndex, const size_t st
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-bool DatasetReaderBase<PointT>::isOpen_(const size_t datasetIndex) {
+bool DatasetReaderBase<PointT>::isOpen_(const size_t datasetIndex) const {
   return false;
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-bool DatasetReaderBase<PointT>::isEof_(const size_t datasetIndex) {
+bool DatasetReaderBase<PointT>::isEof_(const size_t datasetIndex) const {
   return !isOpen() || (currentFrameNumbers_.at(datasetIndex) >= datasetParam_.frameCounts.at(datasetIndex));
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void DatasetReaderBase<PointT>::load_(const size_t  datasetIndex,
                                       const size_t  startFrameNumber,
@@ -157,6 +170,7 @@ void DatasetReaderBase<PointT>::load_(const size_t  datasetIndex,
   BOOST_THROW_EXCEPTION(logic_error(string("Not Implemented ")));
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void DatasetReaderBase<PointT>::close_(const size_t datasetIndex) {
   currentFrameNumbers_.at(datasetIndex) = 0;

@@ -31,9 +31,9 @@ class PcapReader : public DatasetReaderBase<PointT> {
  protected:
   void open_(size_t datasetIndex, size_t startFrameNumber) override;
 
-  [[nodiscard]] bool isOpen_(size_t datasetIndex) override;
+  [[nodiscard]] bool isOpen_(size_t datasetIndex) const override;
 
-  [[nodiscard]] bool isEof_(size_t datasetIndex) override;
+  [[nodiscard]] bool isEof_(size_t datasetIndex) const override;
 
   void load_(size_t datasetIndex, size_t startFrameNumber, size_t groupOfFramesSize, GroupOfFrame& frames) override;
 

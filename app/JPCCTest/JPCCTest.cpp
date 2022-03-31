@@ -49,7 +49,7 @@ using OctreeNBufBaseT   = OctreeNBufBase<BUFFER_SIZE, OctreeContainerPointIndice
 using OctreePointCloudT = OctreePointCloud<PointT, OctreeContainerPointIndices, OctreeContainerEmpty, OctreeNBufBaseT>;
 
 void test(const AppParameter& parameter, StopwatchUserTime& clock) {
-  JPCCVisualizer<PointT>::Ptr viewer(
+  const JPCCVisualizer<PointT>::Ptr viewer(
       new JPCCVisualizer<PointT>("JPCC Dataset Viewer " + parameter.dataset.name, parameter.visualizerParameter));
 
   atomic_bool  run(true);
@@ -63,14 +63,14 @@ void test(const AppParameter& parameter, StopwatchUserTime& clock) {
   auto datasetLoading = [&] {
     try {
       while (run) {
-        DatasetReaderPtr<PointT> reader = newReader<PointT>(parameter.reader, parameter.dataset);
-        PreProcessor<PointT>     preProcessor(parameter.preProcess);
+        const DatasetReaderPtr<PointT> reader = newReader<PointT>(parameter.reader, parameter.dataset);
+        PreProcessor<PointT>           preProcessor(parameter.preProcess);
 
-        GroupOfFrame<PointT>                              frames;
-        typename PreProcessor<PointT>::GroupOfFrameMapPtr map(new JPCCVisualizer<PointT>::GroupOfFrameMap());
+        GroupOfFrame<PointT>                           frames;
+        const PreProcessor<PointT>::GroupOfFrameMapPtr map(new JPCCVisualizer<PointT>::GroupOfFrameMap());
 
-        size_t startFrameNumber = parameter.dataset.getStartFrameNumbers();
-        size_t endFrameNumber   = startFrameNumber + parameter.dataset.getFrameCounts();
+        size_t       startFrameNumber = parameter.dataset.getStartFrameNumbers();
+        const size_t endFrameNumber   = startFrameNumber + parameter.dataset.getFrameCounts();
 
         BufferIndex bufferIndex = 0;
 
@@ -112,7 +112,7 @@ void test(const AppParameter& parameter, StopwatchUserTime& clock) {
         }
 
         auto range      = boost::counting_range<size_t>(0, frames.size());
-        auto calcNormal = [&](size_t i) {
+        auto calcNormal = [&](const size_t i) {
           clouds.at(i) = frames.at(i);
 
           NormalEstimation<PointT, PointT> ne;
@@ -158,9 +158,9 @@ void test(const AppParameter& parameter, StopwatchUserTime& clock) {
           octree.addPointsFromInputCloud();
 
           {
-            shared_ptr<Indices> indices(new Indices());
-            FramePtr<PointT>    staticCloud_(new Frame<PointT>());
-            FramePtr<PointT>    dynamicCloud_(new Frame<PointT>());
+            const shared_ptr<Indices> indices(new Indices());
+            const FramePtr<PointT>    staticCloud_(new Frame<PointT>());
+            const FramePtr<PointT>    dynamicCloud_(new Frame<PointT>());
             octree.process(func, *indices);
 
             ExtractIndices<PointT> extractIndices;

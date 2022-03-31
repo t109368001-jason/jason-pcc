@@ -17,11 +17,11 @@ using namespace jpcc;
 using namespace jpcc::io;
 
 void parse(const AppParameter& parameter, pcc::chrono::StopwatchUserTime& clock) {
-  DatasetReader<>::Ptr reader = newReader<>(parameter.inputReader, parameter.inputDataset);
-  GroupOfFrame<>       frames;
-  size_t               groupOfFramesSize = 32;
-  size_t               startFrameNumber  = parameter.inputDataset.getStartFrameNumbers();
-  size_t               endFrameNumber    = startFrameNumber + parameter.inputDataset.getFrameCounts();
+  const DatasetReader<>::Ptr reader = newReader<>(parameter.inputReader, parameter.inputDataset);
+  GroupOfFrame<>             frames;
+  const size_t               groupOfFramesSize = 32;
+  size_t                     startFrameNumber  = parameter.inputDataset.getStartFrameNumbers();
+  const size_t               endFrameNumber    = startFrameNumber + parameter.inputDataset.getFrameCounts();
   while (startFrameNumber < endFrameNumber) {
     clock.start();
     reader->loadAll(startFrameNumber, groupOfFramesSize, frames, parameter.parallel);

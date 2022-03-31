@@ -21,7 +21,7 @@ class Parameter {
  public:
   Parameter(std::string prefix, const std::string& caption);
 
-  [[nodiscard]] virtual po::options_description& getOpts();
+  [[nodiscard]] virtual const po::options_description& getOpts() const;
 
   [[nodiscard]] virtual std::vector<std::array<std::string, 2>> getConflicts() const;
 

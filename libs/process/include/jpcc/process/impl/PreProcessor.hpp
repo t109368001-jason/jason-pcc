@@ -15,11 +15,15 @@ namespace jpcc::process {
 using namespace std;
 using namespace jpcc;
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <class PointT>
 PreProcessor<PointT>::PreProcessor(PreProcessParameter param) : param_(std::move(param)) {}
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <class PointT>
-void PreProcessor<PointT>::process(GroupOfFrame& groupOfFrame, GroupOfFrameMapPtr removedMap, bool parallel) {
+void PreProcessor<PointT>::process(GroupOfFrame&            groupOfFrame,
+                                   const GroupOfFrameMapPtr removedMap,
+                                   const bool               parallel) {
   for (const string& algorithm : param_.order) {
     GroupOfFrame removed;
     if (removedMap) {
@@ -31,6 +35,7 @@ void PreProcessor<PointT>::process(GroupOfFrame& groupOfFrame, GroupOfFrameMapPt
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <class PointT>
 typename PreProcessor<PointT>::FilterPtr PreProcessor<PointT>::buildFilter(const string& algorithm) {
   FilterPtr filter;
@@ -51,15 +56,16 @@ typename PreProcessor<PointT>::FilterPtr PreProcessor<PointT>::buildFilter(const
   return filter;
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <class PointT>
 void PreProcessor<PointT>::applyAlgorithm(const string& algorithm,
                                           GroupOfFrame& groupOfFrame,
                                           GroupOfFrame& removed,
-                                          bool          parallel) {
-  auto func = [&](size_t i) {
+                                          const bool    parallel) {
+  auto func = [&](const size_t i) {
     this->applyAlgorithm(algorithm, groupOfFrame.at(i), removed.empty() ? nullptr : removed.at(i));
   };
-  auto range = boost::counting_range<size_t>(0, groupOfFrame.size());
+  const auto range = boost::counting_range<size_t>(0, groupOfFrame.size());
   if (parallel) {
     std::for_each(std::execution::par_unseq, range.begin(), range.end(), func);
   } else {
@@ -67,8 +73,9 @@ void PreProcessor<PointT>::applyAlgorithm(const string& algorithm,
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <class PointT>
-void PreProcessor<PointT>::applyAlgorithm(const string& algorithm, FramePtr frame, FramePtr removed) {
+void PreProcessor<PointT>::applyAlgorithm(const string& algorithm, const FramePtr frame, const FramePtr removed) {
   FilterPtr filter = buildFilter(algorithm);
   filter->setInputCloud(frame);
   if (!removed) {

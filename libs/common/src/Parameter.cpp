@@ -10,7 +10,7 @@ using namespace po;
 Parameter::Parameter(string prefix, const string& caption) :
     prefix_(std::move(prefix)), caption_(caption), opts_(caption) {}
 
-options_description& Parameter::getOpts() { return opts_; }
+const options_description& Parameter::getOpts() const { return opts_; }
 
 vector<array<string, 2>> Parameter::getConflicts() const { return {}; }
 

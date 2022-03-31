@@ -9,14 +9,14 @@ using namespace std;
 using namespace std::placeholders;
 using namespace jpcc;
 
-#pragma clang diagnostic push
-#pragma ide diagnostic   ignored "OCUnusedGlobalDeclarationInspection"
-constexpr auto           LASER_PER_FIRING = 32;
-constexpr auto           FIRING_PER_PKT   = 12;
+constexpr auto LASER_PER_FIRING = 32;
+constexpr auto FIRING_PER_PKT   = 12;
 
 constexpr float PI_DIV18000 = M_PI / 18000.0;
 constexpr float TOTAL_POINTS_MULTIPLE_MAX_AZIMUTH_DIFF_OF_PACKET =
     36000.0 * (LASER_PER_FIRING + 1) * (FIRING_PER_PKT - 1);
+
+//////////////////////////////////////////////////////////////////////////////////////////////
 constexpr int   VLP16_MAX_NUM_LASERS    = 16;
 constexpr float VLP16_VERTICAL_DEGREE[] = {-15.0, 1.0, -13.0, 3.0,  -11.0, 5.0,  -9.0, 7.0,
                                            -7.0,  9.0, -5.0,  11.0, -3.0,  13.0, -1.0, 15.0};
@@ -36,6 +36,7 @@ constexpr float VLP16_VERTICAL_COS[] = {
     -0.05233595624, 0.2249510543,  -0.01745240644, 0.2588190451,
 };
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 constexpr int   HDL32_MAX_NUM_LASERS    = 32;
 constexpr float HDL32_VERTICAL_DEGREE[] = {
     -30.67,     -9.3299999, -29.33, -8.0,      -28,    -6.6700001, -26.67, -5.3299999, -25.33,    -4.0,   -24.0,
@@ -69,6 +70,7 @@ constexpr float HDL32_VERTICAL_COS[] = {
     -0.2079116908, 0.1621205137,   -0.1851520951, 0.1851520951,
 };
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 #pragma pack(push, 1)
 typedef struct LaserReturn {
   uint16_t distance;
@@ -92,13 +94,13 @@ struct DataPacket {
   uint8_t    sensorType;
 };
 #pragma pack(pop)
-#pragma clang diagnostic pop
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 PcapReader<PointT>::PcapReader(DatasetReaderParameter param, DatasetParameter datasetParam) :
     DatasetReaderBase<PointT>(std::move(param), std::move(datasetParam)) {
-  assert(DatasetReaderBase<PointT>::datasetParam_.type == "pcap");
-  if (DatasetReaderBase<PointT>::datasetParam_.sensor == "vlp16") {
+  assert(this->datasetParam_.type == "pcap");
+  if (this->datasetParam_.sensor == "vlp16") {
     maxNumLasers_ = VLP16_MAX_NUM_LASERS;
     verticals_.resize(maxNumLasers_);
     sinVerticals_.resize(maxNumLasers_);
@@ -108,7 +110,7 @@ PcapReader<PointT>::PcapReader(DatasetReaderParameter param, DatasetParameter da
       sinVerticals_.at(i) = VLP16_VERTICAL_SIN[i];
       cosVerticals_.at(i) = VLP16_VERTICAL_COS[i];
     }
-  } else if (DatasetReaderBase<PointT>::datasetParam_.sensor == "hdl32") {
+  } else if (this->datasetParam_.sensor == "hdl32") {
     maxNumLasers_ = HDL32_MAX_NUM_LASERS;
     verticals_.resize(maxNumLasers_);
     sinVerticals_.resize(maxNumLasers_);
@@ -119,27 +121,26 @@ PcapReader<PointT>::PcapReader(DatasetReaderParameter param, DatasetParameter da
       cosVerticals_.at(i) = HDL32_VERTICAL_COS[i];
     }
   } else {
-    throw logic_error("Not support dataset.sensor " + DatasetReaderBase<PointT>::datasetParam_.sensor);
+    throw logic_error("Not support dataset.sensor " + this->datasetParam_.sensor);
   }
-  DatasetReaderBase<PointT>::currentFrameNumbers_.resize(DatasetReaderBase<PointT>::datasetParam_.count());
-  pcaps_.resize(DatasetReaderBase<PointT>::datasetParam_.count());
-  lastAzimuth100s_.resize(DatasetReaderBase<PointT>::datasetParam_.count());
-  DatasetReaderBase<PointT>::frameBuffers_.resize(DatasetReaderBase<PointT>::datasetParam_.count());
+  this->currentFrameNumbers_.resize(this->datasetParam_.count());
+  pcaps_.resize(this->datasetParam_.count());
+  lastAzimuth100s_.resize(this->datasetParam_.count());
+  this->frameBuffers_.resize(this->datasetParam_.count());
 
-  for_each(DatasetReaderBase<PointT>::datasetIndices_.begin(), DatasetReaderBase<PointT>::datasetIndices_.end(),
+  for_each(this->datasetIndices_.begin(), this->datasetIndices_.end(),
            [this](auto&& PH1) { open_(std::forward<decltype(PH1)>(PH1), 0); });
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void PcapReader<PointT>::open_(const size_t datasetIndex, const size_t startFrameNumber) {
-  if (pcaps_.at(datasetIndex) && DatasetReaderBase<PointT>::currentFrameNumbers_.at(datasetIndex) <= startFrameNumber) {
-    return;
-  }
+  if (pcaps_.at(datasetIndex) && this->currentFrameNumbers_.at(datasetIndex) <= startFrameNumber) { return; }
   if (pcaps_.at(datasetIndex)) { close_(datasetIndex); }
-  string pcapPath = DatasetReaderBase<PointT>::datasetParam_.getFilePath(datasetIndex);
+  const string pcapPath = this->datasetParam_.getFilePath(datasetIndex);
 
-  char    error[PCAP_ERRBUF_SIZE];
-  pcap_t* pcap = pcap_open_offline(pcapPath.c_str(), error);
+  char          error[PCAP_ERRBUF_SIZE];
+  pcap_t* const pcap = pcap_open_offline(pcapPath.c_str(), error);
   if (!pcap) { throw std::runtime_error(error); }
 
   struct bpf_program filter = {0};
@@ -152,39 +153,43 @@ void PcapReader<PointT>::open_(const size_t datasetIndex, const size_t startFram
   pcaps_.at(datasetIndex) = pcap;
 
   // Push One Rotation Data to Queue
-  FramePtr frame(new Frame());
+  const FramePtr frame(new Frame());
   frame->reserve(29200);  // VLP 16 10 Hz (600 rpm)
-  DatasetReaderBase<PointT>::frameBuffers_.at(datasetIndex).push_back(frame);
+  this->frameBuffers_.at(datasetIndex).push_back(frame);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-bool PcapReader<PointT>::isOpen_(const size_t datasetIndex) {
+bool PcapReader<PointT>::isOpen_(const size_t datasetIndex) const {
   return static_cast<bool>(pcaps_.at(datasetIndex));
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-bool PcapReader<PointT>::isEof_(const size_t datasetIndex) {
-  return DatasetReaderBase<PointT>::isEof_(datasetIndex);
+bool PcapReader<PointT>::isEof_(const size_t datasetIndex) const {
+  return this->isEof_(datasetIndex);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void PcapReader<PointT>::load_(const size_t  datasetIndex,
                                const size_t  startFrameNumber,
                                const size_t  groupOfFramesSize,
                                GroupOfFrame& frames) {
   assert(groupOfFramesSize > 0);
-  size_t&       currentFrameNumber = DatasetReaderBase<PointT>::currentFrameNumbers_.at(datasetIndex);
-  pcap_t*       pcap               = pcaps_.at(datasetIndex);
+  size_t&       currentFrameNumber = this->currentFrameNumbers_.at(datasetIndex);
+  pcap_t* const pcap               = pcaps_.at(datasetIndex);
   uint16_t&     lastAzimuth        = lastAzimuth100s_.at(datasetIndex);
-  GroupOfFrame& frameBuffer        = DatasetReaderBase<PointT>::frameBuffers_.at(datasetIndex);
+  GroupOfFrame& frameBuffer        = this->frameBuffers_.at(datasetIndex);
 
   const int ret = parseDataPacket(startFrameNumber, currentFrameNumber, pcap, lastAzimuth, frameBuffer);
   assert(ret > 0);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void PcapReader<PointT>::close_(const size_t datasetIndex) {
-  DatasetReaderBase<PointT>::close_(datasetIndex);
+  this->close_(datasetIndex);
   if (pcaps_.at(datasetIndex)) {
     pcap_close(pcaps_.at(datasetIndex));
     pcaps_.at(datasetIndex) = nullptr;
@@ -192,10 +197,11 @@ void PcapReader<PointT>::close_(const size_t datasetIndex) {
   lastAzimuth100s_.at(datasetIndex) = 0;
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 int PcapReader<PointT>::parseDataPacket(const size_t  startFrameNumber,
                                         size_t&       currentFrameNumber,
-                                        pcap_t*       pcap,
+                                        pcap_t* const pcap,
                                         uint16_t&     lastAzimuth100,
                                         GroupOfFrame& frameBuffer) {
   // Retrieve Header and Data from PCAP
@@ -210,7 +216,7 @@ int PcapReader<PointT>::parseDataPacket(const size_t  startFrameNumber,
 
   // Convert to DataPacket Structure ( Cut Header 42 bytes )
   // Sensor Type 0x21 is HDL-32E, 0x22 is VLP-16
-  const auto* packet = reinterpret_cast<const DataPacket*>(data + 42);
+  const auto* const packet = reinterpret_cast<const DataPacket*>(data + 42);
 
   if (packet->sensorType != 0x21 && packet->sensorType != 0x22) {
     throw(std::runtime_error("This sensor is not supported"));
@@ -223,14 +229,14 @@ int PcapReader<PointT>::parseDataPacket(const size_t  startFrameNumber,
   for (auto firing_data : packet->firingData) {
     // Retrieve Firing Data
     // Retrieve Rotation Azimuth
-    uint16_t azimuth100 = firing_data.rotationalPosition;
+    const uint16_t azimuth100 = firing_data.rotationalPosition;
     // Complete Retrieve Capture One Rotation Data
     if (lastAzimuth100 > azimuth100) {
       frameBuffer.back()->width  = static_cast<std::uint32_t>(frameBuffer.back()->size());
       frameBuffer.back()->height = 1;
       // Push One Rotation Data to Queue
-      FramePtr frame(new Frame());
-      float    size = static_cast<float>(packet->firingData[11].rotationalPosition) -
+      const FramePtr frame(new Frame());
+      float          size = static_cast<float>(packet->firingData[11].rotationalPosition) -
                    static_cast<float>(packet->firingData[0].rotationalPosition);
       if (size < 0) { size += 36000.0; }
       size = TOTAL_POINTS_MULTIPLE_MAX_AZIMUTH_DIFF_OF_PACKET / size;
@@ -243,21 +249,21 @@ int PcapReader<PointT>::parseDataPacket(const size_t  startFrameNumber,
       continue;
     }
     for (int laser_index = 0; laser_index < LASER_PER_FIRING; laser_index++) {
-      float distance = static_cast<float>(firing_data.laserReturns[laser_index].distance) / 500.0f;
-      float azimuth  = static_cast<float>(azimuth100) * PI_DIV18000;
+      const float distance = static_cast<float>(firing_data.laserReturns[laser_index].distance) / 500.0f;
+      const float azimuth  = static_cast<float>(azimuth100) * PI_DIV18000;
       //      float   vertical  = verticals_.at(laser_index % maxNumLasers_);
       //      uint8_t intensity = firing_data.laserReturns[laser_index].intensity;
-      auto    id = static_cast<uint8_t>(laser_index % maxNumLasers_);
-      int64_t time;
-      if (DatasetReaderBase<PointT>::datasetParam_.haveGpsTime) {
+      const auto id = static_cast<uint8_t>(laser_index % maxNumLasers_);
+      int64_t    time;
+      if (this->datasetParam_.haveGpsTime) {
         time = packet->gpsTimestamp;
       } else {
         time = static_cast<int64_t>(header->ts.tv_sec) * 1000 + header->ts.tv_usec / 1000;
       }
-      float rSinV = distance * sinVerticals_.at(id);
-      auto  x     = static_cast<float>(rSinV * cos(azimuth));
-      auto  y     = static_cast<float>(rSinV * sin(azimuth));
-      auto  z     = static_cast<float>(distance * cosVerticals_.at(id));
+      const float rSinV = distance * sinVerticals_.at(id);
+      const auto  x     = static_cast<float>(rSinV * cos(azimuth));
+      const auto  y     = static_cast<float>(rSinV * sin(azimuth));
+      const auto  z     = static_cast<float>(distance * cosVerticals_.at(id));
       if (frameBuffer.back()->header.stamp == 0) { frameBuffer.back()->header.stamp = time; }
       // TODO add transform
       // emplace_back points only, improve performance

@@ -41,7 +41,7 @@ struct PointNormal : public _Point {
     curvature                                  = 0.f;
   }
 
-  inline PointNormal(float _x, float _y, float _z) {
+  inline PointNormal(const float _x, const float _y, const float _z) {
     x        = _x;
     y        = _y;
     z        = _z;
@@ -50,7 +50,8 @@ struct PointNormal : public _Point {
     curvature                                  = 0.f;
   }
 
-  inline PointNormal(float _x, float _y, float _z, float _nx, float _ny, float _nz) {
+  inline PointNormal(
+      const float _x, const float _y, const float _z, const float _nx, const float _ny, const float _nz) {
     x         = _x;
     y         = _y;
     z         = _z;

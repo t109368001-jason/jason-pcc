@@ -26,14 +26,6 @@ PreProcessParameter::PreProcessParameter(const std::string& prefix, const std::s
   opts_.add(statisticalOutlierRemoval.getOpts());
 }
 
-ostream& operator<<(ostream& out, const PreProcessParameter& obj) {
-  out << obj.caption_ << endl;
-  out << "\t" << obj.prefix_ << ORDER_OPT "=" << obj.order_ << endl;
-  out << obj.radiusOutlierRemoval;
-  out << obj.statisticalOutlierRemoval;
-  return out;
-}
-
 void PreProcessParameter::notify() {
   radiusOutlierRemoval.notify();
   statisticalOutlierRemoval.notify();
@@ -48,6 +40,14 @@ void PreProcessParameter::notify() {
   }
   if (!order_.empty()) { boost::algorithm::split(order, order_, boost::is_any_of(",")); }
   assert(order.size() == algorithmCount);
+}
+
+ostream& operator<<(ostream& out, const PreProcessParameter& obj) {
+  out << obj.caption_ << endl;
+  out << "\t" << obj.prefix_ << ORDER_OPT "=" << obj.order_ << endl;
+  out << obj.radiusOutlierRemoval;
+  out << obj.statisticalOutlierRemoval;
+  return out;
 }
 
 }  // namespace jpcc::process

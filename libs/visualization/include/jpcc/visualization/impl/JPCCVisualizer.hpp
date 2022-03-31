@@ -27,9 +27,9 @@ JPCCVisualizer<PointT>::JPCCVisualizer(const string& name, VisualizerParameter p
   m_pModifiedCallback->SetCallback(windowModifiedCallback.target<void(vtkObject*, long unsigned int, void*, void*)>());
   getRenderWindow()->AddObserver(vtkCommand::ModifiedEvent, m_pModifiedCallback);
 
-  registerKeyboardCallback([this](auto& event) { this->handleKeyboardEvent(event); });
+  registerKeyboardCallback([this](const auto& event) { this->handleKeyboardEvent(event); });
 
-  registerPointPickingCallback([](auto& event) {
+  registerPointPickingCallback([](const auto& event) {
     Point point;
     event.getPoint(point.x, point.y, point.z);
     cout << "picked point=" << point << endl;
@@ -38,7 +38,7 @@ JPCCVisualizer<PointT>::JPCCVisualizer(const string& name, VisualizerParameter p
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <class PointT>
-void JPCCVisualizer<PointT>::updateOrAddText(const string& text, int ypos, const string& id) {
+void JPCCVisualizer<PointT>::updateOrAddText(const string& text, const int ypos, const string& id) {
   const RGBColor& tc = getTextColor(id);
   if (!PCLVisualizer::updateText(text, 5, ypos, fontSize_, tc[0], tc[1], tc[2], id)) {
     addText(text, 5, ypos, fontSize_, tc[0], tc[1], tc[2], id);
@@ -49,15 +49,15 @@ void JPCCVisualizer<PointT>::updateOrAddText(const string& text, int ypos, const
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <class PointT>
-void JPCCVisualizer<PointT>::updateOrAddCloud(FramePtr cloud, const PointCloudColor& color, const string& id) {
+void JPCCVisualizer<PointT>::updateOrAddCloud(const FramePtr cloud, const PointCloudColor& color, const string& id) {
   if (!updatePointCloud(cloud, color, id)) { addPointCloud(cloud, color, id); }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <class PointT>
 void JPCCVisualizer<PointT>::updateText() {
-  int* windowSize = getRenderWindow()->GetSize();
-  int  textHeight = windowSize[1] - lineHeight_;
+  const int* const windowSize = getRenderWindow()->GetSize();
+  int              textHeight = windowSize[1] - lineHeight_;
 
   if ((cloudMap_.find(primaryId_) != cloudMap_.end())) {
     {
@@ -78,8 +78,8 @@ void JPCCVisualizer<PointT>::updateText() {
     }
   }
   for (const auto& [id, cloud] : cloudMap_) {
-    PointCloudColorPtr color = getCloudColor(id, cloud);
-    const RGBColor&    tc    = getTextColor(id);
+    const PointCloudColorPtr color = getCloudColor(id, cloud);
+    const RGBColor&          tc    = getTextColor(id);
     updateOrAddCloud(cloud, *color, id);
     const string text = id + " points: " + to_string(cloud->size());
     updateOrAddText(text, textHeight, id);
@@ -91,8 +91,8 @@ void JPCCVisualizer<PointT>::updateText() {
 template <class PointT>
 void JPCCVisualizer<PointT>::updateCloud() {
   for (const auto& [id, cloud] : cloudMap_) {
-    PointCloudColorPtr color = getCloudColor(id, cloud);
-    const RGBColor&    tc    = getTextColor(id);
+    const PointCloudColorPtr color = getCloudColor(id, cloud);
+    const RGBColor&          tc    = getTextColor(id);
     updateOrAddCloud(cloud, *color, id);
   }
 }
@@ -105,7 +105,7 @@ void JPCCVisualizer<PointT>::updateQueue() {
     const FrameQueue& queue      = queueMap_.at(primaryId_);
     const string      id         = primaryId_ + "QueueSize";
     const string      text       = "queue: " + to_string(queue.size());
-    int               textHeight = textHeightMap[id];
+    const int         textHeight = textHeightMap[id];
     updateOrAddText(text, textHeight, id);
   }
 }
@@ -136,7 +136,7 @@ void JPCCVisualizer<PointT>::enqueue(const JPCCVisualizer::GroupOfFrameMap& map)
   for (const auto& [id, frames] : map) {
     if (queueMap_.find(id) == queueMap_.end()) { queueMap_[id] = FrameQueue(); }
     FrameQueue& queue = queueMap_.at(id);
-    for (FramePtr frame : frames) { queue.push(frame); }
+    for (const FramePtr& frame : frames) { queue.push(frame); }
   }
   updateQueue();
 }
@@ -156,8 +156,8 @@ typename JPCCVisualizer<PointT>::RGBColor JPCCVisualizer<PointT>::getTextColor(c
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <class PointT>
-typename JPCCVisualizer<PointT>::PointCloudColorPtr JPCCVisualizer<PointT>::getCloudColor(const string& id,
-                                                                                          FramePtr      cloud) {
+typename JPCCVisualizer<PointT>::PointCloudColorPtr JPCCVisualizer<PointT>::getCloudColor(const string&  id,
+                                                                                          const FramePtr cloud) {
   PointCloudColorPtr color;
   if (fieldColorMap_.find(id) != fieldColorMap_.end()) {
     color.reset(new PointCloudColorHandlerGenericField<PointT>(cloud, fieldColorMap_.at(id)));

@@ -28,11 +28,11 @@ class DatasetReaderBase {
 
   ~DatasetReaderBase();
 
-  [[nodiscard]] DatasetReaderParameter getReaderParameter();
+  [[nodiscard]] const DatasetReaderParameter& getReaderParameter() const;
 
-  [[nodiscard]] DatasetParameter getDatasetParameter();
+  [[nodiscard]] const DatasetParameter& getDatasetParameter() const;
 
-  [[nodiscard]] bool isOpen();
+  [[nodiscard]] bool isOpen() const;
 
   virtual void loadAll(size_t startFrameNumber, size_t groupOfFramesSize, GroupOfFrame& frames);
 
@@ -45,9 +45,9 @@ class DatasetReaderBase {
 
   virtual void open_(size_t datasetIndex, size_t startFrameNumber);
 
-  [[nodiscard]] virtual bool isOpen_(size_t datasetIndex);
+  [[nodiscard]] virtual bool isOpen_(size_t datasetIndex) const;
 
-  [[nodiscard]] virtual bool isEof_(size_t datasetIndex);
+  [[nodiscard]] virtual bool isEof_(size_t datasetIndex) const;
 
   virtual void load_(size_t datasetIndex, size_t startFrameNumber, size_t groupOfFramesSize, GroupOfFrame& frames);
 

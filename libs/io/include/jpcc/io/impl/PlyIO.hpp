@@ -10,9 +10,13 @@ namespace jpcc::io {
 
 using namespace std;
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-void loadPly(
-    GroupOfFrame<PointT>& frames, std::string filePath, size_t startFrameNumber, size_t endFrameNumber, bool parallel) {
+void loadPly(GroupOfFrame<PointT>& frames,
+             const string&         filePath,
+             const size_t          startFrameNumber,
+             const size_t          endFrameNumber,
+             const bool            parallel) {
   const size_t frameCount = endFrameNumber - startFrameNumber;
   frames.clear();
   frames.resize(frameCount);
@@ -24,7 +28,7 @@ void loadPly(
     auto& frame = frames.at(frameNumber - startFrameNumber);
     frame.reset(new Frame<PointT>());
 
-    int result = pcl::io::load(string(fileName), *frame);
+    const int result = pcl::io::load(string(fileName), *frame);
     assert(result != -1);
     if (frame->header.seq == 0) { frame->header.seq = frameNumber; }
   };
@@ -36,13 +40,14 @@ void loadPly(
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-void savePly(const GroupOfFrame<PointT>& frames, std::string filePath, bool parallel) {
+void savePly(const GroupOfFrame<PointT>& frames, const string& filePath, const bool parallel) {
   auto func = [&](const FramePtr<PointT>& frame) {
     char fileName[4096];
     sprintf(fileName, filePath.c_str(), frame->header.seq);
 
-    int result = pcl::io::savePLYFileASCII(string(fileName), *frame);
+    const int result = pcl::io::savePLYFileASCII(string(fileName), *frame);
     assert(result != -1);
   };
 
