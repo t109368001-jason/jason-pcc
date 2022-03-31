@@ -7,8 +7,7 @@ namespace jpcc {
 using namespace std;
 using namespace po;
 
-Parameter::Parameter(string prefix, const string& caption) :
-    prefix_(std::move(prefix)), caption_(caption), opts_(caption) {}
+Parameter::Parameter(string prefix, const string& caption) : prefix_(move(prefix)), caption_(caption), opts_(caption) {}
 
 const options_description& Parameter::getOpts() const { return opts_; }
 

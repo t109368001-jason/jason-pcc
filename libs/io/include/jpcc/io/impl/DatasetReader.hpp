@@ -6,8 +6,6 @@
 
 namespace jpcc::io {
 
-using namespace std;
-
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 DatasetReaderPtr<PointT> newReader(const DatasetReaderParameter& param, const DatasetParameter& datasetParam) {

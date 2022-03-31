@@ -12,9 +12,6 @@
 
 namespace jpcc::process {
 
-using namespace std;
-using namespace jpcc;
-
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <class PointT>
 PreProcessor<PointT>::PreProcessor(PreProcessParameter param) : param_(std::move(param)) {}
@@ -24,7 +21,7 @@ template <class PointT>
 void PreProcessor<PointT>::process(GroupOfFrame&            groupOfFrame,
                                    const GroupOfFrameMapPtr removedMap,
                                    const bool               parallel) {
-  for (const string& algorithm : param_.order) {
+  for (const std::string& algorithm : param_.order) {
     GroupOfFrame removed;
     if (removedMap) {
       removed.resize(groupOfFrame.size());
@@ -37,7 +34,7 @@ void PreProcessor<PointT>::process(GroupOfFrame&            groupOfFrame,
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <class PointT>
-typename PreProcessor<PointT>::FilterPtr PreProcessor<PointT>::buildFilter(const string& algorithm) {
+typename PreProcessor<PointT>::FilterPtr PreProcessor<PointT>::buildFilter(const std::string& algorithm) {
   FilterPtr filter;
   if (algorithm == RADIUS_OUTLIER_REMOVAL_OPT_PREFIX) {
     typename pcl::RadiusOutlierRemoval<PointT>::Ptr radiusOutlierRemoval(new pcl::RadiusOutlierRemoval<PointT>());
@@ -51,17 +48,17 @@ typename PreProcessor<PointT>::FilterPtr PreProcessor<PointT>::buildFilter(const
     statisticalOutlierRemoval->setStddevMulThresh(param_.statisticalOutlierRemoval.stddevMulThresh);
     filter = statisticalOutlierRemoval;
   } else {
-    BOOST_THROW_EXCEPTION(logic_error("not support algorithm: " + algorithm));
+    BOOST_THROW_EXCEPTION(std::logic_error("not support algorithm: " + algorithm));
   }
   return filter;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <class PointT>
-void PreProcessor<PointT>::applyAlgorithm(const string& algorithm,
-                                          GroupOfFrame& groupOfFrame,
-                                          GroupOfFrame& removed,
-                                          const bool    parallel) {
+void PreProcessor<PointT>::applyAlgorithm(const std::string& algorithm,
+                                          GroupOfFrame&      groupOfFrame,
+                                          GroupOfFrame&      removed,
+                                          const bool         parallel) {
   auto func = [&](const size_t i) {
     this->applyAlgorithm(algorithm, groupOfFrame.at(i), removed.empty() ? nullptr : removed.at(i));
   };
@@ -75,7 +72,7 @@ void PreProcessor<PointT>::applyAlgorithm(const string& algorithm,
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <class PointT>
-void PreProcessor<PointT>::applyAlgorithm(const string& algorithm, const FramePtr frame, const FramePtr removed) {
+void PreProcessor<PointT>::applyAlgorithm(const std::string& algorithm, const FramePtr frame, const FramePtr removed) {
   FilterPtr filter = buildFilter(algorithm);
   filter->setInputCloud(frame);
   if (!removed) {

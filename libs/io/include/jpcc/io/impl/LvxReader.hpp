@@ -7,11 +7,6 @@
 
 namespace jpcc::io {
 
-using namespace std;
-using namespace std::placeholders;
-using namespace livox_ros;
-using namespace jpcc;
-
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 LvxReader<PointT>::LvxReader(DatasetReaderParameter param, DatasetParameter datasetParam) :
@@ -22,7 +17,7 @@ LvxReader<PointT>::LvxReader(DatasetReaderParameter param, DatasetParameter data
   } else if (this->datasetParam_.sensor == "mid-70") {
     capacity_ = (size_t)((double)(100000) / this->param_.frequency * 1.05);
   } else {
-    throw logic_error("Not support dataset.sensor " + this->datasetParam_.sensor);
+    throw std::logic_error("Not support dataset.sensor " + this->datasetParam_.sensor);
   }
   lvxs_.resize(this->datasetParam_.count());
   for_each(this->datasetIndices_.begin(), this->datasetIndices_.end(),
@@ -34,13 +29,13 @@ template <typename PointT>
 void LvxReader<PointT>::open_(const size_t datasetIndex, const size_t startFrameNumber) {
   if (lvxs_.at(datasetIndex) && this->currentFrameNumbers_.at(datasetIndex) <= startFrameNumber) { return; }
   if (lvxs_.at(datasetIndex)) { close_(datasetIndex); }
-  const string              lvxPath = this->datasetParam_.getFilePath(datasetIndex);
-  shared_ptr<LvxFileHandle> lvx(new LvxFileHandle());
-  assert(lvx->Open(lvxPath.c_str(), std::ios::in) == 0);
+  const std::string                    lvxPath = this->datasetParam_.getFilePath(datasetIndex);
+  shared_ptr<livox_ros::LvxFileHandle> lvx(new livox_ros::LvxFileHandle());
+  assert(lvx->Open(lvxPath.c_str(), ios::in) == 0);
 
-  assert(lvx->GetFileVersion() == kLvxFileV1);
+  assert(lvx->GetFileVersion() == livox_ros::kLvxFileV1);
   assert(lvx->GetDeviceCount() != 0);
-  assert(lvx->GetDeviceCount() < kMaxSourceLidar);
+  assert(lvx->GetDeviceCount() < livox_ros::kMaxSourceLidar);
   lvxs_.at(datasetIndex) = lvx;
 }
 
@@ -53,7 +48,7 @@ bool LvxReader<PointT>::isOpen_(const size_t datasetIndex) const {
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 bool LvxReader<PointT>::isEof_(const size_t datasetIndex) const {
-  return this->isEof_(datasetIndex) || lvxs_.at(datasetIndex)->GetFileState() == kLvxFileAtEnd;
+  return this->isEof_(datasetIndex) || lvxs_.at(datasetIndex)->GetFileState() == livox_ros::kLvxFileAtEnd;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -63,9 +58,9 @@ void LvxReader<PointT>::load_(const size_t  datasetIndex,
                               const size_t  groupOfFramesSize,
                               GroupOfFrame& frames) {
   assert(groupOfFramesSize > 0);
-  size_t&                   currentFrameNumber = this->currentFrameNumbers_.at(datasetIndex);
-  shared_ptr<LvxFileHandle> lvx                = lvxs_.at(datasetIndex);
-  vector<FramePtr>&         frameBuffer        = this->frameBuffers_.at(datasetIndex);
+  size_t&                              currentFrameNumber = this->currentFrameNumbers_.at(datasetIndex);
+  shared_ptr<livox_ros::LvxFileHandle> lvx                = lvxs_.at(datasetIndex);
+  std::vector<FramePtr>&               frameBuffer        = this->frameBuffers_.at(datasetIndex);
 
   std::vector<int64_t> lastTimestamps(lvx->GetDeviceCount());
 
@@ -104,18 +99,18 @@ void LvxReader<PointT>::load_(const size_t  datasetIndex,
         frameBuffer.at(index)->points.emplace_back(x, y, z);
         lastTimestamps.at(deviceIndex) = timestamp;
       });
-  assert(ret == 0 || ret == kLvxFileAtEnd);
+  assert(ret == 0 || ret == livox_ros::kLvxFileAtEnd);
 
-  if (ret == kLvxFileAtEnd) {
+  if (ret == livox_ros::kLvxFileAtEnd) {
     for (const FramePtr& frame : frameBuffer) {
-      frame->width  = static_cast<std::uint32_t>(frame->size());
+      frame->width  = static_cast<uint32_t>(frame->size());
       frame->height = 1;
     }
   } else {
-    const int64_t minLastTimestamp = *std::min_element(lastTimestamps.begin(), lastTimestamps.end());
+    const int64_t minLastTimestamp = *min_element(lastTimestamps.begin(), lastTimestamps.end());
     for (const FramePtr& frame : frameBuffer) {
       if ((frame->header.stamp + (int64_t)this->param_.interval) > minLastTimestamp) { break; }
-      frame->width  = static_cast<std::uint32_t>(frame->size());
+      frame->width  = static_cast<uint32_t>(frame->size());
       frame->height = 1;
     }
   }

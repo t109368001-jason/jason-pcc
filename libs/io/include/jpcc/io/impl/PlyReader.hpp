@@ -6,8 +6,6 @@
 
 namespace jpcc::io {
 
-using namespace std;
-
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 PlyReader<PointT>::PlyReader(DatasetReaderParameter param, DatasetParameter datasetParam) :

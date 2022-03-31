@@ -5,10 +5,6 @@
 
 namespace jpcc::io {
 
-using namespace std;
-using namespace std::placeholders;
-using namespace jpcc;
-
 constexpr auto LASER_PER_FIRING = 32;
 constexpr auto FIRING_PER_PKT   = 12;
 
@@ -121,7 +117,7 @@ PcapReader<PointT>::PcapReader(DatasetReaderParameter param, DatasetParameter da
       cosVerticals_.at(i) = HDL32_VERTICAL_COS[i];
     }
   } else {
-    throw logic_error("Not support dataset.sensor " + this->datasetParam_.sensor);
+    throw std::logic_error("Not support dataset.sensor " + this->datasetParam_.sensor);
   }
   this->currentFrameNumbers_.resize(this->datasetParam_.count());
   pcaps_.resize(this->datasetParam_.count());
@@ -137,7 +133,7 @@ template <typename PointT>
 void PcapReader<PointT>::open_(const size_t datasetIndex, const size_t startFrameNumber) {
   if (pcaps_.at(datasetIndex) && this->currentFrameNumbers_.at(datasetIndex) <= startFrameNumber) { return; }
   if (pcaps_.at(datasetIndex)) { close_(datasetIndex); }
-  const string pcapPath = this->datasetParam_.getFilePath(datasetIndex);
+  const std::string pcapPath = this->datasetParam_.getFilePath(datasetIndex);
 
   char          error[PCAP_ERRBUF_SIZE];
   pcap_t* const pcap = pcap_open_offline(pcapPath.c_str(), error);
@@ -232,7 +228,7 @@ int PcapReader<PointT>::parseDataPacket(const size_t  startFrameNumber,
     const uint16_t azimuth100 = firing_data.rotationalPosition;
     // Complete Retrieve Capture One Rotation Data
     if (lastAzimuth100 > azimuth100) {
-      frameBuffer.back()->width  = static_cast<std::uint32_t>(frameBuffer.back()->size());
+      frameBuffer.back()->width  = static_cast<uint32_t>(frameBuffer.back()->size());
       frameBuffer.back()->height = 1;
       // Push One Rotation Data to Queue
       const FramePtr frame(new Frame());

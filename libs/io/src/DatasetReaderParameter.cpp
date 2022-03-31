@@ -9,7 +9,7 @@ using namespace po;
 
 DatasetReaderParameter::DatasetReaderParameter() : DatasetReaderParameter(READER_OPT_PREFIX, __FUNCTION__) {}
 
-DatasetReaderParameter::DatasetReaderParameter(const std::string& prefix, const std::string& caption) :
+DatasetReaderParameter::DatasetReaderParameter(const string& prefix, const string& caption) :
     LvxReaderParameter(prefix, caption), Parameter(prefix, caption) {}
 
 void DatasetReaderParameter::notify() { LvxReaderParameter::notify(); }

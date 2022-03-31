@@ -10,7 +10,7 @@ using namespace po;
 
 LvxReaderParameter::LvxReaderParameter() : LvxReaderParameter(LVX_READER_OPT_PREFIX, __FUNCTION__) {}
 
-LvxReaderParameter::LvxReaderParameter(const std::string& prefix, const std::string& caption) :
+LvxReaderParameter::LvxReaderParameter(const string& prefix, const string& caption) :
     Parameter(prefix, caption), frequency(10.0), interval(100.0) {
   opts_.add_options()                                       //
       (string(prefix + FREQUENCY_OPT).c_str(),              //

@@ -11,12 +11,14 @@
 
 #include "AppParameter.h"
 
+using namespace std;
 using namespace std::chrono;
 using namespace pcc;
+using namespace pcc::chrono;
 using namespace jpcc;
 using namespace jpcc::io;
 
-void parse(const AppParameter& parameter, pcc::chrono::StopwatchUserTime& clock) {
+void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
   const DatasetReader<>::Ptr reader = newReader<>(parameter.inputReader, parameter.inputDataset);
   GroupOfFrame<>             frames;
   const size_t               groupOfFramesSize = 32;
@@ -34,23 +36,23 @@ void parse(const AppParameter& parameter, pcc::chrono::StopwatchUserTime& clock)
 }
 
 int main(int argc, char* argv[]) {
-  std::cout << "JPCC App Dataset Parser Start" << std::endl;
+  cout << "JPCC App Dataset Parser Start" << endl;
 
   AppParameter parameter;
   try {
     ParameterParser pp;
     pp.add(parameter);
     if (!pp.parse(argc, argv)) { return 1; }
-    std::cout << parameter << std::endl;
-  } catch (std::exception& e) {
-    std::cerr << e.what() << std::endl;
+    cout << parameter << endl;
+  } catch (exception& e) {
+    cerr << e.what() << endl;
     return 1;
   }
 
   try {
     // Timers to count elapsed wall/user time
-    pcc::chrono::Stopwatch<steady_clock> clockWall;
-    pcc::chrono::StopwatchUserTime       clockUser;
+    Stopwatch<steady_clock> clockWall;
+    StopwatchUserTime       clockUser;
 
     clockWall.start();
     parse(parameter, clockUser);
@@ -59,12 +61,12 @@ int main(int argc, char* argv[]) {
     auto totalWall      = duration_cast<milliseconds>(clockWall.count()).count();
     auto totalUserSelf  = duration_cast<milliseconds>(clockUser.self.count()).count();
     auto totalUserChild = duration_cast<milliseconds>(clockUser.children.count()).count();
-    std::cout << "Processing time (wall): " << (float)totalWall / 1000.0 << " s\n";
-    std::cout << "Processing time (user.self): " << (float)totalUserSelf / 1000.0 << " s\n";
-    std::cout << "Processing time (user.children): " << (float)totalUserChild / 1000.0 << " s\n";
-    std::cout << "Peak memory: " << getPeakMemory() << " KB\n";
-  } catch (std::exception& e) { std::cerr << e.what() << std::endl; }
+    cout << "Processing time (wall): " << (float)totalWall / 1000.0 << " s\n";
+    cout << "Processing time (user.self): " << (float)totalUserSelf / 1000.0 << " s\n";
+    cout << "Processing time (user.children): " << (float)totalUserChild / 1000.0 << " s\n";
+    cout << "Peak memory: " << getPeakMemory() << " KB\n";
+  } catch (exception& e) { cerr << e.what() << endl; }
 
-  std::cout << "JPCC App Dataset Parser End" << std::endl;
+  cout << "JPCC App Dataset Parser End" << endl;
   return 0;
 }

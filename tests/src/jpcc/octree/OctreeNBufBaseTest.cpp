@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include <jpcc/common/Common.h>
 #include <jpcc/octree/OctreeNBufBase.h>
 
 #include "test_data/octree/TestOctree.h"
@@ -10,8 +11,8 @@ using namespace pcl::octree;
 
 TEST(OctreeNBufBaseTest, getChildPattern) {
   // given
-  OctreePointCloud<pcl::PointXYZ, OctreeContainerPointIndices, OctreeContainerEmpty, OctreeNBufBase<BUFFER_SIZE>>
-      octree = getTestOctree();
+  OctreePointCloud<Point, OctreeContainerPointIndices, OctreeContainerEmpty, OctreeNBufBase<BUFFER_SIZE>> octree =
+      getTestOctree();
   // then
   EXPECT_EQ(octree.getBufferSize(), BUFFER_SIZE);
   EXPECT_EQ(octree.getTreeDepth(), 1);
@@ -27,7 +28,7 @@ TEST(OctreeNBufBaseTest, getChildPattern) {
 
 TEST(OctreeNBufBaseTest, getBufferPattern) {
   // given
-  const OctreePointCloud<pcl::PointXYZ, OctreeContainerPointIndices, OctreeContainerEmpty, OctreeNBufBase<BUFFER_SIZE>>&
+  const OctreePointCloud<Point, OctreeContainerPointIndices, OctreeContainerEmpty, OctreeNBufBase<BUFFER_SIZE>>&
       octree = getTestOctree();
   // then
   for (ChildIndex childIndex = 0; childIndex < 8; childIndex++) {
@@ -41,8 +42,8 @@ TEST(OctreeNBufBaseTest, getBufferPattern) {
 
 TEST(OctreeNBufBaseTest, getIndicesByFilter) {
   // given
-  OctreePointCloud<pcl::PointXYZ, OctreeContainerPointIndices, OctreeContainerEmpty, OctreeNBufBase<BUFFER_SIZE>>
-       octree = getTestOctree();
+  OctreePointCloud<Point, OctreeContainerPointIndices, OctreeContainerEmpty, OctreeNBufBase<BUFFER_SIZE>> octree =
+      getTestOctree();
   auto filter = [](BufferIndex b, const OctreeNBufBase<BUFFER_SIZE>::BufferPattern& bufferPattern) {
     return bufferPattern.test(b);
   };
@@ -61,8 +62,8 @@ TEST(OctreeNBufBaseTest, getIndicesByFilter) {
 
 TEST(OctreeNBufBaseTest, deleteBuffer) {
   // given
-  OctreePointCloud<pcl::PointXYZ, OctreeContainerPointIndices, OctreeContainerEmpty, OctreeNBufBase<BUFFER_SIZE>>
-      octree = getTestOctree();
+  OctreePointCloud<Point, OctreeContainerPointIndices, OctreeContainerEmpty, OctreeNBufBase<BUFFER_SIZE>> octree =
+      getTestOctree();
 
   // then
   for (BufferIndex bufferIndex = 0; bufferIndex < octree.getBufferSize(); bufferIndex++) {
@@ -75,8 +76,8 @@ TEST(OctreeNBufBaseTest, deleteBuffer) {
 
 TEST(OctreeNBufBaseTest, reuseBuffer) {
   // given
-  OctreePointCloud<pcl::PointXYZ, OctreeContainerPointIndices, OctreeContainerEmpty, OctreeNBufBase<BUFFER_SIZE>>
-       octree = getTestOctree();
+  OctreePointCloud<Point, OctreeContainerPointIndices, OctreeContainerEmpty, OctreeNBufBase<BUFFER_SIZE>> octree =
+      getTestOctree();
   auto filter = [](BufferIndex b, const OctreeNBufBase<BUFFER_SIZE>::BufferPattern& bufferPattern) {
     return bufferPattern.test(b);
   };

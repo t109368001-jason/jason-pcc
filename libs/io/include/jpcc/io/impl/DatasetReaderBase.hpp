@@ -8,9 +8,6 @@
 
 namespace jpcc::io {
 
-using namespace std;
-using namespace std::placeholders;
-
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 DatasetReaderBase<PointT>::DatasetReaderBase(DatasetReaderParameter param, DatasetParameter datasetParam) :
@@ -67,10 +64,10 @@ void DatasetReaderBase<PointT>::loadAll(const size_t  startFrameNumber,
   for_each(datasetIndices_.begin(), datasetIndices_.end(),
            [this, startFrameNumber](auto&& PH1) { open_(std::forward<decltype(PH1)>(PH1), startFrameNumber); });
 
-  vector<GroupOfFrame> sources;
+  std::vector<GroupOfFrame> sources;
   sources.resize(datasetIndices_.size());
   if (parallel) {
-    for_each(execution::par, datasetIndices_.begin(), datasetIndices_.end(), [&](size_t datasetIndex) {
+    for_each(std::execution::par, datasetIndices_.begin(), datasetIndices_.end(), [&](size_t datasetIndex) {
       load(datasetIndex, startFrameNumber, groupOfFramesSize, sources.at(datasetIndex));
     });
   } else {
@@ -92,7 +89,7 @@ void DatasetReaderBase<PointT>::loadAll(const size_t  startFrameNumber,
                       make_move_iterator(sources.at(datasetIndex).at(i)->end()));
       }
     }
-    frame->width  = static_cast<std::uint32_t>(frame->size());
+    frame->width  = static_cast<uint32_t>(frame->size());
     frame->height = 1;
   }
 }
@@ -167,7 +164,7 @@ void DatasetReaderBase<PointT>::load_(const size_t  datasetIndex,
                                       const size_t  startFrameNumber,
                                       const size_t  groupOfFramesSize,
                                       GroupOfFrame& frames) {
-  BOOST_THROW_EXCEPTION(logic_error(string("Not Implemented ")));
+  BOOST_THROW_EXCEPTION(std::logic_error(std::string("Not Implemented ")));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

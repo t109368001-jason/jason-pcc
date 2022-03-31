@@ -10,7 +10,7 @@ using namespace po;
 
 ParserParameter::ParserParameter() : ParserParameter("", "ParserParameter") {}
 
-ParserParameter::ParserParameter(const std::string& prefix, const std::string& caption) :
+ParserParameter::ParserParameter(const string& prefix, const string& caption) :
     Parameter(prefix, caption), disableEnvVar(false), configs() {
   opts_.add_options()                                                                                       //
       (string(prefix_ + DISABLE_ENV_VAR_OPT).c_str(),                                                       //

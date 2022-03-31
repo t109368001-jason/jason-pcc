@@ -53,8 +53,8 @@ bool ParameterParser::parse(int argc, char* argv[]) {
     for (Parameter* param : params_) { param->notify(); }
     cout << param_ << endl;
     return true;
-  } catch (std::exception& e) {
-    std::cerr << e.what() << std::endl;
+  } catch (exception& e) {
+    cerr << e.what() << endl;
     cout << opts_ << "\n";
     throw e;
   }

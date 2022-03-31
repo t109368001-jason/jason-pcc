@@ -11,7 +11,7 @@ namespace jpcc::octree {
 #define BOUNDING_BOX 1.0
 
 pcl::octree::OctreePointCloud<
-    pcl::PointXYZ,
+    Point,
     pcl::octree::OctreeContainerPointIndices,
     pcl::octree::OctreeContainerEmpty,
     OctreeNBufBase<BUFFER_SIZE, pcl::octree::OctreeContainerPointIndices, pcl::octree::OctreeContainerEmpty>>

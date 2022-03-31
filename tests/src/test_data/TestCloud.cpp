@@ -3,7 +3,6 @@
 namespace jpcc::octree {
 
 using namespace std;
-using namespace pcl;
 
 ChildPattern getTestChildPattern(BufferIndex bufferSelector) {
   vector<ChildPattern> childPatterns = {
@@ -14,8 +13,8 @@ ChildPattern getTestChildPattern(BufferIndex bufferSelector) {
   return childPatterns.at(bufferSelector);
 }
 
-PointCloud<PointXYZ>::Ptr getTestCloud(BufferIndex bufferSelector) {
-  PointCloud<PointXYZ>::Ptr cloud(new PointCloud<PointXYZ>());
+FramePtr<Point> getTestCloud(BufferIndex bufferSelector) {
+  FramePtr<Point> cloud(new Frame<Point>());
   if (getTestChildPattern(bufferSelector).test(7)) { cloud->emplace_back(0.5, 0.5, 0.5); }
   if (getTestChildPattern(bufferSelector).test(6)) { cloud->emplace_back(0.5, 0.5, 0.0); }
   if (getTestChildPattern(bufferSelector).test(5)) { cloud->emplace_back(0.5, 0.0, 0.5); }

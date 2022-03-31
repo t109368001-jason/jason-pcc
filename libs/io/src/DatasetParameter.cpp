@@ -18,7 +18,7 @@ using namespace po;
 
 DatasetParameter::DatasetParameter() : DatasetParameter(DATASET_OPT_PREFIX, __FUNCTION__) {}
 
-DatasetParameter::DatasetParameter(const std::string& prefix, const std::string& caption) :
+DatasetParameter::DatasetParameter(const string& prefix, const string& caption) :
     Parameter(prefix, caption),
     folderPrefix("../../dataset/"),
     files(),
@@ -60,7 +60,7 @@ void DatasetParameter::notify() {
 
 size_t DatasetParameter::count() const { return files.size(); }
 
-std::string DatasetParameter::getFilePath(const size_t index) const { return folderPrefix + folder + files.at(index); }
+string DatasetParameter::getFilePath(const size_t index) const { return folderPrefix + folder + files.at(index); }
 
 size_t DatasetParameter::getFrameCounts(const size_t index) const { return frameCounts.at(index); }
 
