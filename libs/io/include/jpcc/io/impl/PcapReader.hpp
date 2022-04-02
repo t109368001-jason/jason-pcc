@@ -163,7 +163,7 @@ bool PcapReader<PointT>::isOpen_(const size_t datasetIndex) const {
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 bool PcapReader<PointT>::isEof_(const size_t datasetIndex) const {
-  return this->isEof_(datasetIndex);
+  return DatasetReaderBase<PointT>::isEof_(datasetIndex);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -185,7 +185,7 @@ void PcapReader<PointT>::load_(const size_t  datasetIndex,
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void PcapReader<PointT>::close_(const size_t datasetIndex) {
-  this->close_(datasetIndex);
+  DatasetReaderBase<PointT>::close_(datasetIndex);
   if (pcaps_.at(datasetIndex)) {
     pcap_close(pcaps_.at(datasetIndex));
     pcaps_.at(datasetIndex) = nullptr;

@@ -48,7 +48,8 @@ bool LvxReader<PointT>::isOpen_(const size_t datasetIndex) const {
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 bool LvxReader<PointT>::isEof_(const size_t datasetIndex) const {
-  return this->isEof_(datasetIndex) || lvxs_.at(datasetIndex)->GetFileState() == livox_ros::kLvxFileAtEnd;
+  return DatasetReaderBase<PointT>::isEof_(datasetIndex) ||
+         lvxs_.at(datasetIndex)->GetFileState() == livox_ros::kLvxFileAtEnd;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -119,7 +120,7 @@ void LvxReader<PointT>::load_(const size_t  datasetIndex,
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void LvxReader<PointT>::close_(const size_t datasetIndex) {
-  this->close_(datasetIndex);
+  DatasetReaderBase<PointT>::close_(datasetIndex);
   if (lvxs_.at(datasetIndex)) {
     lvxs_.at(datasetIndex)->CloseLvxFile();
     lvxs_.at(datasetIndex) = nullptr;
