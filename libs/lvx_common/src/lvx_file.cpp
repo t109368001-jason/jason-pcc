@@ -29,6 +29,7 @@
 #include <time.h>
 #include <cmath>
 #include <exception>
+#include <iostream>
 
 #include "rapidxml/rapidxml.hpp"
 #include "rapidxml/rapidxml_utils.hpp"
@@ -364,39 +365,57 @@ int LvxFileHandle::parsePacketsOfFrameXYZ(
   int file_state = GetPacketsOfFrame(&buffer_);
   if (file_state != 0) { return file_state; }
 
-  uint32_t data_size   = buffer_.data_size;
-  uint8_t* packet_base = buffer_.packet;
-  uint32_t data_offset = 0;
+  uint32_t              data_size   = buffer_.data_size;
+  uint8_t*              packet_base = buffer_.packet;
+  uint32_t              data_offset = 0;
+  uint32_t              fix_offset  = 0;
+  std::vector<LdsStamp> lastTimestamps(GetDeviceCount());
+  for (LdsStamp& lastTimestamp : lastTimestamps) { lastTimestamp.stamp = -1; }
   while (data_offset < data_size) {
-    LivoxEthPacket*    eth_packet;
-    int32_t            handle;
-    uint8_t            data_type;
-    LdsStamp           timestamp;
-    ExtrinsicParameter extrinsic;
+    LivoxEthPacket* eth_packet;
+    int32_t         handle;
+    uint8_t         data_type;
+    LdsStamp        timestamp;
 
     LvxFilePacket* detail_packet = (LvxFilePacket*)&packet_base[data_offset];
-    eth_packet                   = (LivoxEthPacket*)(&detail_packet->version);
-    handle                       = detail_packet->device_index;
-    data_type                    = eth_packet->data_type;
-    memcpy(timestamp.stamp_bytes, eth_packet->timestamp, sizeof(timestamp));
-    extrinsic = GetExtrinsicParameter(detail_packet->device_index);
+    if (detail_packet->version != 5) {
+      if (((LvxFilePacket*)&packet_base[data_offset + 1])->version == 5) {
+        detail_packet = (LvxFilePacket*)&packet_base[data_offset + 1];
+      } else if (((LvxFilePacket*)&packet_base[data_offset - 1])->version == 5) {
+        detail_packet = (LvxFilePacket*)&packet_base[data_offset - 1];
+      } else {
+        { throw std::logic_error("eth_packet->version != 5 "); }
+      }
+    }
 
-    if (detail_packet->device_index >= GetDeviceCount()) {
-      throw new std::logic_error("detail_packet->device_index >= GetDeviceCount() ");
-    }
-    if (data_type >= kMaxPointDataType) { throw new std::logic_error("data_type >= kMaxPointDataType"); }
+    eth_packet = (LivoxEthPacket*)(&detail_packet->version);
+    handle     = detail_packet->device_index;
+    data_type  = eth_packet->data_type;
+    memcpy(timestamp.stamp_bytes, eth_packet->timestamp, sizeof(timestamp));
+
+    detail_packet->device_index = detail_packet->device_index % GetDeviceCount();
+    //    if (detail_packet->device_index >= GetDeviceCount()) {
+    //      throw std::logic_error("detail_packet->device_index >= GetDeviceCount() ");
+    //    }
+    if (data_type >= kMaxPointDataType) { throw std::logic_error("data_type >= kMaxPointDataType"); }
     if (eth_packet->timestamp_type != kTimestampTypeNoSync) {
-      throw new std::logic_error("eth_packet->timestamp_type != kTimestampTypeNoSync ");
+      throw std::logic_error("eth_packet->timestamp_type != kTimestampTypeNoSync ");
     }
-    if (eth_packet->version != 5) { throw new std::logic_error("eth_packet->version != 5 "); }
+    if ((lastTimestamps.at(detail_packet->device_index).stamp != -1) &&
+        ((timestamp.stamp - lastTimestamps.at(detail_packet->device_index).stamp) <= 0)) {
+      data_offset += (GetEthPacketLen(eth_packet->data_type) + 1);
+      continue;
+    }
+
     switch (eth_packet->data_type) {
       case kCartesian:
       case kExtendCartesian: break;
-      default: throw new std::logic_error("eth_packet->data_type != kCartesian "); break;
+      default: throw std::logic_error("eth_packet->data_type != kCartesian "); break;
     }
 
-    uint32_t       points_per_packet = GetPointsPerPacket(eth_packet->data_type);
-    LivoxRawPoint* raw_point         = reinterpret_cast<LivoxRawPoint*>(eth_packet->data);
+    uint32_t           points_per_packet = GetPointsPerPacket(eth_packet->data_type);
+    LivoxRawPoint*     raw_point         = reinterpret_cast<LivoxRawPoint*>(eth_packet->data);
+    ExtrinsicParameter extrinsic         = GetExtrinsicParameter(detail_packet->device_index);
     while (points_per_packet) {
       float x = raw_point->x / 1000.0f;
       float y = raw_point->y / 1000.0f;
@@ -420,12 +439,13 @@ int LvxFileHandle::parsePacketsOfFrameXYZ(
         case kExtendCartesian:
           raw_point = reinterpret_cast<LivoxRawPoint*>(reinterpret_cast<LivoxExtendRawPoint*>(raw_point) + 1);
           break;
-        default: throw new std::logic_error("eth_packet->data_type != kCartesian "); break;
+        default: throw std::logic_error("eth_packet->data_type != kCartesian "); break;
       }
       --points_per_packet;
     }
 
     data_offset += (GetEthPacketLen(eth_packet->data_type) + 1);
+    lastTimestamps.at(detail_packet->device_index).stamp = timestamp.stamp;
   }
   return file_state;
 }
