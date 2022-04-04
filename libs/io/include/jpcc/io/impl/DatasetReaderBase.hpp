@@ -6,6 +6,8 @@
 #include <functional>
 #include <utility>
 
+#include <pcl/common/transforms.h>
+
 namespace jpcc::io {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -107,9 +109,10 @@ void DatasetReaderBase<PointT>::load(const size_t  datasetIndex,
                                      const size_t  startFrameNumber,
                                      const size_t  groupOfFramesSize,
                                      GroupOfFrame& frames) {
-  const size_t  endFrameNumber     = startFrameNumber + groupOfFramesSize;
-  size_t&       currentFrameNumber = currentFrameNumbers_.at(datasetIndex);
-  GroupOfFrame& frameBuffer        = frameBuffers_.at(datasetIndex);
+  const size_t                endFrameNumber     = startFrameNumber + groupOfFramesSize;
+  size_t&                     currentFrameNumber = currentFrameNumbers_.at(datasetIndex);
+  GroupOfFrame&               frameBuffer        = frameBuffers_.at(datasetIndex);
+  shared_ptr<Eigen::Matrix4f> transform          = datasetParam_.getTransforms(datasetIndex);
 
   open_(datasetIndex, startFrameNumber);
   frames.resize(groupOfFramesSize);
@@ -121,6 +124,7 @@ void DatasetReaderBase<PointT>::load(const size_t  datasetIndex,
         currentFrameNumber++;
         continue;
       }
+      if (transform) { pcl::transformPointCloud(*frameBuffer.front(), *frameBuffer.front(), *transform); }
       frameBuffer.front()->header.seq                  = currentFrameNumber;
       frames.at(currentFrameNumber - startFrameNumber) = frameBuffer.front();
       cout << datasetParam_.getFilePath(datasetIndex) << ":" << currentFrameNumber << " "
