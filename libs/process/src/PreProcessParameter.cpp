@@ -16,7 +16,9 @@ PreProcessParameter::PreProcessParameter(const std::string& prefix, const std::s
     Parameter(prefix, caption),
     radiusOutlierRemoval(prefix + "." + RADIUS_OUTLIER_REMOVAL_OPT_PREFIX, "RadiusOutlierRemovalParameter"),
     statisticalOutlierRemoval(prefix + "." + STATISTICAL_OUTLIER_REMOVAL_OPT_PREFIX,
-                              "StatisticalOutlierRemovalParameter") {
+                              "StatisticalOutlierRemovalParameter"),
+    jpccConditionalRemovalParameter(prefix + "." + JPCC_CONDITIONAL_REMOVAL_OPT_PREFIX,
+                                    "JPCCConditionalRemovalParameter") {
   opts_.add_options()                        //
       (string(prefix_ + ORDER_OPT).c_str(),  //
        value<string>(&order_),               //
@@ -24,11 +26,13 @@ PreProcessParameter::PreProcessParameter(const std::string& prefix, const std::s
       ;
   opts_.add(radiusOutlierRemoval.getOpts());
   opts_.add(statisticalOutlierRemoval.getOpts());
+  opts_.add(jpccConditionalRemovalParameter.getOpts());
 }
 
 void PreProcessParameter::notify() {
   radiusOutlierRemoval.notify();
   statisticalOutlierRemoval.notify();
+  jpccConditionalRemovalParameter.notify();
   size_t algorithmCount = 0;
   if (radiusOutlierRemoval.enable) {
     assert(boost::icontains(order_, RADIUS_OUTLIER_REMOVAL_OPT_PREFIX));
@@ -36,6 +40,10 @@ void PreProcessParameter::notify() {
   }
   if (statisticalOutlierRemoval.enable) {
     assert(boost::icontains(order_, STATISTICAL_OUTLIER_REMOVAL_OPT_PREFIX));
+    algorithmCount++;
+  }
+  if (jpccConditionalRemovalParameter.enable) {
+    assert(boost::icontains(order_, JPCC_CONDITIONAL_REMOVAL_OPT_PREFIX));
     algorithmCount++;
   }
   if (!order_.empty()) { boost::algorithm::split(order, order_, boost::is_any_of(",")); }
@@ -47,6 +55,7 @@ ostream& operator<<(ostream& out, const PreProcessParameter& obj) {
   out << "\t" << obj.prefix_ << ORDER_OPT "=" << obj.order_ << endl;
   out << obj.radiusOutlierRemoval;
   out << obj.statisticalOutlierRemoval;
+  out << obj.jpccConditionalRemovalParameter;
   return out;
 }
 

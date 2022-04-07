@@ -10,6 +10,8 @@
 #include <pcl/filters/radius_outlier_removal.h>
 #include <pcl/filters/statistical_outlier_removal.h>
 
+#include <jpcc/process/JPCCConditionalRemoval.h>
+
 namespace jpcc::process {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -47,6 +49,10 @@ typename PreProcessor<PointT>::FilterPtr PreProcessor<PointT>::buildFilter(const
     statisticalOutlierRemoval->setMeanK(param_.statisticalOutlierRemoval.meanK);
     statisticalOutlierRemoval->setStddevMulThresh(param_.statisticalOutlierRemoval.stddevMulThresh);
     filter = statisticalOutlierRemoval;
+  } else if (algorithm == JPCC_CONDITIONAL_REMOVAL_OPT_PREFIX) {
+    typename JPCCConditionalRemoval<PointT>::Ptr jpccConditionalRemoval(
+        new JPCCConditionalRemoval<PointT>(param_.jpccConditionalRemovalParameter));
+    filter = jpccConditionalRemoval;
   } else {
     BOOST_THROW_EXCEPTION(std::logic_error("not support algorithm: " + algorithm));
   }
