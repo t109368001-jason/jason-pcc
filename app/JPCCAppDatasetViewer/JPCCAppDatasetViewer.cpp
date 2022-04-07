@@ -43,24 +43,24 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
       PreProcessor<>             preProcessor(parameter.preProcess);
 
       GroupOfFrame<>                           frames;
-      const PreProcessor<>::GroupOfFrameMapPtr removed(new PreProcessor<>::GroupOfFrameMap());
+      const PreProcessor<>::GroupOfFrameMapPtr framesMap(new PreProcessor<>::GroupOfFrameMap());
       const size_t                             groupOfFramesSize = 32;
       size_t                                   startFrameNumber  = 1;
       reader->loadAll(0, 1, frames, parameter.parallel);
-      preProcessor.process(frames, removed, parameter.parallel);
-      (*removed)[primaryId] = frames;
-      viewer->enqueue(*removed);
+      preProcessor.process(frames, framesMap, parameter.parallel);
+      framesMap->insert_or_assign(primaryId, frames);
+      viewer->enqueue(*framesMap);
       viewer->nextFrame();
       while (run) {
         clock.start();
         reader->loadAll(startFrameNumber, groupOfFramesSize, frames, parameter.parallel);
-        preProcessor.process(frames, removed, parameter.parallel);
+        preProcessor.process(frames, framesMap, parameter.parallel);
         clock.stop();
 
         while (run && viewer->isFull()) { this_thread::sleep_for(100ms); }
 
-        (*removed)[primaryId] = frames;
-        viewer->enqueue(*removed);
+        framesMap->insert_or_assign(primaryId, frames);
+        viewer->enqueue(*framesMap);
 
         if (frames.size() < groupOfFramesSize) {
           startFrameNumber = 0;
@@ -72,13 +72,13 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
     run = false;
   };
 
-  shared_ptr<thread> datasetLoadingThread(new thread(datasetLoading));
+  thread datasetLoadingThread(datasetLoading);
   while (!viewer->wasStopped() && run) {
     viewer->spinOnce(100);
     // this_thread::sleep_for(100ms);
   }
   run = false;
-  if (datasetLoadingThread && datasetLoadingThread->joinable()) { datasetLoadingThread->join(); }
+  if (datasetLoadingThread.joinable()) { datasetLoadingThread.join(); }
 }
 
 int main(int argc, char* argv[]) {

@@ -19,7 +19,7 @@ class JPCCConditionalRemoval : public virtual pcl::FilterIndices<PointT> {
   JPCCConditionalRemovalParameter param_;
 
  public:
-  JPCCConditionalRemoval(JPCCConditionalRemovalParameter  param, int extract_removed_indices = false);
+  JPCCConditionalRemoval(JPCCConditionalRemovalParameter param, int extract_removed_indices = false);
 
  protected:
   void applyFilter(pcl::Indices& indices) override;

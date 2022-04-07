@@ -74,18 +74,18 @@ void test(const AppParameter& parameter, StopwatchUserTime& clock) {
 
         BufferIndex bufferIndex = 0;
 
-        array<FramePtr<PointT>, BUFFER_SIZE> clouds;
+        array<FramePtr<PointT>, BUFFER_SIZE> frameBuffer;
 
         OctreeNBufBaseT::Filter3 func = [&](const BufferIndex                     _bufferIndex,
                                             const OctreeNBufBaseT::BufferPattern& bufferPattern,
                                             const OctreeNBufBaseT::BufferIndices& bufferIndices) {
           if ((float)bufferPattern.count() > BUFFER_SIZE * parameter.float3) { return true; }
-          auto      normal = clouds.at(_bufferIndex)->at(bufferIndices.at(_bufferIndex)).getNormalVector3fMap();
+          auto      normal = frameBuffer.at(_bufferIndex)->at(bufferIndices.at(_bufferIndex)).getNormalVector3fMap();
           Matrix3Xf matrix(3, bufferPattern.count());
           int       i = 0;
           for (BufferIndex ii = 0; ii < BUFFER_SIZE; ii++) {
             if (bufferPattern.test(ii)) {
-              matrix.col(i++) = clouds.at(ii)->at(bufferIndices.at(ii)).getNormalVector3fMap();
+              matrix.col(i++) = frameBuffer.at(ii)->at(bufferIndices.at(ii)).getNormalVector3fMap();
             }
           }
           float e = (float)((matrix.transpose() * normal).array().acos().mean() / M_PI * 180.0);
@@ -113,12 +113,12 @@ void test(const AppParameter& parameter, StopwatchUserTime& clock) {
 
         auto range      = boost::counting_range<size_t>(0, frames.size());
         auto calcNormal = [&](const size_t i) {
-          clouds.at(i) = frames.at(i);
+          frameBuffer.at(i) = frames.at(i);
 
           NormalEstimation<PointT, PointT> ne;
           ne.setRadiusSearch(parameter.float1);
-          ne.setInputCloud(clouds.at(i));
-          ne.compute(*clouds.at(i));
+          ne.setInputCloud(frameBuffer.at(i));
+          ne.compute(*frameBuffer.at(i));
         };
 
         if (parameter.parallel) {
@@ -131,7 +131,7 @@ void test(const AppParameter& parameter, StopwatchUserTime& clock) {
           try {
             octree.switchBuffers(bufferIndex);
             octree.deleteBuffer(bufferIndex);
-            octree.setInputCloud(clouds.at(bufferIndex));
+            octree.setInputCloud(frameBuffer.at(bufferIndex));
             octree.addPointsFromInputCloud();
 
             startFrameNumber += 1;
@@ -145,16 +145,16 @@ void test(const AppParameter& parameter, StopwatchUserTime& clock) {
           preProcessor.process(frames, map, parameter.parallel);
           clock.stop();
 
-          clouds.at(bufferIndex) = frames.at(0);
+          frameBuffer.at(bufferIndex) = frames.at(0);
 
           NormalEstimation<PointT, PointT> ne;
           ne.setRadiusSearch(0.1);
-          ne.setInputCloud(clouds.at(bufferIndex));
-          ne.compute(*clouds.at(bufferIndex));
+          ne.setInputCloud(frameBuffer.at(bufferIndex));
+          ne.compute(*frameBuffer.at(bufferIndex));
 
           octree.switchBuffers(bufferIndex);
           octree.deleteBuffer(bufferIndex);
-          octree.setInputCloud(clouds.at(bufferIndex));
+          octree.setInputCloud(frameBuffer.at(bufferIndex));
           octree.addPointsFromInputCloud();
 
           {

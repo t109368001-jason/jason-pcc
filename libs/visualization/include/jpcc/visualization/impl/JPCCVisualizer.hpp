@@ -10,9 +10,9 @@ template <class PointT>
 JPCCVisualizer<PointT>::JPCCVisualizer(const std::string& name, VisualizerParameter param) :
     PCLVisualizer(name), param_(std::move(param)), name_(name), fontSize_(16), lineHeight_(20), primaryId_("cloud") {
   initCameraParameters();
-  setCameraPosition(param_.cameraPosition[0], param_.cameraPosition[1], param_.cameraPosition[2],
-                    param_.cameraPosition[3], param_.cameraPosition[4], param_.cameraPosition[5],
-                    param_.cameraPosition[6], param_.cameraPosition[7], param_.cameraPosition[8]);
+  setCameraPosition(param_.cameraPosition.at(0), param_.cameraPosition.at(1), param_.cameraPosition.at(2),
+                    param_.cameraPosition.at(3), param_.cameraPosition.at(4), param_.cameraPosition.at(5),
+                    param_.cameraPosition.at(6), param_.cameraPosition.at(7), param_.cameraPosition.at(8));
   setBackgroundColor(0, 0, 0);
   addCoordinateSystem(3.0, "coordinate");
 
@@ -37,8 +37,8 @@ JPCCVisualizer<PointT>::JPCCVisualizer(const std::string& name, VisualizerParame
 template <class PointT>
 void JPCCVisualizer<PointT>::updateOrAddText(const std::string& text, const int ypos, const std::string& id) {
   const RGBColor& tc = getTextColor(id);
-  if (!PCLVisualizer::updateText(text, 5, ypos, fontSize_, tc[0], tc[1], tc[2], id)) {
-    addText(text, 5, ypos, fontSize_, tc[0], tc[1], tc[2], id);
+  if (!PCLVisualizer::updateText(text, 5, ypos, fontSize_, tc.at(0), tc.at(1), tc.at(2), id)) {
+    addText(text, 5, ypos, fontSize_, tc.at(0), tc.at(1), tc.at(2), id);
   }
   textMap_.insert_or_assign(id, text);
   textHeightMap.insert_or_assign(id, ypos);
@@ -58,9 +58,9 @@ void JPCCVisualizer<PointT>::updateText() {
   const int* const windowSize = getRenderWindow()->GetSize();
   int              textHeight = windowSize[1] - lineHeight_;
 
-  if ((cloudMap_.find(primaryId_) != cloudMap_.end())) {
+  if ((frameMap_.find(primaryId_) != frameMap_.end())) {
     {
-      const FramePtr&   cloud = cloudMap_.at(primaryId_);
+      const FramePtr&   cloud = frameMap_.at(primaryId_);
       const RGBColor&   tc    = getTextColor(primaryId_);
       const std::string id    = primaryId_ + "FrameId";
       const std::string text  = "frame: " + to_string(cloud->header.seq);
@@ -71,12 +71,12 @@ void JPCCVisualizer<PointT>::updateText() {
     std::lock_guard<std::recursive_mutex> lock(mutex_);
     if (queueMap_.find(primaryId_) != queueMap_.end()) {
       const std::string id = primaryId_ + "QueueSize";
-      textHeightMap[id]    = textHeight;
+      textHeightMap.insert_or_assign(id, textHeight);
       updateQueue();
       textHeight -= lineHeight_;
     }
   }
-  for (const auto& [id, cloud] : cloudMap_) {
+  for (const auto& [id, cloud] : frameMap_) {
     const PointCloudColorPtr color = getCloudColor(id, cloud);
     const RGBColor&          tc    = getTextColor(id);
     updateOrAddCloud(cloud, *color, id);
@@ -89,7 +89,7 @@ void JPCCVisualizer<PointT>::updateText() {
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <class PointT>
 void JPCCVisualizer<PointT>::updateCloud() {
-  for (const auto& [id, cloud] : cloudMap_) {
+  for (const auto& [id, cloud] : frameMap_) {
     const PointCloudColorPtr color = getCloudColor(id, cloud);
     const RGBColor&          tc    = getTextColor(id);
     updateOrAddCloud(cloud, *color, id);
@@ -122,7 +122,7 @@ void JPCCVisualizer<PointT>::nextFrame() {
   std::lock_guard<std::recursive_mutex> lock(mutex_);
   for (auto& [id, queue] : queueMap_) {
     if (queue.empty()) { continue; }
-    cloudMap_[id] = queue.front();
+    frameMap_[id] = queue.front();
     queue.pop();
   }
   updateAll();
@@ -130,9 +130,9 @@ void JPCCVisualizer<PointT>::nextFrame() {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <class PointT>
-void JPCCVisualizer<PointT>::enqueue(const JPCCVisualizer::GroupOfFrameMap& map) {
+void JPCCVisualizer<PointT>::enqueue(const JPCCVisualizer::GroupOfFrameMap& framesMap) {
   std::lock_guard<std::recursive_mutex> lock(mutex_);
-  for (const auto& [id, frames] : map) {
+  for (const auto& [id, frames] : framesMap) {
     if (queueMap_.find(id) == queueMap_.end()) { queueMap_[id] = FrameQueue(); }
     FrameQueue& queue = queueMap_.at(id);
     for (const FramePtr& frame : frames) { queue.push(frame); }

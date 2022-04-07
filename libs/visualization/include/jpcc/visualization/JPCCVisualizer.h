@@ -31,7 +31,7 @@ class JPCCVisualizer : public pcl::visualization::PCLVisualizer {
   std::string                        primaryId_;
   std::map<std::string, std::string> textMap_;
   std::map<std::string, int>         textHeightMap;
-  std::map<std::string, FramePtr>    cloudMap_;
+  std::map<std::string, FramePtr>    frameMap_;
   std::map<std::string, std::string> fieldColorMap_;
   std::map<std::string, RGBColor>    rgbColorMap_;
   mutable std::recursive_mutex       mutex_;
@@ -54,7 +54,7 @@ class JPCCVisualizer : public pcl::visualization::PCLVisualizer {
 
   void nextFrame();
 
-  void enqueue(const GroupOfFrameMap& map);
+  void enqueue(const GroupOfFrameMap& framesMap);
 
   void handleKeyboardEvent(const pcl::visualization::KeyboardEvent& event);
 

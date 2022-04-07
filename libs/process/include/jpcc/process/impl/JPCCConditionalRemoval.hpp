@@ -6,8 +6,8 @@ namespace jpcc::process {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-JPCCConditionalRemoval<PointT>::JPCCConditionalRemoval(JPCCConditionalRemovalParameter  param,
-                                                       int                                    extract_removed_indices) :
+JPCCConditionalRemoval<PointT>::JPCCConditionalRemoval(JPCCConditionalRemovalParameter param,
+                                                       int                             extract_removed_indices) :
     pcl::FilterIndices<PointT>(extract_removed_indices), param_(std::move(param)) {
   this->filter_name_ = __FUNCTION__;
 }
@@ -22,7 +22,7 @@ void JPCCConditionalRemoval<PointT>::JPCCConditionalRemoval<PointT>::applyFilter
 
   for (const auto& index : (*this->indices_)) {
     bool predict = std::all_of(param_.conditions.begin(), param_.conditions.end(), [&](const Condition& condition) {
-      double val;
+      double        val;
       const PointT& point = this->input_->at(index);
       switch (condition.field) {
         case Condition::X: val = point.x; break;
