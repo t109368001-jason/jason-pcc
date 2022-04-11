@@ -55,10 +55,13 @@ void test(const AppParameter& parameter, StopwatchUserTime& clock) {
   atomic_bool  run(true);
   atomic_bool  hasFirstFrame(false);
   const string primaryId = "static";
+  const string dynamicId = "dynamic";
   viewer->setPrimaryId(primaryId);
   viewer->setColor(primaryId, "z");
-  viewer->setColor(RADIUS_OUTLIER_REMOVAL_OPT_PREFIX, 1.0, 1.0, 1.0);
-  viewer->setColor(STATISTICAL_OUTLIER_REMOVAL_OPT_PREFIX, 1.0, 0.0, 1.0);
+  viewer->setColor(dynamicId, 1.0, 1.0, 1.0);
+  viewer->setColor(RADIUS_OUTLIER_REMOVAL_OPT_PREFIX, 0.5, 0.0, 1.0);
+  viewer->setColor(STATISTICAL_OUTLIER_REMOVAL_OPT_PREFIX, 0.5, 0.0, 0.5);
+  viewer->setColor(JPCC_CONDITIONAL_REMOVAL_OPT_PREFIX, 0.5, 0.5, 0.5);
 
   auto datasetLoading = [&] {
     try {
@@ -67,7 +70,7 @@ void test(const AppParameter& parameter, StopwatchUserTime& clock) {
         PreProcessor<PointT>           preProcessor(parameter.preProcess);
 
         GroupOfFrame<PointT>                           frames;
-        const PreProcessor<PointT>::GroupOfFrameMapPtr map(new JPCCVisualizer<PointT>::GroupOfFrameMap());
+        const PreProcessor<PointT>::GroupOfFrameMapPtr framesMap(new JPCCVisualizer<PointT>::GroupOfFrameMap());
 
         size_t       startFrameNumber = parameter.dataset.getStartFrameNumbers();
         const size_t endFrameNumber   = startFrameNumber + parameter.dataset.getFrameCounts();
@@ -99,32 +102,20 @@ void test(const AppParameter& parameter, StopwatchUserTime& clock) {
         preProcessor.process(frames, nullptr, parameter.parallel);
         clock.stop();
 
-        auto outlierRemoval = [&](const PointT& point) {
-          float distance = point.getVector3fMap().norm();
-          return distance > 100.0;
-        };
-        for (auto& frame : frames) {
-          if (parameter.parallel) {
-            frame->erase(remove_if(execution::par_unseq, frame->begin(), frame->end(), outlierRemoval));
-          } else {
-            frame->erase(remove_if(frame->begin(), frame->end(), outlierRemoval));
-          }
-        }
-
         auto range      = boost::counting_range<size_t>(0, frames.size());
-        auto calcNormal = [&](const size_t i) {
-          frameBuffer.at(i) = frames.at(i);
-
+        auto calcNormal = [&](const FramePtr<PointT>& frame) {
           NormalEstimation<PointT, PointT> ne;
-          ne.setRadiusSearch(parameter.float1);
-          ne.setInputCloud(frameBuffer.at(i));
-          ne.compute(*frameBuffer.at(i));
+          //          ne.setRadiusSearch(parameter.float1);
+          ne.setKSearch(parameter.int1);
+          ne.setInputCloud(frame);
+          ne.compute(*frame);
         };
-
+        std::copy(frames.begin(), frames.end(), frameBuffer.begin());
         if (parameter.parallel) {
-          for_each(execution::par_unseq, range.begin(), range.end(), calcNormal);
+          for_each(execution::par_unseq, range.begin(), range.end(),
+                   [&](const size_t i) { calcNormal(frameBuffer.at(i)); });
         } else {
-          for_each(range.begin(), range.end(), calcNormal);
+          for_each(range.begin(), range.end(), [&](const size_t i) { calcNormal(frameBuffer.at(i)); });
         }
 
         for (size_t i = 0; i < frames.size(); i++) {
@@ -142,15 +133,11 @@ void test(const AppParameter& parameter, StopwatchUserTime& clock) {
         while (run && startFrameNumber < endFrameNumber) {
           clock.start();
           reader->loadAll(startFrameNumber, 1, frames, parameter.parallel);
-          preProcessor.process(frames, map, parameter.parallel);
+          preProcessor.process(frames, framesMap, parameter.parallel);
           clock.stop();
 
           frameBuffer.at(bufferIndex) = frames.at(0);
-
-          NormalEstimation<PointT, PointT> ne;
-          ne.setRadiusSearch(0.1);
-          ne.setInputCloud(frameBuffer.at(bufferIndex));
-          ne.compute(*frameBuffer.at(bufferIndex));
+          calcNormal(frameBuffer.at(bufferIndex));
 
           octree.switchBuffers(bufferIndex);
           octree.deleteBuffer(bufferIndex);
@@ -158,9 +145,9 @@ void test(const AppParameter& parameter, StopwatchUserTime& clock) {
           octree.addPointsFromInputCloud();
 
           {
-            const shared_ptr<Indices> indices(new Indices());
-            const FramePtr<PointT>    staticCloud_(new Frame<PointT>());
-            const FramePtr<PointT>    dynamicCloud_(new Frame<PointT>());
+            const pcl::shared_ptr<Indices> indices(new Indices());
+            const FramePtr<PointT>         staticCloud_(new Frame<PointT>());
+            const FramePtr<PointT>         dynamicCloud_(new Frame<PointT>());
             octree.process(func, *indices);
 
             ExtractIndices<PointT> extractIndices;
@@ -171,10 +158,10 @@ void test(const AppParameter& parameter, StopwatchUserTime& clock) {
             extractIndices.setNegative(false);
             extractIndices.filter(*staticCloud_);
 
-            map->insert_or_assign("static", GroupOfFrame<PointT>{staticCloud_});
-            map->insert_or_assign("dynamic", GroupOfFrame<PointT>{dynamicCloud_});
+            framesMap->insert_or_assign(primaryId, GroupOfFrame<PointT>{staticCloud_});
+            framesMap->insert_or_assign(dynamicId, GroupOfFrame<PointT>{dynamicCloud_});
 
-            viewer->enqueue(*map);
+            viewer->enqueue(*framesMap);
           }
 
           while (run && viewer->isFull()) { this_thread::sleep_for(100ms); }
@@ -191,7 +178,7 @@ void test(const AppParameter& parameter, StopwatchUserTime& clock) {
     run = false;
   };
 
-  shared_ptr<thread> datasetLoadingThread(new thread(datasetLoading));
+  jpcc::shared_ptr<thread> datasetLoadingThread(new thread(datasetLoading));
 
   while (!viewer->wasStopped() && run) {
     viewer->spinOnce(100);
