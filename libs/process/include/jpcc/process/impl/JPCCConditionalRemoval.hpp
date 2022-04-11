@@ -14,7 +14,7 @@ JPCCConditionalRemoval<PointT>::JPCCConditionalRemoval(JPCCConditionalRemovalPar
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-void JPCCConditionalRemoval<PointT>::JPCCConditionalRemoval<PointT>::applyFilter(pcl::Indices& indices) {
+void JPCCConditionalRemoval<PointT>::applyFilter(pcl::Indices& indices) {
   indices.resize(this->indices_->size());
   this->removed_indices_->resize(this->indices_->size());
   int outputIndex = 0;

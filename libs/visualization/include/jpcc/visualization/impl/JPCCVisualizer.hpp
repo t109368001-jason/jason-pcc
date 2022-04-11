@@ -63,8 +63,8 @@ void JPCCVisualizer<PointT>::updateText() {
       const FramePtr&   cloud = frameMap_.at(primaryId_);
       const RGBColor&   tc    = getTextColor(primaryId_);
       const std::string id    = primaryId_ + "FrameId";
-      const std::string text  = "frame: " + to_string(cloud->header.seq);
-      setWindowName(name_ + " " + to_string(cloud->header.seq));
+      const std::string text  = "frame: " + std::to_string(cloud->header.seq);
+      setWindowName(name_ + " " + std::to_string(cloud->header.seq));
       updateOrAddText(text, textHeight, id);
       textHeight -= lineHeight_;
     }
@@ -80,7 +80,7 @@ void JPCCVisualizer<PointT>::updateText() {
     const PointCloudColorPtr color = getCloudColor(id, cloud);
     const RGBColor&          tc    = getTextColor(id);
     updateOrAddCloud(cloud, *color, id);
-    const std::string text = id + " points: " + to_string(cloud->size());
+    const std::string text = id + " points: " + std::to_string(cloud->size());
     updateOrAddText(text, textHeight, id);
     textHeight -= lineHeight_;
   }
@@ -103,7 +103,7 @@ void JPCCVisualizer<PointT>::updateQueue() {
   if (queueMap_.find(primaryId_) != queueMap_.end()) {
     const FrameQueue& queue      = queueMap_.at(primaryId_);
     const std::string id         = primaryId_ + "QueueSize";
-    const std::string text       = "queue: " + to_string(queue.size());
+    const std::string text       = "queue: " + std::to_string(queue.size());
     const int         textHeight = textHeightMap[id];
     updateOrAddText(text, textHeight, id);
   }

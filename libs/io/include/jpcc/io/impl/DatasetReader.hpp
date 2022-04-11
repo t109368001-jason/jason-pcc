@@ -16,7 +16,7 @@ DatasetReaderPtr<PointT> newReader(const DatasetReaderParameter& param, const Da
   } else if (datasetParam.type == "ply") {
     return DatasetReaderPtr<PointT>(new PlyReader<PointT>(param, datasetParam));
   } else {
-    BOOST_THROW_EXCEPTION(logic_error(string("Not Implemented ")));
+    BOOST_THROW_EXCEPTION(std::logic_error(std::string("Not Implemented ")));
   }
 }
 
