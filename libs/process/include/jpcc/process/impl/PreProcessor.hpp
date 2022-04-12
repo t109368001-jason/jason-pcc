@@ -22,7 +22,7 @@ PreProcessor<PointT>::PreProcessor(PreProcessParameter param) : param_(std::move
 template <class PointT>
 void PreProcessor<PointT>::process(GroupOfFrame&            groupOfFrame,
                                    const GroupOfFrameMapPtr removedMap,
-                                   const bool               parallel) {
+                                   const bool               parallel) const {
   for (const std::string& algorithm : param_.order) {
     GroupOfFrame removed;
     if (removedMap) {
@@ -36,7 +36,7 @@ void PreProcessor<PointT>::process(GroupOfFrame&            groupOfFrame,
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <class PointT>
-typename PreProcessor<PointT>::FilterPtr PreProcessor<PointT>::buildFilter(const std::string& algorithm) {
+typename PreProcessor<PointT>::FilterPtr PreProcessor<PointT>::buildFilter(const std::string& algorithm) const {
   FilterPtr filter;
   if (algorithm == RADIUS_OUTLIER_REMOVAL_OPT_PREFIX) {
     typename pcl::RadiusOutlierRemoval<PointT>::Ptr radiusOutlierRemoval(new pcl::RadiusOutlierRemoval<PointT>());
@@ -64,7 +64,7 @@ template <class PointT>
 void PreProcessor<PointT>::applyAlgorithm(const std::string& algorithm,
                                           GroupOfFrame&      groupOfFrame,
                                           GroupOfFrame&      removed,
-                                          const bool         parallel) {
+                                          const bool         parallel) const {
   auto func = [&](const size_t i) {
     this->applyAlgorithm(algorithm, groupOfFrame.at(i), removed.empty() ? nullptr : removed.at(i));
   };
@@ -78,7 +78,9 @@ void PreProcessor<PointT>::applyAlgorithm(const std::string& algorithm,
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <class PointT>
-void PreProcessor<PointT>::applyAlgorithm(const std::string& algorithm, const FramePtr frame, const FramePtr removed) {
+void PreProcessor<PointT>::applyAlgorithm(const std::string& algorithm,
+                                          const FramePtr     frame,
+                                          const FramePtr     removed) const {
   FilterPtr filter = buildFilter(algorithm);
   filter->setInputCloud(frame);
   if (!removed) {

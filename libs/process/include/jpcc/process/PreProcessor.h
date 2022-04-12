@@ -28,16 +28,16 @@ class PreProcessor {
  public:
   PreProcessor(PreProcessParameter param);
 
-  void process(GroupOfFrame& groupOfFrame, GroupOfFrameMapPtr removedMap = nullptr, bool parallel = false);
+  void process(GroupOfFrame& groupOfFrame, GroupOfFrameMapPtr removedMap = nullptr, bool parallel = false) const;
 
-  FilterPtr buildFilter(const std::string& algorithm);
+  FilterPtr buildFilter(const std::string& algorithm) const;
 
   void applyAlgorithm(const std::string& algorithm,
                       GroupOfFrame&      groupOfFrame,
                       GroupOfFrame&      removed  = nullptr,
-                      bool               parallel = false);
+                      bool               parallel = false) const;
 
-  void applyAlgorithm(const std::string& algorithm, FramePtr frame, FramePtr removed = nullptr);
+  void applyAlgorithm(const std::string& algorithm, FramePtr frame, FramePtr removed = nullptr) const;
 };
 
 }  // namespace jpcc::process

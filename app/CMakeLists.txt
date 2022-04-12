@@ -1,3 +1,4 @@
+add_subdirectory(JPCCAppBackgroundGenerator)
 add_subdirectory(JPCCAppDatasetParser)
 add_subdirectory(JPCCAppDatasetViewer)
 add_subdirectory(JPCCTest)
