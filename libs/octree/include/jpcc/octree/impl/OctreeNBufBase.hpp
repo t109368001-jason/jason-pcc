@@ -375,8 +375,10 @@ void OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::deleteBranch
 
         // delete unused branch
         delete (branchChild);
-        // set branch child pointer to 0
-        branchNode.setChildPtr(bufferIndex, childIndex, nullptr);
+        for (BufferIndex _bufferIndex = 0; _bufferIndex < BUFFER_SIZE; ++_bufferIndex) {
+          // set branch child pointer to 0
+          branchNode.setChildPtr(_bufferIndex, childIndex, nullptr);
+        }
         branch_count_--;
         branch_counts_.at(bufferIndex)--;
         break;
@@ -746,7 +748,7 @@ bool OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::deleteBuffer
     OctreeNBufBase::BranchNode& branchNode, BufferIndex bufferIndex) {
   // delete all branch node children
   for (ChildIndex childIndex = 0; childIndex < 8; childIndex++) {
-    if (branchNode.getChildPtr(bufferIndex, childIndex)) {
+    if (branchNode.hasChild(bufferIndex, childIndex)) {
       OctreeNode* childNode = branchNode.getChildPtr(bufferIndex, childIndex);
 
       switch (childNode->getNodeType()) {
@@ -756,7 +758,6 @@ bool OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::deleteBuffer
 
           if (noChild) {
             delete (childNode);
-            branchNode.setChildPtr(bufferIndex, childIndex, nullptr);
             if (bufferIndex == bufferIndex_) { branch_count_--; }
             branch_counts_.at(bufferIndex)--;
           }
