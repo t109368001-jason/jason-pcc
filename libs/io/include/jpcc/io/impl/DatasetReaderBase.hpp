@@ -82,8 +82,8 @@ void DatasetReaderBase<PointT>::loadAll(const size_t  startFrameNumber,
                          })->size();
   frames.resize(maxSize);
   for (size_t i = 0; i < maxSize; i++) {
-    FramePtr& frame = frames.at(i);
-    frame.reset(new Frame());
+    FramePtr& frame   = frames.at(i);
+    frame             = std::make_shared<Frame>();
     frame->header.seq = startFrameNumber + i;
     for (size_t datasetIndex = 0; datasetIndex < datasetParam_.count(); datasetIndex++) {
       if (i < sources.at(datasetIndex).size()) {

@@ -26,8 +26,8 @@ using namespace jpcc::process;
 using namespace jpcc::visualization;
 
 void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
-  const JPCCVisualizer<>::Ptr viewer(
-      new JPCCVisualizer<>("JPCC Dataset Viewer " + parameter.dataset.name, parameter.visualizerParameter));
+  const auto viewer = std::make_shared<JPCCVisualizer<>>("JPCC Dataset Viewer " + parameter.dataset.name,
+                                                         parameter.visualizerParameter);
 
   atomic_bool  run(true);
   const string primaryId = "cloud";
@@ -42,10 +42,10 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
       const DatasetReader<>::Ptr reader = newReader(parameter.reader, parameter.dataset);
       PreProcessor<>             preProcessor(parameter.preProcess);
 
-      GroupOfFrame<>                           frames;
-      const PreProcessor<>::GroupOfFrameMapPtr framesMap(new PreProcessor<>::GroupOfFrameMap());
-      const size_t                             groupOfFramesSize = 32;
-      size_t                                   startFrameNumber  = 1;
+      GroupOfFrame<> frames;
+      const auto     framesMap         = std::make_shared<PreProcessor<>::GroupOfFrameMap>();
+      const size_t   groupOfFramesSize = 32;
+      size_t         startFrameNumber  = 1;
       reader->loadAll(0, 1, frames, parameter.parallel);
       preProcessor.process(frames, framesMap, parameter.parallel);
       framesMap->insert_or_assign(primaryId, frames);

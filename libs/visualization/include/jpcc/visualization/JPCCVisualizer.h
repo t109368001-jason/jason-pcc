@@ -10,7 +10,7 @@
 
 namespace jpcc::visualization {
 
-template <class PointT = Point>
+template <typename PointT = Point>
 class JPCCVisualizer : public pcl::visualization::PCLVisualizer {
  public:
   using Ptr                = shared_ptr<JPCCVisualizer>;

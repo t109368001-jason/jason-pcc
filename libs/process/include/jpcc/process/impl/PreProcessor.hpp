@@ -15,11 +15,11 @@
 namespace jpcc::process {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <class PointT>
+template <typename PointT>
 PreProcessor<PointT>::PreProcessor(PreProcessParameter param) : param_(std::move(param)) {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <class PointT>
+template <typename PointT>
 void PreProcessor<PointT>::process(GroupOfFrame&            groupOfFrame,
                                    const GroupOfFrameMapPtr removedMap,
                                    const bool               parallel) const {
@@ -27,7 +27,7 @@ void PreProcessor<PointT>::process(GroupOfFrame&            groupOfFrame,
     GroupOfFrame removed;
     if (removedMap) {
       removed.resize(groupOfFrame.size());
-      for (auto& frame : removed) { frame.reset(new Frame()); }
+      for (auto& frame : removed) { frame = std::make_shared<Frame>(); }
     }
     applyAlgorithm(algorithm, groupOfFrame, removed, parallel);
     if (removedMap) { removedMap->insert_or_assign(algorithm, removed); }
@@ -35,24 +35,21 @@ void PreProcessor<PointT>::process(GroupOfFrame&            groupOfFrame,
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <class PointT>
+template <typename PointT>
 typename PreProcessor<PointT>::FilterPtr PreProcessor<PointT>::buildFilter(const std::string& algorithm) const {
   FilterPtr filter;
   if (algorithm == RADIUS_OUTLIER_REMOVAL_OPT_PREFIX) {
-    typename pcl::RadiusOutlierRemoval<PointT>::Ptr radiusOutlierRemoval(new pcl::RadiusOutlierRemoval<PointT>());
+    auto radiusOutlierRemoval = std::make_shared<pcl::RadiusOutlierRemoval<PointT>>();
     radiusOutlierRemoval->setRadiusSearch(param_.radiusOutlierRemoval.radius);
     radiusOutlierRemoval->setMinNeighborsInRadius(param_.radiusOutlierRemoval.minNeighborsInRadius);
     filter = radiusOutlierRemoval;
   } else if (algorithm == STATISTICAL_OUTLIER_REMOVAL_OPT_PREFIX) {
-    typename pcl::StatisticalOutlierRemoval<PointT>::Ptr statisticalOutlierRemoval(
-        new pcl::StatisticalOutlierRemoval<PointT>());
+    auto statisticalOutlierRemoval = std::make_shared<pcl::StatisticalOutlierRemoval<PointT>>();
     statisticalOutlierRemoval->setMeanK(param_.statisticalOutlierRemoval.meanK);
     statisticalOutlierRemoval->setStddevMulThresh(param_.statisticalOutlierRemoval.stddevMulThresh);
     filter = statisticalOutlierRemoval;
   } else if (algorithm == JPCC_CONDITIONAL_REMOVAL_OPT_PREFIX) {
-    typename JPCCConditionalRemoval<PointT>::Ptr jpccConditionalRemoval(
-        new JPCCConditionalRemoval<PointT>(param_.jpccConditionalRemovalParameter));
-    filter = jpccConditionalRemoval;
+    filter = std::make_shared<JPCCConditionalRemoval<PointT>>(param_.jpccConditionalRemovalParameter);
   } else {
     BOOST_THROW_EXCEPTION(std::logic_error("not support algorithm: " + algorithm));
   }
@@ -60,7 +57,7 @@ typename PreProcessor<PointT>::FilterPtr PreProcessor<PointT>::buildFilter(const
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <class PointT>
+template <typename PointT>
 void PreProcessor<PointT>::applyAlgorithm(const std::string& algorithm,
                                           GroupOfFrame&      groupOfFrame,
                                           GroupOfFrame&      removed,
@@ -77,7 +74,7 @@ void PreProcessor<PointT>::applyAlgorithm(const std::string& algorithm,
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <class PointT>
+template <typename PointT>
 void PreProcessor<PointT>::applyAlgorithm(const std::string& algorithm,
                                           const FramePtr     frame,
                                           const FramePtr     removed) const {
@@ -87,7 +84,7 @@ void PreProcessor<PointT>::applyAlgorithm(const std::string& algorithm,
     filter->filter(*frame);
   } else {
     removed->clear();
-    shared_ptr<pcl::Indices> indices(new pcl::Indices());
+    auto indices = std::make_shared<pcl::Indices>();
     filter->filter(*indices);
     pcl::ExtractIndices<PointT> extractIndices;
     extractIndices.setInputCloud(frame);

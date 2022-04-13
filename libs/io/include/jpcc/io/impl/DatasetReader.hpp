@@ -10,11 +10,11 @@ namespace jpcc::io {
 template <typename PointT>
 DatasetReaderPtr<PointT> newReader(const DatasetReaderParameter& param, const DatasetParameter& datasetParam) {
   if (datasetParam.type == "pcap") {
-    return DatasetReaderPtr<PointT>(new PcapReader<PointT>(param, datasetParam));
+    return std::make_shared<PcapReader<PointT>>(param, datasetParam);
   } else if (datasetParam.type == "lvx") {
-    return DatasetReaderPtr<PointT>(new LvxReader<PointT>(param, datasetParam));
+    return std::make_shared<LvxReader<PointT>>(param, datasetParam);
   } else if (datasetParam.type == "ply") {
-    return DatasetReaderPtr<PointT>(new PlyReader<PointT>(param, datasetParam));
+    return std::make_shared<PlyReader<PointT>>(param, datasetParam);
   } else {
     BOOST_THROW_EXCEPTION(std::logic_error(std::string("Not Implemented ")));
   }

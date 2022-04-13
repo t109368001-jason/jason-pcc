@@ -14,7 +14,7 @@ TEST(PlyIOTest, save_load) {
   GroupOfFrame<> frames;
   size_t         ii = 1;
   for (size_t i = 0; i < frameCount; i++) {
-    frames.emplace_back(new Frame<>());
+    frames.push_back(std::make_shared<Frame<>>());
     frames.at(i)->header.seq = startFrameNumber + i;
     for (size_t j = 0; j < i + 1; j++, ii++) { frames.at(i)->emplace_back(ii * 1.1, ii * 2.2, ii * 3.3); }
   }

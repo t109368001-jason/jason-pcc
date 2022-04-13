@@ -149,7 +149,7 @@ void PcapReader<PointT>::open_(const size_t datasetIndex, const size_t startFram
   pcaps_.at(datasetIndex) = pcap;
 
   // Push One Rotation Data to Queue
-  const FramePtr frame(new Frame());
+  const auto frame = std::make_shared<Frame>();
   frame->reserve(29200);  // VLP 16 10 Hz (600 rpm)
   this->frameBuffers_.at(datasetIndex).push_back(frame);
 }
@@ -231,8 +231,8 @@ int PcapReader<PointT>::parseDataPacket(const size_t  startFrameNumber,
       frameBuffer.back()->width  = static_cast<uint32_t>(frameBuffer.back()->size());
       frameBuffer.back()->height = 1;
       // Push One Rotation Data to Queue
-      const FramePtr frame(new Frame());
-      float          size = static_cast<float>(packet->firingData[11].rotationalPosition) -
+      const auto frame = std::make_shared<Frame>();
+      float      size  = static_cast<float>(packet->firingData[11].rotationalPosition) -
                    static_cast<float>(packet->firingData[0].rotationalPosition);
       if (size < 0) { size += 36000.0; }
       size = TOTAL_POINTS_MULTIPLE_MAX_AZIMUTH_DIFF_OF_PACKET / size;

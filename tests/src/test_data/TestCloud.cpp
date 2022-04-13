@@ -14,7 +14,7 @@ ChildPattern getTestChildPattern(BufferIndex bufferSelector) {
 }
 
 FramePtr<Point> getTestCloud(BufferIndex bufferSelector) {
-  FramePtr<Point> cloud(new Frame<Point>());
+  auto cloud = std::make_shared<Frame<Point>>();
   if (getTestChildPattern(bufferSelector).test(7)) { cloud->emplace_back(0.5, 0.5, 0.5); }
   if (getTestChildPattern(bufferSelector).test(6)) { cloud->emplace_back(0.5, 0.5, 0.0); }
   if (getTestChildPattern(bufferSelector).test(5)) { cloud->emplace_back(0.5, 0.0, 0.5); }

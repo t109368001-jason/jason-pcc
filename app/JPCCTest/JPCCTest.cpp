@@ -49,8 +49,8 @@ using OctreeNBufBaseT   = OctreeNBufBase<BUFFER_SIZE, OctreeContainerPointIndice
 using OctreePointCloudT = OctreePointCloud<PointT, OctreeContainerPointIndices, OctreeContainerEmpty, OctreeNBufBaseT>;
 
 void test(const AppParameter& parameter, StopwatchUserTime& clock) {
-  const JPCCVisualizer<PointT>::Ptr viewer(
-      new JPCCVisualizer<PointT>("JPCC Dataset Viewer " + parameter.dataset.name, parameter.visualizerParameter));
+  const auto viewer = std::make_shared<JPCCVisualizer<PointT>>("JPCC Dataset Viewer " + parameter.dataset.name,
+                                                               parameter.visualizerParameter);
 
   atomic_bool  run(true);
   atomic_bool  hasFirstFrame(false);
@@ -69,8 +69,8 @@ void test(const AppParameter& parameter, StopwatchUserTime& clock) {
         const DatasetReaderPtr<PointT> reader = newReader<PointT>(parameter.reader, parameter.dataset);
         PreProcessor<PointT>           preProcessor(parameter.preProcess);
 
-        GroupOfFrame<PointT>                           frames;
-        const PreProcessor<PointT>::GroupOfFrameMapPtr framesMap(new JPCCVisualizer<PointT>::GroupOfFrameMap());
+        GroupOfFrame<PointT> frames;
+        const auto           framesMap = std::make_shared<JPCCVisualizer<PointT>::GroupOfFrameMap>();
 
         size_t       startFrameNumber = parameter.dataset.getStartFrameNumbers();
         const size_t endFrameNumber   = startFrameNumber + parameter.dataset.getFrameCounts();
@@ -145,9 +145,9 @@ void test(const AppParameter& parameter, StopwatchUserTime& clock) {
           octree.addPointsFromInputCloud();
 
           {
-            const pcl::shared_ptr<Indices> indices(new Indices());
-            const FramePtr<PointT>         staticCloud_(new Frame<PointT>());
-            const FramePtr<PointT>         dynamicCloud_(new Frame<PointT>());
+            const auto indices       = std::make_shared<Indices>();
+            const auto staticCloud_  = std::make_shared<Frame<PointT>>();
+            const auto dynamicCloud_ = std::make_shared<Frame<PointT>>();
             octree.process(func, *indices);
 
             ExtractIndices<PointT> extractIndices;
@@ -178,7 +178,7 @@ void test(const AppParameter& parameter, StopwatchUserTime& clock) {
     run = false;
   };
 
-  jpcc::shared_ptr<thread> datasetLoadingThread(new thread(datasetLoading));
+  auto datasetLoadingThread(std::make_shared<thread>(datasetLoading));
 
   while (!viewer->wasStopped() && run) {
     viewer->spinOnce(100);

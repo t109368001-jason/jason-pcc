@@ -24,7 +24,7 @@ void loadPly(GroupOfFrame<PointT>& frames,
     char fileName[4096];
     sprintf(fileName, filePath.c_str(), frameNumber);
     auto& frame = frames.at(frameNumber - startFrameNumber);
-    frame.reset(new Frame<PointT>());
+    frame       = std::make_shared<Frame<PointT>>();
 
     const int result = pcl::io::load(std::string(fileName), *frame);
     assert(result != -1);

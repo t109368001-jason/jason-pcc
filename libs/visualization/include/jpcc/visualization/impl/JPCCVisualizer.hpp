@@ -6,7 +6,7 @@
 namespace jpcc::visualization {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <class PointT>
+template <typename PointT>
 JPCCVisualizer<PointT>::JPCCVisualizer(const std::string& name, VisualizerParameter param) :
     PCLVisualizer(name), param_(std::move(param)), name_(name), fontSize_(16), lineHeight_(20), primaryId_("cloud") {
   initCameraParameters();
@@ -34,7 +34,7 @@ JPCCVisualizer<PointT>::JPCCVisualizer(const std::string& name, VisualizerParame
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <class PointT>
+template <typename PointT>
 void JPCCVisualizer<PointT>::updateOrAddText(const std::string& text, const int ypos, const std::string& id) {
   const RGBColor& tc = getTextColor(id);
   if (!PCLVisualizer::updateText(text, 5, ypos, fontSize_, tc.at(0), tc.at(1), tc.at(2), id)) {
@@ -45,7 +45,7 @@ void JPCCVisualizer<PointT>::updateOrAddText(const std::string& text, const int 
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <class PointT>
+template <typename PointT>
 void JPCCVisualizer<PointT>::updateOrAddCloud(const FramePtr         cloud,
                                               const PointCloudColor& color,
                                               const std::string&     id) {
@@ -53,7 +53,7 @@ void JPCCVisualizer<PointT>::updateOrAddCloud(const FramePtr         cloud,
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <class PointT>
+template <typename PointT>
 void JPCCVisualizer<PointT>::updateText() {
   const int* const windowSize = getRenderWindow()->GetSize();
   int              textHeight = windowSize[1] - lineHeight_;
@@ -87,7 +87,7 @@ void JPCCVisualizer<PointT>::updateText() {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <class PointT>
+template <typename PointT>
 void JPCCVisualizer<PointT>::updateCloud() {
   for (const auto& [id, cloud] : frameMap_) {
     const PointCloudColorPtr color = getCloudColor(id, cloud);
@@ -97,7 +97,7 @@ void JPCCVisualizer<PointT>::updateCloud() {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <class PointT>
+template <typename PointT>
 void JPCCVisualizer<PointT>::updateQueue() {
   std::lock_guard<std::recursive_mutex> lock(mutex_);
   if (queueMap_.find(primaryId_) != queueMap_.end()) {
@@ -110,14 +110,14 @@ void JPCCVisualizer<PointT>::updateQueue() {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <class PointT>
+template <typename PointT>
 void JPCCVisualizer<PointT>::updateAll() {
   updateText();
   updateCloud();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <class PointT>
+template <typename PointT>
 void JPCCVisualizer<PointT>::nextFrame() {
   std::lock_guard<std::recursive_mutex> lock(mutex_);
   for (auto& [id, queue] : queueMap_) {
@@ -129,7 +129,7 @@ void JPCCVisualizer<PointT>::nextFrame() {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <class PointT>
+template <typename PointT>
 void JPCCVisualizer<PointT>::enqueue(const JPCCVisualizer::GroupOfFrameMap& framesMap) {
   std::lock_guard<std::recursive_mutex> lock(mutex_);
   for (const auto& [id, frames] : framesMap) {
@@ -141,55 +141,53 @@ void JPCCVisualizer<PointT>::enqueue(const JPCCVisualizer::GroupOfFrameMap& fram
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <class PointT>
+template <typename PointT>
 void JPCCVisualizer<PointT>::handleKeyboardEvent(const pcl::visualization::KeyboardEvent& event) {
   if (event.getKeyCode() == ' ' && event.keyDown()) { nextFrame(); }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <class PointT>
+template <typename PointT>
 typename JPCCVisualizer<PointT>::RGBColor JPCCVisualizer<PointT>::getTextColor(const std::string& id) {
   if (rgbColorMap_.find(id) != rgbColorMap_.end()) { return rgbColorMap_.at(id); }
   return {1.0, 1.0, 1.0};
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <class PointT>
+template <typename PointT>
 typename JPCCVisualizer<PointT>::PointCloudColorPtr JPCCVisualizer<PointT>::getCloudColor(const std::string& id,
                                                                                           const FramePtr     cloud) {
-  PointCloudColorPtr color;
   if (fieldColorMap_.find(id) != fieldColorMap_.end()) {
-    color.reset(new pcl::visualization::PointCloudColorHandlerGenericField<PointT>(cloud, fieldColorMap_.at(id)));
+    return std::make_shared<pcl::visualization::PointCloudColorHandlerGenericField<PointT>>(cloud,
+                                                                                            fieldColorMap_.at(id));
   } else if (rgbColorMap_.find(id) != rgbColorMap_.end()) {
-    color.reset(new pcl::visualization::PointCloudColorHandlerCustom<PointT>(cloud, rgbColorMap_.at(id).at(0) * 255.0,
-                                                                             rgbColorMap_.at(id).at(1) * 255.0,
-                                                                             rgbColorMap_.at(id).at(2) * 255.0));
+    return std::make_shared<pcl::visualization::PointCloudColorHandlerCustom<PointT>>(
+        cloud, rgbColorMap_.at(id).at(0) * 255.0, rgbColorMap_.at(id).at(1) * 255.0, rgbColorMap_.at(id).at(2) * 255.0);
   } else {
-    color.reset(new pcl::visualization::PointCloudColorHandlerCustom<PointT>(cloud, 255.0, 255.0, 255.0));
+    return std::make_shared<pcl::visualization::PointCloudColorHandlerCustom<PointT>>(cloud, 255.0, 255.0, 255.0);
   }
-  return color;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <class PointT>
+template <typename PointT>
 void JPCCVisualizer<PointT>::setPrimaryId(const std::string& primaryId) {
   primaryId_ = primaryId;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <class PointT>
+template <typename PointT>
 void JPCCVisualizer<PointT>::setColor(const std::string& id, const std::string& field) {
   fieldColorMap_[id] = field;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <class PointT>
+template <typename PointT>
 void JPCCVisualizer<PointT>::setColor(const std::string& id, const double r, const double g, const double b) {
   rgbColorMap_[id] = {r, g, b};
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <class PointT>
+template <typename PointT>
 bool JPCCVisualizer<PointT>::isFull() {
   std::lock_guard<std::recursive_mutex> lock(mutex_);
   return queueMap_.at(primaryId_).size() >= param_.bufferSize;

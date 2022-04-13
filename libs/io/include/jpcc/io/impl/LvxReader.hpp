@@ -29,9 +29,9 @@ template <typename PointT>
 void LvxReader<PointT>::open_(const size_t datasetIndex, const size_t startFrameNumber) {
   if (lvxs_.at(datasetIndex) && this->currentFrameNumbers_.at(datasetIndex) <= startFrameNumber) { return; }
   if (lvxs_.at(datasetIndex)) { close_(datasetIndex); }
-  const std::string                    lvxPath = this->datasetParam_.getFilePath(datasetIndex);
-  shared_ptr<livox_ros::LvxFileHandle> lvx(new livox_ros::LvxFileHandle());
-  assert(lvx->Open(lvxPath.c_str(), ios::in) == 0);
+  const std::string lvxPath = this->datasetParam_.getFilePath(datasetIndex);
+  auto              lvx     = std::make_shared<livox_ros::LvxFileHandle>();
+  assert(lvx->Open(lvxPath.c_str(), std::ios::in) == 0);
 
   assert(lvx->GetFileVersion() == livox_ros::kLvxFileV1);
   assert(lvx->GetDeviceCount() != 0);
@@ -70,7 +70,7 @@ void LvxReader<PointT>::load_(const size_t  datasetIndex,
         const int64_t timestamp = timestampNS / 1000000;
         if (frameBuffer.empty()) {
           // new frame
-          const FramePtr frame(new Frame());
+          const auto frame    = std::make_shared<Frame>();
           frame->header.stamp = (int64_t)((float)timestamp / this->param_.interval * this->param_.interval);
           frame->reserve(capacity_);
           frameBuffer.push_back(frame);
@@ -79,7 +79,7 @@ void LvxReader<PointT>::load_(const size_t  datasetIndex,
         if (index < 0) {
           for (int i = -1; i >= index; i--) {
             // new frame
-            const FramePtr frame(new Frame());
+            const auto frame    = std::make_shared<Frame>();
             frame->header.stamp = frameBuffer.front()->header.stamp + (int64_t)(this->param_.interval * (float)i);
             frame->reserve(capacity_);
             frameBuffer.insert(frameBuffer.begin(), frame);
@@ -88,7 +88,7 @@ void LvxReader<PointT>::load_(const size_t  datasetIndex,
         } else if (index >= frameBuffer.size()) {
           for (size_t i = frameBuffer.size(); i <= index; i++) {
             // new frame
-            const FramePtr frame(new Frame());
+            const auto frame    = std::make_shared<Frame>();
             frame->header.stamp = frameBuffer.front()->header.stamp + (int64_t)(this->param_.interval * (float)i);
             frame->reserve(capacity_);
             frameBuffer.push_back(frame);

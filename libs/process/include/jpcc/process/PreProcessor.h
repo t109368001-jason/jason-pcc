@@ -10,7 +10,7 @@
 
 namespace jpcc::process {
 
-template <class PointT = Point>
+template <typename PointT = Point>
 class PreProcessor {
  public:
   using Ptr                = shared_ptr<PreProcessor>;
@@ -20,7 +20,7 @@ class PreProcessor {
   using GroupOfFrameMap    = std::map<std::string, GroupOfFrame>;
   using GroupOfFrameMapPtr = shared_ptr<GroupOfFrameMap>;
   using Filter             = pcl::FilterIndices<PointT>;
-  using FilterPtr          = typename pcl::FilterIndices<PointT>::Ptr;
+  using FilterPtr          = typename Filter::Ptr;
 
  protected:
   PreProcessParameter param_;
