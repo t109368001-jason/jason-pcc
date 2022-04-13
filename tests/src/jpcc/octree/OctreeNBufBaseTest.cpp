@@ -49,7 +49,7 @@ TEST(OctreeNBufBaseTest, getIndicesByFilter) {
   };
   // then
   for (BufferIndex bufferIndex = 0; bufferIndex < octree.getBufferSize(); bufferIndex++) {
-    pcl::Indices indices;
+    Indices indices;
     octree.switchBuffers(bufferIndex);
     octree.getIndicesByFilter(
         [filter, bufferIndex](auto&& bufferPattern) {
@@ -67,7 +67,7 @@ TEST(OctreeNBufBaseTest, deleteBuffer) {
 
   // then
   for (BufferIndex bufferIndex = 0; bufferIndex < octree.getBufferSize(); bufferIndex++) {
-    pcl::Indices indices;
+    Indices indices;
     octree.deleteBuffer(bufferIndex);
     EXPECT_EQ(octree.leaf_counts_.at(bufferIndex), 0);
     EXPECT_EQ(octree.branch_counts_.at(bufferIndex), 1);
@@ -85,7 +85,7 @@ TEST(OctreeNBufBaseTest, reuseBuffer) {
   for (BufferIndex bufferIndex = 0; bufferIndex < octree.getBufferSize(); bufferIndex++) {
     octree.switchBuffers(bufferIndex);
     {
-      pcl::Indices indices;
+      Indices indices;
       octree.getIndicesByFilter(
           [filter, bufferIndex](auto&& bufferPattern) {
             return filter(bufferIndex, std::forward<decltype(bufferPattern)>(bufferPattern));
@@ -94,7 +94,7 @@ TEST(OctreeNBufBaseTest, reuseBuffer) {
       EXPECT_EQ(indices.size(), getTestChildPattern(bufferIndex).count());
     }
     {
-      pcl::Indices indices;
+      Indices indices;
       octree.deleteBuffer(bufferIndex);
       octree.setInputCloud(getTestCloud(0));
       octree.addPointsFromInputCloud();

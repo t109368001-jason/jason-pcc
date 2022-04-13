@@ -654,14 +654,14 @@ OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::getBufferPattern(
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <BufferIndex BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
 void OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::getIndicesByFilter(const Filter1& filter,
-                                                                                       pcl::Indices&  indices) const {
+                                                                                       Indices&       indices) const {
   getIndicesByFilterRecursive(root_node_, filter, indices);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <BufferIndex BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
 void OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::getIndicesByFilterRecursive(
-    const BranchNode* branchNode, const Filter1& filter, pcl::Indices& indices) const {
+    const BranchNode* branchNode, const Filter1& filter, Indices& indices) const {
   // iterate over all children
   for (ChildIndex childIndex = 0; childIndex < 8; childIndex++) {
     if (branchNode->hasChild(bufferIndex_, childIndex)) {
@@ -688,7 +688,7 @@ void OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::getIndicesBy
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <BufferIndex BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
 void OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::process(const Filter3& func,
-                                                                            pcl::Indices&  indices) const {
+                                                                            Indices&       indices) const {
   processRecursive(root_node_, func, indices);
 }
 
@@ -696,7 +696,7 @@ void OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::process(cons
 template <BufferIndex BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
 void OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::processRecursive(const BranchNode* branchNode,
                                                                                      const Filter3&    func,
-                                                                                     pcl::Indices&     indices) const {
+                                                                                     Indices&          indices) const {
   for (ChildIndex childIndex = 0; childIndex < 8; childIndex++) {
     if (branchNode->hasChild(bufferIndex_, childIndex)) {
       const OctreeNode* childNode = branchNode->getChildPtr(bufferIndex_, childIndex);

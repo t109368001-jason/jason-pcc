@@ -11,6 +11,7 @@
 #include <pcl/filters/statistical_outlier_removal.h>
 
 #include <jpcc/process/JPCCConditionalRemoval.h>
+#include <jpcc/process/Process.h>
 
 namespace jpcc::process {
 
@@ -84,15 +85,9 @@ void PreProcessor<PointT>::applyAlgorithm(const std::string& algorithm,
     filter->filter(*frame);
   } else {
     removed->clear();
-    auto indices = std::make_shared<pcl::Indices>();
+    auto indices = std::make_shared<Indices>();
     filter->filter(*indices);
-    pcl::ExtractIndices<PointT> extractIndices;
-    extractIndices.setInputCloud(frame);
-    extractIndices.setIndices(indices);
-    extractIndices.setNegative(true);
-    extractIndices.filter(*removed);
-    extractIndices.setNegative(false);
-    extractIndices.filter(*frame);
+    split<PointT>(frame, indices, frame, removed);
   }
 }
 

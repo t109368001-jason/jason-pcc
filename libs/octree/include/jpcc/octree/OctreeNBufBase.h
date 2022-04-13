@@ -228,13 +228,13 @@ class OctreeNBufBase {
 
   [[nodiscard]] BufferPattern getBufferPattern(const BranchNode& branchNode, ChildIndex childIndex) const;
 
-  void getIndicesByFilter(const Filter1& filter, pcl::Indices& indices) const;
+  void getIndicesByFilter(const Filter1& filter, Indices& indices) const;
 
-  void getIndicesByFilterRecursive(const BranchNode* branchNode, const Filter1& filter, pcl::Indices& indices) const;
+  void getIndicesByFilterRecursive(const BranchNode* branchNode, const Filter1& filter, Indices& indices) const;
 
-  void process(const Filter3& func, pcl::Indices& indices) const;
+  void process(const Filter3& func, Indices& indices) const;
 
-  void processRecursive(const BranchNode* branchNode, const Filter3& func, pcl::Indices& indices) const;
+  void processRecursive(const BranchNode* branchNode, const Filter3& func, Indices& indices) const;
 
   bool deleteBuffer();
 

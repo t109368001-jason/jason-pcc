@@ -22,7 +22,7 @@ class JPCCConditionalRemoval : public virtual pcl::FilterIndices<PointT> {
   JPCCConditionalRemoval(JPCCConditionalRemovalParameter param, int extract_removed_indices = false);
 
  protected:
-  void applyFilter(pcl::Indices& indices) override;
+  void applyFilter(Indices& indices) override;
 };
 
 }  // namespace jpcc::process

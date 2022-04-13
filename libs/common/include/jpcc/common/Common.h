@@ -11,7 +11,10 @@
 
 namespace jpcc {
 
-using std::shared_ptr;
+using pcl::shared_ptr;
+
+using Indices    = pcl::Indices;
+using IndicesPtr = shared_ptr<Indices>;
 
 using Point  = pcl::PointXYZ;
 using Normal = pcl::Normal;

@@ -150,13 +150,7 @@ void test(const AppParameter& parameter, StopwatchUserTime& clock) {
             const auto dynamicCloud_ = std::make_shared<Frame<PointT>>();
             octree.process(func, *indices);
 
-            ExtractIndices<PointT> extractIndices;
-            extractIndices.setInputCloud(frames.at(0));
-            extractIndices.setIndices(indices);
-            extractIndices.setNegative(true);
-            extractIndices.filter(*dynamicCloud_);
-            extractIndices.setNegative(false);
-            extractIndices.filter(*staticCloud_);
+            process::split<PointT>(frames.at(0), indices, staticCloud_, dynamicCloud_);
 
             framesMap->insert_or_assign(primaryId, GroupOfFrame<PointT>{staticCloud_});
             framesMap->insert_or_assign(dynamicId, GroupOfFrame<PointT>{dynamicCloud_});

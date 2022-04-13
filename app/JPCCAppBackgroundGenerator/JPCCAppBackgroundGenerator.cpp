@@ -1,3 +1,4 @@
+#include <array>
 #include <chrono>
 #include <iostream>
 #include <vector>
@@ -9,6 +10,7 @@
 #include <jpcc/io/DatasetReader.h>
 #include <jpcc/process/JPCCNormalEstimation.h>
 #include <jpcc/process/PreProcessor.h>
+#include <jpcc/process/Process.h>
 #include <jpcc/octree/OctreeNBufBase.h>
 
 #include <PCCChrono.h>
@@ -30,13 +32,14 @@ using namespace jpcc::process;
 #define BUFFER_SIZE 8
 
 using PointT            = jpcc::PointNormal;
-using OctreeNBufBaseT   = OctreeNBufBase<BUFFER_SIZE, OctreeContainerPointIndices, OctreeContainerEmpty>;
-using OctreePointCloudT = OctreePointCloud<PointT, OctreeContainerPointIndices, OctreeContainerEmpty, OctreeNBufBaseT>;
+using LeafContainerT    = OctreeContainerPointIndices;
+using BranchContainerT  = OctreeContainerEmpty;
+using OctreeNBufBaseT   = OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>;
+using OctreePointCloudT = OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeNBufBaseT>;
 
 void backgroundGenerator(const AppParameter& parameter, StopwatchUserTime& clock) {
-  size_t       frameNumber       = parameter.dataset.getStartFrameNumbers();
-  const size_t endFrameNumber    = frameNumber + parameter.dataset.getFrameCounts();
-  const size_t groupOfFramesSize = parameter.groupOfFramesSize;
+  size_t       frameNumber    = parameter.dataset.getStartFrameNumbers();
+  const size_t endFrameNumber = frameNumber + parameter.dataset.getFrameCounts();
 
   const DatasetReaderPtr<PointT>     reader = newReader<PointT>(parameter.reader, parameter.dataset);
   const PreProcessor<PointT>         preProcessor(parameter.preProcess);
@@ -45,26 +48,52 @@ void backgroundGenerator(const AppParameter& parameter, StopwatchUserTime& clock
 
   octree.defineBoundingBox(octree.getResolution() * 2);
 
-  GroupOfFrame<PointT> frames;
-  BufferIndex          bufferIndex = 0;
+  OctreeNBufBaseT::Filter3 func = [&](const BufferIndex                     _bufferIndex,
+                                      const OctreeNBufBaseT::BufferPattern& bufferPattern,
+                                      const OctreeNBufBaseT::BufferIndices& bufferIndices) {
+    return ((float)bufferPattern.count() > BUFFER_SIZE * 0.3);
+  };
+
+  GroupOfFrame<PointT>                 frames;
+  array<FramePtr<PointT>, BUFFER_SIZE> frameBuffer;
+  BufferIndex                          bufferIndex = 0;
+  clock.start();
+  reader->loadAll(frameNumber, BUFFER_SIZE - 1, frames, parameter.parallel);
+  preProcessor.process(frames, nullptr, parameter.parallel);
+  normalEstimation.computeInPlaceAll(frames, parameter.parallel);
+  clock.stop();
+  for (size_t i = 0; i < frames.size(); i++) {
+    frameBuffer.at(bufferIndex) = frames.at(i);
+    octree.switchBuffers(bufferIndex);
+    octree.deleteBuffer(bufferIndex);
+    octree.setInputCloud(frameBuffer.at(bufferIndex));
+    octree.addPointsFromInputCloud();
+  }
+  frameNumber += parameter.groupOfFramesSize;
+
   while (frameNumber < endFrameNumber) {
     clock.start();
-    reader->loadAll(frameNumber, groupOfFramesSize, frames, parameter.parallel);
+    reader->loadAll(frameNumber, parameter.groupOfFramesSize, frames, parameter.parallel);
     preProcessor.process(frames, nullptr, parameter.parallel);
     normalEstimation.computeInPlaceAll(frames, parameter.parallel);
     clock.stop();
-
     for (size_t i = 0; i < frames.size(); i++) {
+      frameBuffer.at(bufferIndex) = frames.at(i);
       octree.switchBuffers(bufferIndex);
       octree.deleteBuffer(bufferIndex);
-      octree.setInputCloud(frames.at(i));
+      octree.setInputCloud(frameBuffer.at(bufferIndex));
       octree.addPointsFromInputCloud();
+
+      const auto indices       = std::make_shared<Indices>();
+      const auto staticCloud_  = std::make_shared<Frame<PointT>>();
+      const auto dynamicCloud_ = std::make_shared<Frame<PointT>>();
+      octree.process(func, *indices);
+
+      process::split<PointT>(frames.at(0), indices, staticCloud_, dynamicCloud_);
 
       bufferIndex = (bufferIndex + 1) % BUFFER_SIZE;
     }
-    // TODO generate background
-
-    frameNumber += groupOfFramesSize;
+    frameNumber += parameter.groupOfFramesSize;
   }
 }
 
@@ -82,23 +111,21 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-  try {
-    // Timers to count elapsed wall/user time
-    Stopwatch<steady_clock> clockWall;
-    StopwatchUserTime       clockUser;
+  // Timers to count elapsed wall/user time
+  Stopwatch<steady_clock> clockWall;
+  StopwatchUserTime       clockUser;
 
-    clockWall.start();
-    backgroundGenerator(parameter, clockUser);
-    clockWall.stop();
+  clockWall.start();
+  backgroundGenerator(parameter, clockUser);
+  clockWall.stop();
 
-    auto totalWall      = duration_cast<milliseconds>(clockWall.count()).count();
-    auto totalUserSelf  = duration_cast<milliseconds>(clockUser.self.count()).count();
-    auto totalUserChild = duration_cast<milliseconds>(clockUser.children.count()).count();
-    cout << "Processing time (wall): " << (float)totalWall / 1000.0 << " s\n";
-    cout << "Processing time (user.self): " << (float)totalUserSelf / 1000.0 << " s\n";
-    cout << "Processing time (user.children): " << (float)totalUserChild / 1000.0 << " s\n";
-    cout << "Peak memory: " << getPeakMemory() << " KB\n";
-  } catch (exception& e) { cerr << e.what() << endl; }
+  auto totalWall      = duration_cast<milliseconds>(clockWall.count()).count();
+  auto totalUserSelf  = duration_cast<milliseconds>(clockUser.self.count()).count();
+  auto totalUserChild = duration_cast<milliseconds>(clockUser.children.count()).count();
+  cout << "Processing time (wall): " << (float)totalWall / 1000.0 << " s\n";
+  cout << "Processing time (user.self): " << (float)totalUserSelf / 1000.0 << " s\n";
+  cout << "Processing time (user.children): " << (float)totalUserChild / 1000.0 << " s\n";
+  cout << "Peak memory: " << getPeakMemory() << " KB\n";
 
   cout << "JPCC App Background Generator End" << endl;
   return 0;
