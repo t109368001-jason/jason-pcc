@@ -67,6 +67,7 @@ void LvxReader<PointT>::load_(const size_t  datasetIndex,
 
   const int ret = lvx->parsePacketsOfFrameXYZ(
       [&](const int64_t timestampNS, const uint8_t deviceIndex, const float x, const float y, const float z) {
+        if (x < 0.001 && y < 0.001 && z < 0.001) { return; }
         const int64_t timestamp = timestampNS / 1000000;
         if (frameBuffer.empty()) {
           // new frame
