@@ -84,9 +84,9 @@ void backgroundGenerator(const AppParameter& parameter, StopwatchUserTime& clock
       octree.setInputCloud(frameBuffer.at(bufferIndex));
       octree.addPointsFromInputCloud();
 
-      const auto indices       = std::make_shared<Indices>();
-      const auto staticCloud_  = std::make_shared<Frame<PointT>>();
-      const auto dynamicCloud_ = std::make_shared<Frame<PointT>>();
+      const auto indices       = jpcc::make_shared<Indices>();
+      const auto staticCloud_  = jpcc::make_shared<Frame<PointT>>();
+      const auto dynamicCloud_ = jpcc::make_shared<Frame<PointT>>();
       octree.process(func, *indices);
 
       process::split<PointT>(frames.at(0), indices, staticCloud_, dynamicCloud_);

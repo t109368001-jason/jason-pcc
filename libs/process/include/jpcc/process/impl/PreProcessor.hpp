@@ -28,7 +28,7 @@ void PreProcessor<PointT>::process(GroupOfFrame&            groupOfFrame,
     GroupOfFrame removed;
     if (removedMap) {
       removed.resize(groupOfFrame.size());
-      for (auto& frame : removed) { frame = std::make_shared<Frame>(); }
+      for (auto& frame : removed) { frame = jpcc::make_shared<Frame>(); }
     }
     applyAlgorithm(algorithm, groupOfFrame, removed, parallel);
     if (removedMap) { removedMap->insert_or_assign(algorithm, removed); }
@@ -40,17 +40,17 @@ template <typename PointT>
 typename PreProcessor<PointT>::FilterPtr PreProcessor<PointT>::buildFilter(const std::string& algorithm) const {
   FilterPtr filter;
   if (algorithm == RADIUS_OUTLIER_REMOVAL_OPT_PREFIX) {
-    auto radiusOutlierRemoval = std::make_shared<pcl::RadiusOutlierRemoval<PointT>>();
+    auto radiusOutlierRemoval = jpcc::make_shared<pcl::RadiusOutlierRemoval<PointT>>();
     radiusOutlierRemoval->setRadiusSearch(param_.radiusOutlierRemoval.radius);
     radiusOutlierRemoval->setMinNeighborsInRadius(param_.radiusOutlierRemoval.minNeighborsInRadius);
     filter = radiusOutlierRemoval;
   } else if (algorithm == STATISTICAL_OUTLIER_REMOVAL_OPT_PREFIX) {
-    auto statisticalOutlierRemoval = std::make_shared<pcl::StatisticalOutlierRemoval<PointT>>();
+    auto statisticalOutlierRemoval = jpcc::make_shared<pcl::StatisticalOutlierRemoval<PointT>>();
     statisticalOutlierRemoval->setMeanK(param_.statisticalOutlierRemoval.meanK);
     statisticalOutlierRemoval->setStddevMulThresh(param_.statisticalOutlierRemoval.stddevMulThresh);
     filter = statisticalOutlierRemoval;
   } else if (algorithm == JPCC_CONDITIONAL_REMOVAL_OPT_PREFIX) {
-    filter = std::make_shared<JPCCConditionalRemoval<PointT>>(param_.jpccConditionalRemovalParameter);
+    filter = jpcc::make_shared<JPCCConditionalRemoval<PointT>>(param_.jpccConditionalRemovalParameter);
   } else {
     BOOST_THROW_EXCEPTION(std::logic_error("not support algorithm: " + algorithm));
   }
@@ -85,7 +85,7 @@ void PreProcessor<PointT>::applyAlgorithm(const std::string& algorithm,
     filter->filter(*frame);
   } else {
     removed->clear();
-    auto indices = std::make_shared<Indices>();
+    auto indices = jpcc::make_shared<Indices>();
     filter->filter(*indices);
     split<PointT>(frame, indices, frame, removed);
   }

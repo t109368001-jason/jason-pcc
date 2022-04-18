@@ -49,8 +49,8 @@ using OctreeNBufBaseT   = OctreeNBufBase<BUFFER_SIZE, OctreeContainerPointIndice
 using OctreePointCloudT = OctreePointCloud<PointT, OctreeContainerPointIndices, OctreeContainerEmpty, OctreeNBufBaseT>;
 
 void test(const AppParameter& parameter, StopwatchUserTime& clock) {
-  const auto viewer = std::make_shared<JPCCVisualizer<PointT>>("JPCC Dataset Viewer " + parameter.dataset.name,
-                                                               parameter.visualizerParameter);
+  const auto viewer = jpcc::make_shared<JPCCVisualizer<PointT>>("JPCC Dataset Viewer " + parameter.dataset.name,
+                                                                parameter.visualizerParameter);
 
   atomic_bool  run(true);
   atomic_bool  hasFirstFrame(false);
@@ -70,7 +70,7 @@ void test(const AppParameter& parameter, StopwatchUserTime& clock) {
         PreProcessor<PointT>           preProcessor(parameter.preProcess);
 
         GroupOfFrame<PointT> frames;
-        const auto           framesMap = std::make_shared<JPCCVisualizer<PointT>::GroupOfFrameMap>();
+        const auto           framesMap = jpcc::make_shared<JPCCVisualizer<PointT>::GroupOfFrameMap>();
 
         size_t       startFrameNumber = parameter.dataset.getStartFrameNumbers();
         const size_t endFrameNumber   = startFrameNumber + parameter.dataset.getFrameCounts();
@@ -145,9 +145,9 @@ void test(const AppParameter& parameter, StopwatchUserTime& clock) {
           octree.addPointsFromInputCloud();
 
           {
-            const auto indices       = std::make_shared<Indices>();
-            const auto staticCloud_  = std::make_shared<Frame<PointT>>();
-            const auto dynamicCloud_ = std::make_shared<Frame<PointT>>();
+            const auto indices       = jpcc::make_shared<Indices>();
+            const auto staticCloud_  = jpcc::make_shared<Frame<PointT>>();
+            const auto dynamicCloud_ = jpcc::make_shared<Frame<PointT>>();
             octree.process(func, *indices);
 
             process::split<PointT>(frames.at(0), indices, staticCloud_, dynamicCloud_);
@@ -172,7 +172,7 @@ void test(const AppParameter& parameter, StopwatchUserTime& clock) {
     run = false;
   };
 
-  auto datasetLoadingThread(std::make_shared<thread>(datasetLoading));
+  auto datasetLoadingThread(jpcc::make_shared<thread>(datasetLoading));
 
   while (!viewer->wasStopped() && run) {
     viewer->spinOnce(100);

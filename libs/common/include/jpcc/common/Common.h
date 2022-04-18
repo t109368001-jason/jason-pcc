@@ -11,6 +11,7 @@
 
 namespace jpcc {
 
+using pcl::make_shared;
 using pcl::shared_ptr;
 
 using Indices    = pcl::Indices;

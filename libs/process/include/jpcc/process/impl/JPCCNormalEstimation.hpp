@@ -22,7 +22,7 @@ void JPCCNormalEstimation<PointT>::computeInPlace(FramePtr& frame) const {
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 jpcc::Frame<PointNormal>::Ptr JPCCNormalEstimation<PointT>::compute(FramePtr& frame) const {
-  auto             output = std::make_shared<jpcc::Frame<PointNormal>>();
+  auto             output = jpcc::make_shared<jpcc::Frame<PointNormal>>();
   NormalEstimation ne(normalEstimation_);
   ne.setInputCloud(frame);
   ne.compute(*output);

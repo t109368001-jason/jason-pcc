@@ -158,13 +158,13 @@ template <typename PointT>
 typename JPCCVisualizer<PointT>::PointCloudColorPtr JPCCVisualizer<PointT>::getCloudColor(const std::string& id,
                                                                                           const FramePtr     cloud) {
   if (fieldColorMap_.find(id) != fieldColorMap_.end()) {
-    return std::make_shared<pcl::visualization::PointCloudColorHandlerGenericField<PointT>>(cloud,
-                                                                                            fieldColorMap_.at(id));
+    return jpcc::make_shared<pcl::visualization::PointCloudColorHandlerGenericField<PointT>>(cloud,
+                                                                                             fieldColorMap_.at(id));
   } else if (rgbColorMap_.find(id) != rgbColorMap_.end()) {
-    return std::make_shared<pcl::visualization::PointCloudColorHandlerCustom<PointT>>(
+    return jpcc::make_shared<pcl::visualization::PointCloudColorHandlerCustom<PointT>>(
         cloud, rgbColorMap_.at(id).at(0) * 255.0, rgbColorMap_.at(id).at(1) * 255.0, rgbColorMap_.at(id).at(2) * 255.0);
   } else {
-    return std::make_shared<pcl::visualization::PointCloudColorHandlerCustom<PointT>>(cloud, 255.0, 255.0, 255.0);
+    return jpcc::make_shared<pcl::visualization::PointCloudColorHandlerCustom<PointT>>(cloud, 255.0, 255.0, 255.0);
   }
 }
 

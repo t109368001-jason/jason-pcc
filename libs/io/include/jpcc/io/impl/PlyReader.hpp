@@ -26,7 +26,7 @@ void PlyReader<PointT>::loadAll(const size_t  startFrameNumber,
 
   loadPly(sources, this->datasetParam_.getFilePath(), startFrameNumber, endFrameNumber, parallel);
   for (size_t i = startFrameNumber; i < endFrameNumber; i++) {
-    cout << this->datasetParam_.getFilePath() << ":" << i << " " << *sources.at(i - startFrameNumber) << endl;
+    std::cout << this->datasetParam_.getFilePath() << ":" << i << " " << *sources.at(i - startFrameNumber) << std::endl;
   }
 }
 

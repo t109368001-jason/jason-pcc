@@ -83,7 +83,7 @@ void DatasetReaderBase<PointT>::loadAll(const size_t  startFrameNumber,
   frames.resize(maxSize);
   for (size_t i = 0; i < maxSize; i++) {
     FramePtr& frame   = frames.at(i);
-    frame             = std::make_shared<Frame>();
+    frame             = jpcc::make_shared<Frame>();
     frame->header.seq = startFrameNumber + i;
     for (size_t datasetIndex = 0; datasetIndex < datasetParam_.count(); datasetIndex++) {
       if (i < sources.at(datasetIndex).size()) {
@@ -127,8 +127,8 @@ void DatasetReaderBase<PointT>::load(const size_t  datasetIndex,
       if (transform) { pcl::transformPointCloud(*frameBuffer.front(), *frameBuffer.front(), *transform); }
       frameBuffer.front()->header.seq                  = currentFrameNumber;
       frames.at(currentFrameNumber - startFrameNumber) = frameBuffer.front();
-      cout << datasetParam_.getFilePath(datasetIndex) << ":" << currentFrameNumber << " "
-           << *frames.at(currentFrameNumber - startFrameNumber) << endl;
+      std::cout << datasetParam_.getFilePath(datasetIndex) << ":" << currentFrameNumber << " "
+                << *frames.at(currentFrameNumber - startFrameNumber) << std::endl;
       frameBuffer.erase(frameBuffer.begin());
       currentFrameNumber++;
     }

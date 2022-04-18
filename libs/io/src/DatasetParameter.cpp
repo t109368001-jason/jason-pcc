@@ -66,7 +66,7 @@ void DatasetParameter::notify() {
     assert(transforms_.size() == files.size());
     transforms.resize(transforms_.size());
     for (size_t i = 0; i < transforms_.size(); i++) {
-      transforms.at(i) = std::make_shared<Eigen::Matrix4f>();
+      transforms.at(i) = jpcc::make_shared<Eigen::Matrix4f>();
       vector<string> ss;
       boost::algorithm::split(ss, transforms_.at(i), boost::is_any_of(","));
       assert(ss.size() == (*transforms.at(i)).size());
