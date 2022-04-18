@@ -29,7 +29,7 @@ using namespace jpcc::io;
 using namespace jpcc::octree;
 using namespace jpcc::process;
 
-#define BUFFER_SIZE 8
+#define BUFFER_SIZE 100
 
 using PointT            = jpcc::PointNormal;
 using LeafContainerT    = OctreeContainerPointIndices;
@@ -38,8 +38,7 @@ using OctreeNBufBaseT   = OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchCont
 using OctreePointCloudT = OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeNBufBaseT>;
 
 void backgroundGenerator(const AppParameter& parameter, StopwatchUserTime& clock) {
-  size_t       frameNumber    = parameter.dataset.getStartFrameNumbers();
-  const size_t endFrameNumber = frameNumber + parameter.dataset.getFrameCounts();
+  size_t frameNumber = parameter.dataset.getStartFrameNumbers();
 
   const DatasetReaderPtr<PointT>     reader = newReader<PointT>(parameter.reader, parameter.dataset);
   const PreProcessor<PointT>         preProcessor(parameter.preProcess);
@@ -65,12 +64,12 @@ void backgroundGenerator(const AppParameter& parameter, StopwatchUserTime& clock
   clock.stop();
 
   for (size_t i = 0; i < frames.size(); i++) {
+    if (i != 0) { bufferIndex = (bufferIndex + 1) % BUFFER_SIZE; }
     frameBuffer.at(bufferIndex) = frames.at(i);
     octree.switchBuffers(bufferIndex);
     octree.deleteBuffer(bufferIndex);
     octree.setInputCloud(frameBuffer.at(bufferIndex));
     octree.addPointsFromInputCloud();
-    bufferIndex = (bufferIndex + 1) % BUFFER_SIZE;
   }
 
   const auto indices       = jpcc::make_shared<Indices>();
@@ -78,8 +77,8 @@ void backgroundGenerator(const AppParameter& parameter, StopwatchUserTime& clock
   const auto dynamicCloud_ = jpcc::make_shared<Frame<PointT>>();
   octree.process(func, *indices);
 
-  process::split<PointT>(frames.at(0), indices, staticCloud_, dynamicCloud_);
-  pcl::io::savePLYFile((parameter.dataset.folderPath / "background.ply").string(), *staticCloud_);
+  process::split<PointT>(frameBuffer.at(bufferIndex), indices, staticCloud_, dynamicCloud_);
+  pcl::io::savePLYFile(parameter.getOutputPath(), *staticCloud_);
 }
 
 int main(int argc, char* argv[]) {

@@ -16,6 +16,7 @@ class AppParameter : public Parameter {
  public:
   bool                                   parallel;
   size_t                                 groupOfFramesSize;
+  std::string                            outputPath;
   io::DatasetParameter                   dataset;
   io::DatasetReaderParameter             reader;
   process::PreProcessParameter           preProcess;
@@ -24,6 +25,8 @@ class AppParameter : public Parameter {
   AppParameter();
 
   void notify() override;
+
+  [[nodiscard]] std::string getOutputPath() const;
 
   friend std::ostream& operator<<(std::ostream& out, const AppParameter& obj);
 };
