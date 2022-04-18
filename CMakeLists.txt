@@ -37,13 +37,13 @@ if (NOT WIN32)
     endif (NOT TBB_FOUND)
 endif (NOT WIN32)
 
-find_package(Boost 1.71 REQUIRED COMPONENTS program_options)
+find_package(Boost 1.74 REQUIRED COMPONENTS program_options)
 
 find_package(PCAP REQUIRED)
 
-find_package(PCL 1.10 REQUIRED COMPONENTS common octree visualization)
+find_package(PCL 1.12.0 REQUIRED COMPONENTS common octree visualization)
 
-find_package(VTK 7.1.1 REQUIRED COMPONENTS vtkCommonCore)
+find_package(VTK 9.0.3 REQUIRED COMPONENTS CommonCore)
 
 add_subdirectory(libs/common)
 add_subdirectory(libs/io)
