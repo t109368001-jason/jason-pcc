@@ -57,44 +57,29 @@ void backgroundGenerator(const AppParameter& parameter, StopwatchUserTime& clock
   GroupOfFrame<PointT>                 frames;
   array<FramePtr<PointT>, BUFFER_SIZE> frameBuffer;
   BufferIndex                          bufferIndex = 0;
+
   clock.start();
-  reader->loadAll(frameNumber, BUFFER_SIZE - 1, frames, parameter.parallel);
+  reader->loadAll(frameNumber, BUFFER_SIZE, frames, parameter.parallel);
   preProcessor.process(frames, nullptr, parameter.parallel);
   normalEstimation.computeInPlaceAll(frames, parameter.parallel);
   clock.stop();
+
   for (size_t i = 0; i < frames.size(); i++) {
     frameBuffer.at(bufferIndex) = frames.at(i);
     octree.switchBuffers(bufferIndex);
     octree.deleteBuffer(bufferIndex);
     octree.setInputCloud(frameBuffer.at(bufferIndex));
     octree.addPointsFromInputCloud();
+    bufferIndex = (bufferIndex + 1) % BUFFER_SIZE;
   }
-  frameNumber += parameter.groupOfFramesSize;
 
-  while (frameNumber < endFrameNumber) {
-    clock.start();
-    reader->loadAll(frameNumber, parameter.groupOfFramesSize, frames, parameter.parallel);
-    preProcessor.process(frames, nullptr, parameter.parallel);
-    normalEstimation.computeInPlaceAll(frames, parameter.parallel);
-    clock.stop();
-    for (size_t i = 0; i < frames.size(); i++) {
-      frameBuffer.at(bufferIndex) = frames.at(i);
-      octree.switchBuffers(bufferIndex);
-      octree.deleteBuffer(bufferIndex);
-      octree.setInputCloud(frameBuffer.at(bufferIndex));
-      octree.addPointsFromInputCloud();
+  const auto indices       = jpcc::make_shared<Indices>();
+  const auto staticCloud_  = jpcc::make_shared<Frame<PointT>>();
+  const auto dynamicCloud_ = jpcc::make_shared<Frame<PointT>>();
+  octree.process(func, *indices);
 
-      const auto indices       = jpcc::make_shared<Indices>();
-      const auto staticCloud_  = jpcc::make_shared<Frame<PointT>>();
-      const auto dynamicCloud_ = jpcc::make_shared<Frame<PointT>>();
-      octree.process(func, *indices);
-
-      process::split<PointT>(frames.at(0), indices, staticCloud_, dynamicCloud_);
-
-      bufferIndex = (bufferIndex + 1) % BUFFER_SIZE;
-    }
-    frameNumber += parameter.groupOfFramesSize;
-  }
+  process::split<PointT>(frames.at(0), indices, staticCloud_, dynamicCloud_);
+  pcl::io::savePLYFile((parameter.dataset.folderPath / "background.ply").string(), *staticCloud_);
 }
 
 int main(int argc, char* argv[]) {
