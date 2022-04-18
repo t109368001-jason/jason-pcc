@@ -1,5 +1,6 @@
 #pragma once
 
+#include <filesystem>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -20,7 +21,9 @@ class DatasetParameter : public virtual Parameter {
   std::string                              type;
   std::string                              folderPrefix;
   std::string                              folder;
+  std::filesystem::path                    folderPath;
   std::vector<std::string>                 files;
+  std::vector<std::filesystem::path>       filePaths;
   std::vector<size_t>                      frameCounts;
   std::vector<size_t>                      startFrameNumbers;
   std::vector<shared_ptr<Eigen::Matrix4f>> transforms;

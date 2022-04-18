@@ -58,9 +58,13 @@ vector<array<string, 2>> DatasetParameter::getDependencies() const {
 void DatasetParameter::notify() {
   assert(!name.empty());
   assert(!type.empty());
+  assert(!folderPrefix.empty());
   assert(!folder.empty());
   assert(frameCounts.size() == files.size());
   assert((startFrameNumbers.empty()) || (startFrameNumbers.size() == files.size()));
+  folderPath = filesystem::path(folderPrefix) / folder;
+  filePaths.resize(files.size());
+  for (size_t i = 0; i < files.size(); i++) { filePaths.at(i) = folderPath / files.at(i); }
   if (!transforms_.empty()) {
     assert(type != "ply");
     assert(transforms_.size() == files.size());
@@ -80,7 +84,7 @@ void DatasetParameter::notify() {
 
 size_t DatasetParameter::count() const { return files.size(); }
 
-string DatasetParameter::getFilePath(const size_t index) const { return folderPrefix + folder + files.at(index); }
+string DatasetParameter::getFilePath(const size_t index) const { return filePaths.at(index).string(); }
 
 size_t DatasetParameter::getFrameCounts(const size_t index) const { return frameCounts.at(index); }
 
