@@ -9,6 +9,7 @@
 #include <jpcc/common/ParameterParser.h>
 #include <jpcc/io/DatasetReader.h>
 #include <jpcc/process/PreProcessor.h>
+#include <jpcc/process/OctreePointCloudOperation.h>
 #include <jpcc/visualization/JPCCVisualizer.h>
 
 #include <PCCChrono.h>
@@ -28,12 +29,24 @@ using namespace jpcc::visualization;
 void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
   const auto viewer = jpcc::make_shared<JPCCVisualizer<>>("JPCC Dataset Viewer " + parameter.dataset.name,
                                                           parameter.visualizerParameter);
+  OctreePointCloudOperation<>::Ptr octreePointCloudOperation;
+
+  FramePtr<> background;
+  if (!parameter.backgroundPath.empty() && std::filesystem::exists(parameter.backgroundPath)) {
+    background = jpcc::make_shared<Frame<>>();
+    pcl::io::loadPLYFile(parameter.backgroundPath, *background);
+    octreePointCloudOperation = jpcc::make_shared<OctreePointCloudOperation<>>(0.1);
+    octreePointCloudOperation->setSource(background);
+  }
 
   atomic_bool  run(true);
-  const string primaryId = "cloud";
+  const string primaryId    = "cloud";
+  const string backgroundId = "background";
+
   viewer->setPrimaryId(primaryId);
   viewer->setColor(primaryId, "z");
-  viewer->setColor(RADIUS_OUTLIER_REMOVAL_OPT_PREFIX, 1.0, 1.0, 1.0);
+  if (octreePointCloudOperation) { viewer->setColor(backgroundId, 1.0, 1.0, 1.0); }
+  viewer->setColor(RADIUS_OUTLIER_REMOVAL_OPT_PREFIX, 1.0, 0.0, 0.5);
   viewer->setColor(STATISTICAL_OUTLIER_REMOVAL_OPT_PREFIX, 1.0, 0.0, 1.0);
   viewer->setColor(JPCC_CONDITIONAL_REMOVAL_OPT_PREFIX, 0.5, 0.5, 0.5);
 
@@ -48,6 +61,11 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
       size_t         startFrameNumber  = 1;
       reader->loadAll(0, 1, frames, parameter.parallel);
       preProcessor.process(frames, framesMap, parameter.parallel);
+      if (octreePointCloudOperation) {
+        framesMap->insert_or_assign(backgroundId, GroupOfFrame<>{background});
+        octreePointCloudOperation->setTarget(frames.at(0));
+        frames.at(0) = octreePointCloudOperation->targetAndNotSource();
+      }
       framesMap->insert_or_assign(primaryId, frames);
       viewer->enqueue(*framesMap);
       viewer->nextFrame();
@@ -59,6 +77,15 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
 
         while (run && viewer->isFull()) { this_thread::sleep_for(100ms); }
 
+        if (octreePointCloudOperation) {
+          GroupOfFrame<> backgrounds(frames.size());
+          fill(backgrounds.begin(), backgrounds.end(), background);
+          framesMap->insert_or_assign(backgroundId, backgrounds);
+          for_each(frames.begin(), frames.end(), [&](auto& frame) {
+            octreePointCloudOperation->setTarget(frame);
+            frame = octreePointCloudOperation->targetAndNotSource();
+          });
+        }
         framesMap->insert_or_assign(primaryId, frames);
         viewer->enqueue(*framesMap);
 

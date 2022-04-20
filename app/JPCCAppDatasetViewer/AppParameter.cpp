@@ -9,13 +9,17 @@ using namespace po;
 
 #define APP_OPT_PREFIX "app"
 #define PARALLEL_OPT_PREFIX ".parallel"
+#define BACKGROUND_PATH_OPT_PREFIX ".backgroundPath"
 
 AppParameter::AppParameter() :
     Parameter(APP_OPT_PREFIX, __FUNCTION__), parallel(false), dataset(), reader(), preProcess() {
-  opts_.add_options()                                    //
-      (string(prefix_ + PARALLEL_OPT_PREFIX).c_str(),    //
-       value<bool>(&parallel)->default_value(parallel),  //
-       "parallel")                                       //
+  opts_.add_options()                                                  //
+      (string(prefix_ + PARALLEL_OPT_PREFIX).c_str(),                  //
+       value<bool>(&parallel)->default_value(parallel),                //
+       "parallel")                                                     //
+      (string(prefix_ + BACKGROUND_PATH_OPT_PREFIX).c_str(),           //
+       value<string>(&backgroundPath)->default_value(backgroundPath),  //
+       "backgroundPath")                                               //
       ;
   opts_.add(dataset.getOpts());
   opts_.add(reader.getOpts());
@@ -33,6 +37,7 @@ void AppParameter::notify() {
 ostream& operator<<(ostream& out, const AppParameter& obj) {
   out << obj.caption_ << endl;
   out << "\t" << obj.prefix_ << PARALLEL_OPT_PREFIX "=" << obj.parallel << endl;
+  out << "\t" << obj.prefix_ << BACKGROUND_PATH_OPT_PREFIX "=" << obj.backgroundPath << endl;
   out << obj.dataset;
   out << obj.reader;
   out << obj.preProcess;
