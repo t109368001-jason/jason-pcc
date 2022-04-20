@@ -4,8 +4,6 @@
 #include <thread>
 #include <vector>
 
-#include <vtkObject.h>
-
 #include <jpcc/common/ParameterParser.h>
 #include <jpcc/io/DatasetReader.h>
 #include <jpcc/process/PreProcessor.h>
@@ -110,8 +108,6 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
 
 int main(int argc, char* argv[]) {
   cout << "JPCC App Dataset Viewer Start" << endl;
-
-  vtkObject::GlobalWarningDisplayOff();
 
   AppParameter parameter;
   try {

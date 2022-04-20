@@ -2,6 +2,7 @@
 
 #include <vtkCallbackCommand.h>
 #include <vtkNew.h>
+#include <vtkObject.h>
 
 namespace jpcc::visualization {
 
@@ -9,6 +10,8 @@ namespace jpcc::visualization {
 template <typename PointT>
 JPCCVisualizer<PointT>::JPCCVisualizer(const std::string& name, VisualizerParameter param) :
     PCLVisualizer(name), param_(std::move(param)), name_(name), fontSize_(16), lineHeight_(20), primaryId_("cloud") {
+  vtkObject::GlobalWarningDisplayOff();
+
   initCameraParameters();
   setCameraPosition(param_.cameraPosition.at(0), param_.cameraPosition.at(1), param_.cameraPosition.at(2),
                     param_.cameraPosition.at(3), param_.cameraPosition.at(4), param_.cameraPosition.at(5),

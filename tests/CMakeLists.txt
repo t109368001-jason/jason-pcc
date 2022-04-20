@@ -13,7 +13,7 @@ add_definitions(${PCL_DEFINITIONS})
 
 add_executable(${PROJECT_NAME} ${INCS} ${SRCS})
 
-target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include JPCC::common JPCC::io JPCC::octree)
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE gtest_main ${PCL_LIBRARIES} JPCC::common JPCC::io JPCC::octree)
 
