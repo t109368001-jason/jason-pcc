@@ -17,10 +17,12 @@ add_library(${PROJECT_NAME} ${INCS} ${SRCS})
 
 add_library(JPCC::${FOLDER_NAME} ALIAS ${PROJECT_NAME})
 
-target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include JPCC::common)
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include JPCC::common JPCC::octree)
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE Boost::program_options ${PCL_LIBRARIES} ${PCAP_LIBRARIES} JPCC::common)
+target_link_libraries(${PROJECT_NAME} PRIVATE Boost::program_options)
+target_link_libraries(${PROJECT_NAME} PUBLIC Boost::program_options ${PCL_LIBRARIES} JPCC::common JPCC::octree)
+
 if (NOT WIN32)
     target_link_libraries(${PROJECT_NAME} PRIVATE TBB::tbb)
 endif ()
