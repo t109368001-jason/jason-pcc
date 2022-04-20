@@ -9,16 +9,16 @@
 
 namespace jpcc::process {
 
-template <typename PointT = Point, bool onlyOnePointInVoxel = false>
+template <typename PointT = Point, bool singlePointVoxel = false>
 class OctreePointCloudOperation
     : public pcl::octree::OctreePointCloud<
           PointT,
-          typename std::conditional<onlyOnePointInVoxel,
+          typename std::conditional<singlePointVoxel,
                                     pcl::octree::OctreeContainerPointIndex,
                                     pcl::octree::OctreeContainerPointIndices>::type,
           pcl::octree::OctreeContainerEmpty,
           octree::OctreeNBufBase<2,
-                                 typename std::conditional<onlyOnePointInVoxel,
+                                 typename std::conditional<singlePointVoxel,
                                                            pcl::octree::OctreeContainerPointIndex,
                                                            pcl::octree::OctreeContainerPointIndices>::type,
                                  pcl::octree::OctreeContainerEmpty>> {
@@ -29,13 +29,13 @@ class OctreePointCloudOperation
   using GroupOfFrame = jpcc::GroupOfFrame<PointT>;
   using OctreeNBufBaseT =
       octree::OctreeNBufBase<2,
-                             typename std::conditional<onlyOnePointInVoxel,
+                             typename std::conditional<singlePointVoxel,
                                                        pcl::octree::OctreeContainerPointIndex,
                                                        pcl::octree::OctreeContainerPointIndices>::type,
                              pcl::octree::OctreeContainerEmpty>;
   using OctreePointCloudT =
       pcl::octree::OctreePointCloud<PointT,
-                                    typename std::conditional<onlyOnePointInVoxel,
+                                    typename std::conditional<singlePointVoxel,
                                                               pcl::octree::OctreeContainerPointIndex,
                                                               pcl::octree::OctreeContainerPointIndices>::type,
                                     pcl::octree::OctreeContainerEmpty,
