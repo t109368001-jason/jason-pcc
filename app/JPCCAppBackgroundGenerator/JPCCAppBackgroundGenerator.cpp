@@ -43,40 +43,43 @@ void backgroundGenerator(const AppParameter& parameter, StopwatchUserTime& clock
   const DatasetReaderPtr<PointT>     reader = newReader<PointT>(parameter.reader, parameter.dataset);
   const PreProcessor<PointT>         preProcessor(parameter.preProcess);
   const JPCCNormalEstimation<PointT> normalEstimation(parameter.jpccNormalEstimation);
-  OctreePointCloudT                  octree(0.1);
 
-  octree.defineBoundingBox(octree.getResolution() * 2);
-
-  OctreeNBufBaseT::Filter3 func = [&](const BufferIndex                     _bufferIndex,
-                                      const OctreeNBufBaseT::BufferPattern& bufferPattern,
-                                      const OctreeNBufBaseT::BufferIndices& bufferIndices) {
-    return ((float)bufferPattern.count() > BUFFER_SIZE * 0.3);
-  };
-
-  GroupOfFrame<PointT>                 frames;
   array<FramePtr<PointT>, BUFFER_SIZE> frameBuffer;
   BufferIndex                          bufferIndex = 0;
+  const auto                           indices     = jpcc::make_shared<Indices>();
+  {
+    OctreePointCloudT octree(0.1);
 
-  clock.start();
-  reader->loadAll(frameNumber, BUFFER_SIZE, frames, parameter.parallel);
-  preProcessor.process(frames, nullptr, parameter.parallel);
-  normalEstimation.computeInPlaceAll(frames, parameter.parallel);
-  clock.stop();
+    octree.defineBoundingBox(octree.getResolution() * 2);
 
-  for (size_t i = 0; i < frames.size(); i++) {
-    if (i != 0) { bufferIndex = (bufferIndex + 1) % BUFFER_SIZE; }
-    frameBuffer.at(bufferIndex) = frames.at(i);
-    octree.switchBuffers(bufferIndex);
-    octree.deleteBuffer(bufferIndex);
-    octree.setInputCloud(frameBuffer.at(bufferIndex));
-    octree.addPointsFromInputCloud();
+    OctreeNBufBaseT::Filter3 func = [&](const BufferIndex                     _bufferIndex,
+                                        const OctreeNBufBaseT::BufferPattern& bufferPattern,
+                                        const OctreeNBufBaseT::BufferIndices& bufferIndices) {
+      return ((float)bufferPattern.count() > BUFFER_SIZE * 0.3);
+    };
+
+    GroupOfFrame<PointT> frames;
+
+    clock.start();
+    reader->loadAll(frameNumber, BUFFER_SIZE, frames, parameter.parallel);
+    preProcessor.process(frames, nullptr, parameter.parallel);
+    normalEstimation.computeInPlaceAll(frames, parameter.parallel);
+    clock.stop();
+
+    for (size_t i = 0; i < frames.size(); i++) {
+      if (i != 0) { bufferIndex = (bufferIndex + 1) % BUFFER_SIZE; }
+      frameBuffer.at(bufferIndex) = frames.at(i);
+      octree.switchBuffers(bufferIndex);
+      octree.deleteBuffer(bufferIndex);
+      octree.setInputCloud(frameBuffer.at(bufferIndex));
+      octree.addPointsFromInputCloud();
+    }
+
+    octree.process(func, *indices);
   }
 
-  const auto indices       = jpcc::make_shared<Indices>();
   const auto staticCloud_  = jpcc::make_shared<Frame<PointT>>();
   const auto dynamicCloud_ = jpcc::make_shared<Frame<PointT>>();
-  octree.process(func, *indices);
-
   process::split<PointT>(frameBuffer.at(bufferIndex), indices, staticCloud_, dynamicCloud_);
   pcl::io::savePLYFile(parameter.getOutputPath(), *staticCloud_);
 }
