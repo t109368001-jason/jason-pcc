@@ -39,7 +39,6 @@
 #pragma once
 
 #include <array>
-#include <bitset>
 #include <cstdint>
 
 #include <pcl/pcl_macros.h>
@@ -53,9 +52,6 @@
 
 namespace jpcc::octree {
 
-using ChildPattern = std::bitset<8>;
-
-// TODO delete by bufferSelector
 template <BufferIndex BUFFER_SIZE   = 2,
           typename LeafContainerT   = pcl::octree::OctreeContainerPointIndices,
           typename BranchContainerT = pcl::octree::OctreeContainerEmpty>
@@ -66,17 +62,13 @@ class OctreeNBufBase {
   using LeafNode   = pcl::octree::OctreeLeafNode<LeafContainerT>;
   using OctreeNode = pcl::octree::OctreeNode;
 
+  using BufferPattern = typename BranchNode::BufferPattern;
+
   using BranchContainer [[maybe_unused]] = BranchContainerT;
   using LeafContainer [[maybe_unused]]   = LeafContainerT;
 
   using OctreeKey = pcl::octree::OctreeKey;
   using uindex_t  = unsigned int;
-
-  using BufferPattern = std::bitset<BUFFER_SIZE>;
-  using BufferIndices = std::array<int, BUFFER_SIZE>;
-  using Filter1       = std::function<bool(const BufferPattern& bufferPattern)>;
-  using Filter3       = std::function<bool(
-      const BufferIndex bufferIndex, const BufferPattern& bufferPattern, const BufferIndices& bufferIndices)>;
 
   using Iterator                   = pcl::octree::OctreeDepthFirstIterator<OctreeT>;
   using LeafNodeDepthFirstIterator = pcl::octree::OctreeLeafNodeDepthFirstIterator<OctreeT>;
@@ -90,8 +82,7 @@ class OctreeNBufBase {
   friend class pcl::octree::OctreeLeafNodeDepthFirstIterator<OctreeT>;
   friend class pcl::octree::OctreeLeafNodeBreadthFirstIterator<OctreeT>;
 
-  // public for research
-  //  protected:
+ protected:
   std::size_t leaf_count_;
 
   std::size_t branch_count_;
@@ -154,9 +145,19 @@ class OctreeNBufBase {
 
   void removeLeaf(uindex_t xIndex, uindex_t yIndex, uindex_t zIndex);
 
+  [[nodiscard]] pcl::octree::OctreeNode* getRootNode();
+
+  [[nodiscard]] const pcl::octree::OctreeNode* getRootNode() const;
+
   [[nodiscard]] std::size_t getLeafCount() const;
 
   [[nodiscard]] std::size_t getBranchCount() const;
+
+  [[nodiscard]] std::size_t getLeafCount(BufferIndex bufferIndex) const;
+
+  [[nodiscard]] std::size_t getBranchCount(BufferIndex bufferIndex) const;
+
+  [[nodiscard]] BufferIndex getBufferIndex() const;
 
   [[nodiscard]] BufferIndex getBufferSize() const;
 
@@ -164,12 +165,7 @@ class OctreeNBufBase {
 
   void switchBuffers(BufferIndex bufferIndex);
 
-  // public for research
-  //  protected:
-  [[nodiscard]] pcl::octree::OctreeNode* getRootNode();
-
-  [[nodiscard]] const pcl::octree::OctreeNode* getRootNode() const;
-
+ protected:
   [[nodiscard]] LeafContainerT* findLeaf(const OctreeKey& key);
 
   [[nodiscard]] const LeafContainerT* findLeaf(const OctreeKey& key) const;
@@ -212,35 +208,6 @@ class OctreeNBufBase {
                          LeafContainerT*& result) const;
 
   bool deleteLeafRecursive(const OctreeKey& key, uindex_t depthMask, BranchNode* branchNode);
-
-  virtual void serializeTreeCallback(LeafContainerT&, const OctreeKey&);
-
-  virtual void deserializeTreeCallback(LeafContainerT&, const OctreeKey&);
-
-  [[nodiscard]] bool octreeCanResize() const;
-
-  void printBinary(ChildPattern childPattern) const;
-
- public:
-  [[nodiscard]] ChildPattern getChildPattern(const BranchNode& branchNode) const;
-
-  [[nodiscard]] ChildPattern getChildPattern(const BranchNode& branchNode, BufferIndex bufferIndex) const;
-
-  [[nodiscard]] BufferPattern getBufferPattern(const BranchNode& branchNode, ChildIndex childIndex) const;
-
-  void getIndicesByFilter(const Filter1& filter, Indices& indices) const;
-
-  void getIndicesByFilterRecursive(const BranchNode* branchNode, const Filter1& filter, Indices& indices) const;
-
-  void process(const Filter3& func, Indices& indices) const;
-
-  void processRecursive(const BranchNode* branchNode, const Filter3& func, Indices& indices) const;
-
-  bool deleteBuffer();
-
-  bool deleteBuffer(BufferIndex bufferIndex);
-
-  bool deleteBufferRecursive(BranchNode& branchNode, BufferIndex bufferIndex);
 };
 
 }  // namespace jpcc::octree

@@ -38,6 +38,7 @@
 
 #pragma once
 
+#include <bitset>
 #include <cstdint>
 
 #include <pcl/octree/octree_nodes.h>
@@ -48,11 +49,14 @@ using BufferIndex = uint16_t;
 
 using ChildIndex = uint16_t;
 
+using ChildPattern = std::bitset<8>;
+
 template <BufferIndex BUFFER_SIZE = 2, typename BranchContainerT = pcl::octree::OctreeContainerEmpty>
 class OctreeNBufBranchNode : public pcl::octree::OctreeNode {
  public:
   using BranchContainer = BranchContainerT;
   using OctreeNode      = pcl::octree::OctreeNode;
+  using BufferPattern   = std::bitset<BUFFER_SIZE>;
 
  protected:
   BranchContainer container_;
@@ -68,7 +72,7 @@ class OctreeNBufBranchNode : public pcl::octree::OctreeNode {
 
   ~OctreeNBufBranchNode() override;
 
-  OctreeNBufBranchNode* deepCopy() const override;
+  [[nodiscard]] OctreeNBufBranchNode* deepCopy() const override;
 
   [[nodiscard]] OctreeNode* getChildPtr(BufferIndex bufferIndex, ChildIndex childIndex) const;
 
@@ -78,25 +82,29 @@ class OctreeNBufBranchNode : public pcl::octree::OctreeNode {
 
   [[nodiscard]] pcl::octree::node_type_t getNodeType() const override;
 
-  [[nodiscard]] BufferIndex getBufferSize() const;
-
   void reset();
 
-  const BranchContainer* operator->() const;
+  [[nodiscard]] const BranchContainer* operator->() const;
 
-  BranchContainer* operator->();
+  [[nodiscard]] BranchContainer* operator->();
 
-  const BranchContainer& operator*() const;
+  [[nodiscard]] const BranchContainer& operator*() const;
 
-  BranchContainer& operator*();
+  [[nodiscard]] BranchContainer& operator*();
 
-  const BranchContainer& getContainer() const;
+  [[nodiscard]] const BranchContainer& getContainer() const;
 
-  BranchContainer& getContainer();
+  [[nodiscard]] BranchContainer& getContainer();
 
-  const BranchContainer* getContainerPtr() const;
+  [[nodiscard]] const BranchContainer* getContainerPtr() const;
 
-  BranchContainer* getContainerPtr();
+  [[nodiscard]] BranchContainer* getContainerPtr();
+
+  [[nodiscard]] BufferIndex getBufferSize() const;
+
+  [[nodiscard]] ChildPattern getChildPattern(BufferIndex bufferIndex) const;
+
+  [[nodiscard]] BufferPattern getBufferPattern(ChildIndex childIndex) const;
 };
 
 }  // namespace jpcc::octree

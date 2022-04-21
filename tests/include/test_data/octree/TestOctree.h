@@ -14,7 +14,7 @@ pcl::octree::OctreePointCloud<
     Point,
     pcl::octree::OctreeContainerPointIndices,
     pcl::octree::OctreeContainerEmpty,
-    OctreeNBufBase<BUFFER_SIZE, pcl::octree::OctreeContainerPointIndices, pcl::octree::OctreeContainerEmpty>>
+    OctreeNBuf<BUFFER_SIZE, pcl::octree::OctreeContainerPointIndices, pcl::octree::OctreeContainerEmpty>>
 getTestOctree();
 
 }  // namespace jpcc::octree

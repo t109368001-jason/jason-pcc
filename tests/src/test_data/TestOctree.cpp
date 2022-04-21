@@ -4,9 +4,8 @@ namespace jpcc::octree {
 
 using namespace pcl::octree;
 
-OctreePointCloud<Point, OctreeContainerPointIndices, OctreeContainerEmpty, OctreeNBufBase<BUFFER_SIZE>>
-getTestOctree() {
-  OctreePointCloud<Point, OctreeContainerPointIndices, OctreeContainerEmpty, OctreeNBufBase<BUFFER_SIZE>> octree(
+OctreePointCloud<Point, OctreeContainerPointIndices, OctreeContainerEmpty, OctreeNBuf<BUFFER_SIZE>> getTestOctree() {
+  OctreePointCloud<Point, OctreeContainerPointIndices, OctreeContainerEmpty, OctreeNBuf<BUFFER_SIZE>> octree(
       RESOLUTION);
   octree.defineBoundingBox(BOUNDING_BOX);
   for (BufferIndex bufferIndex = 0; bufferIndex < BUFFER_SIZE; ++bufferIndex) {

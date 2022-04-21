@@ -20,7 +20,7 @@
 
 #include <jpcc/common/ParameterParser.h>
 #include <jpcc/io/DatasetReader.h>
-#include <jpcc/octree/OctreeNBufBase.h>
+#include <jpcc/octree/OctreeNBuf.h>
 #include <jpcc/process/PreProcessor.h>
 #include <jpcc/visualization/JPCCVisualizer.h>
 
@@ -45,8 +45,8 @@ using namespace jpcc::process;
 using namespace jpcc::visualization;
 
 using PointT            = jpcc::PointNormal;
-using OctreeNBufBaseT   = OctreeNBufBase<BUFFER_SIZE, OctreeContainerPointIndices, OctreeContainerEmpty>;
-using OctreePointCloudT = OctreePointCloud<PointT, OctreeContainerPointIndices, OctreeContainerEmpty, OctreeNBufBaseT>;
+using OctreeNBufT       = OctreeNBuf<BUFFER_SIZE, OctreeContainerPointIndices, OctreeContainerEmpty>;
+using OctreePointCloudT = OctreePointCloud<PointT, OctreeContainerPointIndices, OctreeContainerEmpty, OctreeNBufT>;
 
 void test(const AppParameter& parameter, StopwatchUserTime& clock) {
   const auto viewer = jpcc::make_shared<JPCCVisualizer<PointT>>("JPCC Dataset Viewer " + parameter.dataset.name,
@@ -79,9 +79,8 @@ void test(const AppParameter& parameter, StopwatchUserTime& clock) {
 
         array<FramePtr<PointT>, BUFFER_SIZE> frameBuffer;
 
-        OctreeNBufBaseT::Filter3 func = [&](const BufferIndex                     _bufferIndex,
-                                            const OctreeNBufBaseT::BufferPattern& bufferPattern,
-                                            const OctreeNBufBaseT::BufferIndices& bufferIndices) {
+        OctreeNBufT::Filter3 func = [&](const BufferIndex _bufferIndex, const OctreeNBufT::BufferPattern& bufferPattern,
+                                        const OctreeNBufT::BufferIndices& bufferIndices) {
           if ((float)bufferPattern.count() > BUFFER_SIZE * parameter.float3) { return true; }
           auto      normal = frameBuffer.at(_bufferIndex)->at(bufferIndices.at(_bufferIndex)).getNormalVector3fMap();
           Matrix3Xf matrix(3, bufferPattern.count());

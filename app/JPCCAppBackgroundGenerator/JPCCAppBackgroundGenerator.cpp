@@ -11,7 +11,7 @@
 #include <jpcc/process/JPCCNormalEstimation.h>
 #include <jpcc/process/PreProcessor.h>
 #include <jpcc/process/Process.h>
-#include <jpcc/octree/OctreeNBufBase.h>
+#include <jpcc/octree/OctreeNBuf.h>
 
 #include <PCCChrono.h>
 #include <PCCMemory.h>
@@ -34,8 +34,8 @@ using namespace jpcc::process;
 using PointT            = jpcc::PointNormal;
 using LeafContainerT    = OctreeContainerPointIndices;
 using BranchContainerT  = OctreeContainerEmpty;
-using OctreeNBufBaseT   = OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>;
-using OctreePointCloudT = OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeNBufBaseT>;
+using OctreeNBufT       = OctreeNBuf<BUFFER_SIZE, LeafContainerT, BranchContainerT>;
+using OctreePointCloudT = OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeNBufT>;
 
 void backgroundGenerator(const AppParameter& parameter, StopwatchUserTime& clock) {
   size_t frameNumber = parameter.dataset.getStartFrameNumbers();
@@ -53,9 +53,8 @@ void backgroundGenerator(const AppParameter& parameter, StopwatchUserTime& clock
 
     octree.defineBoundingBox(octree.getResolution() * 2);
 
-    OctreeNBufBaseT::Filter3 func = [&](const BufferIndex                     _bufferIndex,
-                                        const OctreeNBufBaseT::BufferPattern& bufferPattern,
-                                        const OctreeNBufBaseT::BufferIndices& bufferIndices) {
+    OctreeNBufT::Filter3 func = [&](const BufferIndex _bufferIndex, const OctreeNBufT::BufferPattern& bufferPattern,
+                                    const OctreeNBufT::BufferIndices& bufferIndices) {
       return ((float)bufferPattern.count() > BUFFER_SIZE * 0.3);
     };
 

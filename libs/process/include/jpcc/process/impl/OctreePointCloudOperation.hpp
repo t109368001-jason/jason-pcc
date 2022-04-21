@@ -35,7 +35,7 @@ FramePtr<PointT> OctreePointCloudOperation<PointT, quantize>::targetAndNotSource
   auto indices = make_shared<Indices>();
   this->switchBuffers(1);
   this->getIndicesByFilter(
-      [](const typename OctreeNBufBaseT::BufferPattern& bufferPattern) { return !bufferPattern.test(0); }, *indices);
+      [](const typename OctreeNBufT::BufferPattern& bufferPattern) { return !bufferPattern.test(0); }, *indices);
 
   auto output = make_shared<Frame>();
 

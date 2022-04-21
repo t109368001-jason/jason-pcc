@@ -1,7 +1,7 @@
 #pragma once
 
 #include <jpcc/common/Common.h>
-#include <jpcc/octree/OctreeNBufBase.h>
+#include <jpcc/octree/OctreeNBuf.h>
 
 #include <test_data/octree/TestData.h>
 

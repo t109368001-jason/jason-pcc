@@ -5,7 +5,7 @@
 
 #include <jpcc/common/Common.h>
 #include <jpcc/common/GroupOfFrame.h>
-#include <jpcc/octree/OctreeNBufBase.h>
+#include <jpcc/octree/OctreeNBuf.h>
 
 namespace jpcc::process {
 
@@ -17,29 +17,28 @@ class OctreePointCloudOperation
                                     pcl::octree::OctreeContainerPointIndex,
                                     pcl::octree::OctreeContainerPointIndices>::type,
           pcl::octree::OctreeContainerEmpty,
-          octree::OctreeNBufBase<2,
-                                 typename std::conditional<singlePointVoxel,
-                                                           pcl::octree::OctreeContainerPointIndex,
-                                                           pcl::octree::OctreeContainerPointIndices>::type,
-                                 pcl::octree::OctreeContainerEmpty>> {
+          octree::OctreeNBuf<2,
+                             typename std::conditional<singlePointVoxel,
+                                                       pcl::octree::OctreeContainerPointIndex,
+                                                       pcl::octree::OctreeContainerPointIndices>::type,
+                             pcl::octree::OctreeContainerEmpty>> {
  public:
   using Ptr          = shared_ptr<OctreePointCloudOperation>;
   using Frame        = jpcc::Frame<PointT>;
   using FramePtr     = typename Frame::Ptr;
   using GroupOfFrame = jpcc::GroupOfFrame<PointT>;
-  using OctreeNBufBaseT =
-      octree::OctreeNBufBase<2,
-                             typename std::conditional<singlePointVoxel,
-                                                       pcl::octree::OctreeContainerPointIndex,
-                                                       pcl::octree::OctreeContainerPointIndices>::type,
-                             pcl::octree::OctreeContainerEmpty>;
+  using OctreeNBufT  = octree::OctreeNBuf<2,
+                                         typename std::conditional<singlePointVoxel,
+                                                                   pcl::octree::OctreeContainerPointIndex,
+                                                                   pcl::octree::OctreeContainerPointIndices>::type,
+                                         pcl::octree::OctreeContainerEmpty>;
   using OctreePointCloudT =
       pcl::octree::OctreePointCloud<PointT,
                                     typename std::conditional<singlePointVoxel,
                                                               pcl::octree::OctreeContainerPointIndex,
                                                               pcl::octree::OctreeContainerPointIndices>::type,
                                     pcl::octree::OctreeContainerEmpty,
-                                    OctreeNBufBaseT>;
+                                    OctreeNBufT>;
 
  protected:
   FramePtr source_;

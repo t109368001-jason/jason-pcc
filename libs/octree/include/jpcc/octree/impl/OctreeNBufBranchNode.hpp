@@ -76,12 +76,6 @@ pcl::octree::node_type_t OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>::ge
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <BufferIndex BUFFER_SIZE, typename BranchContainerT>
-BufferIndex OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>::getBufferSize() const {
-  return BUFFER_SIZE;
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <BufferIndex BUFFER_SIZE, typename BranchContainerT>
 void OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>::reset() {
   memset(childMatrix_, 0, sizeof(OctreeNode*) * BUFFER_SIZE * 8);
 }
@@ -132,6 +126,38 @@ const BranchContainerT* OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>::get
 template <BufferIndex BUFFER_SIZE, typename BranchContainerT>
 BranchContainerT* OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>::getContainerPtr() {
   return &container_;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <BufferIndex BUFFER_SIZE, typename BranchContainerT>
+BufferIndex OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>::getBufferSize() const {
+  return BUFFER_SIZE;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <BufferIndex BUFFER_SIZE, typename BranchContainerT>
+ChildPattern OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>::getChildPattern(const BufferIndex bufferIndex) const {
+  ChildPattern childPattern;
+
+  for (ChildIndex childIndex = 0; childIndex < 8; childIndex++) {
+    childPattern.set(childIndex, hasChild(bufferIndex, childIndex));
+  }
+
+  return childPattern;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <BufferIndex BUFFER_SIZE, typename BranchContainerT>
+typename OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>::BufferPattern
+OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>::getBufferPattern(const ChildIndex childIndex) const {
+  BufferPattern bufferPattern;
+
+  // create bit pattern
+  for (BufferIndex bufferIndex = 0; bufferIndex < BUFFER_SIZE; bufferIndex++) {
+    bufferPattern.set(bufferIndex, hasChild(bufferIndex, childIndex));
+  }
+
+  return bufferPattern;
 }
 
 }  // namespace jpcc::octree

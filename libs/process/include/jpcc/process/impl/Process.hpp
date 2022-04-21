@@ -4,7 +4,7 @@
 #include <pcl/filters/extract_indices.h>
 #include <pcl/octree/octree_pointcloud.h>
 
-#include <jpcc/octree/OctreeNBufBase.h>
+#include <jpcc/octree/OctreeNBuf.h>
 
 namespace jpcc::process {
 
@@ -30,10 +30,9 @@ void split(const FramePtr<PointT>& input,
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void quantize(const FramePtr<PointT>& frame, double resolution) {
-  using OctreeNBufBaseT =
-      octree::OctreeNBufBase<1, pcl::octree::OctreeContainerPointIndex, pcl::octree::OctreeContainerEmpty>;
+  using OctreeNBufT = octree::OctreeNBuf<1, pcl::octree::OctreeContainerPointIndex, pcl::octree::OctreeContainerEmpty>;
   using OctreePointCloudT = pcl::octree::OctreePointCloud<PointT, pcl::octree::OctreeContainerPointIndex,
-                                                          pcl::octree::OctreeContainerEmpty, OctreeNBufBaseT>;
+                                                          pcl::octree::OctreeContainerEmpty, OctreeNBufT>;
 
   OctreePointCloudT octree(resolution);
   octree.setInputCloud(frame);
