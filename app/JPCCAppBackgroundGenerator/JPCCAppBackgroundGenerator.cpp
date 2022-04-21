@@ -44,19 +44,13 @@ void backgroundGenerator(const AppParameter& parameter, StopwatchUserTime& clock
   const PreProcessor<PointT>         preProcessor(parameter.preProcess);
   const JPCCNormalEstimation<PointT> normalEstimation(parameter.jpccNormalEstimation);
 
-  const auto indices      = jpcc::make_shared<Indices>();
-  auto       staticCloud_ = jpcc::make_shared<Frame<PointT>>();
+  auto staticCloud_ = jpcc::make_shared<Frame<Point>>();
   {
     BufferIndex                          bufferIndex = 0;
     array<FramePtr<PointT>, BUFFER_SIZE> frameBuffer;
     OctreePointCloudT                    octree(0.1);
 
     octree.defineBoundingBox(octree.getResolution() * 2);
-
-    OctreeNBufT::Filter3 func = [&](const BufferIndex _bufferIndex, const OctreeNBufT::BufferPattern& bufferPattern,
-                                    const OctreeNBufT::BufferIndices& bufferIndices) {
-      return ((float)bufferPattern.count() > BUFFER_SIZE * 0.3);
-    };
 
     GroupOfFrame<PointT> frames;
 
@@ -75,15 +69,33 @@ void backgroundGenerator(const AppParameter& parameter, StopwatchUserTime& clock
       octree.addPointsFromInputCloud();
     }
 
-    octree.process(func, *indices);
-    staticCloud_ = frameBuffer.at(bufferIndex);
+    OctreePointCloud<Point, OctreeContainerPointIndex, BranchContainerT,
+                     OctreeNBuf<1, OctreeContainerPointIndex, BranchContainerT>>
+        staticOctree(0.01);
+    staticOctree.setInputCloud(staticCloud_);
+    OctreeNBufT::LeafBranchCallback callback = [&](const ChildIndex               childIndex,
+                                                   const OctreeNBufT::BranchNode& branchNode) {
+      const OctreeNBufT::BufferPattern& bufferPattern = branchNode.getBufferPattern(childIndex);
+      if ((float)bufferPattern.count() > BUFFER_SIZE * 0.3) {
+        for (BufferIndex _bufferIndex = 0; _bufferIndex < BUFFER_SIZE; _bufferIndex++) {
+          if (branchNode.hasChild(_bufferIndex, childIndex)) {
+            Indices& _indices = dynamic_cast<OctreeNBufT::LeafNode*>(branchNode.getChildPtr(_bufferIndex, childIndex))
+                                    ->getContainer()
+                                    .getPointIndicesVector();
+            for_each(_indices.begin(), _indices.end(), [&](const auto& index) {
+              Point point;
+              pcl::copyPoint(frameBuffer.at(_bufferIndex)->at(index), point);
+              if (!staticOctree.isVoxelOccupiedAtPoint(point)) { staticOctree.addPointToCloud(point, staticCloud_); }
+            });
+          }
+        }
+      }
+    };
+
+    octree.forEachLeafBranch(callback);
   }
 
-  process::split<PointT>(staticCloud_, indices, staticCloud_, nullptr);
-  process::quantize<PointT>(staticCloud_, 0.01);
-  auto output = jpcc::make_shared<Frame<Point>>();
-  pcl::copyPointCloud(*staticCloud_, *output);
-  pcl::io::savePLYFile(parameter.getOutputPath(), *output);
+  pcl::io::savePLYFile(parameter.getOutputPath(), *staticCloud_);
 }
 
 int main(int argc, char* argv[]) {
