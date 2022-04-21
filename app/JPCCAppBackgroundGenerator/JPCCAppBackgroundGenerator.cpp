@@ -44,11 +44,12 @@ void backgroundGenerator(const AppParameter& parameter, StopwatchUserTime& clock
   const PreProcessor<PointT>         preProcessor(parameter.preProcess);
   const JPCCNormalEstimation<PointT> normalEstimation(parameter.jpccNormalEstimation);
 
-  array<FramePtr<PointT>, BUFFER_SIZE> frameBuffer;
-  BufferIndex                          bufferIndex = 0;
-  const auto                           indices     = jpcc::make_shared<Indices>();
+  const auto indices      = jpcc::make_shared<Indices>();
+  auto       staticCloud_ = jpcc::make_shared<Frame<PointT>>();
   {
-    OctreePointCloudT octree(0.1);
+    BufferIndex                          bufferIndex = 0;
+    array<FramePtr<PointT>, BUFFER_SIZE> frameBuffer;
+    OctreePointCloudT                    octree(0.1);
 
     octree.defineBoundingBox(octree.getResolution() * 2);
 
@@ -76,12 +77,14 @@ void backgroundGenerator(const AppParameter& parameter, StopwatchUserTime& clock
     }
 
     octree.process(func, *indices);
+    staticCloud_ = frameBuffer.at(bufferIndex);
   }
 
-  const auto staticCloud_  = jpcc::make_shared<Frame<PointT>>();
-  const auto dynamicCloud_ = jpcc::make_shared<Frame<PointT>>();
-  process::split<PointT>(frameBuffer.at(bufferIndex), indices, staticCloud_, dynamicCloud_);
-  pcl::io::savePLYFile(parameter.getOutputPath(), *staticCloud_);
+  process::split<PointT>(staticCloud_, indices, staticCloud_, nullptr);
+  process::quantize<PointT>(staticCloud_, 0.01);
+  auto output = jpcc::make_shared<Frame<Point>>();
+  pcl::copyPointCloud(*staticCloud_, *output);
+  pcl::io::savePLYFile(parameter.getOutputPath(), *output);
 }
 
 int main(int argc, char* argv[]) {

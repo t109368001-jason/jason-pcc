@@ -10,6 +10,9 @@ void split(const FramePtr<PointT>& input,
            const FramePtr<PointT>& output,
            const FramePtr<PointT>& outputNegative);
 
-}
+template <typename PointT>
+void quantize(const FramePtr<PointT>& frame, double resolution);
+
+}  // namespace jpcc::process
 
 #include <jpcc/process/impl/Process.hpp>
