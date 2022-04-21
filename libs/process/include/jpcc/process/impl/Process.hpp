@@ -40,7 +40,7 @@ void quantize(const FramePtr<PointT>& frame, double resolution) {
 
   auto indices = make_shared<Indices>();
   indices->resize(frame->size());
-  for (auto it = octree.leaf_depth_begin(); it != octree.leaf_depth_end(); it++) {
+  for (auto it = octree.leaf_depth_begin(octree.getTreeDepth()); it != octree.leaf_depth_end(); it++) {
     indices->push_back(it.getLeafContainer().getPointIndex());
   }
   process::split<PointT>(frame, indices, frame, nullptr);

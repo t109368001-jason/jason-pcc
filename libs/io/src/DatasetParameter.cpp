@@ -64,7 +64,10 @@ void DatasetParameter::notify() {
   assert((startFrameNumbers.empty()) || (startFrameNumbers.size() == files.size()));
   folderPath = filesystem::path(folderPrefix) / folder;
   filePaths.resize(files.size());
-  for (size_t i = 0; i < files.size(); i++) { filePaths.at(i) = folderPath / files.at(i); }
+  for (size_t i = 0; i < files.size(); i++) {
+    filePaths.at(i) = folderPath / files.at(i);
+    assert(filesystem::exists(filePaths.at(i)));
+  }
   if (!transforms_.empty()) {
     assert(type != "ply");
     assert(transforms_.size() == files.size());
