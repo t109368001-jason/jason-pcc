@@ -17,10 +17,11 @@ class OctreeNBuf : public virtual OctreeNBufBase<BUFFER_SIZE, LeafContainerT, Br
   using BranchNode    = typename OctreeNBufBaseT::BranchNode;
   using BufferPattern = typename OctreeNBufBaseT::BufferPattern;
 
-  using BufferIndices = std::array<int, BUFFER_SIZE>;
-  using Filter1       = std::function<bool(const BufferPattern& bufferPattern)>;
-  using Filter3       = std::function<bool(
+  using BufferIndices      = std::array<int, BUFFER_SIZE>;
+  using Filter1            = std::function<bool(const BufferPattern& bufferPattern)>;
+  using Filter3            = std::function<bool(
       const BufferIndex bufferIndex, const BufferPattern& bufferPattern, const BufferIndices& bufferIndices)>;
+  using LeafBranchCallback = std::function<void(const ChildIndex childIndex, const BranchNode& branchNode)>;
 
  public:
   void getIndicesByFilter(const Filter1& filter, Indices& indices) const;
@@ -30,6 +31,10 @@ class OctreeNBuf : public virtual OctreeNBufBase<BUFFER_SIZE, LeafContainerT, Br
   void process(const Filter3& func, Indices& indices) const;
 
   void processRecursive(const BranchNode* branchNode, const Filter3& func, Indices& indices) const;
+
+  void forEachLeafBranch(LeafBranchCallback& callback);
+
+  void forEachLeafBranchRecursive(const BranchNode* branchNode, LeafBranchCallback& callback);
 
   bool deleteBuffer();
 

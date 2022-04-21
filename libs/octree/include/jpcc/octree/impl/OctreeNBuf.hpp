@@ -82,6 +82,39 @@ void OctreeNBuf<BUFFER_SIZE, LeafContainerT, BranchContainerT>::processRecursive
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <BufferIndex BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
+void OctreeNBuf<BUFFER_SIZE, LeafContainerT, BranchContainerT>::forEachLeafBranch(LeafBranchCallback& callback) {
+  forEachLeafBranchRecursive(this->root_node_, callback);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <BufferIndex BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
+void OctreeNBuf<BUFFER_SIZE, LeafContainerT, BranchContainerT>::forEachLeafBranchRecursive(
+    const OctreeNBuf::BranchNode* branchNode, LeafBranchCallback& callback) {
+  for (ChildIndex childIndex = 0; childIndex < 8; childIndex++) {
+    for (BufferIndex bufferIndex = 0; bufferIndex < BUFFER_SIZE; bufferIndex++) {
+      if (branchNode->hasChild(bufferIndex, childIndex)) {
+        const OctreeNode* childNode = branchNode->getChildPtr(bufferIndex, childIndex);
+
+        switch (childNode->getNodeType()) {
+          case pcl::octree::BRANCH_NODE: {
+            // recursively proceed with indexed child branchNode
+            forEachLeafBranchRecursive(dynamic_cast<const BranchNode*>(childNode), callback);
+            break;
+          }
+          case pcl::octree::LEAF_NODE: {
+            callback(childIndex, *branchNode);
+            break;
+          }
+          default: break;
+        }
+        break;
+      }
+    }
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <BufferIndex BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
 bool OctreeNBuf<BUFFER_SIZE, LeafContainerT, BranchContainerT>::deleteBuffer() {
   return deleteBufferRecursive(*dynamic_cast<BranchNode*>(this->root_node_), this->bufferIndex_);
 }
