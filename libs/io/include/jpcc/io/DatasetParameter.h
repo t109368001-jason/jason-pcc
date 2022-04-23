@@ -26,6 +26,7 @@ class DatasetParameter : public virtual Parameter {
   std::vector<std::filesystem::path>       filePaths;
   std::vector<size_t>                      frameCounts;
   std::vector<size_t>                      startFrameNumbers;
+  std::vector<size_t>                      endFrameNumbers;
   std::vector<shared_ptr<Eigen::Matrix4f>> transforms;
   bool                                     haveGpsTime;
 
@@ -44,6 +45,12 @@ class DatasetParameter : public virtual Parameter {
   [[nodiscard]] size_t getFrameCounts(size_t index = 0) const;
 
   [[nodiscard]] size_t getStartFrameNumbers(size_t index = 0) const;
+
+  [[nodiscard]] size_t getStartFrameNumber() const;
+
+  [[nodiscard]] size_t getEndFrameNumbers(size_t index = 0) const;
+
+  [[nodiscard]] size_t getEndFrameNumber() const;
 
   [[nodiscard]] shared_ptr<Eigen::Matrix4f> getTransforms(size_t index = 0) const;
 

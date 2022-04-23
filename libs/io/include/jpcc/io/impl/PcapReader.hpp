@@ -146,7 +146,8 @@ void PcapReader<PointT>::open_(const size_t datasetIndex, const size_t startFram
   }
 
   if (pcap_setfilter(pcap, &filter) == -1) { throw std::runtime_error(pcap_geterr(pcap)); }
-  pcaps_.at(datasetIndex) = pcap;
+  pcaps_.at(datasetIndex)                     = pcap;
+  this->currentFrameNumbers_.at(datasetIndex) = this->datasetParam_.getStartFrameNumbers(datasetIndex);
 
   // Push One Rotation Data to Queue
   const auto frame = jpcc::make_shared<Frame>();

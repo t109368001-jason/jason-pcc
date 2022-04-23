@@ -36,7 +36,8 @@ void LvxReader<PointT>::open_(const size_t datasetIndex, const size_t startFrame
   assert(lvx->GetFileVersion() == livox_ros::kLvxFileV1);
   assert(lvx->GetDeviceCount() != 0);
   assert(lvx->GetDeviceCount() < livox_ros::kMaxSourceLidar);
-  lvxs_.at(datasetIndex) = lvx;
+  lvxs_.at(datasetIndex)                      = lvx;
+  this->currentFrameNumbers_.at(datasetIndex) = this->datasetParam_.getStartFrameNumbers(datasetIndex);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

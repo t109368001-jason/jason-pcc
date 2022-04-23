@@ -72,7 +72,7 @@ void test(const AppParameter& parameter, StopwatchUserTime& clock) {
         GroupOfFrame<PointT> frames;
         const auto           framesMap = jpcc::make_shared<JPCCVisualizer<PointT>::GroupOfFrameMap>();
 
-        size_t       startFrameNumber = parameter.dataset.getStartFrameNumbers();
+        size_t       startFrameNumber = parameter.dataset.getStartFrameNumber();
         const size_t endFrameNumber   = startFrameNumber + parameter.dataset.getFrameCounts();
 
         BufferIndex bufferIndex = 0;

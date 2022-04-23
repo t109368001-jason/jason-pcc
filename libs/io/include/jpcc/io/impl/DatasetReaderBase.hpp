@@ -159,7 +159,7 @@ bool DatasetReaderBase<PointT>::isOpen_(const size_t datasetIndex) const {
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 bool DatasetReaderBase<PointT>::isEof_(const size_t datasetIndex) const {
-  return !isOpen() || (currentFrameNumbers_.at(datasetIndex) >= datasetParam_.frameCounts.at(datasetIndex));
+  return !isOpen() || (currentFrameNumbers_.at(datasetIndex) >= datasetParam_.getEndFrameNumbers(datasetIndex));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -174,7 +174,7 @@ void DatasetReaderBase<PointT>::load_(const size_t  datasetIndex,
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void DatasetReaderBase<PointT>::close_(const size_t datasetIndex) {
-  currentFrameNumbers_.at(datasetIndex) = 0;
+  currentFrameNumbers_.at(datasetIndex) = datasetParam_.getStartFrameNumbers(datasetIndex);
   frameBuffers_.at(datasetIndex).clear();
 }
 

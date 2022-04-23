@@ -21,7 +21,7 @@ void PlyReader<PointT>::loadAll(const size_t  startFrameNumber,
                                 const bool    parallel) {
   const size_t endFrameNumber =
       std::min(startFrameNumber + groupOfFramesSize,
-               this->datasetParam_.getStartFrameNumbers() + this->datasetParam_.getFrameCounts());
+               this->datasetParam_.getStartFrameNumber() + this->datasetParam_.getFrameCounts());
   if (startFrameNumber >= endFrameNumber) { return; }
 
   loadPly(sources, this->datasetParam_.getFilePath(), startFrameNumber, endFrameNumber, parallel);

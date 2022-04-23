@@ -56,8 +56,9 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
       GroupOfFrame<> frames;
       const auto     framesMap         = jpcc::make_shared<PreProcessor<>::GroupOfFrameMap>();
       const size_t   groupOfFramesSize = 32;
-      size_t         startFrameNumber  = 1;
-      reader->loadAll(0, 1, frames, parameter.parallel);
+      size_t         startFrameNumber  = parameter.dataset.getStartFrameNumber();
+      reader->loadAll(startFrameNumber, 1, frames, parameter.parallel);
+      startFrameNumber++;
       preProcessor.process(frames, framesMap, parameter.parallel);
       if (octreePointCloudOperation) {
         framesMap->insert_or_assign(backgroundId, GroupOfFrame<>{background});

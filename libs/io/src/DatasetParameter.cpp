@@ -62,6 +62,10 @@ void DatasetParameter::notify() {
   assert(!folder.empty());
   assert(frameCounts.size() == files.size());
   assert((startFrameNumbers.empty()) || (startFrameNumbers.size() == files.size()));
+  endFrameNumbers.resize(startFrameNumbers.size());
+  for (size_t i = 0; i < startFrameNumbers.size(); i++) {
+    endFrameNumbers.at(i) = startFrameNumbers.at(i) + frameCounts.at(i);
+  }
   folderPath = filesystem::path(folderPrefix) / folder;
   filePaths.resize(files.size());
   for (size_t i = 0; i < files.size(); i++) {
@@ -92,6 +96,16 @@ string DatasetParameter::getFilePath(const size_t index) const { return filePath
 size_t DatasetParameter::getFrameCounts(const size_t index) const { return frameCounts.at(index); }
 
 size_t DatasetParameter::getStartFrameNumbers(const size_t index) const { return startFrameNumbers.at(index); }
+
+size_t DatasetParameter::getStartFrameNumber() const {
+  return *max_element(startFrameNumbers.begin(), startFrameNumbers.end());
+}
+
+size_t DatasetParameter::getEndFrameNumbers(const size_t index) const { return endFrameNumbers.at(index); }
+
+size_t DatasetParameter::getEndFrameNumber() const {
+  return *min_element(endFrameNumbers.begin(), endFrameNumbers.end());
+}
 
 shared_ptr<Eigen::Matrix4f> DatasetParameter::getTransforms(const size_t index) const {
   return transforms.empty() ? nullptr : transforms.at(index);

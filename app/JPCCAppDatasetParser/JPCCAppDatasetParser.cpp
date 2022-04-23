@@ -22,7 +22,7 @@ void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
   const DatasetReader<>::Ptr reader = newReader<>(parameter.inputReader, parameter.inputDataset);
   GroupOfFrame<>             frames;
   const size_t               groupOfFramesSize = 32;
-  size_t                     startFrameNumber  = parameter.inputDataset.getStartFrameNumbers();
+  size_t                     startFrameNumber  = parameter.inputDataset.getStartFrameNumber();
   const size_t               endFrameNumber    = startFrameNumber + parameter.inputDataset.getFrameCounts();
   while (startFrameNumber < endFrameNumber) {
     clock.start();

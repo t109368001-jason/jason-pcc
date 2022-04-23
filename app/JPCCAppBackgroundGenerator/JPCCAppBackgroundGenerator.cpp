@@ -38,7 +38,7 @@ using OctreeNBufT       = OctreeNBuf<BUFFER_SIZE, LeafContainerT, BranchContaine
 using OctreePointCloudT = OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeNBufT>;
 
 void backgroundGenerator(const AppParameter& parameter, StopwatchUserTime& clock) {
-  size_t frameNumber = parameter.dataset.getStartFrameNumbers();
+  size_t frameNumber = parameter.dataset.getStartFrameNumber();
 
   const DatasetReaderPtr<PointT>     reader = newReader<PointT>(parameter.reader, parameter.dataset);
   const PreProcessor<PointT>         preProcessor(parameter.preProcess);
