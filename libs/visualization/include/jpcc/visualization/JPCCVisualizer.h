@@ -22,6 +22,7 @@ class JPCCVisualizer : public pcl::visualization::PCLVisualizer {
   using RGBColor           = std::array<double, 3>;
   using PointCloudColor    = pcl::visualization::PointCloudColorHandler<PointT>;
   using PointCloudColorPtr = typename PointCloudColor::Ptr;
+  using KeyboardEvent      = std::function<bool(const pcl::visualization::KeyboardEvent& event)>;
 
  protected:
   VisualizerParameter                param_;
@@ -36,6 +37,8 @@ class JPCCVisualizer : public pcl::visualization::PCLVisualizer {
   std::map<std::string, RGBColor>    rgbColorMap_;
   mutable std::recursive_mutex       mutex_;
   std::map<std::string, FrameQueue>  queueMap_;
+
+  std::map<std::string, KeyboardEvent> keyboardCallbacks_;
 
  public:
   JPCCVisualizer(const std::string& name, VisualizerParameter param);
@@ -55,6 +58,8 @@ class JPCCVisualizer : public pcl::visualization::PCLVisualizer {
   void nextFrame();
 
   void enqueue(const GroupOfFrameMap& framesMap);
+
+  void registerKeyboardEvent(KeyboardEvent callback, const std::string& id);
 
   void handleKeyboardEvent(const pcl::visualization::KeyboardEvent& event);
 

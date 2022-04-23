@@ -40,7 +40,7 @@ class DatasetReaderBase {
 
   void close();
 
- protected:
+  // protected:
   virtual void load(size_t datasetIndex, size_t startFrameNumber, size_t groupOfFramesSize, GroupOfFrame& frames);
 
   virtual void open_(size_t datasetIndex, size_t startFrameNumber);

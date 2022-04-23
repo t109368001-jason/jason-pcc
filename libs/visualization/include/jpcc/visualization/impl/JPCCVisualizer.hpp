@@ -145,7 +145,17 @@ void JPCCVisualizer<PointT>::enqueue(const JPCCVisualizer::GroupOfFrameMap& fram
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
+void JPCCVisualizer<PointT>::registerKeyboardEvent(KeyboardEvent callback, const std::string& id) {
+  keyboardCallbacks_.insert_or_assign(id, callback);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT>
 void JPCCVisualizer<PointT>::handleKeyboardEvent(const pcl::visualization::KeyboardEvent& event) {
+  std::cout << "KeyboardEvent: keyCode=" << event.getKeyCode() << " keyDown=" << event.keyDown() << std::endl;
+  for (auto it = keyboardCallbacks_.begin(); it != keyboardCallbacks_.end(); it++) {
+    if ((*it).second(event)) { return; }
+  }
   if (event.getKeyCode() == ' ' && event.keyDown()) { nextFrame(); }
 }
 
