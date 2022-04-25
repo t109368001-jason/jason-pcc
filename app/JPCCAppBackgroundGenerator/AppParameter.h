@@ -17,6 +17,9 @@ class AppParameter : public Parameter {
   bool                                   parallel;
   size_t                                 groupOfFramesSize;
   std::string                            outputPath;
+  double                                 backgroundThreshold;
+  double                                 filterResolution;
+  double                                 backgroundResolution;
   io::DatasetParameter                   dataset;
   io::DatasetReaderParameter             reader;
   process::PreProcessParameter           preProcess;
