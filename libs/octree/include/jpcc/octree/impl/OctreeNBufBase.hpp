@@ -52,7 +52,7 @@ OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::begin(uindex_t ma
 template <BufferIndex BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
 typename OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::Iterator
 OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::end() {
-  return Iterator();
+  return Iterator(this, 0, nullptr);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -66,7 +66,7 @@ OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::leaf_depth_begin(
 template <BufferIndex BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
 typename OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::LeafNodeDepthFirstIterator
 OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::leaf_depth_end() {
-  return LeafNodeDepthFirstIterator();
+  return LeafNodeDepthFirstIterator(this, 0, nullptr);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -80,7 +80,7 @@ OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::depth_begin(uinde
 template <BufferIndex BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
 typename OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::DepthFirstIterator
 OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::depth_end() {
-  return DepthFirstIterator();
+  return DepthFirstIterator(this, 0, nullptr);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -93,7 +93,7 @@ OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::breadth_begin(uin
 template <BufferIndex BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
 typename OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::BreadthFirstIterator
 OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::breadth_end() {
-  return BreadthFirstIterator();
+  return BreadthFirstIterator(this, 0, nullptr);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
