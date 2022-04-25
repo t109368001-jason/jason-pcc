@@ -10,7 +10,6 @@ void split(const FramePtr<PointT>& input,
            const FramePtr<PointT>& output,
            const FramePtr<PointT>& outputNegative);
 
-//  TODO fix bug
 template <typename PointT>
 void quantize(const FramePtr<PointT>& frame, double resolution);
 
