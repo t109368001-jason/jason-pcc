@@ -9,7 +9,13 @@ namespace jpcc::visualization {
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 JPCCVisualizer<PointT>::JPCCVisualizer(const std::string& name, VisualizerParameter param) :
-    PCLVisualizer(name), param_(std::move(param)), name_(name), fontSize_(16), lineHeight_(20), primaryId_("cloud") {
+    PCLVisualizer(name),
+    param_(std::move(param)),
+    name_(name),
+    fontSize_(16),
+    lineHeight_(20),
+    primaryId_("cloud"),
+    lastWindowHeight_(new int{0}) {
   vtkObject::GlobalWarningDisplayOff();
 
   initCameraParameters();
@@ -19,13 +25,21 @@ JPCCVisualizer<PointT>::JPCCVisualizer(const std::string& name, VisualizerParame
   setBackgroundColor(0, 0, 0);
   addCoordinateSystem(3.0, "coordinate");
 
-  std::function<void(vtkObject*, long unsigned int, void*, void*)> windowModifiedCallback =
-      [&](vtkObject* caller, long unsigned int vtkNotUsed(eventId), void* vtkNotUsed(clientData),
-          void* vtkNotUsed(callData)) { updateText(); };
+  vtkNew<vtkCallbackCommand> modifiedCallback;
+  modifiedCallback->SetCallback(
+      [](vtkObject* caller, long unsigned int vtkNotUsed(eventId), void* clientData, void* vtkNotUsed(callData)) {
+        std::cout << "ModifiedEvent" << std::endl;
+        auto* window     = dynamic_cast<vtkRenderWindow*>(caller);
+        int*  windowSize = window->GetSize();
+        auto* viewer     = static_cast<JPCCVisualizer<PointT>*>(clientData);
+        if (*viewer->lastWindowHeight_ != windowSize[1]) {
+          viewer->updateText(windowSize);
+          *viewer->lastWindowHeight_ = windowSize[1];
+        }
+      });
+  modifiedCallback->SetClientData(this);
 
-  vtkNew<vtkCallbackCommand> m_pModifiedCallback;
-  m_pModifiedCallback->SetCallback(windowModifiedCallback.target<void(vtkObject*, long unsigned int, void*, void*)>());
-  getRenderWindow()->AddObserver(vtkCommand::ModifiedEvent, m_pModifiedCallback);
+  getRenderWindow()->AddObserver(vtkCommand::ModifiedEvent, modifiedCallback);
 
   registerKeyboardCallback([this](const auto& event) { this->handleKeyboardEvent(event); });
 
@@ -57,9 +71,10 @@ void JPCCVisualizer<PointT>::updateOrAddCloud(const FramePtr         cloud,
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-void JPCCVisualizer<PointT>::updateText() {
-  const int* const windowSize = getRenderWindow()->GetSize();
-  int              textHeight = windowSize[1] - lineHeight_;
+void JPCCVisualizer<PointT>::updateText(int* windowSize) {
+  std::cout << "JPCCVisualizer updateText()" << std::endl;
+  if (!windowSize) { windowSize = getRenderWindow()->GetSize(); }
+  int textHeight = windowSize[1] - lineHeight_;
 
   if ((frameMap_.find(primaryId_) != frameMap_.end())) {
     {

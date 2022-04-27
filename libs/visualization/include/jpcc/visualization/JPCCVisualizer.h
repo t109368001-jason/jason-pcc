@@ -37,6 +37,7 @@ class JPCCVisualizer : public pcl::visualization::PCLVisualizer {
   std::map<std::string, RGBColor>    rgbColorMap_;
   mutable std::recursive_mutex       mutex_;
   std::map<std::string, FrameQueue>  queueMap_;
+  shared_ptr<int>                    lastWindowHeight_;
 
   std::map<std::string, KeyboardEvent> keyboardCallbacks_;
 
@@ -47,7 +48,7 @@ class JPCCVisualizer : public pcl::visualization::PCLVisualizer {
 
   void updateOrAddCloud(FramePtr cloud, const PointCloudColor& color, const std::string& id);
 
-  void updateText();
+  void updateText(int* windowSize = nullptr);
 
   void updateCloud();
 
