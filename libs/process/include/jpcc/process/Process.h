@@ -4,14 +4,14 @@
 
 namespace jpcc::process {
 
-template <typename PointT>
+template <typename PointT = Point>
 void split(const FramePtr<PointT>& input,
            const IndicesPtr&       indices,
            const FramePtr<PointT>& output,
            const FramePtr<PointT>& outputNegative);
 
 //  TODO fix bug
-template <typename PointT>
+template <typename PointT = Point>
 void quantize(const FramePtr<PointT>& frame, double resolution);
 
 }  // namespace jpcc::process
