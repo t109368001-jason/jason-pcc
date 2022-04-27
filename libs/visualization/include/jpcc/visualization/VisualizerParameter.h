@@ -14,6 +14,9 @@ class VisualizerParameter : public virtual Parameter {
   std::string cameraPosition_;
 
  public:
+  std::string           name;
+  std::string           description;
+  bool                  showParameter;
   std::array<double, 9> cameraPosition{};
   size_t                bufferSize;
 

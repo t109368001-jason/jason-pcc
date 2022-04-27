@@ -19,6 +19,8 @@ class StatisticalOutlierRemovalParameter : public virtual Parameter {
 
   StatisticalOutlierRemovalParameter(const std::string& prefix, const std::string& caption);
 
+  void getShowTexts(std::vector<std::string>& showTexts) const override;
+
   void notify() override;
 
   friend std::ostream& operator<<(std::ostream& out, const StatisticalOutlierRemovalParameter& obj);

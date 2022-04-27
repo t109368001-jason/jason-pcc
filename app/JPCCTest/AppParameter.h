@@ -34,6 +34,8 @@ class AppParameter : public Parameter {
 
   AppParameter();
 
+  void getShowTexts(std::vector<std::string>& showTexts) const override;
+
   void notify() override;
 
   friend std::ostream& operator<<(std::ostream& out, const AppParameter& obj);

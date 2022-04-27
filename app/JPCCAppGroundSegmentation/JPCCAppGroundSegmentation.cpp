@@ -28,12 +28,12 @@ using namespace jpcc::process;
 using namespace jpcc::visualization;
 
 void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
-  const auto viewer = jpcc::make_shared<JPCCVisualizer<>>("JPCC Ground Segmentation " + parameter.dataset.name,
-                                                          parameter.visualizerParameter);
+  const auto viewer = jpcc::make_shared<JPCCVisualizer<>>(parameter.visualizerParameter);
 
   const string cloudPlaneId = "cloudPlane";
   const string cloudOtherId = "cloudOther";
 
+  viewer->addParameter(parameter);
   viewer->setPrimaryId(cloudOtherId);
   viewer->setColor(cloudOtherId, "z");
   viewer->setColor(cloudPlaneId, 1.0, 0.0, 1.0);
@@ -50,9 +50,9 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
     preProcessor.process(frames, nullptr, parameter.parallel);
     clock.stop();
 
-    pcl::SampleConsensusModelPlane<Point>::Ptr model_p(new pcl::SampleConsensusModelPlane<Point>(frames.at(0)));
-    auto                                       indices = jpcc::make_shared<Indices>();
-    pcl::RandomSampleConsensus<Point>          ransac(model_p);
+    auto modelPlane = jpcc::make_shared<pcl::SampleConsensusModelPlane<Point>>(frames.at(0), true);
+    auto indices    = jpcc::make_shared<Indices>();
+    pcl::RandomSampleConsensus<Point> ransac(modelPlane);
     ransac.setDistanceThreshold(parameter.distanceThreshold);
     ransac.computeModel();
     ransac.getInliers(*indices);

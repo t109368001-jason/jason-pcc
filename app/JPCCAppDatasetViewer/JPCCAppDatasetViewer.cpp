@@ -25,8 +25,7 @@ using namespace jpcc::process;
 using namespace jpcc::visualization;
 
 void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
-  const auto viewer = jpcc::make_shared<JPCCVisualizer<>>("JPCC Dataset Viewer " + parameter.dataset.name,
-                                                          parameter.visualizerParameter);
+  const auto                       viewer = jpcc::make_shared<JPCCVisualizer<>>(parameter.visualizerParameter);
   OctreePointCloudOperation<>::Ptr octreePointCloudOperation;
 
   FramePtr<> background;
@@ -41,6 +40,7 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
   const string primaryId    = "cloud";
   const string backgroundId = "background";
 
+  viewer->addParameter(parameter);
   viewer->setPrimaryId(primaryId);
   viewer->setColor(primaryId, "z");
   if (octreePointCloudOperation) { viewer->setColor(backgroundId, 1.0, 1.0, 1.0); }

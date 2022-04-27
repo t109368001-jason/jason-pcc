@@ -32,6 +32,14 @@ AppParameter::AppParameter() :
   opts_.add(visualizerParameter.getOpts());
 }
 
+void AppParameter::getShowTexts(vector<std::string>& showTexts) const {
+  showTexts.push_back(prefix_ + DISTANCE_THRESHOLD_OPT_PREFIX ": " + to_string(distanceThreshold));
+  dataset.getShowTexts(showTexts);
+  reader.getShowTexts(showTexts);
+  preProcess.getShowTexts(showTexts);
+  visualizerParameter.getShowTexts(showTexts);
+}
+
 void AppParameter::notify() {
   dataset.notify();
   reader.notify();

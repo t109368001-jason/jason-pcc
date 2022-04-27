@@ -15,6 +15,14 @@ vector<array<string, 2>> Parameter::getConflicts() const { return {}; }
 
 vector<array<string, 2>> Parameter::getDependencies() const { return {}; }
 
+std::vector<std::string> Parameter::getShowTexts() const {
+  std::vector<std::string> showTexts;
+  getShowTexts(showTexts);
+  return showTexts;
+}
+
+void Parameter::getShowTexts(std::vector<std::string>& showTexts) const {}
+
 void Parameter::notify() {}
 
 }  // namespace jpcc

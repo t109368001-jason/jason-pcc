@@ -8,10 +8,9 @@ namespace jpcc::visualization {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-JPCCVisualizer<PointT>::JPCCVisualizer(const std::string& name, VisualizerParameter param) :
-    PCLVisualizer(name),
+JPCCVisualizer<PointT>::JPCCVisualizer(VisualizerParameter param) :
+    PCLVisualizer(param.name),
     param_(std::move(param)),
-    name_(name),
     fontSize_(16),
     lineHeight_(20),
     primaryId_("cloud"),
@@ -28,7 +27,6 @@ JPCCVisualizer<PointT>::JPCCVisualizer(const std::string& name, VisualizerParame
   vtkNew<vtkCallbackCommand> modifiedCallback;
   modifiedCallback->SetCallback(
       [](vtkObject* caller, long unsigned int vtkNotUsed(eventId), void* clientData, void* vtkNotUsed(callData)) {
-        std::cout << "ModifiedEvent" << std::endl;
         auto* window     = dynamic_cast<vtkRenderWindow*>(caller);
         int*  windowSize = window->GetSize();
         auto* viewer     = static_cast<JPCCVisualizer<PointT>*>(clientData);
@@ -72,17 +70,20 @@ void JPCCVisualizer<PointT>::updateOrAddCloud(const FramePtr         cloud,
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void JPCCVisualizer<PointT>::updateText(int* windowSize) {
-  std::cout << "JPCCVisualizer updateText()" << std::endl;
   if (!windowSize) { windowSize = getRenderWindow()->GetSize(); }
   int textHeight = windowSize[1] - lineHeight_;
 
+  if (!param_.description.empty()) {
+    updateOrAddText(param_.description, textHeight, "description");
+    textHeight -= lineHeight_;
+  }
   if ((frameMap_.find(primaryId_) != frameMap_.end())) {
     {
       const FramePtr&   cloud = frameMap_.at(primaryId_);
       const RGBColor&   tc    = getTextColor(primaryId_);
       const std::string id    = primaryId_ + "FrameId";
       const std::string text  = "frame: " + std::to_string(cloud->header.seq);
-      setWindowName(name_ + " " + std::to_string(cloud->header.seq));
+      setWindowName(param_.name + " " + std::to_string(cloud->header.seq));
       updateOrAddText(text, textHeight, id);
       textHeight -= lineHeight_;
     }
@@ -101,6 +102,13 @@ void JPCCVisualizer<PointT>::updateText(int* windowSize) {
     const std::string text = id + " points: " + std::to_string(cloud->size());
     updateOrAddText(text, textHeight, id);
     textHeight -= lineHeight_;
+  }
+  textHeight = std::min<int>(textHeight, lineHeight_ * parameterTexts_.size());
+  if (param_.showParameter) {
+    for (size_t i = 0; i < parameterTexts_.size(); i++) {
+      updateOrAddText(parameterTexts_.at(i), textHeight, "parameter" + std::to_string(i));
+      textHeight -= lineHeight_;
+    }
   }
 }
 
@@ -219,6 +227,12 @@ template <typename PointT>
 bool JPCCVisualizer<PointT>::isFull() {
   std::lock_guard<std::recursive_mutex> lock(mutex_);
   return queueMap_.at(primaryId_).size() >= param_.bufferSize;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT>
+void JPCCVisualizer<PointT>::addParameter(const Parameter& parameter) {
+  parameter.getShowTexts(parameterTexts_);
 }
 
 }  // namespace jpcc::visualization

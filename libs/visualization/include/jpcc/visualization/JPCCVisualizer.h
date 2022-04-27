@@ -25,24 +25,23 @@ class JPCCVisualizer : public pcl::visualization::PCLVisualizer {
   using KeyboardEvent      = std::function<bool(const pcl::visualization::KeyboardEvent& event)>;
 
  protected:
-  VisualizerParameter                param_;
-  std::string                        name_;
-  int                                fontSize_;
-  int                                lineHeight_;
-  std::string                        primaryId_;
-  std::map<std::string, std::string> textMap_;
-  std::map<std::string, int>         textHeightMap;
-  std::map<std::string, FramePtr>    frameMap_;
-  std::map<std::string, std::string> fieldColorMap_;
-  std::map<std::string, RGBColor>    rgbColorMap_;
-  mutable std::recursive_mutex       mutex_;
-  std::map<std::string, FrameQueue>  queueMap_;
-  shared_ptr<int>                    lastWindowHeight_;
-
+  VisualizerParameter                  param_;
+  int                                  fontSize_;
+  int                                  lineHeight_;
+  std::string                          primaryId_;
+  std::map<std::string, std::string>   textMap_;
+  std::map<std::string, int>           textHeightMap;
+  std::map<std::string, FramePtr>      frameMap_;
+  std::map<std::string, std::string>   fieldColorMap_;
+  std::map<std::string, RGBColor>      rgbColorMap_;
+  mutable std::recursive_mutex         mutex_;
+  std::map<std::string, FrameQueue>    queueMap_;
+  shared_ptr<int>                      lastWindowHeight_;
   std::map<std::string, KeyboardEvent> keyboardCallbacks_;
+  std::vector<std::string>             parameterTexts_;
 
  public:
-  JPCCVisualizer(const std::string& name, VisualizerParameter param);
+  JPCCVisualizer(VisualizerParameter param);
 
   void updateOrAddText(const std::string& text, int ypos, const std::string& id);
 
@@ -75,6 +74,8 @@ class JPCCVisualizer : public pcl::visualization::PCLVisualizer {
   void setColor(const std::string& id, double r, double g, double b);
 
   bool isFull();
+
+  void addParameter(const Parameter& parameter);
 };
 
 }  // namespace jpcc::visualization

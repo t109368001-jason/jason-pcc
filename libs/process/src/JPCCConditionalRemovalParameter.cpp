@@ -24,8 +24,21 @@ JPCCConditionalRemovalParameter::JPCCConditionalRemovalParameter(const std::stri
       ;
 }
 
+void JPCCConditionalRemovalParameter::getShowTexts(vector<std::string>& showTexts) const {
+  if (enable) {
+    stringstream ss;
+    ss << prefix_ << CONDITIONS_OPT ": ";
+    for (size_t i = 0; i < conditions_.size(); i++) {
+      if (i != 0) { ss << " && "; }
+      ss << conditions_.at(i);
+    }
+    showTexts.push_back(ss.str());
+  }
+}
+
 void JPCCConditionalRemovalParameter::notify() {
   if (enable) {
+    assert(!conditions_.empty());
     conditions.resize(conditions_.size());
     std::transform(conditions_.begin(), conditions_.end(), conditions.begin(),
                    [](const string& condition) { return Condition(condition); });

@@ -27,6 +27,10 @@ class Parameter {
 
   [[nodiscard]] virtual std::vector<std::array<std::string, 2>> getDependencies() const;
 
+  [[nodiscard]] virtual std::vector<std::string> getShowTexts() const;
+
+  virtual void getShowTexts(std::vector<std::string>& showTexts) const;
+
   virtual void notify();
 };
 

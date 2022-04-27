@@ -49,13 +49,14 @@ using OctreeNBufT       = OctreeNBuf<BUFFER_SIZE, OctreeContainerPointIndices, O
 using OctreePointCloudT = OctreePointCloud<PointT, OctreeContainerPointIndices, OctreeContainerEmpty, OctreeNBufT>;
 
 void test(const AppParameter& parameter, StopwatchUserTime& clock) {
-  const auto viewer = jpcc::make_shared<JPCCVisualizer<PointT>>("JPCC Dataset Viewer " + parameter.dataset.name,
-                                                                parameter.visualizerParameter);
+  const auto viewer = jpcc::make_shared<JPCCVisualizer<PointT>>(parameter.visualizerParameter);
 
   atomic_bool  run(true);
   atomic_bool  hasFirstFrame(false);
   const string primaryId = "static";
   const string dynamicId = "dynamic";
+
+  viewer->addParameter(parameter);
   viewer->setPrimaryId(primaryId);
   viewer->setColor(primaryId, "z");
   viewer->setColor(dynamicId, 1.0, 1.0, 1.0);

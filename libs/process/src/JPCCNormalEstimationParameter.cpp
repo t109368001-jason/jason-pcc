@@ -23,6 +23,11 @@ JPCCNormalEstimationParameter::JPCCNormalEstimationParameter(const std::string& 
       ;
 }
 
+void JPCCNormalEstimationParameter::getShowTexts(vector<std::string>& showTexts) const {
+  if (kSearch != 0) { showTexts.push_back(prefix_ + K_SEARCH_OPT ": " + to_string(kSearch)); }
+  if (radiusSearch != 0) { showTexts.push_back(prefix_ + RADIUS_SEARCH_OPT ": " + to_string(radiusSearch)); }
+}
+
 void JPCCNormalEstimationParameter::notify() {
   assert((radiusSearch > 0 && kSearch == 0) || (radiusSearch == 0 && kSearch > 0));
 }

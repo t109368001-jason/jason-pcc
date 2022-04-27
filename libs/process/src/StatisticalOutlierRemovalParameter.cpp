@@ -28,6 +28,13 @@ StatisticalOutlierRemovalParameter::StatisticalOutlierRemovalParameter(const std
       ;
 }
 
+void StatisticalOutlierRemovalParameter::getShowTexts(vector<std::string>& showTexts) const {
+  if (enable) {
+    showTexts.push_back(prefix_ + MEAN_K_OPT ": " + to_string(meanK));
+    showTexts.push_back(prefix_ + STDDEV_MUL_THRESH_OPT ": " + to_string(stddevMulThresh));
+  }
+}
+
 void StatisticalOutlierRemovalParameter::notify() {
   if (enable) {
     assert(meanK > 0);

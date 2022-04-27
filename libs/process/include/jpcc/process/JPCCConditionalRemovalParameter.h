@@ -23,6 +23,8 @@ class JPCCConditionalRemovalParameter : public virtual Parameter {
 
   JPCCConditionalRemovalParameter(const std::string& prefix, const std::string& caption);
 
+  void getShowTexts(std::vector<std::string>& showTexts) const override;
+
   void notify() override;
 
   friend std::ostream& operator<<(std::ostream& out, const JPCCConditionalRemovalParameter& obj);

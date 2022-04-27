@@ -25,10 +25,10 @@ using namespace jpcc::process;
 using namespace jpcc::visualization;
 
 void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
-  const auto   viewer = jpcc::make_shared<JPCCVisualizer<>>("JPCC Dataset Registration Tool " + parameter.dataset.name,
-                                                          parameter.visualizerParameter);
+  const auto   viewer    = jpcc::make_shared<JPCCVisualizer<>>(parameter.visualizerParameter);
   const string primaryId = "0";
 
+  viewer->addParameter(parameter);
   viewer->setPrimaryId(primaryId);
   viewer->setColor("0", 1.0, 1.0, 1.0);
   viewer->setColor("1", 1.0, 0.0, 0.0);

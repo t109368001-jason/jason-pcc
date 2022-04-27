@@ -19,6 +19,8 @@ class RadiusOutlierRemovalParameter : public virtual Parameter {
 
   RadiusOutlierRemovalParameter(const std::string& prefix, const std::string& caption);
 
+  void getShowTexts(std::vector<std::string>& showTexts) const override;
+
   void notify() override;
 
   friend std::ostream& operator<<(std::ostream& out, const RadiusOutlierRemovalParameter& obj);

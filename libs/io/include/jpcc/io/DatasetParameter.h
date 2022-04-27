@@ -36,6 +36,8 @@ class DatasetParameter : public virtual Parameter {
 
   [[nodiscard]] std::vector<std::array<std::string, 2>> getDependencies() const override;
 
+  void getShowTexts(std::vector<std::string>& showTexts) const override;
+
   void notify() override;
 
   [[nodiscard]] size_t count() const;
@@ -43,6 +45,8 @@ class DatasetParameter : public virtual Parameter {
   [[nodiscard]] std::string getFilePath(size_t index = 0) const;
 
   [[nodiscard]] size_t getFrameCounts(size_t index = 0) const;
+
+  [[nodiscard]] size_t getFrameCount() const;
 
   [[nodiscard]] size_t getStartFrameNumbers(size_t index = 0) const;
 

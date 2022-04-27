@@ -23,6 +23,13 @@ AppParameter::AppParameter() :
   opts_.add(visualizerParameter.getOpts());
 }
 
+void AppParameter::getShowTexts(vector<std::string>& showTexts) const {
+  dataset.getShowTexts(showTexts);
+  reader.getShowTexts(showTexts);
+  preProcess.getShowTexts(showTexts);
+  visualizerParameter.getShowTexts(showTexts);
+}
+
 void AppParameter::notify() {
   dataset.notify();
   reader.notify();

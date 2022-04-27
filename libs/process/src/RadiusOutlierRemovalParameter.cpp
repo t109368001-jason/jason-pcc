@@ -27,6 +27,13 @@ RadiusOutlierRemovalParameter::RadiusOutlierRemovalParameter(const std::string& 
       ;
 }
 
+void RadiusOutlierRemovalParameter::getShowTexts(vector<std::string>& showTexts) const {
+  if (enable) {
+    showTexts.push_back(prefix_ + RADIUS_OPT ": " + to_string(radius));
+    showTexts.push_back(prefix_ + MIN_NEIGHBORS_IN_RADIUS_OPT ": " + to_string(minNeighborsInRadius));
+  }
+}
+
 void RadiusOutlierRemovalParameter::notify() {
   if (enable) {
     assert(radius > 0.0);

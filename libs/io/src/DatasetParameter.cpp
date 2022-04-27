@@ -55,6 +55,11 @@ vector<array<string, 2>> DatasetParameter::getDependencies() const {
   };
 }
 
+void DatasetParameter::getShowTexts(vector<std::string>& showTexts) const {
+  showTexts.push_back(prefix_ + NAME_OPT ": " + name);
+  showTexts.push_back(prefix_ + FRAME_COUNTS_OPT ": " + to_string(getFrameCount()));
+}
+
 void DatasetParameter::notify() {
   assert(!name.empty());
   assert(!type.empty());
@@ -94,6 +99,8 @@ size_t DatasetParameter::count() const { return files.size(); }
 string DatasetParameter::getFilePath(const size_t index) const { return filePaths.at(index).string(); }
 
 size_t DatasetParameter::getFrameCounts(const size_t index) const { return frameCounts.at(index); }
+
+size_t DatasetParameter::getFrameCount() const { return *min_element(frameCounts.begin(), frameCounts.end()); }
 
 size_t DatasetParameter::getStartFrameNumbers(const size_t index) const { return startFrameNumbers.at(index); }
 

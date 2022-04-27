@@ -19,6 +19,10 @@ LvxReaderParameter::LvxReaderParameter(const string& prefix, const string& capti
       ;
 }
 
+void LvxReaderParameter::getShowTexts(vector<std::string>& showTexts) const {
+  showTexts.push_back(prefix_ + FREQUENCY_OPT ": " + to_string(frequency));
+}
+
 void LvxReaderParameter::notify() {
   assert(frequency > 0);
   interval = 1000 / frequency;
