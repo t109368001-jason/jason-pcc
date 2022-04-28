@@ -10,11 +10,13 @@ using namespace po;
 #define APP_OPT_PREFIX "app"
 #define PARALLEL_OPT_PREFIX ".parallel"
 #define DISTANCE_THRESHOLD_OPT_PREFIX ".distanceThreshold"
+#define HEADLESS_OPT_PREFIX ".headless"
 
 AppParameter::AppParameter() :
     Parameter(APP_OPT_PREFIX, __FUNCTION__),
     parallel(false),
     distanceThreshold(0.5),
+    headless(false),
     dataset(),
     reader(),
     preProcess() {
@@ -25,6 +27,9 @@ AppParameter::AppParameter() :
       (string(prefix_ + DISTANCE_THRESHOLD_OPT_PREFIX).c_str(),              //
        value<double>(&distanceThreshold)->default_value(distanceThreshold),  //
        "distanceThreshold")                                                  //
+      (string(prefix_ + HEADLESS_OPT_PREFIX).c_str(),                        //
+       value<bool>(&headless)->default_value(headless),                      //
+       "headless")                                                           //
       ;
   opts_.add(dataset.getOpts());
   opts_.add(reader.getOpts());
@@ -51,6 +56,7 @@ ostream& operator<<(ostream& out, const AppParameter& obj) {
   out << obj.caption_ << endl;
   out << "\t" << obj.prefix_ << PARALLEL_OPT_PREFIX "=" << obj.parallel << endl;
   out << "\t" << obj.prefix_ << DISTANCE_THRESHOLD_OPT_PREFIX "=" << obj.distanceThreshold << endl;
+  out << "\t" << obj.prefix_ << HEADLESS_OPT_PREFIX "=" << obj.headless << endl;
   out << obj.dataset;
   out << obj.reader;
   out << obj.preProcess;

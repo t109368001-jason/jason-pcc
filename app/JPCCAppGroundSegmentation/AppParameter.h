@@ -16,6 +16,7 @@ class AppParameter : public Parameter {
  public:
   bool                               parallel;
   double                             distanceThreshold;
+  bool                               headless;
   io::DatasetParameter               dataset;
   io::DatasetReaderParameter         reader;
   process::PreProcessParameter       preProcess;

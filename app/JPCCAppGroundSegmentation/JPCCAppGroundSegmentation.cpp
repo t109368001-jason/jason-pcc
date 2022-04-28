@@ -28,15 +28,18 @@ using namespace jpcc::process;
 using namespace jpcc::visualization;
 
 void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
-  const auto viewer = jpcc::make_shared<JPCCVisualizer<>>(parameter.visualizerParameter);
+  JPCCVisualizer<>::Ptr viewer;
+  if (!parameter.headless) { viewer = jpcc::make_shared<JPCCVisualizer<>>(parameter.visualizerParameter); }
 
   const string cloudPlaneId = "cloudPlane";
   const string cloudOtherId = "cloudOther";
 
-  viewer->addParameter(parameter);
-  viewer->setPrimaryId(cloudOtherId);
-  viewer->setColor(cloudOtherId, "z");
-  viewer->setColor(cloudPlaneId, 1.0, 0.0, 1.0);
+  if (viewer) {
+    viewer->addParameter(parameter);
+    viewer->setPrimaryId(cloudOtherId);
+    viewer->setColor(cloudOtherId, "z");
+    viewer->setColor(cloudPlaneId, 1.0, 0.0, 1.0);
+  }
 
   const auto framesMap = jpcc::make_shared<PreProcessor<>::GroupOfFrameMap>();
 
@@ -57,7 +60,10 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
     ransac.computeModel();
     ransac.getInliers(*indices);
 
-    cout << "RANSAC coefficients=" << ransac.model_coefficients_ << endl;
+    cout << "RANSAC iteration=" << ransac.iterations_ << endl;
+    cout << "RANSAC coefficients=" << endl << ransac.model_coefficients_ << endl << endl;
+
+    if (!viewer) { return; }
 
     auto framePlane = jpcc::make_shared<Frame<>>();
     auto frameOther = jpcc::make_shared<Frame<>>();
