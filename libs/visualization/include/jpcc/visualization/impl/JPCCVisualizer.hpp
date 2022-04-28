@@ -172,14 +172,47 @@ void JPCCVisualizer<PointT>::registerKeyboardEvent(KeyboardEvent callback, const
   keyboardCallbacks_.insert_or_assign(id, callback);
 }
 
+// "| Help:\n"
+// "-------\n"
+//"          p, P   : switch to a point-based representation\n"
+// "          w, W   : switch to a wireframe-based representation (where available)\n"
+// "          s, S   : switch to a surface-based representation (where available)\n"
+// "          j, J   : take a .PNG snapshot of the current window view\n"
+// "          c, C   : display current camera/window parameters\n"
+// "          f, F   : fly to point mode\n"
+// "          e, E   : exit the interactor\n"
+// "          q, Q   : stop and call VTK's TerminateApp\n"
+// "           +/-   : increment/decrement overall point size\n"
+// "     +/- [+ ALT] : zoom in/out \n"
+// "          g, G   : display scale grid (on/off)\n"
+// "          u, U   : display lookup table (on/off)\n"
+// "    o, O         : switch between perspective/parallel projection (default = perspective)\n"
+// "    r, R [+ ALT] : reset camera [to viewpoint = {0, 0, 0} -> center_{x, y, z}]\n"
+// "    CTRL + s, S  : save camera parameters\n"
+// "    CTRL + r, R  : restore camera parameters\n"
+// "    ALT + s, S   : turn stereo mode on/off\n"
+// "    ALT + f, F   : switch between maximized window mode and original size\n"
+// "          l, L           : list all available geometric and color handlers for the current actor
+// map\n" "    ALT + 0..9 [+ CTRL]  : switch between different geometric handlers (where available)\n"
+// "          0..9 [+ CTRL]  : switch between different color handlers (where available)\n"
+// "    SHIFT + left click   : select a point (start with -use_point_picking)\n"
+// "          x, X   : toggle rubber band selection mode for left mouse button\n"
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void JPCCVisualizer<PointT>::handleKeyboardEvent(const pcl::visualization::KeyboardEvent& event) {
-  std::cout << "KeyboardEvent: keyCode=" << event.getKeyCode() << " keyDown=" << event.keyDown() << std::endl;
-  for (auto it = keyboardCallbacks_.begin(); it != keyboardCallbacks_.end(); it++) {
-    if ((*it).second(event)) { return; }
+  if (event.keyDown()) {
+    switch (event.getKeyCode()) {
+      case 'h':
+      case 'H':
+        std::cout << "\n"
+                     "------- JPCCVisualizer\n"
+                     "          space  : next frame\n";
+        break;
+      case ' ': nextFrame(); break;
+    }
   }
-  if (event.getKeyCode() == ' ' && event.keyDown()) { nextFrame(); }
+  for (auto it = keyboardCallbacks_.begin(); it != keyboardCallbacks_.end(); it++) { it->second(event); }
+  std::cout << "KeyboardEvent: keyCode=" << event.getKeyCode() << " keyDown=" << event.keyDown() << std::endl;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
