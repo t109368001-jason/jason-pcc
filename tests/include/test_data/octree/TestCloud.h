@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include <jpcc/common/Common.h>
 #include <jpcc/octree/OctreeNBuf.h>
 
@@ -10,5 +12,7 @@ namespace jpcc::octree {
 ChildPattern getTestChildPattern(BufferIndex bufferSelector);
 
 FramePtr<Point> getTestCloud(BufferIndex bufferSelector);
+
+std::vector<size_t> getCounts();
 
 }  // namespace jpcc::octree

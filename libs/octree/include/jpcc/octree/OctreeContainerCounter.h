@@ -14,6 +14,8 @@ class OctreeContainerCounter : public pcl::octree::OctreeContainerBase {
   void reset() override;
 
   void addPointIndex(const pcl::index_t& index);
+
+  [[nodiscard]] size_t getCount() const;
 };
 
 }  // namespace jpcc::octree

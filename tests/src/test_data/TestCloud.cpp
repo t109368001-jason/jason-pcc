@@ -26,4 +26,6 @@ FramePtr<Point> getTestCloud(BufferIndex bufferSelector) {
   return cloud;
 }
 
+vector<size_t> getCounts() { return {1, 7, 2, 8, 4, 9, 5, 11}; }
+
 }  // namespace jpcc::octree

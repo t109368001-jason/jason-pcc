@@ -8,4 +8,6 @@ void OctreeContainerCounter::reset() { count_ = 0; }
 
 void OctreeContainerCounter::addPointIndex(const pcl::index_t& index) { count_++; }
 
+size_t OctreeContainerCounter::getCount() const { return count_; }
+
 }  // namespace jpcc::octree
