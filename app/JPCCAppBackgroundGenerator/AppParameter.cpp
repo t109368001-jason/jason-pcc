@@ -11,6 +11,9 @@ using namespace po;
 #define PARALLEL_OPT ".parallel"
 #define GROUP_OF_FRAMES_SIZE_OPT ".groupOfFramesSize"
 #define OUTPUT_PATH_OPT ".outputPath"
+#define BACKGROUND_THRESHOLD_OPT ".backgroundThreshold"
+#define FILTER_RESOLUTION_OPT ".filterResolution"
+#define BACKGROUND_RESOLUTION_OPT ".backgroundResolution"
 
 AppParameter::AppParameter() :
     Parameter(APP_OPT_PREFIX, __FUNCTION__),
@@ -21,16 +24,25 @@ AppParameter::AppParameter() :
     reader(),
     preProcess(),
     jpccNormalEstimation() {
-  opts_.add_options()                                                        //
-      (string(prefix_ + PARALLEL_OPT).c_str(),                               //
-       value<bool>(&parallel)->default_value(parallel),                      //
-       "parallel")                                                           //
-      (string(prefix_ + GROUP_OF_FRAMES_SIZE_OPT).c_str(),                   //
-       value<size_t>(&groupOfFramesSize)->default_value(groupOfFramesSize),  //
-       "groupOfFramesSize")                                                  //
-      (string(prefix_ + OUTPUT_PATH_OPT).c_str(),                            //
-       value<string>(&outputPath)->default_value(outputPath),                //
-       "outputPath")                                                         //
+  opts_.add_options()                                                              //
+      (string(prefix_ + PARALLEL_OPT).c_str(),                                     //
+       value<bool>(&parallel)->default_value(parallel),                            //
+       "parallel")                                                                 //
+      (string(prefix_ + GROUP_OF_FRAMES_SIZE_OPT).c_str(),                         //
+       value<size_t>(&groupOfFramesSize)->default_value(groupOfFramesSize),        //
+       "groupOfFramesSize")                                                        //
+      (string(prefix_ + OUTPUT_PATH_OPT).c_str(),                                  //
+       value<string>(&outputPath)->default_value(outputPath),                      //
+       "outputPath")                                                               //
+      (string(prefix_ + BACKGROUND_THRESHOLD_OPT).c_str(),                         //
+       value<double>(&backgroundThreshold)->default_value(backgroundThreshold),    //
+       "backgroundThreshold")                                                      //
+      (string(prefix_ + FILTER_RESOLUTION_OPT).c_str(),                            //
+       value<double>(&filterResolution)->default_value(filterResolution),          //
+       "filterResolution")                                                         //
+      (string(prefix_ + BACKGROUND_RESOLUTION_OPT).c_str(),                        //
+       value<double>(&backgroundResolution)->default_value(backgroundResolution),  //
+       "backgroundResolution")                                                     //
       ;
   opts_.add(dataset.getOpts());
   opts_.add(reader.getOpts());
@@ -58,6 +70,8 @@ ostream& operator<<(ostream& out, const AppParameter& obj) {
   out << "\t" << obj.prefix_ << PARALLEL_OPT "=" << obj.parallel << endl;
   out << "\t" << obj.prefix_ << GROUP_OF_FRAMES_SIZE_OPT "=" << obj.groupOfFramesSize << endl;
   out << "\t" << obj.prefix_ << OUTPUT_PATH_OPT "=" << obj.outputPath << endl;
+  out << "\t" << obj.prefix_ << FILTER_RESOLUTION_OPT "=" << obj.filterResolution << endl;
+  out << "\t" << obj.prefix_ << BACKGROUND_RESOLUTION_OPT "=" << obj.backgroundResolution << endl;
   out << obj.dataset;
   out << obj.reader;
   out << obj.preProcess;

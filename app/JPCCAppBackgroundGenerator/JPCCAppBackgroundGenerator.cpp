@@ -48,7 +48,7 @@ void backgroundGenerator(const AppParameter& parameter, StopwatchUserTime& clock
   {
     BufferIndex                          bufferIndex = 0;
     array<FramePtr<PointT>, BUFFER_SIZE> frameBuffer;
-    OctreePointCloudT                    octree(0.1);
+    OctreePointCloudT                    octree(parameter.filterResolution);
 
     octree.defineBoundingBox(octree.getResolution() * 2);
 
@@ -57,7 +57,7 @@ void backgroundGenerator(const AppParameter& parameter, StopwatchUserTime& clock
     clock.start();
     reader->loadAll(frameNumber, BUFFER_SIZE, frames, parameter.parallel);
     preProcessor.process(frames, nullptr, parameter.parallel);
-    normalEstimation.computeInPlaceAll(frames, parameter.parallel);
+    //    normalEstimation.computeInPlaceAll(frames, parameter.parallel);
     clock.stop();
 
     for (size_t i = 0; i < frames.size(); i++) {
@@ -71,12 +71,12 @@ void backgroundGenerator(const AppParameter& parameter, StopwatchUserTime& clock
 
     OctreePointCloud<Point, OctreeContainerPointIndex, BranchContainerT,
                      OctreeNBuf<1, OctreeContainerPointIndex, BranchContainerT>>
-        staticOctree(0.01);
+        staticOctree(parameter.backgroundResolution);
     staticOctree.setInputCloud(staticCloud_);
     OctreeNBufT::LeafBranchCallback callback = [&](const ChildIndex               childIndex,
                                                    const OctreeNBufT::BranchNode& branchNode) {
       const OctreeNBufT::BufferPattern& bufferPattern = branchNode.getBufferPattern(childIndex);
-      if ((float)bufferPattern.count() > BUFFER_SIZE * 0.3) {
+      if ((float)bufferPattern.count() > BUFFER_SIZE * parameter.backgroundThreshold) {
         for (BufferIndex _bufferIndex = 0; _bufferIndex < BUFFER_SIZE; _bufferIndex++) {
           if (branchNode.hasChild(_bufferIndex, childIndex)) {
             Indices& _indices = dynamic_cast<OctreeNBufT::LeafNode*>(branchNode.getChildPtr(_bufferIndex, childIndex))
