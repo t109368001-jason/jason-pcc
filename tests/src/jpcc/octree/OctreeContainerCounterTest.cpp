@@ -3,20 +3,20 @@
 #define PCL_NO_PRECOMPILE
 #include <pcl/octree/octree_pointcloud.h>
 
-#include <jpcc/octree/OctreeContainerCounter.h>
-
 #include <jpcc/common/Common.h>
-#include <jpcc/octree/OctreeNBuf.h>
+#include <jpcc/octree/OctreeContainerCounter.h>
 
 #include "test_data/octree/TestOctree.h"
 
 using namespace std;
+using namespace pcl::octree;
 
 namespace jpcc::octree {
 
-using OctreeNuf = OctreeNBuf<1, OctreeContainerCounter, pcl::octree::OctreeContainerEmpty>;
-using OctreePointCloud =
-    pcl::octree::OctreePointCloud<Point, OctreeContainerCounter, pcl::octree::OctreeContainerEmpty, OctreeNuf>;
+using OctreePointCloud = OctreePointCloud<Point,
+                                          OctreeContainerCounter,
+                                          OctreeContainerEmpty,
+                                          OctreeBase<OctreeContainerCounter, OctreeContainerEmpty>>;
 
 TEST(OctreeContainerCounterTest, getChildPattern) {
   OctreePointCloud octree(RESOLUTION);
@@ -24,15 +24,14 @@ TEST(OctreeContainerCounterTest, getChildPattern) {
   octree.defineBoundingBox(BOUNDING_BOX);
 
   for (BufferIndex bufferIndex = 0; bufferIndex < BUFFER_SIZE; ++bufferIndex) {
-    octree.switchBuffers(0);
     octree.setInputCloud(getTestCloud(bufferIndex));
     octree.addPointsFromInputCloud();
   }
   vector<size_t> counts = getCounts();
-  for (ChildIndex childIndex = 0; childIndex < 8; ++childIndex) {
-    auto rootNode = dynamic_cast<const OctreePointCloud::BranchNode*>(octree.getRootNode());
-    auto leafNode = dynamic_cast<const OctreePointCloud::LeafNode*>(rootNode->getChildPtr(0, childIndex));
-    EXPECT_EQ(leafNode->getContainer().getCount(), counts.at(childIndex));
+
+  int i = 0;
+  for (auto it = octree.leaf_breadth_begin(), end = octree.leaf_breadth_end(); it != end; ++it, i++) {
+    EXPECT_EQ(it.getLeafContainer().getCount(), counts.at(i));
   }
 }
 
