@@ -41,7 +41,7 @@ find_package(Boost 1.74 REQUIRED COMPONENTS program_options)
 
 find_package(PCAP REQUIRED)
 
-find_package(PCL 1.12.0 REQUIRED COMPONENTS common octree visualization)
+find_package(PCL 1.12.0 REQUIRED COMPONENTS common features filters io octree sample_consensus visualization)
 
 find_package(VTK 9.0.3 REQUIRED COMPONENTS CommonCore)
 

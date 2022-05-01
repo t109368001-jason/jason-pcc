@@ -32,4 +32,8 @@ function(JPCC_ADD_EXECUTABLE OUT_NAME)
     add_executable(${EXECUTABLE_NAME} ${INCS} ${SRCS})
 
     target_compile_features(${EXECUTABLE_NAME} PUBLIC cxx_std_17)
+
+    if (NOT WIN32)
+        target_link_libraries(${EXECUTABLE_NAME} PRIVATE pthread)
+    endif (NOT WIN32)
 endfunction()

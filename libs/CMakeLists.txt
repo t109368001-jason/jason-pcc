@@ -1,0 +1,7 @@
+add_subdirectory(common)
+add_subdirectory(io)
+add_subdirectory(lvx_common)
+add_subdirectory(octree)
+add_subdirectory(pcc_common)
+add_subdirectory(process)
+add_subdirectory(visualization)

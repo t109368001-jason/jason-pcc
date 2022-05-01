@@ -8,8 +8,6 @@ if (NOT WIN32)
         message(FATAL_ERROR "getrusage not found")
     endif (NOT HAVE_GETRUSAGE)
     target_compile_definitions(${LIBRARY_NAME} PUBLIC -DHAVE_GETRUSAGE)
-endif (NOT WIN32)
 
-if (NOT WIN32)
     target_link_libraries(${LIBRARY_NAME} PUBLIC TBB::tbb)
 endif (NOT WIN32)
