@@ -49,13 +49,7 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
     clock.start();
     reader->loadAll(frameNumber, groupOfFramesSize, frames, parameter.parallel);
     preProcessor.process(frames, nullptr, parameter.parallel);
-    if (parameter.parallel) {
-      for_each(execution::par_unseq, frames.begin(), frames.end(),
-               [&parameter](auto& frame) { process::quantize(frame, parameter.resolution); });
-    } else {
-      for_each(frames.begin(), frames.end(),
-               [&parameter](auto& frame) { process::quantize(frame, parameter.resolution); });
-    }
+    process::quantize(frames, parameter.resolution, parameter.parallel);
     clock.stop();
     for (auto& frame : frames) {
       octree.setInputCloud(frame);

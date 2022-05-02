@@ -1,5 +1,8 @@
 #pragma once
 
+#include <algorithm>
+#include <execution>
+
 #define PCL_NO_PRECOMPILE
 #include <pcl/filters/extract_indices.h>
 #include <pcl/octree/octree_pointcloud.h>
@@ -29,10 +32,10 @@ void split(const FramePtr<PointT>& input,
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-void quantize(const FramePtr<PointT>& frame, double resolution) {
-  using OctreeNBufT = octree::OctreeNBuf<1, pcl::octree::OctreeContainerPointIndex, pcl::octree::OctreeContainerEmpty>;
+void quantize(const FramePtr<PointT>& frame, const double resolution) {
+  using OctreeT = pcl::octree::OctreeBase<pcl::octree::OctreeContainerPointIndex, pcl::octree::OctreeContainerEmpty>;
   using OctreePointCloudT = pcl::octree::OctreePointCloud<PointT, pcl::octree::OctreeContainerPointIndex,
-                                                          pcl::octree::OctreeContainerEmpty, OctreeNBufT>;
+                                                          pcl::octree::OctreeContainerEmpty, OctreeT>;
 
   OctreePointCloudT octree(resolution);
   octree.setInputCloud(frame);
@@ -47,6 +50,18 @@ void quantize(const FramePtr<PointT>& frame, double resolution) {
     }
   }
   process::split<PointT>(frame, indices, frame, nullptr);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT>
+void quantize(const GroupOfFrame<PointT>& frames, const double resolution, const bool parallel) {
+  if (parallel) {
+    std::for_each(std::execution::par_unseq, frames.begin(), frames.end(),
+                  [&resolution](const auto& frame) { quantize<PointT>(frame, resolution); });
+  } else {
+    std::for_each(std::execution::seq, frames.begin(), frames.end(),
+                  [&resolution](const auto& frame) { quantize<PointT>(frame, resolution); });
+  }
 }
 
 }  // namespace jpcc::process

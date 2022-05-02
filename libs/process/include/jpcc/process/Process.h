@@ -13,6 +13,9 @@ void split(const FramePtr<PointT>& input,
 template <typename PointT = Point>
 void quantize(const FramePtr<PointT>& frame, double resolution);
 
+template <typename PointT = Point>
+void quantize(const GroupOfFrame<PointT>& frames, double resolution, bool parallel);
+
 }  // namespace jpcc::process
 
 #include <jpcc/process/impl/Process.hpp>
