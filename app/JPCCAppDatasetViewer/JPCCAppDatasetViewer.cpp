@@ -44,9 +44,9 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
   viewer->setPrimaryId(primaryId);
   viewer->setColor(primaryId, "z");
   if (octreePointCloudOperation) { viewer->setColor(backgroundId, 1.0, 1.0, 1.0); }
-  viewer->setColor(RADIUS_OUTLIER_REMOVAL_OPT_PREFIX, 1.0, 0.0, 0.5);
-  viewer->setColor(STATISTICAL_OUTLIER_REMOVAL_OPT_PREFIX, 1.0, 0.0, 1.0);
   viewer->setColor(JPCC_CONDITIONAL_REMOVAL_OPT_PREFIX, 0.5, 0.5, 0.5);
+  viewer->setColor(RADIUS_OUTLIER_REMOVAL_OPT_PREFIX, 1.0, 0.0, 1.0);
+  viewer->setColor(STATISTICAL_OUTLIER_REMOVAL_OPT_PREFIX, 1.0, 0.0, 0.5);
 
   auto datasetLoading = [&] {
     try {

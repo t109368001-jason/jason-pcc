@@ -30,7 +30,7 @@ PreProcessParameter::PreProcessParameter(const std::string& prefix, const std::s
 }
 
 void PreProcessParameter::getShowTexts(vector<std::string>& showTexts) const {
-  showTexts.push_back(prefix_ + ORDER_OPT ": " + order_);
+  if (!order_.empty()) { showTexts.push_back(prefix_ + ORDER_OPT ": " + order_); }
   radiusOutlierRemoval.getShowTexts(showTexts);
   statisticalOutlierRemoval.getShowTexts(showTexts);
   jpccConditionalRemovalParameter.getShowTexts(showTexts);
