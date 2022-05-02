@@ -25,4 +25,9 @@ void Parameter::getShowTexts(std::vector<std::string>& showTexts) const {}
 
 void Parameter::notify() {}
 
+ParameterOStream Parameter::coutParameters(std::ostream& out) const {
+  out << caption_ << endl;
+  return ParameterOStream(out, prefix_);
+}
+
 }  // namespace jpcc

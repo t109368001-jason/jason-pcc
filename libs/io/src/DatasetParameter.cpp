@@ -119,45 +119,18 @@ shared_ptr<Eigen::Matrix4f> DatasetParameter::getTransforms(const size_t index) 
 }
 
 ostream& operator<<(ostream& out, const DatasetParameter& obj) {
-  out << obj.caption_ << endl;
-  out << "\t" << obj.prefix_ << NAME_OPT "=" << obj.name << endl;
-  out << "\t" << obj.prefix_ << SENSOR_OPT "=" << obj.sensor << endl;
-  out << "\t" << obj.prefix_ << TYPE_OPT "=" << obj.type << endl;
-  out << "\t" << obj.prefix_ << FOLDER_PREFIX_OPT "=" << obj.folderPrefix << endl;
-  out << "\t" << obj.prefix_ << FOLDER_OPT "=" << obj.folder << endl;
-  out << "\t" << obj.prefix_ << FILES_OPT "=";
-  for (size_t i = 0; i < obj.files.size(); i++) {
-    if (i == 0) { out << "["; }
-    if (i != 0) { out << ", "; }
-    out << obj.files.at(i);
-    if (i == (obj.files.size() - 1)) { out << "]"; }
-  }
-  out << endl;
-  out << "\t" << obj.prefix_ << FRAME_COUNTS_OPT "=";
-  for (size_t i = 0; i < obj.frameCounts.size(); i++) {
-    if (i == 0) { out << "["; }
-    if (i != 0) { out << ", "; }
-    out << obj.frameCounts.at(i);
-    if (i == (obj.frameCounts.size() - 1)) { out << "]"; }
-  }
-  out << endl;
-  out << "\t" << obj.prefix_ << START_FRAME_NUMBERS_OPT "=";
-  for (size_t i = 0; i < obj.startFrameNumbers.size(); i++) {
-    if (i == 0) { out << "["; }
-    if (i != 0) { out << ", "; }
-    out << obj.startFrameNumbers.at(i);
-    if (i == (obj.startFrameNumbers.size() - 1)) { out << "]"; }
-  }
-  out << endl;
-  out << "\t" << obj.prefix_ << TRANSFORMS_OPT "=";
-  for (size_t i = 0; i < obj.transforms_.size(); i++) {
-    if (i == 0) { out << "["; }
-    if (i != 0) { out << ", "; }
-    out << "[" << obj.transforms_.at(i) << "]";
-    if (i == (obj.transforms_.size() - 1)) { out << "]"; }
-  }
-  out << endl;
-  out << "\t" << obj.prefix_ << HAVE_GPS_TIME_OPT "=" << obj.haveGpsTime << endl;
+  obj.coutParameters(out)                               //
+      (NAME_OPT, obj.name)                              //
+      (SENSOR_OPT, obj.sensor)                          //
+      (TYPE_OPT, obj.type)                              //
+      (FOLDER_PREFIX_OPT, obj.folderPrefix)             //
+      (FOLDER_OPT, obj.folder)                          //
+      (FILES_OPT, obj.files)                            //
+      (FRAME_COUNTS_OPT, obj.frameCounts)               //
+      (START_FRAME_NUMBERS_OPT, obj.startFrameNumbers)  //
+      (TRANSFORMS_OPT, obj.transforms)                  //
+      (HAVE_GPS_TIME_OPT, obj.haveGpsTime)              //
+      ;
   return out;
 }
 

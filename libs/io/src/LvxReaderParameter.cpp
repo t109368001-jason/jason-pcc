@@ -29,8 +29,10 @@ void LvxReaderParameter::notify() {
 }
 
 ostream& operator<<(ostream& out, const LvxReaderParameter& obj) {
-  out << "\t" << obj.prefix_ << FREQUENCY_OPT "=" << obj.frequency << endl;
-  out << "\tinterval=" << obj.interval << endl;
+  obj.coutParameters(out)             //
+      (FREQUENCY_OPT, obj.frequency)  //
+      ("interval", obj.interval)      //
+      ;
   return out;
 }
 

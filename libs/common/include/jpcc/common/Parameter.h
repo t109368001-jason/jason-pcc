@@ -2,11 +2,13 @@
 
 #include <array>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include <boost/program_options.hpp>
 
 #include <jpcc/common/Common.h>
+#include <jpcc/common/ParameterOStream.h>
 
 namespace jpcc {
 
@@ -32,6 +34,8 @@ class Parameter {
   virtual void getShowTexts(std::vector<std::string>& showTexts) const;
 
   virtual void notify();
+
+  ParameterOStream coutParameters(std::ostream& out) const;
 };
 
 }  // namespace jpcc

@@ -66,12 +66,13 @@ std::string AppParameter::getOutputPath() const {
 }
 
 ostream& operator<<(ostream& out, const AppParameter& obj) {
-  out << obj.caption_ << endl;
-  out << "\t" << obj.prefix_ << PARALLEL_OPT "=" << obj.parallel << endl;
-  out << "\t" << obj.prefix_ << GROUP_OF_FRAMES_SIZE_OPT "=" << obj.groupOfFramesSize << endl;
-  out << "\t" << obj.prefix_ << OUTPUT_PATH_OPT "=" << obj.outputPath << endl;
-  out << "\t" << obj.prefix_ << FILTER_RESOLUTION_OPT "=" << obj.filterResolution << endl;
-  out << "\t" << obj.prefix_ << BACKGROUND_RESOLUTION_OPT "=" << obj.backgroundResolution << endl;
+  obj.coutParameters(out)                                    //
+      (PARALLEL_OPT, obj.parallel)                           //
+      (GROUP_OF_FRAMES_SIZE_OPT, obj.groupOfFramesSize)      //
+      (OUTPUT_PATH_OPT, obj.outputPath)                      //
+      (FILTER_RESOLUTION_OPT, obj.filterResolution)          //
+      (BACKGROUND_RESOLUTION_OPT, obj.backgroundResolution)  //
+      ;
   out << obj.dataset;
   out << obj.reader;
   out << obj.preProcess;

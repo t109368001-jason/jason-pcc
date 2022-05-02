@@ -15,7 +15,7 @@ DatasetReaderParameter::DatasetReaderParameter(const string& prefix, const strin
 void DatasetReaderParameter::notify() { LvxReaderParameter::notify(); }
 
 ostream& operator<<(ostream& out, const DatasetReaderParameter& obj) {
-  out << *(LvxReaderParameter*)(&obj);
+  out << dynamic_cast<const LvxReaderParameter&>(obj);
   return out;
 }
 

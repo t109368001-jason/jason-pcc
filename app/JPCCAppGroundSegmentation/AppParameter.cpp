@@ -53,10 +53,11 @@ void AppParameter::notify() {
 }
 
 ostream& operator<<(ostream& out, const AppParameter& obj) {
-  out << obj.caption_ << endl;
-  out << "\t" << obj.prefix_ << PARALLEL_OPT_PREFIX "=" << obj.parallel << endl;
-  out << "\t" << obj.prefix_ << DISTANCE_THRESHOLD_OPT_PREFIX "=" << obj.distanceThreshold << endl;
-  out << "\t" << obj.prefix_ << HEADLESS_OPT_PREFIX "=" << obj.headless << endl;
+  obj.coutParameters(out)                                     //
+      (PARALLEL_OPT_PREFIX, obj.parallel)                     //
+      (DISTANCE_THRESHOLD_OPT_PREFIX, obj.distanceThreshold)  //
+      (HEADLESS_OPT_PREFIX, obj.headless)                     //
+      ;
   out << obj.dataset;
   out << obj.reader;
   out << obj.preProcess;

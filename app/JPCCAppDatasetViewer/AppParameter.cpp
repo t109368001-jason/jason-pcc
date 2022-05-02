@@ -42,9 +42,10 @@ void AppParameter::notify() {
 }
 
 ostream& operator<<(ostream& out, const AppParameter& obj) {
-  out << obj.caption_ << endl;
-  out << "\t" << obj.prefix_ << PARALLEL_OPT_PREFIX "=" << obj.parallel << endl;
-  out << "\t" << obj.prefix_ << BACKGROUND_PATH_OPT_PREFIX "=" << obj.backgroundPath << endl;
+  obj.coutParameters(out)                               //
+      (PARALLEL_OPT_PREFIX, obj.parallel)               //
+      (BACKGROUND_PATH_OPT_PREFIX, obj.backgroundPath)  //
+      ;
   out << obj.dataset;
   out << obj.reader;
   out << obj.preProcess;

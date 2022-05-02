@@ -50,10 +50,11 @@ void AppParameter::notify() {
 }
 
 ostream& operator<<(ostream& out, const AppParameter& obj) {
-  out << obj.caption_ << endl;
-  out << "\t" << obj.prefix_ << PARALLEL_OPT_PREFIX "=" << obj.parallel << endl;
-  out << "\t" << obj.prefix_ << RESOLUTION_OPT_PREFIX "=" << obj.resolution << endl;
-  out << "\t" << obj.prefix_ << OUTPUT_CSV_PATH_OPT_PREFIX "=" << obj.outputCSVPath << endl;
+  obj.coutParameters(out)                              //
+      (PARALLEL_OPT_PREFIX, obj.parallel)              //
+      (RESOLUTION_OPT_PREFIX, obj.resolution)          //
+      (OUTPUT_CSV_PATH_OPT_PREFIX, obj.outputCSVPath)  //
+      ;
   out << obj.dataset;
   out << obj.reader;
   out << obj.preProcess;

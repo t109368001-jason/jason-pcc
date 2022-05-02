@@ -33,9 +33,10 @@ void JPCCNormalEstimationParameter::notify() {
 }
 
 ostream& operator<<(ostream& out, const JPCCNormalEstimationParameter& obj) {
-  out << obj.caption_ << endl;
-  out << "\t" << obj.prefix_ << K_SEARCH_OPT "=" << obj.kSearch << endl;
-  out << "\t" << obj.prefix_ << RADIUS_SEARCH_OPT "=" << obj.radiusSearch << endl;
+  obj.coutParameters(out)                    //
+      (K_SEARCH_OPT, obj.kSearch)            //
+      (RADIUS_SEARCH_OPT, obj.radiusSearch)  //
+      ;
   return out;
 }
 

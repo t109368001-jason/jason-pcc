@@ -80,19 +80,14 @@ void VisualizerParameter::notify() {
 }
 
 ostream& operator<<(ostream& out, const VisualizerParameter& obj) {
-  out << obj.caption_ << endl;
-  out << "\t" << obj.prefix_ << NAME_OPT_PREFIX "=" << obj.name << endl;
-  out << "\t" << obj.prefix_ << DESCRIPTION_OPT_PREFIX "=" << obj.description << endl;
-  out << "\t" << obj.prefix_ << CAMERA_POSITION_OPT_PREFIX "=" << obj.cameraPosition_ << endl;
-  out << "\t" << obj.prefix_ << BUFFER_SIZE_OPT_PREFIX "=" << obj.bufferSize << endl;
-  out << "\t" << obj.prefix_ << ID_COLORS_OPT_PREFIX "=";
-  for (size_t i = 0; i < obj.idColors_.size(); i++) {
-    if (i == 0) { out << "["; }
-    if (i != 0) { out << ", "; }
-    out << obj.idColors_.at(i);
-    if (i == (obj.idColors_.size() - 1)) { out << "]"; }
-  }
-  out << endl;
+  obj.coutParameters(out)                                //
+      (NAME_OPT_PREFIX, obj.name)                        //
+      (DESCRIPTION_OPT_PREFIX, obj.description)          //
+      (SHOW_PARAMETER_OPT_PREFIX, obj.showParameter)     //
+      (CAMERA_POSITION_OPT_PREFIX, obj.cameraPosition_)  //
+      (BUFFER_SIZE_OPT_PREFIX, obj.bufferSize)           //
+      (ID_COLORS_OPT_PREFIX, obj.idColors_)              //
+      ;
   return out;
 }
 

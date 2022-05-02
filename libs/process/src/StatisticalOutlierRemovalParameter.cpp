@@ -43,10 +43,11 @@ void StatisticalOutlierRemovalParameter::notify() {
 }
 
 ostream& operator<<(ostream& out, const StatisticalOutlierRemovalParameter& obj) {
-  out << obj.caption_ << endl;
-  out << "\t" << obj.prefix_ << ENABLE_OPT "=" << obj.enable << endl;
-  out << "\t" << obj.prefix_ << MEAN_K_OPT "=" << obj.meanK << endl;
-  out << "\t" << obj.prefix_ << STDDEV_MUL_THRESH_OPT "=" << obj.stddevMulThresh << endl;
+  obj.coutParameters(out)                           //
+      (ENABLE_OPT, obj.enable)                      //
+      (MEAN_K_OPT, obj.meanK)                       //
+      (STDDEV_MUL_THRESH_OPT, obj.stddevMulThresh)  //
+      ;
   return out;
 }
 

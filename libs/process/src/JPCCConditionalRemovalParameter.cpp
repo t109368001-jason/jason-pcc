@@ -46,16 +46,10 @@ void JPCCConditionalRemovalParameter::notify() {
 }
 
 ostream& operator<<(ostream& out, const JPCCConditionalRemovalParameter& obj) {
-  out << obj.caption_ << endl;
-  out << "\t" << obj.prefix_ << ENABLE_OPT "=" << obj.enable << endl;
-  out << "\t" << obj.prefix_ << CONDITIONS_OPT "=";
-  for (size_t i = 0; i < obj.conditions_.size(); i++) {
-    if (i == 0) { out << "["; }
-    if (i != 0) { out << ", "; }
-    out << "\"" << obj.conditions_.at(i) << "\"";
-    if (i == (obj.conditions_.size() - 1)) { out << "]"; }
-  }
-  out << endl;
+  obj.coutParameters(out)                //
+      (ENABLE_OPT, obj.enable)           //
+      (CONDITIONS_OPT, obj.conditions_)  //
+      ;
   return out;
 }
 

@@ -35,8 +35,9 @@ void AppParameter::notify() {
 }
 
 ostream& operator<<(ostream& out, const AppParameter& obj) {
-  out << obj.caption_ << endl;
-  out << "\t" << obj.prefix_ << PARALLEL_OPT_PREFIX "=" << obj.parallel << endl;
+  obj.coutParameters(out)                  //
+      (PARALLEL_OPT_PREFIX, obj.parallel)  //
+      ;
   out << obj.inputDataset;
   out << obj.inputReader;
   out << obj.outputDataset;

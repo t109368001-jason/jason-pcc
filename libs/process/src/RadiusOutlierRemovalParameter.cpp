@@ -42,10 +42,11 @@ void RadiusOutlierRemovalParameter::notify() {
 }
 
 ostream& operator<<(ostream& out, const RadiusOutlierRemovalParameter& obj) {
-  out << obj.caption_ << endl;
-  out << "\t" << obj.prefix_ << ENABLE_OPT "=" << obj.enable << endl;
-  out << "\t" << obj.prefix_ << RADIUS_OPT "=" << obj.radius << endl;
-  out << "\t" << obj.prefix_ << MIN_NEIGHBORS_IN_RADIUS_OPT "=" << obj.minNeighborsInRadius << endl;
+  obj.coutParameters(out)                                      //
+      (ENABLE_OPT, obj.enable)                                 //
+      (RADIUS_OPT, obj.radius)                                 //
+      (MIN_NEIGHBORS_IN_RADIUS_OPT, obj.minNeighborsInRadius)  //
+      ;
   return out;
 }
 

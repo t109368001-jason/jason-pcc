@@ -58,8 +58,9 @@ void PreProcessParameter::notify() {
 }
 
 ostream& operator<<(ostream& out, const PreProcessParameter& obj) {
-  out << obj.caption_ << endl;
-  out << "\t" << obj.prefix_ << ORDER_OPT "=" << obj.order_ << endl;
+  obj.coutParameters(out)      //
+      (ORDER_OPT, obj.order_)  //
+      ;
   out << obj.radiusOutlierRemoval;
   out << obj.statisticalOutlierRemoval;
   out << obj.jpccConditionalRemovalParameter;
