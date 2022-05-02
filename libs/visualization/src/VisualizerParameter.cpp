@@ -12,6 +12,7 @@ using namespace po;
 #define SHOW_PARAMETER_OPT_PREFIX ".showParameter"
 #define CAMERA_POSITION_OPT_PREFIX ".cameraPosition"
 #define BUFFER_SIZE_OPT_PREFIX ".bufferSize"
+#define ID_COLORS_OPT_PREFIX ".idColors"
 
 VisualizerParameter::VisualizerParameter() : VisualizerParameter(VISUALIZER_OPT_PREFIX, __FUNCTION__) {}
 
@@ -39,15 +40,43 @@ VisualizerParameter::VisualizerParameter(const string& prefix, const string& cap
       (string(prefix_ + BUFFER_SIZE_OPT_PREFIX).c_str(),                 //
        value<size_t>(&bufferSize)->default_value(bufferSize),            //
        "bufferSize")                                                     //
+      (string(prefix_ + ID_COLORS_OPT_PREFIX).c_str(),                   //
+       value<vector<string>>(&idColors_),                                //
+       "bufferSize")                                                     //
       ;
 }
 
 void VisualizerParameter::notify() {
-  vector<string> ss;
-  boost::algorithm::split(ss, cameraPosition_, boost::is_any_of(","));
-  assert(ss.size() == cameraPosition.size());
-  transform(ss.begin(), ss.end(), cameraPosition.begin(), [](auto&& s) { return stod(s); });
+  {
+    vector<string> ss;
+    boost::algorithm::split(ss, cameraPosition_, boost::is_any_of(","));
+    assert(ss.size() == cameraPosition.size());
+    transform(ss.begin(), ss.end(), cameraPosition.begin(), [](auto&& s) { return stod(s); });
+  }
   assert(bufferSize > 0);
+  for (const string& idColor : idColors_) {
+    vector<string> ss;
+    boost::algorithm::split(ss, idColor, boost::is_any_of(","));
+    if (ss.size() == 2) {  // field color
+      string field = ss.at(1);
+      boost::trim(field);
+      assert(field == "x" || field == "y" || field == "z");
+      fieldColorMap.insert_or_assign(ss.at(0), field);
+    } else if (ss.size() == 4) {  // rgb color
+      double r = std::stod(ss.at(1));
+      assert(r >= 0.0);
+      double g = std::stod(ss.at(2));
+      assert(g >= 0.0);
+      double b = std::stod(ss.at(3));
+      assert(b >= 0.0);
+      if (r > 1.0 || g > 1.0 || b > 1.0) {
+        r /= 255.0;
+        g /= 255.0;
+        b /= 255.0;
+      }
+      rgbColorMap.insert_or_assign(ss.at(0), RGBColor{r, g, b});
+    }
+  }
 }
 
 ostream& operator<<(ostream& out, const VisualizerParameter& obj) {
@@ -56,6 +85,14 @@ ostream& operator<<(ostream& out, const VisualizerParameter& obj) {
   out << "\t" << obj.prefix_ << DESCRIPTION_OPT_PREFIX "=" << obj.description << endl;
   out << "\t" << obj.prefix_ << CAMERA_POSITION_OPT_PREFIX "=" << obj.cameraPosition_ << endl;
   out << "\t" << obj.prefix_ << BUFFER_SIZE_OPT_PREFIX "=" << obj.bufferSize << endl;
+  out << "\t" << obj.prefix_ << ID_COLORS_OPT_PREFIX "=";
+  for (size_t i = 0; i < obj.idColors_.size(); i++) {
+    if (i == 0) { out << "["; }
+    if (i != 0) { out << ", "; }
+    out << obj.idColors_.at(i);
+    if (i == (obj.idColors_.size() - 1)) { out << "]"; }
+  }
+  out << endl;
   return out;
 }
 

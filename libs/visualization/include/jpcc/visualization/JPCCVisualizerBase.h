@@ -11,7 +11,6 @@ namespace jpcc::visualization {
 
 class JPCCVisualizerBase : public pcl::visualization::PCLVisualizer {
  public:
-  using RGBColor      = std::array<double, 3>;
   using KeyboardEvent = std::function<void(const pcl::visualization::KeyboardEvent& event)>;
 
  protected:

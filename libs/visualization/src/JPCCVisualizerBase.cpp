@@ -12,6 +12,8 @@ JPCCVisualizerBase::JPCCVisualizerBase(const VisualizerParameter& param) :
     fontSize_(16),
     lineHeight_(20),
     primaryId_("cloud"),
+    fieldColorMap_(param_.fieldColorMap),
+    rgbColorMap_(param_.rgbColorMap),
     lastWindowHeight_(new int{0}) {
   vtkObject::GlobalWarningDisplayOff();
 
@@ -125,7 +127,7 @@ void JPCCVisualizerBase::handleKeyboardEvent(const pcl::visualization::KeyboardE
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-typename JPCCVisualizerBase::RGBColor JPCCVisualizerBase::getTextColor(const std::string& id) {
+RGBColor JPCCVisualizerBase::getTextColor(const std::string& id) {
   if (rgbColorMap_.find(id) != rgbColorMap_.end()) { return rgbColorMap_.at(id); }
   return {1.0, 1.0, 1.0};
 }
