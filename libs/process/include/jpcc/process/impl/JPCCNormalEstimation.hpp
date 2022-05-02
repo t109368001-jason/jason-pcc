@@ -47,9 +47,10 @@ jpcc::GroupOfFrame<PointNormal> JPCCNormalEstimation<PointT>::computeAll(GroupOf
   outputs.resize(frames.size());
   if (parallel) {
     std::transform(std::execution::par_unseq, frames.begin(), frames.end(), outputs.begin(),
-                   [this](FramePtr& frame) { this->compute(frame); });
+                   [this](FramePtr& frame) { return this->compute(frame); });
   } else {
-    std::transform(frames.begin(), frames.end(), outputs.begin(), [this](FramePtr& frame) { this->compute(frame); });
+    std::transform(frames.begin(), frames.end(), outputs.begin(),
+                   [this](FramePtr& frame) { return this->compute(frame); });
   }
   return outputs;
 }
