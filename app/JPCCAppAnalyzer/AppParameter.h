@@ -13,12 +13,12 @@ namespace jpcc {
 
 class AppParameter : public Parameter {
  public:
-  bool                               parallel;
-  double                             resolution;
-  std::string outputCSVPath;
-  io::DatasetParameter               dataset;
-  io::DatasetReaderParameter         reader;
-  process::PreProcessParameter       preProcess;
+  bool                         parallel;
+  double                       resolution;
+  std::string                  outputCSVPath;
+  io::DatasetParameter         dataset;
+  io::DatasetReaderParameter   reader;
+  process::PreProcessParameter preProcess;
 
   AppParameter();
 

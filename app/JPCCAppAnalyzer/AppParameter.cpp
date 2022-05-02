@@ -20,16 +20,16 @@ AppParameter::AppParameter() :
     dataset(),
     reader(),
     preProcess() {
-  opts_.add_options()                                                        //
-      (string(prefix_ + PARALLEL_OPT_PREFIX).c_str(),                        //
-       value<bool>(&parallel)->default_value(parallel),                      //
-       "parallel")                                                           //
+  opts_.add_options()                                                //
+      (string(prefix_ + PARALLEL_OPT_PREFIX).c_str(),                //
+       value<bool>(&parallel)->default_value(parallel),              //
+       "parallel")                                                   //
       (string(prefix_ + RESOLUTION_OPT_PREFIX).c_str(),              //
-       value<double>(&resolution)->default_value(resolution),  //
-       "resolution")                                                  //
-      (string(prefix_ + OUTPUT_CSV_PATH_OPT_PREFIX).c_str(),                        //
-       value<string>(&outputCSVPath)->default_value(outputCSVPath),                      //
-       "outputCSVPath")                                                           //
+       value<double>(&resolution)->default_value(resolution),        //
+       "resolution")                                                 //
+      (string(prefix_ + OUTPUT_CSV_PATH_OPT_PREFIX).c_str(),         //
+       value<string>(&outputCSVPath)->default_value(outputCSVPath),  //
+       "outputCSVPath")                                              //
       ;
   opts_.add(dataset.getOpts());
   opts_.add(reader.getOpts());
