@@ -2,14 +2,12 @@
 
 #include <vector>
 
-#include <jpcc/common/GroupOfFrame.h>
-#include <jpcc/io/DatasetParameter.h>
-#include <jpcc/io/DatasetReaderParameter.h>
+#include <jpcc/io/DatasetReader.h>
 
 namespace jpcc::io {
 
 template <typename PointT = Point>
-class DatasetStreamReader {
+class DatasetStreamReader : public DatasetReader<PointT> {
  public:
   using Ptr          = shared_ptr<DatasetStreamReader>;
   using Frame        = jpcc::Frame<PointT>;
@@ -17,41 +15,23 @@ class DatasetStreamReader {
   using GroupOfFrame = jpcc::GroupOfFrame<PointT>;
 
  protected:
-  DatasetReaderParameter    param_;
-  DatasetParameter          datasetParam_;
-  std::vector<int>          datasetIndices_;
-  std::vector<size_t>       currentFrameNumbers_;
   std::vector<GroupOfFrame> frameBuffers_;
 
  public:
   DatasetStreamReader(DatasetReaderParameter param, DatasetParameter datasetParam);
 
-  ~DatasetStreamReader();
+  void load(size_t datasetIndex, size_t startFrameNumber, size_t groupOfFramesSize, GroupOfFrame& frames) override;
 
-  [[nodiscard]] const DatasetReaderParameter& getReaderParameter() const;
+ protected:
+  void open_(size_t datasetIndex, size_t startFrameNumber) override = 0;
 
-  [[nodiscard]] const DatasetParameter& getDatasetParameter() const;
+  [[nodiscard]] bool isOpen_(size_t datasetIndex) const override = 0;
 
-  [[nodiscard]] bool isOpen() const;
-
-  virtual void loadAll(size_t startFrameNumber, size_t groupOfFramesSize, GroupOfFrame& frames);
-
-  virtual void loadAll(size_t startFrameNumber, size_t groupOfFramesSize, GroupOfFrame& frames, bool parallel);
-
-  void close();
-
-  // protected:
-  virtual void load(size_t datasetIndex, size_t startFrameNumber, size_t groupOfFramesSize, GroupOfFrame& frames);
-
-  virtual void open_(size_t datasetIndex, size_t startFrameNumber);
-
-  [[nodiscard]] virtual bool isOpen_(size_t datasetIndex) const;
+  void close_(size_t datasetIndex) override;
 
   [[nodiscard]] virtual bool isEof_(size_t datasetIndex) const;
 
-  virtual void load_(size_t datasetIndex, size_t startFrameNumber, size_t groupOfFramesSize, GroupOfFrame& frames);
-
-  virtual void close_(size_t datasetIndex);
+  virtual void load_(size_t datasetIndex, size_t startFrameNumber, size_t groupOfFramesSize, GroupOfFrame& frames) = 0;
 };
 
 }  // namespace jpcc::io

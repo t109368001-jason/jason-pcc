@@ -9,6 +9,8 @@
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 
+#define JPCC_NOT_USED(x)
+
 namespace jpcc {
 
 using pcl::make_shared;

@@ -40,7 +40,7 @@ using OctreePointCloudT = OctreePointCloud<PointT, LeafContainerT, BranchContain
 void backgroundGenerator(const AppParameter& parameter, StopwatchUserTime& clock) {
   size_t frameNumber = parameter.dataset.getStartFrameNumber();
 
-  const DatasetReaderPtr<PointT>     reader = newReader<PointT>(parameter.reader, parameter.dataset);
+  const DatasetReader<PointT>::Ptr   reader = newReader<PointT>(parameter.reader, parameter.dataset);
   const PreProcessor<PointT>         preProcessor(parameter.preProcess);
   const JPCCNormalEstimation<PointT> normalEstimation(parameter.jpccNormalEstimation);
 

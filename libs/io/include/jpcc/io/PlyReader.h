@@ -4,19 +4,26 @@
 
 #include <jpcc/common/Common.h>
 #include <jpcc/common/GroupOfFrame.h>
-#include <jpcc/io/DatasetStreamReader.h>
+#include <jpcc/io/DatasetReader.h>
 
 namespace jpcc::io {
 
 template <typename PointT = Point>
-class PlyReader : public DatasetStreamReader<PointT> {
+class PlyReader : public DatasetReader<PointT> {
  public:
   using GroupOfFrame = jpcc::GroupOfFrame<PointT>;
 
  public:
   PlyReader(DatasetReaderParameter param, DatasetParameter datasetParam);
 
-  void loadAll(size_t startFrameNumber, size_t groupOfFramesSize, GroupOfFrame& frames, bool parallel) override;
+  void load(size_t datasetIndex, size_t startFrameNumber, size_t groupOfFramesSize, GroupOfFrame& frames) override;
+
+ protected:
+  void open_(size_t datasetIndex, size_t startFrameNumber) override;
+
+  [[nodiscard]] bool isOpen_(size_t datasetIndex) const override;
+
+  void close_(size_t datasetIndex) override;
 };
 
 }  // namespace jpcc::io

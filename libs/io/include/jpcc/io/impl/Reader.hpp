@@ -8,7 +8,8 @@ namespace jpcc::io {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-DatasetReaderPtr<PointT> newReader(const DatasetReaderParameter& param, const DatasetParameter& datasetParam) {
+typename DatasetReader<PointT>::Ptr newReader(const DatasetReaderParameter& param,
+                                              const DatasetParameter&       datasetParam) {
   if (datasetParam.type == "pcap") {
     return jpcc::make_shared<PcapReader<PointT>>(param, datasetParam);
   } else if (datasetParam.type == "lvx") {

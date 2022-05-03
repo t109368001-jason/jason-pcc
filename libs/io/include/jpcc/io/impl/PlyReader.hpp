@@ -2,6 +2,8 @@
 
 #include <pcl/console/print.h>
 
+#include <jpcc/io/DatasetParameter.h>
+#include <jpcc/io/DatasetReaderParameter.h>
 #include <jpcc/io/PlyIO.h>
 
 namespace jpcc::io {
@@ -9,25 +11,40 @@ namespace jpcc::io {
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 PlyReader<PointT>::PlyReader(DatasetReaderParameter param, DatasetParameter datasetParam) :
-    DatasetStreamReader<PointT>(std::move(param), std::move(datasetParam)) {
+    DatasetReader<PointT>(std::move(param), std::move(datasetParam)) {
   pcl::console::setVerbosityLevel(pcl::console::L_ERROR);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-void PlyReader<PointT>::loadAll(const size_t  startFrameNumber,
-                                const size_t  groupOfFramesSize,
-                                GroupOfFrame& sources,
-                                const bool    parallel) {
+void PlyReader<PointT>::load(const size_t  datasetIndex,
+                             const size_t  startFrameNumber,
+                             const size_t  groupOfFramesSize,
+                             GroupOfFrame& frames) {
   const size_t endFrameNumber =
-      std::min(startFrameNumber + groupOfFramesSize,
-               this->datasetParam_.getStartFrameNumber() + this->datasetParam_.getFrameCounts());
+      std::min(startFrameNumber + groupOfFramesSize, this->datasetParam_.getStartFrameNumbers(datasetIndex) +
+                                                         this->datasetParam_.getFrameCounts(datasetIndex));
   if (startFrameNumber >= endFrameNumber) { return; }
 
-  loadPly(sources, this->datasetParam_.getFilePath(), startFrameNumber, endFrameNumber, parallel);
+  loadPly(frames, this->datasetParam_.getFilePath(datasetIndex), startFrameNumber, endFrameNumber, true);
   for (size_t i = startFrameNumber; i < endFrameNumber; i++) {
-    std::cout << this->datasetParam_.getFilePath() << ":" << i << " " << *sources.at(i - startFrameNumber) << std::endl;
+    std::cout << this->datasetParam_.getFilePath(datasetIndex) << ":" << i << " " << *frames.at(i - startFrameNumber)
+              << std::endl;
   }
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT>
+void PlyReader<PointT>::open_(size_t JPCC_NOT_USED(datasetIndex), size_t JPCC_NOT_USED(startFrameNumber)) {}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT>
+bool PlyReader<PointT>::isOpen_(size_t JPCC_NOT_USED(datasetIndex)) const {
+  return true;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT>
+void PlyReader<PointT>::close_(size_t JPCC_NOT_USED(datasetIndex)) {}
 
 }  // namespace jpcc::io

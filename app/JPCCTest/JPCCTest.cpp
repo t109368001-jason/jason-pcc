@@ -67,8 +67,8 @@ void test(const AppParameter& parameter, StopwatchUserTime& clock) {
   auto datasetLoading = [&] {
     try {
       while (run) {
-        const DatasetReaderPtr<PointT> reader = newReader<PointT>(parameter.reader, parameter.dataset);
-        PreProcessor<PointT>           preProcessor(parameter.preProcess);
+        const DatasetReader<PointT>::Ptr reader = newReader<PointT>(parameter.reader, parameter.dataset);
+        PreProcessor<PointT>             preProcessor(parameter.preProcess);
 
         GroupOfFrame<PointT> frames;
         const auto           framesMap = jpcc::make_shared<JPCCVisualizer<PointT>::GroupOfFrameMap>();
