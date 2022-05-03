@@ -7,7 +7,7 @@
 #include <pcl/octree/octree_pointcloud.h>
 
 #include <jpcc/common/ParameterParser.h>
-#include <jpcc/io/DatasetReader.h>
+#include <jpcc/io/Reader.h>
 #include <jpcc/process/JPCCNormalEstimation.h>
 #include <jpcc/process/PreProcessor.h>
 #include <jpcc/process/Process.h>

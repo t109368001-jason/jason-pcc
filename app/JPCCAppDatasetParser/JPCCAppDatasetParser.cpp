@@ -3,7 +3,7 @@
 #include <vector>
 
 #include <jpcc/common/ParameterParser.h>
-#include <jpcc/io/DatasetReader.h>
+#include <jpcc/io/Reader.h>
 #include <jpcc/io/PlyIO.h>
 
 #include <PCCChrono.h>

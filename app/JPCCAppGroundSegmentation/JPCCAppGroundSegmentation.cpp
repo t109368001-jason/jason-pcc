@@ -8,7 +8,7 @@
 #include <pcl/sample_consensus/sac_model_plane.h>
 
 #include <jpcc/common/ParameterParser.h>
-#include <jpcc/io/DatasetReader.h>
+#include <jpcc/io/Reader.h>
 #include <jpcc/process/PreProcessor.h>
 #include <jpcc/process/OctreePointCloudOperation.h>
 #include <jpcc/visualization/JPCCVisualizer.h>

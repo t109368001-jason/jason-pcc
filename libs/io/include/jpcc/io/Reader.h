@@ -15,4 +15,4 @@ DatasetReaderPtr<PointT> newReader(const DatasetReaderParameter& param, const Da
 
 }  // namespace jpcc::io
 
-#include <jpcc/io/impl/DatasetReader.hpp>
+#include <jpcc/io/impl/Reader.hpp>

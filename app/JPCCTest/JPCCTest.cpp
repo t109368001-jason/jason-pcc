@@ -19,7 +19,7 @@
 #include <pcl/octree/octree_pointcloud.h>
 
 #include <jpcc/common/ParameterParser.h>
-#include <jpcc/io/DatasetReader.h>
+#include <jpcc/io/Reader.h>
 #include <jpcc/octree/OctreeNBuf.h>
 #include <jpcc/process/PreProcessor.h>
 #include <jpcc/visualization/JPCCVisualizer.h>

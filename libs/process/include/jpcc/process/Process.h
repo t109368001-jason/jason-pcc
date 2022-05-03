@@ -4,16 +4,16 @@
 
 namespace jpcc::process {
 
-template <typename PointT = Point>
+template <typename PointT>
 void split(const FramePtr<PointT>& input,
            const IndicesPtr&       indices,
            const FramePtr<PointT>& output,
            const FramePtr<PointT>& outputNegative);
 
-template <typename PointT = Point>
+template <typename PointT>
 void quantize(const FramePtr<PointT>& frame, double resolution);
 
-template <typename PointT = Point>
+template <typename PointT>
 void quantize(const GroupOfFrame<PointT>& frames, double resolution, bool parallel);
 
 }  // namespace jpcc::process
