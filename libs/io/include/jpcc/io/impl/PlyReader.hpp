@@ -9,7 +9,7 @@ namespace jpcc::io {
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 PlyReader<PointT>::PlyReader(DatasetReaderParameter param, DatasetParameter datasetParam) :
-    DatasetReaderBase<PointT>(std::move(param), std::move(datasetParam)) {
+    DatasetStreamReader<PointT>(std::move(param), std::move(datasetParam)) {
   pcl::console::setVerbosityLevel(pcl::console::L_ERROR);
 }
 

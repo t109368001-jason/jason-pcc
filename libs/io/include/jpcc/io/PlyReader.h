@@ -4,12 +4,12 @@
 
 #include <jpcc/common/Common.h>
 #include <jpcc/common/GroupOfFrame.h>
-#include <jpcc/io/DatasetReaderBase.h>
+#include <jpcc/io/DatasetStreamReader.h>
 
 namespace jpcc::io {
 
 template <typename PointT = Point>
-class PlyReader : public DatasetReaderBase<PointT> {
+class PlyReader : public DatasetStreamReader<PointT> {
  public:
   using GroupOfFrame = jpcc::GroupOfFrame<PointT>;
 

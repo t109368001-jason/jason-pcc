@@ -9,9 +9,9 @@
 namespace jpcc::io {
 
 template <typename PointT = Point>
-class DatasetReaderBase {
+class DatasetStreamReader {
  public:
-  using Ptr          = shared_ptr<DatasetReaderBase>;
+  using Ptr          = shared_ptr<DatasetStreamReader>;
   using Frame        = jpcc::Frame<PointT>;
   using FramePtr     = typename Frame::Ptr;
   using GroupOfFrame = jpcc::GroupOfFrame<PointT>;
@@ -24,9 +24,9 @@ class DatasetReaderBase {
   std::vector<GroupOfFrame> frameBuffers_;
 
  public:
-  DatasetReaderBase(DatasetReaderParameter param, DatasetParameter datasetParam);
+  DatasetStreamReader(DatasetReaderParameter param, DatasetParameter datasetParam);
 
-  ~DatasetReaderBase();
+  ~DatasetStreamReader();
 
   [[nodiscard]] const DatasetReaderParameter& getReaderParameter() const;
 
@@ -56,4 +56,4 @@ class DatasetReaderBase {
 
 }  // namespace jpcc::io
 
-#include <jpcc/io/impl/DatasetReaderBase.hpp>
+#include <jpcc/io/impl/DatasetStreamReader.hpp>

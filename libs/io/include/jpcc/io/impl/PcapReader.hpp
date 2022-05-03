@@ -94,7 +94,7 @@ struct DataPacket {
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 PcapReader<PointT>::PcapReader(DatasetReaderParameter param, DatasetParameter datasetParam) :
-    DatasetReaderBase<PointT>(std::move(param), std::move(datasetParam)) {
+    DatasetStreamReader<PointT>(std::move(param), std::move(datasetParam)) {
   assert(this->datasetParam_.type == "pcap");
   if (this->datasetParam_.sensor == "vlp16") {
     maxNumLasers_ = VLP16_MAX_NUM_LASERS;
@@ -164,7 +164,7 @@ bool PcapReader<PointT>::isOpen_(const size_t datasetIndex) const {
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 bool PcapReader<PointT>::isEof_(const size_t datasetIndex) const {
-  return DatasetReaderBase<PointT>::isEof_(datasetIndex);
+  return DatasetStreamReader<PointT>::isEof_(datasetIndex);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -186,7 +186,7 @@ void PcapReader<PointT>::load_(const size_t  datasetIndex,
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void PcapReader<PointT>::close_(const size_t datasetIndex) {
-  DatasetReaderBase<PointT>::close_(datasetIndex);
+  DatasetStreamReader<PointT>::close_(datasetIndex);
   if (pcaps_.at(datasetIndex)) {
     pcap_close(pcaps_.at(datasetIndex));
     pcaps_.at(datasetIndex) = nullptr;

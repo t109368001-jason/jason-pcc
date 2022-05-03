@@ -1,14 +1,14 @@
 #pragma once
 
-#include <jpcc/io/DatasetReaderBase.h>
+#include <jpcc/io/DatasetStreamReader.h>
 
 namespace jpcc::io {
 
 template <typename PointT = Point>
-using DatasetReader = DatasetReaderBase<PointT>;
+using DatasetReader = DatasetStreamReader<PointT>;
 
 template <typename PointT = Point>
-using DatasetReaderPtr = typename DatasetReaderBase<PointT>::Ptr;
+using DatasetReaderPtr = typename DatasetReader<PointT>::Ptr;
 
 template <typename PointT = Point>
 DatasetReaderPtr<PointT> newReader(const DatasetReaderParameter& param, const DatasetParameter& datasetParam);

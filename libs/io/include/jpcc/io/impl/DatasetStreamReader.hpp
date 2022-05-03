@@ -12,7 +12,7 @@ namespace jpcc::io {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-DatasetReaderBase<PointT>::DatasetReaderBase(DatasetReaderParameter param, DatasetParameter datasetParam) :
+DatasetStreamReader<PointT>::DatasetStreamReader(DatasetReaderParameter param, DatasetParameter datasetParam) :
     param_(std::move(param)),
     datasetParam_(std::move(datasetParam)),
     datasetIndices_(datasetParam_.count()),
@@ -24,32 +24,32 @@ DatasetReaderBase<PointT>::DatasetReaderBase(DatasetReaderParameter param, Datas
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-DatasetReaderBase<PointT>::~DatasetReaderBase() {
+DatasetStreamReader<PointT>::~DatasetStreamReader() {
   close();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-const DatasetReaderParameter& DatasetReaderBase<PointT>::getReaderParameter() const {
+const DatasetReaderParameter& DatasetStreamReader<PointT>::getReaderParameter() const {
   return param_;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-const DatasetParameter& DatasetReaderBase<PointT>::getDatasetParameter() const {
+const DatasetParameter& DatasetStreamReader<PointT>::getDatasetParameter() const {
   return datasetParam_;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-bool DatasetReaderBase<PointT>::isOpen() const {
+bool DatasetStreamReader<PointT>::isOpen() const {
   return any_of(datasetIndices_.begin(), datasetIndices_.end(),
                 [this](auto&& PH1) { return isOpen_(std::forward<decltype(PH1)>(PH1)); });
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-void DatasetReaderBase<PointT>::loadAll(const size_t  startFrameNumber,
+void DatasetStreamReader<PointT>::loadAll(const size_t  startFrameNumber,
                                         const size_t  groupOfFramesSize,
                                         GroupOfFrame& frames) {
   loadAll(startFrameNumber, groupOfFramesSize, frames, false);
@@ -57,7 +57,7 @@ void DatasetReaderBase<PointT>::loadAll(const size_t  startFrameNumber,
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-void DatasetReaderBase<PointT>::loadAll(const size_t  startFrameNumber,
+void DatasetStreamReader<PointT>::loadAll(const size_t  startFrameNumber,
                                         const size_t  groupOfFramesSize,
                                         GroupOfFrame& frames,
                                         const bool    parallel) {
@@ -98,14 +98,14 @@ void DatasetReaderBase<PointT>::loadAll(const size_t  startFrameNumber,
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-void DatasetReaderBase<PointT>::close() {
+void DatasetStreamReader<PointT>::close() {
   for_each(datasetIndices_.begin(), datasetIndices_.end(),
            [this](auto&& PH1) { close_(std::forward<decltype(PH1)>(PH1)); });
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-void DatasetReaderBase<PointT>::load(const size_t  datasetIndex,
+void DatasetStreamReader<PointT>::load(const size_t  datasetIndex,
                                      const size_t  startFrameNumber,
                                      const size_t  groupOfFramesSize,
                                      GroupOfFrame& frames) {
@@ -143,7 +143,7 @@ void DatasetReaderBase<PointT>::load(const size_t  datasetIndex,
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-void DatasetReaderBase<PointT>::open_(const size_t datasetIndex, const size_t startFrameNumber) {
+void DatasetStreamReader<PointT>::open_(const size_t datasetIndex, const size_t startFrameNumber) {
   if (isOpen_(datasetIndex) && currentFrameNumbers_.at(datasetIndex) <= startFrameNumber) {
     return;
   } else if (isOpen_(datasetIndex)) {
@@ -152,19 +152,19 @@ void DatasetReaderBase<PointT>::open_(const size_t datasetIndex, const size_t st
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-bool DatasetReaderBase<PointT>::isOpen_(const size_t datasetIndex) const {
+bool DatasetStreamReader<PointT>::isOpen_(const size_t datasetIndex) const {
   return false;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-bool DatasetReaderBase<PointT>::isEof_(const size_t datasetIndex) const {
+bool DatasetStreamReader<PointT>::isEof_(const size_t datasetIndex) const {
   return !isOpen() || (currentFrameNumbers_.at(datasetIndex) >= datasetParam_.getEndFrameNumbers(datasetIndex));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-void DatasetReaderBase<PointT>::load_(const size_t  datasetIndex,
+void DatasetStreamReader<PointT>::load_(const size_t  datasetIndex,
                                       const size_t  startFrameNumber,
                                       const size_t  groupOfFramesSize,
                                       GroupOfFrame& frames) {
@@ -173,7 +173,7 @@ void DatasetReaderBase<PointT>::load_(const size_t  datasetIndex,
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-void DatasetReaderBase<PointT>::close_(const size_t datasetIndex) {
+void DatasetStreamReader<PointT>::close_(const size_t datasetIndex) {
   currentFrameNumbers_.at(datasetIndex) = datasetParam_.getStartFrameNumbers(datasetIndex);
   frameBuffers_.at(datasetIndex).clear();
 }

@@ -10,7 +10,7 @@ namespace jpcc::io {
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 LvxReader<PointT>::LvxReader(DatasetReaderParameter param, DatasetParameter datasetParam) :
-    DatasetReaderBase<PointT>(std::move(param), std::move(datasetParam)) {
+    DatasetStreamReader<PointT>(std::move(param), std::move(datasetParam)) {
   assert(this->datasetParam_.type == "lvx");
   if (this->datasetParam_.sensor == "mid-100") {
     capacity_ = (size_t)((double)(100000 * 3) / this->param_.frequency * 1.05);
@@ -49,7 +49,7 @@ bool LvxReader<PointT>::isOpen_(const size_t datasetIndex) const {
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 bool LvxReader<PointT>::isEof_(const size_t datasetIndex) const {
-  return DatasetReaderBase<PointT>::isEof_(datasetIndex) ||
+  return DatasetStreamReader<PointT>::isEof_(datasetIndex) ||
          lvxs_.at(datasetIndex)->GetFileState() == livox_ros::kLvxFileAtEnd;
 }
 
@@ -122,7 +122,7 @@ void LvxReader<PointT>::load_(const size_t  datasetIndex,
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void LvxReader<PointT>::close_(const size_t datasetIndex) {
-  DatasetReaderBase<PointT>::close_(datasetIndex);
+  DatasetStreamReader<PointT>::close_(datasetIndex);
   if (lvxs_.at(datasetIndex)) {
     lvxs_.at(datasetIndex)->CloseLvxFile();
     lvxs_.at(datasetIndex) = nullptr;

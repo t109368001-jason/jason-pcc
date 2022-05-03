@@ -6,12 +6,12 @@
 
 #include <jpcc/common/Common.h>
 #include <jpcc/common/GroupOfFrame.h>
-#include <jpcc/io/DatasetReaderBase.h>
+#include <jpcc/io/DatasetStreamReader.h>
 
 namespace jpcc::io {
 
 template <typename PointT = Point>
-class LvxReader : public DatasetReaderBase<PointT> {
+class LvxReader : public DatasetStreamReader<PointT> {
  public:
   using Frame        = jpcc::Frame<PointT>;
   using FramePtr     = typename Frame::Ptr;
