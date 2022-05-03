@@ -8,31 +8,7 @@ namespace jpcc::io {
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 DatasetReader<PointT>::DatasetReader(DatasetReaderParameter param, DatasetParameter datasetParam) :
-    param_(std::move(param)),
-    datasetParam_(std::move(datasetParam)),
-    datasetIndices_(datasetParam_.count()),
-    currentFrameNumbers_(datasetParam_.count()) {
-  assert(datasetParam_.count() > 0);
-  generate(datasetIndices_.begin(), datasetIndices_.end(), [n = 0]() mutable { return n++; });
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-DatasetReader<PointT>::~DatasetReader() {
-  close();
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-const DatasetReaderParameter& DatasetReader<PointT>::getReaderParameter() const {
-  return param_;
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-const DatasetParameter& DatasetReader<PointT>::getDatasetParameter() const {
-  return datasetParam_;
-}
+    DatasetReaderBase(param, datasetParam) {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
@@ -80,27 +56,6 @@ void DatasetReader<PointT>::loadAll(const size_t  startFrameNumber,
     frame->width  = static_cast<uint32_t>(frame->size());
     frame->height = 1;
   }
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-void DatasetReader<PointT>::open(const size_t startFrameNumber) {
-  std::for_each(datasetIndices_.begin(), datasetIndices_.end(),
-                [this, startFrameNumber](const auto& datasetIndex) { open_(datasetIndex, startFrameNumber); });
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-bool DatasetReader<PointT>::isOpen() const {
-  return std::any_of(datasetIndices_.begin(), datasetIndices_.end(),
-                     [this](const auto& datasetIndex) { return isOpen_(datasetIndex); });
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-void DatasetReader<PointT>::close() {
-  std::for_each(datasetIndices_.begin(), datasetIndices_.end(),
-                [this](const auto& datasetIndex) { close_(datasetIndex); });
 }
 
 }  // namespace jpcc::io
