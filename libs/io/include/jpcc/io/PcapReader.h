@@ -18,12 +18,12 @@ class PcapReader : public DatasetStreamReader<PointT> {
   using GroupOfFrame = jpcc::GroupOfFrame<PointT>;
 
  protected:
-  int                   maxNumLasers_;
-  std::vector<float>    verticals_;
-  std::vector<float>    sinVerticals_;
-  std::vector<float>    cosVerticals_;
-  std::vector<pcap_t*>  pcaps_;
-  std::vector<uint16_t> lastAzimuth100s_;
+  int                                                         maxNumLasers_;
+  std::vector<float>                                          verticals_;
+  std::vector<float>                                          sinVerticals_;
+  std::vector<float>                                          cosVerticals_;
+  std::vector<std::unique_ptr<pcap_t, decltype(&pcap_close)>> pcaps_;
+  std::vector<uint16_t>                                       lastAzimuth100s_;
 
  public:
   PcapReader(DatasetReaderParameter param, DatasetParameter datasetParam);
@@ -36,8 +36,6 @@ class PcapReader : public DatasetStreamReader<PointT> {
   [[nodiscard]] bool isEof_(size_t datasetIndex) const override;
 
   void load_(size_t datasetIndex, size_t startFrameNumber, size_t groupOfFramesSize, GroupOfFrame& frames) override;
-
-  void close_(size_t datasetIndex) override;
 
   [[nodiscard]] int parseDataPacket(size_t        startFrameNumber,
                                     size_t&       currentFrameNumber,

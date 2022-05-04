@@ -13,9 +13,6 @@ DatasetReaderBase::DatasetReaderBase(DatasetReaderParameter param, DatasetParame
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-DatasetReaderBase::~DatasetReaderBase() { close(); }
-
-//////////////////////////////////////////////////////////////////////////////////////////////
 const DatasetReaderParameter& DatasetReaderBase::getReaderParameter() const { return param_; }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -24,19 +21,13 @@ const DatasetParameter& DatasetReaderBase::getDatasetParameter() const { return 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void DatasetReaderBase::open(const size_t startFrameNumber) {
   std::for_each(datasetIndices_.begin(), datasetIndices_.end(),
-                [this, startFrameNumber](const auto& datasetIndex) { open_(datasetIndex, startFrameNumber); });
+                [this, startFrameNumber](const auto& datasetIndex) { this->open_(datasetIndex, startFrameNumber); });
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 bool DatasetReaderBase::isOpen() const {
   return std::any_of(datasetIndices_.begin(), datasetIndices_.end(),
-                     [this](const auto& datasetIndex) { return isOpen_(datasetIndex); });
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-void DatasetReaderBase::close() {
-  std::for_each(datasetIndices_.begin(), datasetIndices_.end(),
-                [this](const auto& datasetIndex) { close_(datasetIndex); });
+                     [this](const auto& datasetIndex) { return this->isOpen_(datasetIndex); });
 }
 
 }  // namespace jpcc::io

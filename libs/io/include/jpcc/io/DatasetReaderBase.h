@@ -20,8 +20,6 @@ class DatasetReaderBase {
  public:
   DatasetReaderBase(DatasetReaderParameter param, DatasetParameter datasetParam);
 
-  ~DatasetReaderBase();
-
   [[nodiscard]] const DatasetReaderParameter& getReaderParameter() const;
 
   [[nodiscard]] const DatasetParameter& getDatasetParameter() const;
@@ -30,14 +28,10 @@ class DatasetReaderBase {
 
   [[nodiscard]] bool isOpen() const;
 
-  void close();
-
  protected:
   virtual void open_(size_t datasetIndex, size_t startFrameNumber) = 0;
 
   [[nodiscard]] virtual bool isOpen_(size_t datasetIndex) const = 0;
-
-  virtual void close_(size_t datasetIndex) = 0;
 };
 
 }  // namespace jpcc::io

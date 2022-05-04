@@ -54,13 +54,6 @@ void DatasetStreamReader<PointT>::load(const size_t  datasetIndex,
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-void DatasetStreamReader<PointT>::close_(const size_t datasetIndex) {
-  this->currentFrameNumbers_.at(datasetIndex) = this->datasetParam_.getStartFrameNumbers(datasetIndex);
-  frameBuffers_.at(datasetIndex).clear();
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
 bool DatasetStreamReader<PointT>::isEof_(const size_t datasetIndex) const {
   return !this->isOpen() ||
          (this->currentFrameNumbers_.at(datasetIndex) >= this->datasetParam_.getEndFrameNumbers(datasetIndex));

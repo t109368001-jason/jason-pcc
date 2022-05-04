@@ -120,7 +120,7 @@ PcapReader<PointT>::PcapReader(DatasetReaderParameter param, DatasetParameter da
     throw std::logic_error("Not support dataset.sensor " + this->datasetParam_.sensor);
   }
   this->currentFrameNumbers_.resize(this->datasetParam_.count());
-  pcaps_.resize(this->datasetParam_.count());
+  for (size_t i = 0; i < this->datasetParam_.count(); i++) { pcaps_.emplace_back(nullptr, &pcap_close); }
   lastAzimuth100s_.resize(this->datasetParam_.count());
   this->frameBuffers_.resize(this->datasetParam_.count());
 
@@ -132,7 +132,6 @@ PcapReader<PointT>::PcapReader(DatasetReaderParameter param, DatasetParameter da
 template <typename PointT>
 void PcapReader<PointT>::open_(const size_t datasetIndex, const size_t startFrameNumber) {
   if (pcaps_.at(datasetIndex) && this->currentFrameNumbers_.at(datasetIndex) <= startFrameNumber) { return; }
-  if (pcaps_.at(datasetIndex)) { close_(datasetIndex); }
   const std::string pcapPath = this->datasetParam_.getFilePath(datasetIndex);
 
   char          error[PCAP_ERRBUF_SIZE];
@@ -146,8 +145,9 @@ void PcapReader<PointT>::open_(const size_t datasetIndex, const size_t startFram
   }
 
   if (pcap_setfilter(pcap, &filter) == -1) { throw std::runtime_error(pcap_geterr(pcap)); }
-  pcaps_.at(datasetIndex)                     = pcap;
+  pcaps_.at(datasetIndex).reset(pcap);
   this->currentFrameNumbers_.at(datasetIndex) = this->datasetParam_.getStartFrameNumbers(datasetIndex);
+  lastAzimuth100s_.at(datasetIndex)           = 0;
 
   // Push One Rotation Data to Queue
   const auto frame = jpcc::make_shared<Frame>();
@@ -175,23 +175,12 @@ void PcapReader<PointT>::load_(const size_t  datasetIndex,
                                GroupOfFrame& frames) {
   assert(groupOfFramesSize > 0);
   size_t&       currentFrameNumber = this->currentFrameNumbers_.at(datasetIndex);
-  pcap_t* const pcap               = pcaps_.at(datasetIndex);
+  pcap_t* const pcap               = pcaps_.at(datasetIndex).get();
   uint16_t&     lastAzimuth        = lastAzimuth100s_.at(datasetIndex);
   GroupOfFrame& frameBuffer        = this->frameBuffers_.at(datasetIndex);
 
   const int ret = parseDataPacket(startFrameNumber, currentFrameNumber, pcap, lastAzimuth, frameBuffer);
   assert(ret > 0);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-void PcapReader<PointT>::close_(const size_t datasetIndex) {
-  DatasetStreamReader<PointT>::close_(datasetIndex);
-  if (pcaps_.at(datasetIndex)) {
-    pcap_close(pcaps_.at(datasetIndex));
-    pcaps_.at(datasetIndex) = nullptr;
-  }
-  lastAzimuth100s_.at(datasetIndex) = 0;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

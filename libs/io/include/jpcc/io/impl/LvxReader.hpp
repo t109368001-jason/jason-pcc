@@ -19,24 +19,30 @@ LvxReader<PointT>::LvxReader(DatasetReaderParameter param, DatasetParameter data
   } else {
     throw std::logic_error("Not support dataset.sensor " + this->datasetParam_.sensor);
   }
-  lvxs_.resize(this->datasetParam_.count());
-  for_each(this->datasetIndices_.begin(), this->datasetIndices_.end(),
-           [this](auto&& PH1) { open_(std::forward<decltype(PH1)>(PH1), 0); });
+  for (size_t i = 0; i < this->datasetParam_.count(); i++) {
+    lvxs_.emplace_back(nullptr, [](LvxHandler* ptr) {
+      ptr->CloseLvxFile();
+      delete ptr;
+    });
+  }
+  std::for_each(this->datasetIndices_.begin(), this->datasetIndices_.end(),
+                [this](auto&& PH1) { open_(std::forward<decltype(PH1)>(PH1), 0); });
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void LvxReader<PointT>::open_(const size_t datasetIndex, const size_t startFrameNumber) {
   if (lvxs_.at(datasetIndex) && this->currentFrameNumbers_.at(datasetIndex) <= startFrameNumber) { return; }
-  if (lvxs_.at(datasetIndex)) { close_(datasetIndex); }
+  lvxs_.at(datasetIndex)    = nullptr;
   const std::string lvxPath = this->datasetParam_.getFilePath(datasetIndex);
-  auto              lvx     = jpcc::make_shared<livox_ros::LvxFileHandle>();
-  assert(lvx->Open(lvxPath.c_str(), std::ios::in) == 0);
+  LvxHandler*       lvx     = new LvxHandler();
 
+  assert(lvx->Open(lvxPath.c_str(), std::ios::in) == 0);
   assert(lvx->GetFileVersion() == livox_ros::kLvxFileV1);
   assert(lvx->GetDeviceCount() != 0);
   assert(lvx->GetDeviceCount() < livox_ros::kMaxSourceLidar);
-  lvxs_.at(datasetIndex)                      = lvx;
+
+  lvxs_.at(datasetIndex).reset(lvx);
   this->currentFrameNumbers_.at(datasetIndex) = this->datasetParam_.getStartFrameNumbers(datasetIndex);
 }
 
@@ -60,9 +66,9 @@ void LvxReader<PointT>::load_(const size_t  datasetIndex,
                               const size_t  groupOfFramesSize,
                               GroupOfFrame& frames) {
   assert(groupOfFramesSize > 0);
-  size_t&                              currentFrameNumber = this->currentFrameNumbers_.at(datasetIndex);
-  shared_ptr<livox_ros::LvxFileHandle> lvx                = lvxs_.at(datasetIndex);
-  std::vector<FramePtr>&               frameBuffer        = this->frameBuffers_.at(datasetIndex);
+  size_t&                currentFrameNumber = this->currentFrameNumbers_.at(datasetIndex);
+  LvxHandler*            lvx                = lvxs_.at(datasetIndex).get();
+  std::vector<FramePtr>& frameBuffer        = this->frameBuffers_.at(datasetIndex);
 
   std::vector<int64_t> lastTimestamps(lvx->GetDeviceCount());
 
@@ -116,16 +122,6 @@ void LvxReader<PointT>::load_(const size_t  datasetIndex,
       frame->width  = static_cast<uint32_t>(frame->size());
       frame->height = 1;
     }
-  }
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-void LvxReader<PointT>::close_(const size_t datasetIndex) {
-  DatasetStreamReader<PointT>::close_(datasetIndex);
-  if (lvxs_.at(datasetIndex)) {
-    lvxs_.at(datasetIndex)->CloseLvxFile();
-    lvxs_.at(datasetIndex) = nullptr;
   }
 }
 

@@ -27,8 +27,6 @@ class DatasetStreamReader : public DatasetReader<PointT> {
 
   [[nodiscard]] bool isOpen_(size_t datasetIndex) const override = 0;
 
-  void close_(size_t datasetIndex) override;
-
   [[nodiscard]] virtual bool isEof_(size_t datasetIndex) const;
 
   virtual void load_(size_t datasetIndex, size_t startFrameNumber, size_t groupOfFramesSize, GroupOfFrame& frames) = 0;

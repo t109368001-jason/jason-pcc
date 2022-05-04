@@ -22,8 +22,6 @@ class PlyReader : public DatasetReader<PointT> {
   void open_(size_t datasetIndex, size_t startFrameNumber) override;
 
   [[nodiscard]] bool isOpen_(size_t datasetIndex) const override;
-
-  void close_(size_t datasetIndex) override;
 };
 
 }  // namespace jpcc::io

@@ -25,8 +25,6 @@ class DatasetReader : public DatasetReaderBase {
   void open_(size_t datasetIndex, size_t startFrameNumber) override = 0;
 
   [[nodiscard]] bool isOpen_(size_t datasetIndex) const override = 0;
-
-  void close_(size_t datasetIndex) override = 0;
 };
 
 }  // namespace jpcc::io

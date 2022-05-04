@@ -43,8 +43,4 @@ bool PlyReader<PointT>::isOpen_(size_t JPCC_NOT_USED(datasetIndex)) const {
   return true;
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-void PlyReader<PointT>::close_(size_t JPCC_NOT_USED(datasetIndex)) {}
-
 }  // namespace jpcc::io
