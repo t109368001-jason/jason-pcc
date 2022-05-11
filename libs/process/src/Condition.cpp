@@ -6,8 +6,10 @@ namespace jpcc::process {
 
 using namespace std;
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 Condition::Condition() : field(), operation(), threshold() {}
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 Condition::Condition(const std::string& condition) {
   vector<string> ss;
   if (!boost::icontains(condition, " ")) {
@@ -45,6 +47,18 @@ Condition::Condition(const std::string& condition) {
     BOOST_THROW_EXCEPTION(logic_error("not support operation: " + o));
   }
   this->threshold = stod(ss.at(2));
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+bool Condition::predictValue(double val) const {
+  switch (operation) {
+    case GT: return val > threshold;
+    case GE: return val >= threshold;
+    case LT: return val < threshold;
+    case LE: return val <= threshold;
+    case EQ: return val == threshold;
+    default: return false;
+  }
 }
 
 }  // namespace jpcc::process

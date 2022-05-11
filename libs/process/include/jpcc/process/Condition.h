@@ -16,6 +16,13 @@ class Condition {
   Condition();
 
   Condition(const std::string& condition);
+
+  template <typename PointT>
+  bool predict(const PointT& point) const;
+
+  bool predictValue(double val) const;
 };
 
 }  // namespace jpcc::process
+
+#include <jpcc/process/impl/Condition.hpp>
