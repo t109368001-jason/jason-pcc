@@ -2,11 +2,10 @@
 
 #include <vector>
 
-#include <pcap/pcap.h>
-
 #include <jpcc/common/Common.h>
 #include <jpcc/common/GroupOfFrame.h>
 #include <jpcc/io/DatasetStreamReader.h>
+#include <jpcc/io/Pcap.h>
 
 namespace jpcc::io {
 
@@ -18,12 +17,12 @@ class PcapReader : public DatasetStreamReader<PointT> {
   using GroupOfFrame = jpcc::GroupOfFrame<PointT>;
 
  protected:
-  int                                                         maxNumLasers_;
-  std::vector<float>                                          verticals_;
-  std::vector<float>                                          sinVerticals_;
-  std::vector<float>                                          cosVerticals_;
-  std::vector<std::unique_ptr<pcap_t, decltype(&pcap_close)>> pcaps_;
-  std::vector<uint16_t>                                       lastAzimuth100s_;
+  int                                                      maxNumLasers_;
+  std::vector<float>                                       verticals_;
+  std::vector<float>                                       sinVerticals_;
+  std::vector<float>                                       cosVerticals_;
+  std::vector<std::unique_ptr<void, decltype(&pcapClose)>> pcaps_;
+  std::vector<uint16_t>                                    lastAzimuth100s_;
 
  public:
   PcapReader(DatasetReaderParameter param, DatasetParameter datasetParam);
@@ -39,7 +38,7 @@ class PcapReader : public DatasetStreamReader<PointT> {
 
   [[nodiscard]] int parseDataPacket(size_t        startFrameNumber,
                                     size_t&       currentFrameNumber,
-                                    pcap_t*       pcap,
+                                    void*         pcap,
                                     uint16_t&     lastAzimuth100,
                                     GroupOfFrame& frameBuffer);
 };

@@ -120,7 +120,7 @@ PcapReader<PointT>::PcapReader(DatasetReaderParameter param, DatasetParameter da
     throw std::logic_error("Not support dataset.sensor " + this->datasetParam_.sensor);
   }
   this->currentFrameNumbers_.resize(this->datasetParam_.count());
-  for (size_t i = 0; i < this->datasetParam_.count(); i++) { pcaps_.emplace_back(nullptr, &pcap_close); }
+  for (size_t i = 0; i < this->datasetParam_.count(); i++) { pcaps_.emplace_back(nullptr, &pcapClose); }
   lastAzimuth100s_.resize(this->datasetParam_.count());
   this->frameBuffers_.resize(this->datasetParam_.count());
 
@@ -134,18 +134,7 @@ void PcapReader<PointT>::open_(const size_t datasetIndex, const size_t startFram
   if (pcaps_.at(datasetIndex) && this->currentFrameNumbers_.at(datasetIndex) <= startFrameNumber) { return; }
   const std::string pcapPath = this->datasetParam_.getFilePath(datasetIndex);
 
-  char          error[PCAP_ERRBUF_SIZE];
-  pcap_t* const pcap = pcap_open_offline(pcapPath.c_str(), error);
-  if (!pcap) { throw std::runtime_error(error); }
-
-  struct bpf_program filter = {0};
-  std::ostringstream oss;
-  if (pcap_compile(pcap, &filter, oss.str().c_str(), 0, 0xffffffff) == -1) {
-    throw std::runtime_error(pcap_geterr(pcap));
-  }
-
-  if (pcap_setfilter(pcap, &filter) == -1) { throw std::runtime_error(pcap_geterr(pcap)); }
-  pcaps_.at(datasetIndex).reset(pcap);
+  pcaps_.at(datasetIndex).reset(pcapOpen(pcapPath));
   this->currentFrameNumbers_.at(datasetIndex) = this->datasetParam_.getStartFrameNumbers(datasetIndex);
   lastAzimuth100s_.at(datasetIndex)           = 0;
 
@@ -175,7 +164,7 @@ void PcapReader<PointT>::load_(const size_t  datasetIndex,
                                GroupOfFrame& frames) {
   assert(groupOfFramesSize > 0);
   size_t&       currentFrameNumber = this->currentFrameNumbers_.at(datasetIndex);
-  pcap_t* const pcap               = pcaps_.at(datasetIndex).get();
+  void* const   pcap               = pcaps_.at(datasetIndex).get();
   uint16_t&     lastAzimuth        = lastAzimuth100s_.at(datasetIndex);
   GroupOfFrame& frameBuffer        = this->frameBuffers_.at(datasetIndex);
 
@@ -187,18 +176,13 @@ void PcapReader<PointT>::load_(const size_t  datasetIndex,
 template <typename PointT>
 int PcapReader<PointT>::parseDataPacket(const size_t  startFrameNumber,
                                         size_t&       currentFrameNumber,
-                                        pcap_t* const pcap,
+                                        void* const   pcap,
                                         uint16_t&     lastAzimuth100,
                                         GroupOfFrame& frameBuffer) {
   // Retrieve Header and Data from PCAP
-  struct pcap_pkthdr*  header;
   const unsigned char* data;
-  const int            ret = pcap_next_ex(pcap, &header, &data);
+  const int            ret = pcapNextEx(pcap, &data);
   if (ret <= 0) { return ret; }
-
-  // Check Packet Data Size
-  // Data Blocks ( 100 bytes * 12 blocks ) + Time Stamp ( 4 bytes ) + Factory ( 2 bytes )
-  if ((header->len - 42) != 1206) { return ret; }
 
   // Convert to DataPacket Structure ( Cut Header 42 bytes )
   // Sensor Type 0x21 is HDL-32E, 0x22 is VLP-16
@@ -240,18 +224,11 @@ int PcapReader<PointT>::parseDataPacket(const size_t  startFrameNumber,
       const float azimuth = static_cast<float>(azimuth100) * PI_DIV18000;
       //      float   vertical  = verticals_.at(laser_index % maxNumLasers_);
       //      uint8_t intensity = firing_data.laserReturns[laser_index].intensity;
-      const auto id = static_cast<uint8_t>(laser_index % maxNumLasers_);
-      int64_t    time;
-      if (this->datasetParam_.haveGpsTime) {
-        time = packet->gpsTimestamp;
-      } else {
-        time = static_cast<int64_t>(header->ts.tv_sec) * 1000 + header->ts.tv_usec / 1000;
-      }
+      const auto  id    = static_cast<uint8_t>(laser_index % maxNumLasers_);
       const float rSinV = distance * sinVerticals_.at(id);
       const auto  x     = static_cast<float>(rSinV * cos(azimuth));
       const auto  y     = static_cast<float>(rSinV * sin(azimuth));
       const auto  z     = static_cast<float>(distance * cosVerticals_.at(id));
-      if (frameBuffer.back()->header.stamp == 0) { frameBuffer.back()->header.stamp = time; }
       // emplace_back points only, improve performance
       // frameBuffer.back()->emplace_back(x, y, z);
       frameBuffer.back()->points.emplace_back(x, y, z);
