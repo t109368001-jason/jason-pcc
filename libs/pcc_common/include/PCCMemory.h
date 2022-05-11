@@ -34,7 +34,7 @@
 #pragma once
 
 // #include "PCCCommon.h"
-#include <string.h>
+#include <cstdint>
 
 namespace pcc {
 
@@ -43,76 +43,15 @@ namespace pcc {
 // ********************************************************************* //
 
 #if defined(WIN32)
-#include <windows.h>
-#include <psapi.h>
-static int getUsedMemory() {
-  PROCESS_MEMORY_COUNTERS pmc;
-  GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc));
-  return pmc.WorkingSetSize / 1024;
-}
-static uint64_t getPeakMemory() {
-  PROCESS_MEMORY_COUNTERS pmc;
-  GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc));
-  return (uint64_t)pmc.PeakWorkingSetSize / 1024;
-}
+int      getUsedMemory();
+uint64_t getPeakMemory();
 #elif defined(__APPLE__) && defined(__MACH__)
-static inline int getUsedMemory() {
-  struct mach_task_basic_info info;
-  mach_msg_type_number_t      infoCount = MACH_TASK_BASIC_INFO_COUNT;
-  if (task_info(mach_task_self(), MACH_TASK_BASIC_INFO, (task_info_t)&info, &infoCount) != KERN_SUCCESS) { return 0; }
-  return (size_t)info.resident_size;
-}
-static uint64_t getPeakMemory() {
-  struct rusage rusage;
-  getrusage(RUSAGE_SELF, &rusage);
-  return (size_t)rusage.ru_maxrss / 1024;
-}
+inline int getUsedMemory();
+uint64_t   getPeakMemory();
 #else
-static int parseLine(char* pLine) {
-  int         iLen = (int)strlen(pLine);
-  const char* pTmp = pLine;
-  while (*pTmp < '0' || *pTmp > '9') { pTmp++; }
-  pLine[iLen - 3] = '\0';
-  iLen            = atoi(pTmp);
-  return iLen;
-}
-static int getUsedMemory() {
-  FILE* pFile   = fopen("/proc/self/status", "r");
-  int   iResult = 0;
-  if (pFile != NULL) {
-    char pLine[128];
-    while (fgets(pLine, 128, pFile) != NULL) {
-      if (strncmp(pLine, "VmSize:", 7) == 0) {
-        iResult          = (int)strlen(pLine);
-        const char* pTmp = pLine;
-        while (*pTmp < '0' || *pTmp > '9') { pTmp++; }
-        pLine[iResult - 3] = '\0';
-        iResult            = atoi(pTmp);
-        break;
-      }
-    }
-    fclose(pFile);
-  }
-  return iResult;
-}
-static uint64_t getPeakMemory() {
-  FILE*    pFile   = fopen("/proc/self/status", "r");
-  uint64_t iResult = 0;
-  if (pFile != NULL) {
-    char pLine[128];
-    while (fgets(pLine, 128, pFile) != NULL) {
-      if (strncmp(pLine, "VmPeak:", 7) == 0) {
-        const char* pTmp = pLine;
-        while (*pTmp < '0' || *pTmp > '9') { pTmp++; }
-        pLine[(int)strlen(pLine) - 3] = '\0';
-        iResult                       = atoi(pTmp);
-        break;
-      }
-    }
-    fclose(pFile);
-  }
-  return iResult;
-}
+int      parseLine(char* pLine);
+int      getUsedMemory();
+uint64_t getPeakMemory();
 #endif
 
 };  // namespace pcc

@@ -12,9 +12,6 @@
 #include <jpcc/process/OctreePointCloudOperation.h>
 #include <jpcc/visualization/JPCCVisualizer.h>
 
-#include <PCCChrono.h>
-#include <PCCMemory.h>
-
 #include "AppParameter.h"
 
 using namespace std;

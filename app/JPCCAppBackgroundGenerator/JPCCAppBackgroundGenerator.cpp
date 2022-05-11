@@ -3,9 +3,6 @@
 #include <iostream>
 #include <vector>
 
-#define PCL_NO_PRECOMPILE
-#include <pcl/octree/octree_pointcloud.h>
-
 #include <jpcc/common/ParameterParser.h>
 #include <jpcc/io/Reader.h>
 #include <jpcc/process/JPCCNormalEstimation.h>
@@ -13,10 +10,10 @@
 #include <jpcc/process/Process.h>
 #include <jpcc/octree/OctreeNBuf.h>
 
-#include <PCCChrono.h>
-#include <PCCMemory.h>
-
 #include "AppParameter.h"
+
+#define PCL_NO_PRECOMPILE
+#include <pcl/octree/octree_pointcloud.h>
 
 using namespace std;
 using namespace std::chrono;

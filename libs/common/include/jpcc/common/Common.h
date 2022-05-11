@@ -9,6 +9,9 @@
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 
+#include <PCCChrono.h>
+#include <PCCMemory.h>
+
 #define JPCC_NOT_USED(x)
 
 namespace jpcc {

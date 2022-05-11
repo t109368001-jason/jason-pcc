@@ -13,10 +13,8 @@
 
 #include <boost/range/counting_range.hpp>
 
-#define PCL_NO_PRECOMPILE
 #include <pcl/point_cloud.h>
 #include <pcl/features/normal_3d.h>
-#include <pcl/octree/octree_pointcloud.h>
 
 #include <jpcc/common/ParameterParser.h>
 #include <jpcc/io/Reader.h>
@@ -24,10 +22,10 @@
 #include <jpcc/process/PreProcessor.h>
 #include <jpcc/visualization/JPCCVisualizer.h>
 
-#include <PCCChrono.h>
-#include <PCCMemory.h>
-
 #include "AppParameter.h"
+
+#define PCL_NO_PRECOMPILE
+#include <pcl/octree/octree_pointcloud.h>
 
 #define BUFFER_SIZE 8
 

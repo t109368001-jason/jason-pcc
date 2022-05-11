@@ -47,11 +47,11 @@ find_package(VTK 9.0.3 REQUIRED COMPONENTS CommonCore)
 
 include(cmake/jpcc-target.cmake)
 
+add_subdirectory(libs/pcc_common)
 add_subdirectory(libs/common)
 add_subdirectory(libs/io)
 add_subdirectory(libs/lvx_common)
 add_subdirectory(libs/octree)
-add_subdirectory(libs/pcc_common)
 add_subdirectory(libs/process)
 add_subdirectory(libs/visualization)
 

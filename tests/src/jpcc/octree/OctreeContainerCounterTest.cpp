@@ -1,12 +1,12 @@
 #include <gtest/gtest.h>
 
-#define PCL_NO_PRECOMPILE
-#include <pcl/octree/octree_pointcloud.h>
-
 #include <jpcc/common/Common.h>
 #include <jpcc/octree/OctreeContainerCounter.h>
 
 #include "test_data/octree/TestOctree.h"
+
+#define PCL_NO_PRECOMPILE
+#include <pcl/octree/octree_pointcloud.h>
 
 using namespace std;
 using namespace pcl::octree;

@@ -1,11 +1,11 @@
 #pragma once
 
-#define PCL_NO_PRECOMPILE
-#include <pcl/octree/octree_pointcloud.h>
-
 #include <jpcc/common/Common.h>
 #include <jpcc/common/GroupOfFrame.h>
 #include <jpcc/octree/OctreeNBuf.h>
+
+#define PCL_NO_PRECOMPILE
+#include <pcl/octree/octree_pointcloud.h>
 
 namespace jpcc::process {
 

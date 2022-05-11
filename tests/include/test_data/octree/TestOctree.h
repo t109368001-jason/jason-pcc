@@ -1,9 +1,9 @@
 #pragma once
 
+#include <test_data/octree/TestCloud.h>
+
 #define PCL_NO_PRECOMPILE
 #include <pcl/octree/octree_pointcloud.h>
-
-#include <test_data/octree/TestCloud.h>
 
 namespace jpcc::octree {
 

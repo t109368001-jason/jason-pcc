@@ -3,11 +3,12 @@
 #include <algorithm>
 #include <execution>
 
-#define PCL_NO_PRECOMPILE
 #include <pcl/filters/extract_indices.h>
-#include <pcl/octree/octree_pointcloud.h>
 
 #include <jpcc/octree/OctreeNBuf.h>
+
+#define PCL_NO_PRECOMPILE
+#include <pcl/octree/octree_pointcloud.h>
 
 namespace jpcc::process {
 
