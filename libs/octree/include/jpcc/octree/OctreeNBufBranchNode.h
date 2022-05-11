@@ -70,7 +70,7 @@ class OctreeNBufBranchNode : public pcl::octree::OctreeNode {
 
   OctreeNBufBranchNode& operator=(const OctreeNBufBranchNode& source);
 
-  ~OctreeNBufBranchNode() override;
+  virtual ~OctreeNBufBranchNode() override;
 
   [[nodiscard]] OctreeNBufBranchNode* deepCopy() const override;
 
