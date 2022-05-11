@@ -252,7 +252,6 @@ int PcapReader<PointT>::parseDataPacket(const size_t  startFrameNumber,
       const auto  y     = static_cast<float>(rSinV * sin(azimuth));
       const auto  z     = static_cast<float>(distance * cosVerticals_.at(id));
       if (frameBuffer.back()->header.stamp == 0) { frameBuffer.back()->header.stamp = time; }
-      // TODO add transform
       // emplace_back points only, improve performance
       // frameBuffer.back()->emplace_back(x, y, z);
       frameBuffer.back()->points.emplace_back(x, y, z);

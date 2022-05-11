@@ -102,7 +102,6 @@ void LvxReader<PointT>::load_(const size_t  datasetIndex,
             frameBuffer.push_back(frame);
           }
         }
-        // TODO add transform
         // emplace_back points only, improve performance
         // frameBuffer.at(index)->emplace_back(x, y, z);
         frameBuffer.at(index)->points.emplace_back(x, y, z);
