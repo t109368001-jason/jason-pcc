@@ -3,7 +3,6 @@
 #include <mutex>
 #include <vector>
 
-#define PCL_NO_PRECOMPILE
 #include <pcl/sample_consensus/ransac.h>
 #include <pcl/sample_consensus/sac_model_plane.h>
 

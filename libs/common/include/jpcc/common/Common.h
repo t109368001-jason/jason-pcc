@@ -23,7 +23,7 @@ using IndicesPtr = shared_ptr<Indices>;
 using Point  = pcl::PointXYZ;
 using Normal = pcl::Normal;
 
-struct PointNormal;
+using PointNormal = pcl::PointNormal;
 
 template <typename PointT = Point>
 using Frame = pcl::PointCloud<PointT>;
@@ -32,5 +32,3 @@ template <typename PointT = Point>
 using FramePtr = typename pcl::PointCloud<PointT>::Ptr;
 
 }  // namespace jpcc
-
-#include <jpcc/common/impl/Common.hpp>

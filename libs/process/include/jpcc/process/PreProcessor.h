@@ -2,7 +2,6 @@
 
 #include <map>
 
-#define PCL_NO_PRECOMPILE
 #include <pcl/filters/filter_indices.h>
 
 #include <jpcc/common/GroupOfFrame.h>

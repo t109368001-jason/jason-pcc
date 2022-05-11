@@ -5,7 +5,6 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/range/counting_range.hpp>
 
-#define PCL_NO_PRECOMPILE
 #include <pcl/filters/extract_indices.h>
 #include <pcl/filters/radius_outlier_removal.h>
 #include <pcl/filters/statistical_outlier_removal.h>
