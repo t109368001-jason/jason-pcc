@@ -1,5 +1,9 @@
 #include <PCCMemory.h>
 
+#include <cstdlib>
+#include <cstdio>
+#include <cstring>
+
 namespace pcc {
 
 // ********************************************************************* //
