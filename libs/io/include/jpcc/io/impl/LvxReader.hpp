@@ -1,6 +1,7 @@
 #pragma once
 
 #include <fstream>
+#include <stdexcept>
 #include <utility>
 
 #include <lds.h>
@@ -26,7 +27,7 @@ LvxReader<PointT>::LvxReader(DatasetReaderParameter param, DatasetParameter data
     });
   }
   std::for_each(this->datasetIndices_.begin(), this->datasetIndices_.end(),
-                [this](auto&& PH1) { open_(std::forward<decltype(PH1)>(PH1), 0); });
+                [this](const size_t& datasetIndex) { open_(datasetIndex, 0); });
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -35,7 +36,7 @@ void LvxReader<PointT>::open_(const size_t datasetIndex, const size_t startFrame
   if (lvxs_.at(datasetIndex) && this->currentFrameNumbers_.at(datasetIndex) <= startFrameNumber) { return; }
   lvxs_.at(datasetIndex)    = nullptr;
   const std::string lvxPath = this->datasetParam_.getFilePath(datasetIndex);
-  LvxHandler*       lvx     = new LvxHandler();
+  auto*             lvx     = new LvxHandler();
 
   assert(lvx->Open(lvxPath.c_str(), std::ios::in) == 0);
   assert(lvx->GetFileVersion() == livox_ros::kLvxFileV1);
@@ -61,10 +62,9 @@ bool LvxReader<PointT>::isEof_(const size_t datasetIndex) const {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-void LvxReader<PointT>::load_(const size_t  datasetIndex,
-                              const size_t  startFrameNumber,
-                              const size_t  groupOfFramesSize,
-                              GroupOfFrame& frames) {
+void LvxReader<PointT>::load_(const size_t datasetIndex,
+                              const size_t startFrameNumber,
+                              const size_t groupOfFramesSize) {
   assert(groupOfFramesSize > 0);
   size_t&                currentFrameNumber = this->currentFrameNumbers_.at(datasetIndex);
   LvxHandler*            lvx                = lvxs_.at(datasetIndex).get();

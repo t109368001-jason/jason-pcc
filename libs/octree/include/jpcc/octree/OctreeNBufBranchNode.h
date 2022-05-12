@@ -42,6 +42,7 @@
 #include <cstdint>
 
 #include <pcl/octree/octree_nodes.h>
+#include <pcl/octree/octree_container.h>
 
 namespace jpcc::octree {
 

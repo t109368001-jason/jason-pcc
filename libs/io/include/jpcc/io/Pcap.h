@@ -4,9 +4,9 @@
 
 namespace jpcc::io {
 
-void* pcapOpen(const std::string& pcapPath);
+[[nodiscard]] void* pcapOpen(const std::string& pcapPath);
 
-int pcapNextEx(void* pcap, const unsigned char** data);
+[[nodiscard]] int pcapNextEx(void* pcap, const unsigned char** data);
 
 void pcapClose(void* pcap);
 

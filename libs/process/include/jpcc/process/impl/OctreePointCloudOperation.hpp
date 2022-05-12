@@ -1,5 +1,7 @@
 #pragma once
 
+#include <jpcc/process/Process.h>
+
 namespace jpcc::process {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -37,7 +39,7 @@ FramePtr<PointT> OctreePointCloudOperation<PointT, quantize>::targetAndNotSource
 
   auto output = make_shared<Frame>();
 
-  process::split<PointT>(target_, indices, output, nullptr);
+  split<PointT>(target_, indices, output, nullptr);
   return output;
 }
 

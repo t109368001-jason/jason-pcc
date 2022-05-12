@@ -26,11 +26,11 @@ class JPCCNormalEstimation {
 
   void computeInPlace(FramePtr& frame) const;
 
-  jpcc::Frame<PointNormal>::Ptr compute(FramePtr& frame) const;
+  [[nodiscard]] jpcc::Frame<PointNormal>::Ptr compute(FramePtr& frame) const;
 
   void computeInPlaceAll(GroupOfFrame& frames, bool parallel = false) const;
 
-  jpcc::GroupOfFrame<PointNormal> computeAll(GroupOfFrame& frames, bool parallel = false) const;
+  [[nodiscard]] jpcc::GroupOfFrame<PointNormal> computeAll(GroupOfFrame& frames, bool parallel = false) const;
 };
 
 }  // namespace jpcc::process

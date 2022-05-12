@@ -1,7 +1,10 @@
 #pragma once
 
+#include <functional>
 #include <map>
 #include <mutex>
+#include <vector>
+#include <string>
 
 #include <pcl/visualization/pcl_visualizer.h>
 
@@ -42,7 +45,7 @@ class JPCCVisualizerBase : public pcl::visualization::PCLVisualizer {
 
   virtual void handleKeyboardEvent(const pcl::visualization::KeyboardEvent& event);
 
-  RGBColor getTextColor(const std::string& id);
+  [[nodiscard]] RGBColor getTextColor(const std::string& id);
 
   void setPrimaryId(const std::string& primaryId);
 

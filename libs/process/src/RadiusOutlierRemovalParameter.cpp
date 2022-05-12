@@ -12,7 +12,7 @@ using namespace po;
 RadiusOutlierRemovalParameter::RadiusOutlierRemovalParameter() :
     RadiusOutlierRemovalParameter(RADIUS_OUTLIER_REMOVAL_OPT_PREFIX, __FUNCTION__) {}
 
-RadiusOutlierRemovalParameter::RadiusOutlierRemovalParameter(const std::string& prefix, const std::string& caption) :
+RadiusOutlierRemovalParameter::RadiusOutlierRemovalParameter(const string& prefix, const string& caption) :
     Parameter(prefix, caption), enable(false), radius(1.0), minNeighborsInRadius(1) {
   opts_.add_options()                                          //
       (string(prefix_ + ENABLE_OPT).c_str(),                   //
@@ -27,7 +27,7 @@ RadiusOutlierRemovalParameter::RadiusOutlierRemovalParameter(const std::string& 
       ;
 }
 
-void RadiusOutlierRemovalParameter::getShowTexts(vector<std::string>& showTexts) const {
+void RadiusOutlierRemovalParameter::getShowTexts(vector<string>& showTexts) const {
   if (enable) {
     showTexts.push_back(prefix_ + RADIUS_OPT ": " + to_string(radius));
     showTexts.push_back(prefix_ + MIN_NEIGHBORS_IN_RADIUS_OPT ": " + to_string(minNeighborsInRadius));

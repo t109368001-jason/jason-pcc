@@ -31,17 +31,18 @@ void DatasetReader<PointT>::loadAll(const size_t  startFrameNumber,
   std::vector<GroupOfFrame> sources;
   sources.resize(datasetIndices_.size());
   if (parallel) {
-    for_each(std::execution::par, datasetIndices_.begin(), datasetIndices_.end(), [&](size_t datasetIndex) {
+    std::for_each(std::execution::par, datasetIndices_.begin(), datasetIndices_.end(), [&](const size_t& datasetIndex) {
       load(datasetIndex, startFrameNumber, groupOfFramesSize, sources.at(datasetIndex));
     });
   } else {
-    for_each(datasetIndices_.begin(), datasetIndices_.end(), [&](size_t datasetIndex) {
+    std::for_each(datasetIndices_.begin(), datasetIndices_.end(), [&](const size_t& datasetIndex) {
       load(datasetIndex, startFrameNumber, groupOfFramesSize, sources.at(datasetIndex));
     });
   }
-  const size_t maxSize = max_element(sources.begin(), sources.end(), [](const GroupOfFrame& a, const GroupOfFrame& b) {
-                           return a.size() < b.size();
-                         })->size();
+  const size_t maxSize =
+      std::max_element(sources.begin(), sources.end(), [](const GroupOfFrame& a, const GroupOfFrame& b) {
+        return a.size() < b.size();
+      })->size();
   frames.resize(maxSize);
   for (size_t i = 0; i < maxSize; i++) {
     FramePtr& frame   = frames.at(i);

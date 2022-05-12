@@ -228,26 +228,26 @@ void OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::removeLeaf(u
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <BufferIndex BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
-std::size_t OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::getLeafCount() const {
+size_t OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::getLeafCount() const {
   return (leaf_count_);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <BufferIndex BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
-std::size_t OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::getBranchCount() const {
+size_t OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::getBranchCount() const {
   return (branch_count_);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <BufferIndex BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
-std::size_t OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::getLeafCount(
+size_t OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::getLeafCount(
     const BufferIndex bufferIndex) const {
   return (leaf_counts_.at(bufferIndex));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <BufferIndex BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
-std::size_t OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::getBranchCount(
+size_t OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::getBranchCount(
     const BufferIndex bufferIndex) const {
   return (branch_counts_.at(bufferIndex));
 }

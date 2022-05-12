@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include <jpcc/common/Common.h>
 #include <jpcc/common/GroupOfFrame.h>
 #include <jpcc/io/DatasetParameter.h>

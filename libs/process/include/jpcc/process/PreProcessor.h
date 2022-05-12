@@ -1,9 +1,11 @@
 #pragma once
 
 #include <map>
+#include <string>
 
 #include <pcl/filters/filter_indices.h>
 
+#include <jpcc/common/Common.h>
 #include <jpcc/common/GroupOfFrame.h>
 #include <jpcc/process/PreProcessParameter.h>
 
@@ -29,7 +31,7 @@ class PreProcessor {
 
   void process(GroupOfFrame& groupOfFrame, GroupOfFrameMapPtr removedMap = nullptr, bool parallel = false) const;
 
-  FilterPtr buildFilter(const std::string& algorithm) const;
+  [[nodiscard]] FilterPtr buildFilter(const std::string& algorithm) const;
 
   void applyAlgorithm(const std::string& algorithm,
                       GroupOfFrame&      groupOfFrame,

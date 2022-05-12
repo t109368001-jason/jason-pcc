@@ -1,6 +1,7 @@
-#include <utility>
-
 #pragma once
+
+#include <algorithm>
+#include <utility>
 
 namespace jpcc::process {
 

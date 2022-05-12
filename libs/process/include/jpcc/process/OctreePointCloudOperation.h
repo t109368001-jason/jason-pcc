@@ -51,7 +51,7 @@ class OctreePointCloudOperation
 
   void setTarget(FramePtr target);
 
-  FramePtr targetAndNotSource();
+  [[nodiscard]] FramePtr targetAndNotSource();
 };
 
 }  // namespace jpcc::process

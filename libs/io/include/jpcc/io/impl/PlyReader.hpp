@@ -1,5 +1,7 @@
 #pragma once
 
+#include <algorithm>
+
 #include <pcl/console/print.h>
 
 #include <jpcc/io/DatasetParameter.h>

@@ -1,11 +1,14 @@
 #pragma once
 
+#include <memory>
 #include <vector>
 
 #include <lvx_file.h>
 
 #include <jpcc/common/Common.h>
 #include <jpcc/common/GroupOfFrame.h>
+#include <jpcc/io/DatasetParameter.h>
+#include <jpcc/io/DatasetReaderParameter.h>
 #include <jpcc/io/DatasetStreamReader.h>
 
 namespace jpcc::io {
@@ -33,7 +36,7 @@ class LvxReader : public DatasetStreamReader<PointT> {
 
   [[nodiscard]] bool isEof_(size_t datasetIndex) const override;
 
-  void load_(size_t datasetIndex, size_t startFrameNumber, size_t groupOfFramesSize, GroupOfFrame& frames) override;
+  void load_(size_t datasetIndex, size_t startFrameNumber, size_t groupOfFramesSize) override;
 };
 
 }  // namespace jpcc::io

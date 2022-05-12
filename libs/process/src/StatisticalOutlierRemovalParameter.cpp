@@ -12,8 +12,7 @@ using namespace po;
 StatisticalOutlierRemovalParameter::StatisticalOutlierRemovalParameter() :
     StatisticalOutlierRemovalParameter(STATISTICAL_OUTLIER_REMOVAL_OPT_PREFIX, __FUNCTION__) {}
 
-StatisticalOutlierRemovalParameter::StatisticalOutlierRemovalParameter(const std::string& prefix,
-                                                                       const std::string& caption) :
+StatisticalOutlierRemovalParameter::StatisticalOutlierRemovalParameter(const string& prefix, const string& caption) :
     Parameter(prefix, caption), enable(false), meanK(50), stddevMulThresh(1.0) {
   opts_.add_options()                                    //
       (string(prefix_ + ENABLE_OPT).c_str(),             //
@@ -28,7 +27,7 @@ StatisticalOutlierRemovalParameter::StatisticalOutlierRemovalParameter(const std
       ;
 }
 
-void StatisticalOutlierRemovalParameter::getShowTexts(vector<std::string>& showTexts) const {
+void StatisticalOutlierRemovalParameter::getShowTexts(vector<string>& showTexts) const {
   if (enable) {
     showTexts.push_back(prefix_ + MEAN_K_OPT ": " + to_string(meanK));
     showTexts.push_back(prefix_ + STDDEV_MUL_THRESH_OPT ": " + to_string(stddevMulThresh));

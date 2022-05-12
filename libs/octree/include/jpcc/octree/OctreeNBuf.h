@@ -1,5 +1,11 @@
 #pragma once
 
+#include <array>
+#include <functional>
+
+#include <pcl/octree/octree_container.h>
+#include <pcl/octree/octree_nodes.h>
+
 #include <jpcc/common/Common.h>
 #include <jpcc/octree/OctreeNBufBase.h>
 

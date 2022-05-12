@@ -1,6 +1,8 @@
 #pragma once
 
 #include <iostream>
+#include <string>
+#include <vector>
 
 #include <jpcc/common/Parameter.h>
 

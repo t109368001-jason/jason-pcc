@@ -39,7 +39,6 @@
 #pragma once
 
 #include <array>
-#include <cstdint>
 
 #include <pcl/pcl_macros.h>
 #include <pcl/pcl_base.h>
@@ -83,13 +82,13 @@ class OctreeNBufBase {
   friend class pcl::octree::OctreeLeafNodeBreadthFirstIterator<OctreeT>;
 
  protected:
-  std::size_t leaf_count_;
+  size_t leaf_count_;
 
-  std::size_t branch_count_;
+  size_t branch_count_;
 
-  std::array<std::size_t, BUFFER_SIZE> leaf_counts_;
+  std::array<size_t, BUFFER_SIZE> leaf_counts_;
 
-  std::array<std::size_t, BUFFER_SIZE> branch_counts_;
+  std::array<size_t, BUFFER_SIZE> branch_counts_;
 
   BranchNode* root_node_;
 
@@ -149,13 +148,13 @@ class OctreeNBufBase {
 
   [[nodiscard]] const pcl::octree::OctreeNode* getRootNode() const;
 
-  [[nodiscard]] std::size_t getLeafCount() const;
+  [[nodiscard]] size_t getLeafCount() const;
 
-  [[nodiscard]] std::size_t getBranchCount() const;
+  [[nodiscard]] size_t getBranchCount() const;
 
-  [[nodiscard]] std::size_t getLeafCount(BufferIndex bufferIndex) const;
+  [[nodiscard]] size_t getLeafCount(BufferIndex bufferIndex) const;
 
-  [[nodiscard]] std::size_t getBranchCount(BufferIndex bufferIndex) const;
+  [[nodiscard]] size_t getBranchCount(BufferIndex bufferIndex) const;
 
   [[nodiscard]] BufferIndex getBufferIndex() const;
 

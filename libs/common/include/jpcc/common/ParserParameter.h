@@ -19,6 +19,8 @@ class ParserParameter : public virtual Parameter {
 
   [[nodiscard]] static std::string getConfigsOpt();
 
+  [[nodiscard]] static std::string getConfigConfigsOpt();
+
   friend std::ostream& operator<<(std::ostream& out, const ParserParameter& obj);
 };
 

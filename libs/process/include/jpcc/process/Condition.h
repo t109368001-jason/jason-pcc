@@ -2,10 +2,11 @@
 
 #include <string>
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
+
+#include <pcl/point_types.h>
 
 #include <jpcc/common/Common.h>
-#include <pcl/impl/point_types.hpp>
 
 namespace jpcc::process {
 

@@ -2,7 +2,11 @@
 
 #include <vector>
 
+#include <jpcc/common/Common.h>
+#include <jpcc/common/GroupOfFrame.h>
+#include <jpcc/io/DatasetParameter.h>
 #include <jpcc/io/DatasetReader.h>
+#include <jpcc/io/DatasetReaderParameter.h>
 
 namespace jpcc::io {
 
@@ -29,7 +33,7 @@ class DatasetStreamReader : public DatasetReader<PointT> {
 
   [[nodiscard]] virtual bool isEof_(size_t datasetIndex) const;
 
-  virtual void load_(size_t datasetIndex, size_t startFrameNumber, size_t groupOfFramesSize, GroupOfFrame& frames) = 0;
+  virtual void load_(size_t datasetIndex, size_t startFrameNumber, size_t groupOfFramesSize) = 0;
 };
 
 }  // namespace jpcc::io

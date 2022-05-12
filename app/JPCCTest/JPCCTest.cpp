@@ -9,7 +9,7 @@
 
 #include <vtkObject.h>
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
 
 #include <boost/range/counting_range.hpp>
 

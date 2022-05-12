@@ -5,7 +5,9 @@
 namespace jpcc::io {
 
 using namespace std;
+using namespace std::filesystem;
 using namespace po;
+using namespace Eigen;
 
 #define DATASET_OPT_PREFIX "dataset"
 #define NAME_OPT ".name"
@@ -55,7 +57,7 @@ vector<array<string, 2>> DatasetParameter::getDependencies() const {
   };
 }
 
-void DatasetParameter::getShowTexts(vector<std::string>& showTexts) const {
+void DatasetParameter::getShowTexts(vector<string>& showTexts) const {
   showTexts.push_back(prefix_ + NAME_OPT ": " + name);
   showTexts.push_back(prefix_ + FRAME_COUNTS_OPT ": " + to_string(getFrameCount()));
 }
@@ -71,18 +73,18 @@ void DatasetParameter::notify() {
   for (size_t i = 0; i < startFrameNumbers.size(); i++) {
     endFrameNumbers.at(i) = startFrameNumbers.at(i) + frameCounts.at(i);
   }
-  folderPath = filesystem::path(folderPrefix) / folder;
+  folderPath = path(folderPrefix) / folder;
   filePaths.resize(files.size());
   for (size_t i = 0; i < files.size(); i++) {
     filePaths.at(i) = folderPath / files.at(i);
-    assert(filesystem::exists(filePaths.at(i)));
+    assert(exists(filePaths.at(i)));
   }
   if (!transforms_.empty()) {
     assert(type != "ply");
     assert(transforms_.size() == files.size());
     transforms.resize(transforms_.size());
     for (size_t i = 0; i < transforms_.size(); i++) {
-      transforms.at(i) = jpcc::make_shared<Eigen::Matrix4f>();
+      transforms.at(i) = jpcc::make_shared<Matrix4f>();
       vector<string> ss;
       boost::algorithm::split(ss, transforms_.at(i), boost::is_any_of(","));
       assert(ss.size() == (*transforms.at(i)).size());
@@ -114,7 +116,7 @@ size_t DatasetParameter::getEndFrameNumber() const {
   return *min_element(endFrameNumbers.begin(), endFrameNumbers.end());
 }
 
-shared_ptr<Eigen::Matrix4f> DatasetParameter::getTransforms(const size_t index) const {
+shared_ptr<Matrix4f> DatasetParameter::getTransforms(const size_t index) const {
   return transforms.empty() ? nullptr : transforms.at(index);
 }
 

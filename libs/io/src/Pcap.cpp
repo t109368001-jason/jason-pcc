@@ -1,24 +1,25 @@
 #include <jpcc/io/Pcap.h>
 
 #include <sstream>
+#include <stdexcept>
 
 #include <pcap/pcap.h>
+
+using namespace std;
 
 namespace jpcc::io {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void* pcapOpen(const std::string& pcapPath) {
+void* pcapOpen(const string& pcapPath) {
   char          error[PCAP_ERRBUF_SIZE];
   pcap_t* const pcap = pcap_open_offline(pcapPath.c_str(), error);
-  if (!pcap) { throw std::runtime_error(error); }
+  if (!pcap) { throw runtime_error(error); }
 
   struct bpf_program filter = {0};
-  std::ostringstream oss;
-  if (pcap_compile(pcap, &filter, oss.str().c_str(), 0, 0xffffffff) == -1) {
-    throw std::runtime_error(pcap_geterr(pcap));
-  }
+  ostringstream      oss;
+  if (pcap_compile(pcap, &filter, oss.str().c_str(), 0, 0xffffffff) == -1) { throw runtime_error(pcap_geterr(pcap)); }
 
-  if (pcap_setfilter(pcap, &filter) == -1) { throw std::runtime_error(pcap_geterr(pcap)); }
+  if (pcap_setfilter(pcap, &filter) == -1) { throw runtime_error(pcap_geterr(pcap)); }
   return static_cast<void*>(pcap);
 }
 

@@ -1,5 +1,8 @@
 #pragma once
 
+#include <iostream>
+#include <string>
+
 #include <jpcc/io/LvxReaderParameter.h>
 
 namespace jpcc::io {

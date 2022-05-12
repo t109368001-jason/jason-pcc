@@ -1,5 +1,7 @@
 #include <jpcc/process/JPCCConditionalRemovalParameter.h>
 
+#include <algorithm>
+
 namespace jpcc::process {
 
 using namespace std;
@@ -11,8 +13,7 @@ using namespace po;
 JPCCConditionalRemovalParameter::JPCCConditionalRemovalParameter() :
     JPCCConditionalRemovalParameter(JPCC_CONDITIONAL_REMOVAL_OPT_PREFIX, __FUNCTION__) {}
 
-JPCCConditionalRemovalParameter::JPCCConditionalRemovalParameter(const std::string& prefix,
-                                                                 const std::string& caption) :
+JPCCConditionalRemovalParameter::JPCCConditionalRemovalParameter(const string& prefix, const string& caption) :
     Parameter(prefix, caption), conditions_(), enable(false), conditions() {
   opts_.add_options()                             //
       (string(prefix_ + ENABLE_OPT).c_str(),      //
@@ -24,7 +25,7 @@ JPCCConditionalRemovalParameter::JPCCConditionalRemovalParameter(const std::stri
       ;
 }
 
-void JPCCConditionalRemovalParameter::getShowTexts(vector<std::string>& showTexts) const {
+void JPCCConditionalRemovalParameter::getShowTexts(vector<string>& showTexts) const {
   if (enable) {
     stringstream ss;
     ss << prefix_ << CONDITIONS_OPT ": ";
@@ -40,8 +41,8 @@ void JPCCConditionalRemovalParameter::notify() {
   if (enable) {
     assert(!conditions_.empty());
     conditions.resize(conditions_.size());
-    std::transform(conditions_.begin(), conditions_.end(), conditions.begin(),
-                   [](const string& condition) { return Condition(condition); });
+    transform(conditions_.begin(), conditions_.end(), conditions.begin(),
+              [](const string& condition) { return Condition(condition); });
   }
 }
 

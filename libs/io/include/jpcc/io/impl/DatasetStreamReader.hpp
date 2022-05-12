@@ -1,10 +1,5 @@
 #pragma once
 
-#include <exception>
-#include <execution>
-#include <functional>
-#include <utility>
-
 #include <pcl/common/transforms.h>
 
 namespace jpcc::io {
@@ -43,7 +38,7 @@ void DatasetStreamReader<PointT>::load(const size_t  datasetIndex,
       frameBuffer.erase(frameBuffer.begin());
       currentFrameNumber++;
     }
-    load_(datasetIndex, startFrameNumber, groupOfFramesSize, frames);
+    load_(datasetIndex, startFrameNumber, groupOfFramesSize);
   }
   if (currentFrameNumber >= startFrameNumber) {
     frames.resize(currentFrameNumber - startFrameNumber);

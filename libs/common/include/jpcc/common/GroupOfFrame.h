@@ -2,8 +2,6 @@
 
 #include <vector>
 
-#include <pcl/point_cloud.h>
-
 #include <jpcc/common/Common.h>
 
 namespace jpcc {

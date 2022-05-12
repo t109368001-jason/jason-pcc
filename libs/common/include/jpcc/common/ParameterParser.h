@@ -6,6 +6,7 @@
 
 #include <boost/program_options.hpp>
 
+#include <jpcc/common/Parameter.h>
 #include <jpcc/common/ParserParameter.h>
 
 namespace jpcc {
@@ -25,7 +26,7 @@ class ParameterParser {
 
   [[nodiscard]] bool parse(int argc, char* argv[]);
 
-  void parseConfigs(const std::vector<std::string>& configs);
+  void parseConfigs(const po::variables_map& vm);
 
   static void conflicting_options(const po::variables_map& vm, const std::string& opt1, const std::string& opt2);
 

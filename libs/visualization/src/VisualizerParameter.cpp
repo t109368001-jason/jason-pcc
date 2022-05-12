@@ -63,11 +63,11 @@ void VisualizerParameter::notify() {
       assert(field == "x" || field == "y" || field == "z");
       fieldColorMap.insert_or_assign(ss.at(0), field);
     } else if (ss.size() == 4) {  // rgb color
-      double r = std::stod(ss.at(1));
+      double r = stod(ss.at(1));
       assert(r >= 0.0);
-      double g = std::stod(ss.at(2));
+      double g = stod(ss.at(2));
       assert(g >= 0.0);
-      double b = std::stod(ss.at(3));
+      double b = stod(ss.at(3));
       assert(b >= 0.0);
       if (r > 1.0 || g > 1.0 || b > 1.0) {
         r /= 255.0;

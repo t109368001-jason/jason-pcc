@@ -15,19 +15,19 @@ vector<array<string, 2>> Parameter::getConflicts() const { return {}; }
 
 vector<array<string, 2>> Parameter::getDependencies() const { return {}; }
 
-std::vector<std::string> Parameter::getShowTexts() const {
-  std::vector<std::string> showTexts;
+vector<string> Parameter::getShowTexts() const {
+  vector<string> showTexts;
   getShowTexts(showTexts);
   return showTexts;
 }
 
-void Parameter::getShowTexts(std::vector<std::string>& showTexts) const {}
+void Parameter::getShowTexts(vector<string>& showTexts) const {}
 
 void Parameter::notify() {}
 
-ParameterOStream Parameter::coutParameters(std::ostream& out) const {
+ParameterOStream Parameter::coutParameters(ostream& out) const {
   out << caption_ << endl;
-  return ParameterOStream(out, prefix_);
+  return {out, prefix_};
 }
 
 }  // namespace jpcc

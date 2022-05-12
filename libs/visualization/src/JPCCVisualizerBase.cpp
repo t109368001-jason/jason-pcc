@@ -122,7 +122,7 @@ void JPCCVisualizerBase::handleKeyboardEvent(const pcl::visualization::KeyboardE
       case ' ': nextFrame(); break;
     }
   }
-  for (auto it = keyboardCallbacks_.begin(); it != keyboardCallbacks_.end(); it++) { it->second(event); }
+  for (auto& keyboardCallback : keyboardCallbacks_) { keyboardCallback.second(event); }
   std::cout << "KeyboardEvent: keyCode=" << event.getKeyCode() << " keyDown=" << event.keyDown() << std::endl;
 }
 

@@ -11,7 +11,7 @@ using namespace po;
 JPCCNormalEstimationParameter::JPCCNormalEstimationParameter() :
     JPCCNormalEstimationParameter(JPCC_NORMAL_ESTIMATION_OPT_PREFIX, __FUNCTION__) {}
 
-JPCCNormalEstimationParameter::JPCCNormalEstimationParameter(const std::string& prefix, const std::string& caption) :
+JPCCNormalEstimationParameter::JPCCNormalEstimationParameter(const string& prefix, const string& caption) :
     Parameter(prefix, caption), kSearch(0), radiusSearch(0) {
   opts_.add_options()                                           //
       (string(prefix_ + K_SEARCH_OPT).c_str(),                  //
@@ -23,7 +23,7 @@ JPCCNormalEstimationParameter::JPCCNormalEstimationParameter(const std::string& 
       ;
 }
 
-void JPCCNormalEstimationParameter::getShowTexts(vector<std::string>& showTexts) const {
+void JPCCNormalEstimationParameter::getShowTexts(vector<string>& showTexts) const {
   if (kSearch != 0) { showTexts.push_back(prefix_ + K_SEARCH_OPT ": " + to_string(kSearch)); }
   if (radiusSearch != 0) { showTexts.push_back(prefix_ + RADIUS_SEARCH_OPT ": " + to_string(radiusSearch)); }
 }

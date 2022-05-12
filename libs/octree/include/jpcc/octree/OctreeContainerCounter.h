@@ -2,6 +2,8 @@
 
 #include <pcl/octree/octree_container.h>
 
+#include <jpcc/common/Common.h>
+
 namespace jpcc::octree {
 
 class OctreeContainerCounter : public pcl::octree::OctreeContainerBase {
@@ -13,7 +15,7 @@ class OctreeContainerCounter : public pcl::octree::OctreeContainerBase {
 
   void reset() override;
 
-  void addPointIndex(const pcl::index_t& index);
+  void addPointIndex(const index_t& index);
 
   [[nodiscard]] size_t getCount() const;
 };

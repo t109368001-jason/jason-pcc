@@ -57,7 +57,7 @@ void AppParameter::notify() {
   jpccNormalEstimation.notify();
 }
 
-std::string AppParameter::getOutputPath() const {
+string AppParameter::getOutputPath() const {
   if (!outputPath.empty()) {
     return outputPath;
   } else {

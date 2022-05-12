@@ -2,9 +2,11 @@
 
 #include <map>
 #include <queue>
+#include <string>
 
 #include <pcl/visualization/pcl_visualizer.h>
 
+#include <jpcc/common/Common.h>
 #include <jpcc/common/GroupOfFrame.h>
 #include <jpcc/visualization/JPCCVisualizerBase.h>
 
@@ -43,7 +45,7 @@ class JPCCVisualizer : public JPCCVisualizerBase {
 
   void enqueue(const GroupOfFrameMap& framesMap);
 
-  PointCloudColorPtr getCloudColor(const std::string& id, FramePtr cloud);
+  [[nodiscard]] PointCloudColorPtr getCloudColor(const std::string& id, FramePtr cloud);
 
   bool isFull();
 };

@@ -37,9 +37,8 @@ bool ParameterParser::parse(int argc, char* argv[]) {
                           }));
     pOpts_.push_back(envOpts);
     store(envOpts, vm);
-    if (vm.count(ParserParameter::getConfigsOpt())) {
-      parseConfigs(vm[ParserParameter::getConfigsOpt()].as<vector<string>>());
-    }
+
+    parseConfigs(vm);
 
     variables_map vm_final;
     for_each(pOpts_.begin(), pOpts_.end(), [&vm_final](auto& pOpts) { store(pOpts, vm_final); });
@@ -60,22 +59,30 @@ bool ParameterParser::parse(int argc, char* argv[]) {
   }
 }
 
-void ParameterParser::parseConfigs(const vector<string>& configs) {
+void ParameterParser::parseConfigs(const variables_map& vmArg) {
+  vector<string> configs;
+  if (vmArg.count(ParserParameter::getConfigsOpt())) {
+    auto cs = vmArg[ParserParameter::getConfigsOpt()].as<vector<string>>();
+    configs.insert(configs.end(), cs.begin(), cs.end());
+  }
+  if (vmArg.count(ParserParameter::getConfigConfigsOpt())) {
+    auto cs = vmArg[ParserParameter::getConfigConfigsOpt()].as<vector<string>>();
+    configs.insert(configs.end(), cs.begin(), cs.end());
+  }
   // latest config have higher priority
   for (auto it = configs.rbegin(); it != configs.rend(); ++it) {
     const string& config = *it;
     // check if config parsed then return
     if (pCfgs_.find(config) != pCfgs_.end()) { return; }
     ifstream ifs(config.c_str());
-    if (!ifs.good()) { throw runtime_error(ParserParameter::getConfigsOpt() + ": '" + config + "' not found"); }
+    if (!ifs.good()) { throw runtime_error("'" + config + "' not found"); }
     const parsed_options cfgOpts = parse_config_file(ifs, opts_, true);
     variables_map        vm;
     store(cfgOpts, vm);
     pOpts_.push_back(cfgOpts);
     pCfgs_.insert(config);
-    if (vm.count(ParserParameter::getConfigsOpt())) {
-      parseConfigs(vm[ParserParameter::getConfigsOpt()].as<vector<string>>());
-    }
+
+    parseConfigs(vm);
   }
 }
 

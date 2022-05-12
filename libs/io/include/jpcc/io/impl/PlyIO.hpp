@@ -2,7 +2,6 @@
 
 #include <algorithm>
 #include <execution>
-#include <functional>
 
 #include <pcl/io/auto_io.h>
 

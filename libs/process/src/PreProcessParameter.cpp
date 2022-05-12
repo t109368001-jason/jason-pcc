@@ -12,7 +12,7 @@ using namespace po;
 
 PreProcessParameter::PreProcessParameter() : PreProcessParameter(PRE_PROCESS_OPT_PREFIX, __FUNCTION__) {}
 
-PreProcessParameter::PreProcessParameter(const std::string& prefix, const std::string& caption) :
+PreProcessParameter::PreProcessParameter(const string& prefix, const string& caption) :
     Parameter(prefix, caption),
     radiusOutlierRemoval(prefix + "." + RADIUS_OUTLIER_REMOVAL_OPT_PREFIX, "RadiusOutlierRemovalParameter"),
     statisticalOutlierRemoval(prefix + "." + STATISTICAL_OUTLIER_REMOVAL_OPT_PREFIX,
@@ -29,7 +29,7 @@ PreProcessParameter::PreProcessParameter(const std::string& prefix, const std::s
   opts_.add(jpccConditionalRemovalParameter.getOpts());
 }
 
-void PreProcessParameter::getShowTexts(vector<std::string>& showTexts) const {
+void PreProcessParameter::getShowTexts(vector<string>& showTexts) const {
   if (!order_.empty()) { showTexts.push_back(prefix_ + ORDER_OPT ": " + order_); }
   radiusOutlierRemoval.getShowTexts(showTexts);
   statisticalOutlierRemoval.getShowTexts(showTexts);

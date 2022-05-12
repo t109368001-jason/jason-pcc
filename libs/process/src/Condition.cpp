@@ -1,16 +1,20 @@
 #include <jpcc/process/Condition.h>
 
+#include <algorithm>
+#include <stdexcept>
+
 #include <boost/algorithm/string.hpp>
 
 namespace jpcc::process {
 
 using namespace std;
+using namespace Eigen;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 Condition::Condition() : type(), operation(), threshold() {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-Condition::Condition(const std::string& condition) {
+Condition::Condition(const string& condition) {
   vector<string> ss;
   if (!boost::icontains(condition, " ")) {
     BOOST_THROW_EXCEPTION(
@@ -31,10 +35,10 @@ Condition::Condition(const std::string& condition) {
     this->type = Z;
   } else if (boost::icontains(f, "[") && boost::icontains(f, "]*p")) {
     this->type        = PROD;
-    this->coefficient = make_shared<Eigen::Vector4f>(Eigen::Vector4f::Zero());
+    this->coefficient = make_shared<Vector4f>(Vector4f::Zero());
     vector<string> vector;
     boost::algorithm::split(vector, f, boost::is_any_of(",[]*p"));
-    vector.erase(std::remove_if(vector.begin(), vector.end(), [](const string& s) { return s.empty(); }), vector.end());
+    vector.erase(remove_if(vector.begin(), vector.end(), [](const string& s) { return s.empty(); }), vector.end());
     assert(vector.size() == 3 || vector.size() == 4);
     for (int i = 0; i < vector.size(); i++) { (*this->coefficient)(i) = stof(vector.at(i)); }
   } else {

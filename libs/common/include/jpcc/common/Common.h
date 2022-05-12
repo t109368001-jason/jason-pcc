@@ -23,8 +23,7 @@ using index_t    = pcl::index_t;
 using Indices    = pcl::Indices;
 using IndicesPtr = shared_ptr<Indices>;
 
-using Point  = pcl::PointXYZ;
-using Normal = pcl::Normal;
+using Point = pcl::PointXYZ;
 
 using PointNormal = pcl::PointNormal;
 

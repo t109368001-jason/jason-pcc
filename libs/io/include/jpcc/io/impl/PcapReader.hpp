@@ -1,6 +1,6 @@
 #pragma once
 
-#include <sstream>
+#include <stdexcept>
 #include <utility>
 
 namespace jpcc::io {
@@ -124,8 +124,8 @@ PcapReader<PointT>::PcapReader(DatasetReaderParameter param, DatasetParameter da
   lastAzimuth100s_.resize(this->datasetParam_.count());
   this->frameBuffers_.resize(this->datasetParam_.count());
 
-  for_each(this->datasetIndices_.begin(), this->datasetIndices_.end(),
-           [this](auto&& PH1) { open_(std::forward<decltype(PH1)>(PH1), 0); });
+  std::for_each(this->datasetIndices_.begin(), this->datasetIndices_.end(),
+                [this](const size_t& datasetIndex) { open_(datasetIndex, 0); });
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -158,10 +158,9 @@ bool PcapReader<PointT>::isEof_(const size_t datasetIndex) const {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-void PcapReader<PointT>::load_(const size_t  datasetIndex,
-                               const size_t  startFrameNumber,
-                               const size_t  groupOfFramesSize,
-                               GroupOfFrame& frames) {
+void PcapReader<PointT>::load_(const size_t datasetIndex,
+                               const size_t startFrameNumber,
+                               const size_t groupOfFramesSize) {
   assert(groupOfFramesSize > 0);
   size_t&       currentFrameNumber = this->currentFrameNumbers_.at(datasetIndex);
   void* const   pcap               = pcaps_.at(datasetIndex).get();

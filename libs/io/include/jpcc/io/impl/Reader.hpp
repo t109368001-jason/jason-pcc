@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdexcept>
+
 #include <jpcc/io/PcapReader.h>
 #include <jpcc/io/LvxReader.h>
 #include <jpcc/io/PlyReader.h>
