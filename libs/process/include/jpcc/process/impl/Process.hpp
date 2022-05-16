@@ -21,14 +21,25 @@ void split(const FramePtr<PointT>& input,
   pcl::ExtractIndices<PointT> extractIndices;
   extractIndices.setInputCloud(input);
   extractIndices.setIndices(indices);
+
+  FramePtr<PointT> outputTemp;
+  if (output) {
+    extractIndices.setNegative(false);
+    if (input.get() == output.get()) {
+      outputTemp = make_shared<Frame<PointT>>();
+      extractIndices.filter(*outputTemp);
+      outputTemp->header              = input->header;
+      outputTemp->sensor_origin_      = input->sensor_origin_;
+      outputTemp->sensor_orientation_ = input->sensor_orientation_;
+    } else {
+      extractIndices.filter(*output);
+    }
+  }
   if (outputNegative) {
     extractIndices.setNegative(true);
     extractIndices.filter(*outputNegative);
   }
-  if (output) {
-    extractIndices.setNegative(false);
-    extractIndices.filter(*output);
-  }
+  if (outputTemp) { pcl::copyPointCloud(*outputTemp, *output); }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
