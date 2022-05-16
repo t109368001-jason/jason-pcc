@@ -5,6 +5,7 @@
 #include <jpcc/common/ParameterParser.h>
 #include <jpcc/io/Reader.h>
 #include <jpcc/io/PlyIO.h>
+#include <jpcc/process/PreProcessor.h>
 
 #include "AppParameter.h"
 
@@ -14,21 +15,28 @@ using namespace pcc;
 using namespace pcc::chrono;
 using namespace jpcc;
 using namespace jpcc::io;
+using namespace jpcc::process;
 
 void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
   const DatasetReader<>::Ptr reader = newReader<>(parameter.inputReader, parameter.inputDataset);
-  GroupOfFrame<>             frames;
-  const size_t               groupOfFramesSize = 32;
-  size_t                     startFrameNumber  = parameter.inputDataset.getStartFrameNumber();
-  const size_t               endFrameNumber    = startFrameNumber + parameter.inputDataset.getFrameCounts();
-  while (startFrameNumber < endFrameNumber) {
+  PreProcessor<>             preProcessor(parameter.preProcess);
+
+  GroupOfFrame<> frames;
+  size_t         groupOfFramesSize = 32;
+  size_t         frameNumber       = parameter.inputDataset.getStartFrameNumber();
+  const size_t   endFrameNumber    = parameter.inputDataset.getEndFrameNumber();
+  while (frameNumber < endFrameNumber) {
+    size_t groupOfFramesSize_ = endFrameNumber - frameNumber;
+    if (groupOfFramesSize_ < groupOfFramesSize) { groupOfFramesSize = groupOfFramesSize_; }
+
     clock.start();
-    reader->loadAll(startFrameNumber, groupOfFramesSize, frames, parameter.parallel);
+    reader->loadAll(frameNumber, groupOfFramesSize, frames, parameter.parallel);
+    preProcessor.process(frames, nullptr, parameter.parallel);
     clock.stop();
 
     savePly(frames, parameter.outputDataset.getFilePath(), parameter.parallel);
 
-    startFrameNumber += groupOfFramesSize;
+    frameNumber += groupOfFramesSize;
   }
 }
 
