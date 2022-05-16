@@ -47,7 +47,6 @@ OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>* OctreeNBufBranchNode<BUFFER
 template <BufferIndex BUFFER_SIZE, typename BranchContainerT>
 typename OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>::OctreeNode*
 OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>::getChildPtr(BufferIndex bufferIndex, ChildIndex childIndex) const {
-  assert((bufferIndex < BUFFER_SIZE) && (childIndex < 8));
   return childMatrix_[bufferIndex][childIndex];
 }
 
@@ -56,7 +55,6 @@ template <BufferIndex BUFFER_SIZE, typename BranchContainerT>
 void OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>::setChildPtr(BufferIndex bufferIndex,
                                                                       ChildIndex  childIndex,
                                                                       OctreeNode* node) {
-  assert((bufferIndex < BUFFER_SIZE) && (childIndex < 8));
   childMatrix_[bufferIndex][childIndex] = node;
 }
 
@@ -64,7 +62,6 @@ void OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>::setChildPtr(BufferInde
 template <BufferIndex BUFFER_SIZE, typename BranchContainerT>
 bool OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>::hasChild(BufferIndex bufferIndex,
                                                                    ChildIndex  childIndex) const {
-  assert((bufferIndex < BUFFER_SIZE) && (childIndex < 8));
   return (childMatrix_[bufferIndex][childIndex] != nullptr);
 }
 
@@ -77,7 +74,7 @@ pcl::octree::node_type_t OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>::ge
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <BufferIndex BUFFER_SIZE, typename BranchContainerT>
 void OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>::reset() {
-  memset(childMatrix_, 0, sizeof(OctreeNode*) * BUFFER_SIZE * 8);
+  std::for_each(childMatrix_.begin(), childMatrix_.end(), [](auto& childArray) { childArray.fill(nullptr); });
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

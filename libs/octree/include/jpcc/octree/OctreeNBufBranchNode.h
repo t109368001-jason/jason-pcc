@@ -38,6 +38,7 @@
 
 #pragma once
 
+#include <array>
 #include <bitset>
 #include <cstdint>
 
@@ -62,7 +63,7 @@ class OctreeNBufBranchNode : public pcl::octree::OctreeNode {
  protected:
   BranchContainer container_;
 
-  OctreeNode* childMatrix_[BUFFER_SIZE][8];
+  std::array<std::array<OctreeNode*, 8>, BUFFER_SIZE> childMatrix_;
 
  public:
   OctreeNBufBranchNode();
@@ -71,7 +72,7 @@ class OctreeNBufBranchNode : public pcl::octree::OctreeNode {
 
   OctreeNBufBranchNode& operator=(const OctreeNBufBranchNode& source);
 
-  virtual ~OctreeNBufBranchNode() override;
+  ~OctreeNBufBranchNode() override;
 
   [[nodiscard]] OctreeNBufBranchNode* deepCopy() const override;
 
