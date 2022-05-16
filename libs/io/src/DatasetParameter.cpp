@@ -62,7 +62,9 @@ void DatasetParameter::getShowTexts(vector<string>& showTexts) const {
   showTexts.push_back(prefix_ + FRAME_COUNTS_OPT ": " + to_string(getFrameCount()));
 }
 
-void DatasetParameter::notify() {
+void DatasetParameter::notify() { notify(true); }
+
+void DatasetParameter::notify(bool isInput) {
   assert(!name.empty());
   assert(!type.empty());
   assert(!folderPrefix.empty());
@@ -77,7 +79,7 @@ void DatasetParameter::notify() {
   filePaths.resize(files.size());
   for (size_t i = 0; i < files.size(); i++) {
     filePaths.at(i) = folderPath / files.at(i);
-    assert(exists(filePaths.at(i)));
+    if (isInput) { assert(exists(filePaths.at(i))); }
   }
   if (!transforms_.empty()) {
     assert(type != "ply");

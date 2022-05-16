@@ -40,6 +40,8 @@ class DatasetParameter : public virtual Parameter {
 
   void notify() override;
 
+  void notify(bool isInput);
+
   [[nodiscard]] size_t count() const;
 
   [[nodiscard]] std::string getFilePath(size_t index = 0) const;
