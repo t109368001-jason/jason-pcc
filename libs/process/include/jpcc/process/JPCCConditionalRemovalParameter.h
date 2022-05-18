@@ -14,11 +14,13 @@ namespace jpcc::process {
 class JPCCConditionalRemovalParameter : public virtual Parameter {
  public:
  protected:
+  std::string              type_;
   std::vector<std::string> conditions_;
 
  public:
-  bool                   enable;
-  std::vector<Condition> conditions;
+  bool                     enable;
+  Condition::ConditionType type;
+  Condition                condition;
 
   JPCCConditionalRemovalParameter();
 

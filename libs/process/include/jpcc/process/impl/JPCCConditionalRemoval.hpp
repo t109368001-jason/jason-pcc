@@ -23,8 +23,7 @@ void JPCCConditionalRemoval<PointT>::applyFilter(Indices& indices) {
 
   for (const auto& index : (*this->indices_)) {
     const PointT& point   = this->input_->at(index);
-    bool          predict = std::all_of(param_.conditions.begin(), param_.conditions.end(),
-                                        [&](const Condition& condition) { return condition.predict(point); });
+    bool          predict = param_.condition.predict(point);
     if (!predict) {
       if (this->extract_removed_indices_) this->removed_indices_->at(removeIndex++) = index;
       continue;

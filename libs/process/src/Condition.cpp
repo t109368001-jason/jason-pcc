@@ -16,11 +16,25 @@ Condition::Condition() : type(), operation(), threshold() {}
 //////////////////////////////////////////////////////////////////////////////////////////////
 Condition::Condition(const string& condition) {
   vector<string> ss;
-  if (!boost::icontains(condition, " ")) {
+  if (boost::icontains(condition, "&&") || boost::icontains(condition, "||")) {
+    if (boost::icontains(condition, "&&") && boost::icontains(condition, "||")) {
+      BOOST_THROW_EXCEPTION(logic_error("\"&&\" and \"||\" cannot be use at the same time"));
+    } else if (boost::icontains(condition, "&&")) {
+      this->type = AND;
+    } else {
+      this->type = OR;
+    }
+    vector<string> cs;
+    boost::algorithm::split(cs, condition, boost::is_any_of("&&"));
+    cs.erase(remove_if(cs.begin(), cs.end(), [](const string& s) { return s.empty(); }), cs.end());
+    transform(cs.begin(), cs.end(), back_inserter(this->conditions), [](auto& c) { return Condition(c); });
+    return;
+  } else if (!boost::icontains(condition, " ")) {
     BOOST_THROW_EXCEPTION(
         logic_error("please add space before and after operator, (e.g. x > 10, [1.0,0.0,0.0]*p > 10)"));
   }
   boost::algorithm::split(ss, condition, boost::is_any_of(" "));
+  ss.erase(remove_if(ss.begin(), ss.end(), [](const string& s) { return s.empty(); }), ss.end());
   assert(ss.size() == 3);
 
   const string f = boost::to_lower_copy(ss.at(0));
@@ -57,9 +71,15 @@ Condition::Condition(const string& condition) {
   } else if (o == "<=") {
     this->operation = LE;
   } else {
-    BOOST_THROW_EXCEPTION(logic_error("not support operation: " + o));
+    BOOST_THROW_EXCEPTION(logic_error("not support type: " + o));
   }
   this->threshold = stod(ss.at(2));
+}
+
+Condition::Condition(const ConditionType& type, const vector<string>& conditions) : operation(NONE), threshold() {
+  this->type = type;
+  transform(conditions.begin(), conditions.end(), back_inserter(this->conditions),
+            [](auto& c) { return Condition(c); });
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

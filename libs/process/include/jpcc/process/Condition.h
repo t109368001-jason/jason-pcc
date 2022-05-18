@@ -12,17 +12,20 @@ namespace jpcc::process {
 
 class Condition {
  public:
-  enum ConditionType { X, Y, Z, R, PROD };
-  enum ConditionOperation { GT, GE, LT, LE, EQ };
+  enum ConditionType { X, Y, Z, R, PROD, OR, AND };
+  enum ConditionOperation { NONE, GT, GE, LT, LE, EQ };
 
   shared_ptr<Eigen::Vector4f> coefficient;
   ConditionType               type;
   ConditionOperation          operation;
   double                      threshold;
+  std::vector<Condition>      conditions;
 
   Condition();
 
   Condition(const std::string& condition);
+
+  Condition(const ConditionType& type, const std::vector<std::string>& conditions);
 
   template <typename PointT>
   [[nodiscard]] bool predict(const PointT& point) const;
