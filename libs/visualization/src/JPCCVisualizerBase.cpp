@@ -73,6 +73,10 @@ int JPCCVisualizerBase::updateText(int* windowSize) {
       updateOrAddText(parameterTexts_.at(i), textHeight, "parameter" + std::to_string(i));
       textHeight -= lineHeight_;
     }
+  } else {
+    for (size_t i = 0; i < parameterTexts_.size(); i++) {
+      updateOrAddText("", textHeight, "parameter" + std::to_string(i));
+    }
   }
   return textHeight;
 }
@@ -86,7 +90,7 @@ void JPCCVisualizerBase::registerKeyboardEvent(const KeyboardEvent& callback, co
 
 // "| Help:\n"
 // "-------\n"
-//"          p, P   : switch to a point-based representation\n"
+// "          p, P   : switch to a point-based representation\n"
 // "          w, W   : switch to a wireframe-based representation (where available)\n"
 // "          s, S   : switch to a surface-based representation (where available)\n"
 // "          j, J   : take a .PNG snapshot of the current window view\n"
@@ -104,8 +108,8 @@ void JPCCVisualizerBase::registerKeyboardEvent(const KeyboardEvent& callback, co
 // "    CTRL + r, R  : restore camera parameters\n"
 // "    ALT + s, S   : turn stereo mode on/off\n"
 // "    ALT + f, F   : switch between maximized window mode and original size\n"
-// "          l, L           : list all available geometric and color handlers for the current actor
-// map\n" "    ALT + 0..9 [+ CTRL]  : switch between different geometric handlers (where available)\n"
+// "          l, L           : list all available geometric and color handlers for the current actor  map\n"
+// "    ALT + 0..9 [+ CTRL]  : switch between different geometric handlers (where available)\n"
 // "          0..9 [+ CTRL]  : switch between different color handlers (where available)\n"
 // "    SHIFT + left click   : select a point (start with -use_point_picking)\n"
 // "          x, X   : toggle rubber band selection mode for left mouse button\n"
@@ -117,13 +121,24 @@ void JPCCVisualizerBase::handleKeyboardEvent(const pcl::visualization::KeyboardE
       case 'H':
         std::cout << "\n"
                      "------- JPCCVisualizer\n"
-                     "          space  : next frame\n";
+                     "         space   : next frame\n"
+                     "    SHIFT + p, P : toggle display parameters\n"
+                     "\n";
         break;
       case ' ': nextFrame(); break;
+      case 'p':
+      case 'P':
+        if (event.isShiftPressed() && !event.isCtrlPressed() && !event.isAltPressed()) {
+          param_.showParameter = !param_.showParameter;
+          updateText(nullptr);
+        }
+        break;
     }
   }
   for (auto& keyboardCallback : keyboardCallbacks_) { keyboardCallback.second(event); }
-  std::cout << "KeyboardEvent: keyCode=" << event.getKeyCode() << " keyDown=" << event.keyDown() << std::endl;
+  if (event.getKeyCode() != 0) {
+    std::cout << "KeyboardEvent: keyCode=" << event.getKeyCode() << " keyDown=" << event.keyDown() << std::endl;
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
