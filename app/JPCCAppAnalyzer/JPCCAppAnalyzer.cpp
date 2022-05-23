@@ -9,6 +9,7 @@
 #include <jpcc/io/Reader.h>
 #include <jpcc/process/PreProcessor.h>
 #include <jpcc/process/JPCCConditionalRemoval.h>
+#include <jpcc/process/JPCCNormalEstimation.h>
 #include <jpcc/octree/OctreeContainerCounter.h>
 #include <jpcc/visualization/JPCCVisualizer.h>
 
@@ -28,7 +29,7 @@ using namespace jpcc::process;
 using namespace jpcc::octree;
 using namespace jpcc::visualization;
 
-using PointT = Point;
+using PointT = PointNormal;
 
 using OctreePointCloudT = OctreePointCloud<PointT,
                                            OctreeContainerCounter,
@@ -49,8 +50,10 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
   backgroundOctree.defineBoundingBox(parameter.resolution * 2);
   dynamicOctree.defineBoundingBox(parameter.resolution * 2);
 
-  const DatasetReader<PointT>::Ptr reader = newReader(parameter.reader, parameter.dataset);
-  PreProcessor<PointT>             preProcessor(parameter.preProcess);
+  const DatasetReader<PointT>::Ptr   reader = newReader<PointT>(parameter.reader, parameter.dataset);
+  PreProcessor<PointT>               preProcessor(parameter.preProcess);
+  const JPCCNormalEstimation<PointT> normalEstimation(parameter.jpccNormalEstimation);
+
   auto backgroundFilter = jpcc::make_shared<JPCCConditionalRemoval<PointT>>(parameter.background);
   auto dynamicFilter    = jpcc::make_shared<JPCCConditionalRemoval<PointT>>(parameter.dynamic);
 
@@ -61,19 +64,20 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
     clock.start();
     reader->loadAll(parameter.dataset.getStartFrameNumber(), 1, frames, parameter.parallel);
     preProcessor.process(frames, nullptr, parameter.parallel);
+    normalEstimation.computeInPlaceAll(frames, parameter.parallel);
     process::quantize(frames, parameter.resolution, parameter.parallel);
     clock.stop();
     {
       auto indices = jpcc::make_shared<Indices>();
       backgroundFilter->setInputCloud(frames.at(0));
       backgroundFilter->filter(*indices);
-      split<Point>(frames.at(0), indices, background, frames.at(0));
+      split<PointT>(frames.at(0), indices, background, frames.at(0));
     }
     {
       auto indices = jpcc::make_shared<Indices>();
       dynamicFilter->setInputCloud(frames.at(0));
       dynamicFilter->filter(*indices);
-      split<Point>(frames.at(0), indices, dynamic, frames.at(0));
+      split<PointT>(frames.at(0), indices, dynamic, frames.at(0));
     }
     viewer->enqueue({
         {"cloud", frames},                                 //
@@ -93,6 +97,7 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
     clock.start();
     reader->loadAll(frameNumber, groupOfFramesSize, frames, parameter.parallel);
     preProcessor.process(frames, nullptr, parameter.parallel);
+    normalEstimation.computeInPlaceAll(frames, parameter.parallel);
     process::quantize(frames, parameter.resolution, parameter.parallel);
     clock.stop();
     for (auto& frame : frames) {
@@ -102,13 +107,13 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
         auto indices = jpcc::make_shared<Indices>();
         backgroundFilter->setInputCloud(frames.at(0));
         backgroundFilter->filter(*indices);
-        split<Point>(frames.at(0), indices, background, frames.at(0));
+        split<PointT>(frame, indices, background, frame);
       }
       {
         auto indices = jpcc::make_shared<Indices>();
-        dynamicFilter->setInputCloud(frames.at(0));
+        dynamicFilter->setInputCloud(frame);
         dynamicFilter->filter(*indices);
-        split<Point>(frames.at(0), indices, dynamic, frames.at(0));
+        split<PointT>(frame, indices, dynamic, frame);
       }
 
       octree.setInputCloud(frame);

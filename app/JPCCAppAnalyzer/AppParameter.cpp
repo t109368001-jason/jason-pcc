@@ -44,6 +44,7 @@ AppParameter::AppParameter() :
   opts_.add(preProcess.getOpts());
   opts_.add(background.getOpts());
   opts_.add(dynamic.getOpts());
+  opts_.add(jpccNormalEstimation.getOpts());
   opts_.add(visualizerParameter.getOpts());
 }
 
@@ -54,6 +55,7 @@ void AppParameter::getShowTexts(vector<std::string>& showTexts) const {
   preProcess.getShowTexts(showTexts);
   background.getShowTexts(showTexts);
   dynamic.getShowTexts(showTexts);
+  jpccNormalEstimation.getShowTexts(showTexts);
   visualizerParameter.getShowTexts(showTexts);
 }
 
@@ -63,6 +65,7 @@ void AppParameter::notify() {
   preProcess.notify();
   background.notify();
   dynamic.notify();
+  jpccNormalEstimation.notify();
   visualizerParameter.notify();
 }
 
@@ -78,6 +81,7 @@ ostream& operator<<(ostream& out, const AppParameter& obj) {
   out << obj.preProcess;
   out << obj.background;
   out << obj.dynamic;
+  out << obj.jpccNormalEstimation;
   out << obj.visualizerParameter;
   return out;
 }
