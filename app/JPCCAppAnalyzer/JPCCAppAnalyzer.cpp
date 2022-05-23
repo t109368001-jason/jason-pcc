@@ -38,7 +38,7 @@ using OctreePointCloudT = OctreePointCloud<PointT,
 
 void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
   JPCCVisualizer<PointT>::Ptr viewer;
-  if (parameter.preview) {
+  if (parameter.previewOnly) {
     viewer = jpcc::make_shared<JPCCVisualizer<PointT>>(parameter.visualizerParameter);
     viewer->addParameter(parameter);
   }
@@ -57,7 +57,7 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
   auto backgroundFilter = jpcc::make_shared<JPCCConditionalRemoval<PointT>>(parameter.background);
   auto dynamicFilter    = jpcc::make_shared<JPCCConditionalRemoval<PointT>>(parameter.dynamic);
 
-  if (parameter.preview) {
+  if (parameter.previewOnly) {
     GroupOfFrame<PointT> frames;
     auto                 background = jpcc::make_shared<Frame<PointT>>();
     auto                 dynamic    = jpcc::make_shared<Frame<PointT>>();
@@ -86,6 +86,7 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
     });
     viewer->nextFrame();
     viewer->spin();
+    return;
   }
 
   size_t groupOfFramesSize = 32;

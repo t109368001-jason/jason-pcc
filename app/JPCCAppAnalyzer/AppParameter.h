@@ -16,7 +16,7 @@ namespace jpcc {
 class AppParameter : public Parameter {
  public:
   bool                                     parallel;
-  bool                                     preview;
+  bool                                     previewOnly;
   double                                   resolution;
   std::string                              outputCSVPath;
   io::DatasetParameter                     dataset;

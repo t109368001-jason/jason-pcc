@@ -9,14 +9,14 @@ using namespace po;
 
 #define APP_OPT_PREFIX "app"
 #define PARALLEL_OPT_PREFIX ".parallel"
-#define PREVIEW_OPT_PREFIX ".preview"
+#define PREVIEW_ONLY_OPT_PREFIX ".previewOnly"
 #define RESOLUTION_OPT_PREFIX ".resolution"
 #define OUTPUT_CSV_PATH_OPT_PREFIX ".outputCSVPath"
 
 AppParameter::AppParameter() :
     Parameter(APP_OPT_PREFIX, __FUNCTION__),
     parallel(false),
-    preview(false),
+    previewOnly(false),
     resolution(0.1),
     outputCSVPath(),
     dataset(),
@@ -29,9 +29,9 @@ AppParameter::AppParameter() :
       (string(prefix_ + PARALLEL_OPT_PREFIX).c_str(),                //
        value<bool>(&parallel)->default_value(parallel),              //
        "parallel")                                                   //
-      (string(prefix_ + PREVIEW_OPT_PREFIX).c_str(),                 //
-       value<bool>(&preview)->default_value(preview),                //
-       "parallel")                                                   //
+      (string(prefix_ + PREVIEW_ONLY_OPT_PREFIX).c_str(),            //
+       value<bool>(&previewOnly)->default_value(previewOnly),        //
+       "previewOnly")                                                //
       (string(prefix_ + RESOLUTION_OPT_PREFIX).c_str(),              //
        value<double>(&resolution)->default_value(resolution),        //
        "resolution")                                                 //
@@ -72,7 +72,7 @@ void AppParameter::notify() {
 ostream& operator<<(ostream& out, const AppParameter& obj) {
   obj.coutParameters(out)                              //
       (PARALLEL_OPT_PREFIX, obj.parallel)              //
-      (PREVIEW_OPT_PREFIX, obj.preview)                //
+      (PREVIEW_ONLY_OPT_PREFIX, obj.previewOnly)       //
       (RESOLUTION_OPT_PREFIX, obj.resolution)          //
       (OUTPUT_CSV_PATH_OPT_PREFIX, obj.outputCSVPath)  //
       ;
