@@ -8,9 +8,9 @@ using namespace std;
 using namespace po;
 
 #define APP_OPT_PREFIX "app"
-#define PARALLEL_OPT_PREFIX ".parallel"
-#define DISTANCE_THRESHOLD_OPT_PREFIX ".distanceThreshold"
-#define HEADLESS_OPT_PREFIX ".headless"
+#define PARALLEL_OPT ".parallel"
+#define DISTANCE_THRESHOLD_OPT ".distanceThreshold"
+#define HEADLESS_OPT ".headless"
 
 AppParameter::AppParameter() :
     Parameter(APP_OPT_PREFIX, __FUNCTION__),
@@ -21,13 +21,13 @@ AppParameter::AppParameter() :
     reader(),
     preProcess() {
   opts_.add_options()                                                        //
-      (string(prefix_ + PARALLEL_OPT_PREFIX).c_str(),                        //
+      (string(prefix_ + PARALLEL_OPT).c_str(),                               //
        value<bool>(&parallel)->default_value(parallel),                      //
        "parallel")                                                           //
-      (string(prefix_ + DISTANCE_THRESHOLD_OPT_PREFIX).c_str(),              //
+      (string(prefix_ + DISTANCE_THRESHOLD_OPT).c_str(),                     //
        value<double>(&distanceThreshold)->default_value(distanceThreshold),  //
        "distanceThreshold")                                                  //
-      (string(prefix_ + HEADLESS_OPT_PREFIX).c_str(),                        //
+      (string(prefix_ + HEADLESS_OPT).c_str(),                               //
        value<bool>(&headless)->default_value(headless),                      //
        "headless")                                                           //
       ;
@@ -38,7 +38,7 @@ AppParameter::AppParameter() :
 }
 
 void AppParameter::getShowTexts(vector<std::string>& showTexts) const {
-  showTexts.push_back(prefix_ + DISTANCE_THRESHOLD_OPT_PREFIX ": " + to_string(distanceThreshold));
+  showTexts.push_back(prefix_ + DISTANCE_THRESHOLD_OPT ": " + to_string(distanceThreshold));
   dataset.getShowTexts(showTexts);
   reader.getShowTexts(showTexts);
   preProcess.getShowTexts(showTexts);
@@ -53,10 +53,10 @@ void AppParameter::notify() {
 }
 
 ostream& operator<<(ostream& out, const AppParameter& obj) {
-  obj.coutParameters(out)                                     //
-      (PARALLEL_OPT_PREFIX, obj.parallel)                     //
-      (DISTANCE_THRESHOLD_OPT_PREFIX, obj.distanceThreshold)  //
-      (HEADLESS_OPT_PREFIX, obj.headless)                     //
+  obj.coutParameters(out)                              //
+      (PARALLEL_OPT, obj.parallel)                     //
+      (DISTANCE_THRESHOLD_OPT, obj.distanceThreshold)  //
+      (HEADLESS_OPT, obj.headless)                     //
       ;
   out << obj.dataset;
   out << obj.reader;

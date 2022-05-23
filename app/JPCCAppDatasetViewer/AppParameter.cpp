@@ -8,16 +8,16 @@ using namespace std;
 using namespace po;
 
 #define APP_OPT_PREFIX "app"
-#define PARALLEL_OPT_PREFIX ".parallel"
-#define BACKGROUND_PATH_OPT_PREFIX ".backgroundPath"
+#define PARALLEL_OPT ".parallel"
+#define BACKGROUND_PATH_OPT ".backgroundPath"
 
 AppParameter::AppParameter() :
     Parameter(APP_OPT_PREFIX, __FUNCTION__), parallel(false), dataset(), reader(), preProcess() {
   opts_.add_options()                                                  //
-      (string(prefix_ + PARALLEL_OPT_PREFIX).c_str(),                  //
+      (string(prefix_ + PARALLEL_OPT).c_str(),                         //
        value<bool>(&parallel)->default_value(parallel),                //
        "parallel")                                                     //
-      (string(prefix_ + BACKGROUND_PATH_OPT_PREFIX).c_str(),           //
+      (string(prefix_ + BACKGROUND_PATH_OPT).c_str(),                  //
        value<string>(&backgroundPath)->default_value(backgroundPath),  //
        "backgroundPath")                                               //
       ;
@@ -42,9 +42,9 @@ void AppParameter::notify() {
 }
 
 ostream& operator<<(ostream& out, const AppParameter& obj) {
-  obj.coutParameters(out)                               //
-      (PARALLEL_OPT_PREFIX, obj.parallel)               //
-      (BACKGROUND_PATH_OPT_PREFIX, obj.backgroundPath)  //
+  obj.coutParameters(out)                        //
+      (PARALLEL_OPT, obj.parallel)               //
+      (BACKGROUND_PATH_OPT, obj.backgroundPath)  //
       ;
   out << obj.dataset;
   out << obj.reader;

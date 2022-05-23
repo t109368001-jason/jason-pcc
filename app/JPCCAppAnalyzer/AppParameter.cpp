@@ -8,10 +8,10 @@ using namespace std;
 using namespace po;
 
 #define APP_OPT_PREFIX "app"
-#define PARALLEL_OPT_PREFIX ".parallel"
-#define PREVIEW_ONLY_OPT_PREFIX ".previewOnly"
-#define RESOLUTION_OPT_PREFIX ".resolution"
-#define OUTPUT_CSV_PATH_OPT_PREFIX ".outputCSVPath"
+#define PARALLEL_OPT ".parallel"
+#define PREVIEW_ONLY_OPT ".previewOnly"
+#define RESOLUTION_OPT ".resolution"
+#define OUTPUT_CSV_PATH_OPT ".outputCSVPath"
 
 AppParameter::AppParameter() :
     Parameter(APP_OPT_PREFIX, __FUNCTION__),
@@ -26,16 +26,16 @@ AppParameter::AppParameter() :
     dynamic(string("dynamic.") + JPCC_CONDITIONAL_REMOVAL_OPT_PREFIX, "JPCCConditionalRemovalParameter"),
     visualizerParameter() {
   opts_.add_options()                                                //
-      (string(prefix_ + PARALLEL_OPT_PREFIX).c_str(),                //
+      (string(prefix_ + PARALLEL_OPT).c_str(),                       //
        value<bool>(&parallel)->default_value(parallel),              //
        "parallel")                                                   //
-      (string(prefix_ + PREVIEW_ONLY_OPT_PREFIX).c_str(),            //
+      (string(prefix_ + PREVIEW_ONLY_OPT).c_str(),                   //
        value<bool>(&previewOnly)->default_value(previewOnly),        //
        "previewOnly")                                                //
-      (string(prefix_ + RESOLUTION_OPT_PREFIX).c_str(),              //
+      (string(prefix_ + RESOLUTION_OPT).c_str(),                     //
        value<double>(&resolution)->default_value(resolution),        //
        "resolution")                                                 //
-      (string(prefix_ + OUTPUT_CSV_PATH_OPT_PREFIX).c_str(),         //
+      (string(prefix_ + OUTPUT_CSV_PATH_OPT).c_str(),                //
        value<string>(&outputCSVPath)->default_value(outputCSVPath),  //
        "outputCSVPath")                                              //
       ;
@@ -49,7 +49,7 @@ AppParameter::AppParameter() :
 }
 
 void AppParameter::getShowTexts(vector<std::string>& showTexts) const {
-  showTexts.push_back(prefix_ + RESOLUTION_OPT_PREFIX ": " + to_string(resolution));
+  showTexts.push_back(prefix_ + RESOLUTION_OPT ": " + to_string(resolution));
   dataset.getShowTexts(showTexts);
   reader.getShowTexts(showTexts);
   preProcess.getShowTexts(showTexts);
@@ -70,11 +70,11 @@ void AppParameter::notify() {
 }
 
 ostream& operator<<(ostream& out, const AppParameter& obj) {
-  obj.coutParameters(out)                              //
-      (PARALLEL_OPT_PREFIX, obj.parallel)              //
-      (PREVIEW_ONLY_OPT_PREFIX, obj.previewOnly)       //
-      (RESOLUTION_OPT_PREFIX, obj.resolution)          //
-      (OUTPUT_CSV_PATH_OPT_PREFIX, obj.outputCSVPath)  //
+  obj.coutParameters(out)                       //
+      (PARALLEL_OPT, obj.parallel)              //
+      (PREVIEW_ONLY_OPT, obj.previewOnly)       //
+      (RESOLUTION_OPT, obj.resolution)          //
+      (OUTPUT_CSV_PATH_OPT, obj.outputCSVPath)  //
       ;
   out << obj.dataset;
   out << obj.reader;

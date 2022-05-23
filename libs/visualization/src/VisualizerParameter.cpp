@@ -7,12 +7,12 @@ namespace jpcc::visualization {
 using namespace std;
 using namespace po;
 
-#define NAME_OPT_PREFIX ".name"
-#define DESCRIPTION_OPT_PREFIX ".description"
-#define SHOW_PARAMETER_OPT_PREFIX ".showParameter"
-#define CAMERA_POSITION_OPT_PREFIX ".cameraPosition"
-#define BUFFER_SIZE_OPT_PREFIX ".bufferSize"
-#define ID_COLORS_OPT_PREFIX ".idColors"
+#define NAME_OPT ".name"
+#define DESCRIPTION_OPT ".description"
+#define SHOW_PARAMETER_OPT ".showParameter"
+#define CAMERA_POSITION_OPT ".cameraPosition"
+#define BUFFER_SIZE_OPT ".bufferSize"
+#define ID_COLORS_OPT ".idColors"
 
 VisualizerParameter::VisualizerParameter() : VisualizerParameter(VISUALIZER_OPT_PREFIX, __FUNCTION__) {}
 
@@ -25,22 +25,22 @@ VisualizerParameter::VisualizerParameter(const string& prefix, const string& cap
     bufferSize(32) {
   cameraPosition.fill(0.0);
   opts_.add_options()                                                    //
-      (string(prefix_ + NAME_OPT_PREFIX).c_str(),                        //
+      (string(prefix_ + NAME_OPT).c_str(),                               //
        value<string>(&name)->default_value(name),                        //
        "name")                                                           //
-      (string(prefix_ + DESCRIPTION_OPT_PREFIX).c_str(),                 //
+      (string(prefix_ + DESCRIPTION_OPT).c_str(),                        //
        value<string>(&description)->default_value(description),          //
        "description")                                                    //
-      (string(prefix_ + SHOW_PARAMETER_OPT_PREFIX).c_str(),              //
+      (string(prefix_ + SHOW_PARAMETER_OPT).c_str(),                     //
        value<bool>(&showParameter)->default_value(showParameter),        //
        "showParameter")                                                  //
-      (string(prefix_ + CAMERA_POSITION_OPT_PREFIX).c_str(),             //
+      (string(prefix_ + CAMERA_POSITION_OPT).c_str(),                    //
        value<string>(&cameraPosition_)->default_value(cameraPosition_),  //
        "cameraPosition")                                                 //
-      (string(prefix_ + BUFFER_SIZE_OPT_PREFIX).c_str(),                 //
+      (string(prefix_ + BUFFER_SIZE_OPT).c_str(),                        //
        value<size_t>(&bufferSize)->default_value(bufferSize),            //
        "bufferSize")                                                     //
-      (string(prefix_ + ID_COLORS_OPT_PREFIX).c_str(),                   //
+      (string(prefix_ + ID_COLORS_OPT).c_str(),                          //
        value<vector<string>>(&idColors_),                                //
        "bufferSize")                                                     //
       ;
@@ -80,13 +80,13 @@ void VisualizerParameter::notify() {
 }
 
 ostream& operator<<(ostream& out, const VisualizerParameter& obj) {
-  obj.coutParameters(out)                                //
-      (NAME_OPT_PREFIX, obj.name)                        //
-      (DESCRIPTION_OPT_PREFIX, obj.description)          //
-      (SHOW_PARAMETER_OPT_PREFIX, obj.showParameter)     //
-      (CAMERA_POSITION_OPT_PREFIX, obj.cameraPosition_)  //
-      (BUFFER_SIZE_OPT_PREFIX, obj.bufferSize)           //
-      (ID_COLORS_OPT_PREFIX, obj.idColors_)              //
+  obj.coutParameters(out)                         //
+      (NAME_OPT, obj.name)                        //
+      (DESCRIPTION_OPT, obj.description)          //
+      (SHOW_PARAMETER_OPT, obj.showParameter)     //
+      (CAMERA_POSITION_OPT, obj.cameraPosition_)  //
+      (BUFFER_SIZE_OPT, obj.bufferSize)           //
+      (ID_COLORS_OPT, obj.idColors_)              //
       ;
   return out;
 }
