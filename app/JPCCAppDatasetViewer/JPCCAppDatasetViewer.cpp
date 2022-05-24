@@ -92,10 +92,7 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
   };
 
   thread datasetLoadingThread(datasetLoading);
-  while (!viewer->wasStopped() && run) {
-    viewer->spinOnce(100);
-    // this_thread::sleep_for(100ms);
-  }
+  while (!viewer->wasStopped() && run) { viewer->spinOnce(1000); }
   run = false;
   if (datasetLoadingThread.joinable()) { datasetLoadingThread.join(); }
 }
