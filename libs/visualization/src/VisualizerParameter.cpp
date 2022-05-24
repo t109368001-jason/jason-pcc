@@ -12,6 +12,7 @@ using namespace po;
 #define SHOW_PARAMETER_OPT ".showParameter"
 #define CAMERA_POSITION_OPT ".cameraPosition"
 #define BUFFER_SIZE_OPT ".bufferSize"
+#define POINT_SIZE_OPT ".pointSize"
 #define ID_COLORS_OPT ".idColors"
 
 VisualizerParameter::VisualizerParameter() : VisualizerParameter(VISUALIZER_OPT_PREFIX, __FUNCTION__) {}
@@ -40,9 +41,12 @@ VisualizerParameter::VisualizerParameter(const string& prefix, const string& cap
       (string(prefix_ + BUFFER_SIZE_OPT).c_str(),                        //
        value<size_t>(&bufferSize)->default_value(bufferSize),            //
        "bufferSize")                                                     //
+      (string(prefix_ + POINT_SIZE_OPT).c_str(),                         //
+       value<size_t>(&pointSize)->default_value(pointSize),              //
+       "pointSize")                                                      //
       (string(prefix_ + ID_COLORS_OPT).c_str(),                          //
        value<vector<string>>(&idColors_),                                //
-       "bufferSize")                                                     //
+       "idColors")                                                       //
       ;
 }
 
@@ -54,6 +58,7 @@ void VisualizerParameter::notify() {
     transform(ss.begin(), ss.end(), cameraPosition.begin(), [](auto&& s) { return stod(s); });
   }
   assert(bufferSize > 0);
+  assert(pointSize > 0);
   for (const string& idColor : idColors_) {
     vector<string> ss;
     boost::algorithm::split(ss, idColor, boost::is_any_of(","));
@@ -86,6 +91,7 @@ ostream& operator<<(ostream& out, const VisualizerParameter& obj) {
       (SHOW_PARAMETER_OPT, obj.showParameter)     //
       (CAMERA_POSITION_OPT, obj.cameraPosition_)  //
       (BUFFER_SIZE_OPT, obj.bufferSize)           //
+      (POINT_SIZE_OPT, obj.pointSize)             //
       (ID_COLORS_OPT, obj.idColors_)              //
       ;
   return out;

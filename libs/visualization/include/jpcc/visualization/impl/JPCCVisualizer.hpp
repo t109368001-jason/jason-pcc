@@ -13,7 +13,10 @@ template <typename PointT>
 void JPCCVisualizer<PointT>::updateOrAddCloud(const FramePtr         cloud,
                                               const PointCloudColor& color,
                                               const std::string&     id) {
-  if (!updatePointCloud(cloud, color, id)) { addPointCloud(cloud, color, id); }
+  if (!updatePointCloud(cloud, color, id)) {
+    addPointCloud(cloud, color, id);
+    setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, param_.pointSize, id);
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
