@@ -47,6 +47,7 @@ JPCCVisualizerBase::JPCCVisualizerBase(const VisualizerParameter& param) :
     event.getPoint(point.x, point.y, point.z);
     cout << "picked point=" << point << endl;
   });
+  if (param_.windowWidth != 0 && param_.windowHeight != 0) { setSize(param_.windowWidth, param_.windowHeight); }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

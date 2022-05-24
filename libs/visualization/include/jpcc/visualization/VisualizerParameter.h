@@ -25,6 +25,8 @@ class VisualizerParameter : public virtual Parameter {
   std::array<double, 9>              cameraPosition;
   size_t                             bufferSize;
   size_t                             pointSize;
+  int                                windowWidth;
+  int                                windowHeight;
   std::map<std::string, std::string> fieldColorMap;
   std::map<std::string, RGBColor>    rgbColorMap;
 

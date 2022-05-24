@@ -13,6 +13,8 @@ using namespace po;
 #define CAMERA_POSITION_OPT ".cameraPosition"
 #define BUFFER_SIZE_OPT ".bufferSize"
 #define POINT_SIZE_OPT ".pointSize"
+#define WINDOW_WIDTH_OPT ".windowWidth"
+#define WINDOW_HEIGHT_OPT ".windowHeight"
 #define ID_COLORS_OPT ".idColors"
 
 VisualizerParameter::VisualizerParameter() : VisualizerParameter(VISUALIZER_OPT_PREFIX, __FUNCTION__) {}
@@ -23,7 +25,10 @@ VisualizerParameter::VisualizerParameter(const string& prefix, const string& cap
     description(),
     showParameter(true),
     cameraPosition({50.0, 0.0, 200.0, 50.0, 0.0, 0.0, 1.0, 0.0, 0.0}),
-    bufferSize(32) {
+    bufferSize(32),
+    pointSize(1),
+    windowWidth(0),
+    windowHeight(0) {
   cameraPosition.fill(0.0);
   opts_.add_options()                                                    //
       (string(prefix_ + NAME_OPT).c_str(),                               //
@@ -44,6 +49,12 @@ VisualizerParameter::VisualizerParameter(const string& prefix, const string& cap
       (string(prefix_ + POINT_SIZE_OPT).c_str(),                         //
        value<size_t>(&pointSize)->default_value(pointSize),              //
        "pointSize")                                                      //
+      (string(prefix_ + WINDOW_WIDTH_OPT).c_str(),                       //
+       value<int>(&windowWidth)->default_value(windowWidth),             //
+       "windowWidth")                                                    //
+      (string(prefix_ + WINDOW_HEIGHT_OPT).c_str(),                      //
+       value<int>(&windowHeight)->default_value(windowHeight),           //
+       "windowHeight")                                                   //
       (string(prefix_ + ID_COLORS_OPT).c_str(),                          //
        value<vector<string>>(&idColors_),                                //
        "idColors")                                                       //
@@ -92,6 +103,8 @@ ostream& operator<<(ostream& out, const VisualizerParameter& obj) {
       (CAMERA_POSITION_OPT, obj.cameraPosition_)  //
       (BUFFER_SIZE_OPT, obj.bufferSize)           //
       (POINT_SIZE_OPT, obj.pointSize)             //
+      (WINDOW_WIDTH_OPT, obj.windowWidth)         //
+      (WINDOW_HEIGHT_OPT, obj.windowHeight)       //
       (ID_COLORS_OPT, obj.idColors_)              //
       ;
   return out;
