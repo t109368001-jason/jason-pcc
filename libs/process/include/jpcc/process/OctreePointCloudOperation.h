@@ -1,7 +1,6 @@
 #pragma once
 
 #include <jpcc/common/Common.h>
-#include <jpcc/common/GroupOfFrame.h>
 #include <jpcc/octree/OctreeNBuf.h>
 
 #define PCL_NO_PRECOMPILE

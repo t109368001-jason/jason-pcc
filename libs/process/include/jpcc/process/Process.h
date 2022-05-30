@@ -1,7 +1,6 @@
 #pragma once
 
 #include <jpcc/common/Common.h>
-#include <jpcc/common/GroupOfFrame.h>
 
 namespace jpcc::process {
 

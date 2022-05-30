@@ -55,7 +55,7 @@ void previewOnly(const AppParameter& parameter, StopwatchUserTime& clock) {
   reader->loadAll(parameter.dataset.getStartFrameNumber(), 1, frames, parameter.parallel);
   preProcessor.process(frames, nullptr, parameter.parallel);
   normalEstimation.computeInPlaceAll(frames, parameter.parallel);
-  process::quantize(frames, parameter.resolution, parameter.parallel);
+  process::quantize<PointT>(frames, parameter.resolution, parameter.parallel);
   clock.stop();
   {
     auto indices = jpcc::make_shared<Indices>();
@@ -104,7 +104,7 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
     reader->loadAll(frameNumber, groupOfFramesSize, frames, parameter.parallel);
     preProcessor.process(frames, nullptr, parameter.parallel);
     normalEstimation.computeInPlaceAll(frames, parameter.parallel);
-    process::quantize(frames, parameter.resolution, parameter.parallel);
+    process::quantize<PointT>(frames, parameter.resolution, parameter.parallel);
     clock.stop();
     for (auto& frame : frames) {
       auto background = jpcc::make_shared<Frame<PointT>>();

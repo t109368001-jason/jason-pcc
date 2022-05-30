@@ -3,7 +3,6 @@
 #include <pcl/features/normal_3d.h>
 
 #include <jpcc/common/Common.h>
-#include <jpcc/common/GroupOfFrame.h>
 #include <jpcc/process/JPCCNormalEstimationParameter.h>
 
 namespace jpcc::process {

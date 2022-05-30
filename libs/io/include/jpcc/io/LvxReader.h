@@ -6,7 +6,6 @@
 #include <lvx_file.h>
 
 #include <jpcc/common/Common.h>
-#include <jpcc/common/GroupOfFrame.h>
 #include <jpcc/io/DatasetParameter.h>
 #include <jpcc/io/DatasetReaderParameter.h>
 #include <jpcc/io/DatasetStreamReader.h>

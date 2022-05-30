@@ -7,7 +7,6 @@
 #include <pcl/visualization/pcl_visualizer.h>
 
 #include <jpcc/common/Common.h>
-#include <jpcc/common/GroupOfFrame.h>
 #include <jpcc/visualization/JPCCVisualizerBase.h>
 
 namespace jpcc::visualization {

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <jpcc/common/Common.h>
-#include <jpcc/common/GroupOfFrame.h>
 #include <jpcc/io/DatasetReaderBase.h>
 #include <jpcc/io/DatasetParameter.h>
 #include <jpcc/io/DatasetReaderParameter.h>

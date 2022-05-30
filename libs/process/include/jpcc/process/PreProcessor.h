@@ -6,7 +6,6 @@
 #include <pcl/filters/filter_indices.h>
 
 #include <jpcc/common/Common.h>
-#include <jpcc/common/GroupOfFrame.h>
 #include <jpcc/process/PreProcessParameter.h>
 
 namespace jpcc::process {
