@@ -158,7 +158,7 @@ class OctreeNBufBase {
 
   [[nodiscard]] BufferIndex getBufferIndex() const;
 
-  [[nodiscard]] BufferIndex getBufferSize() const;
+  [[nodiscard]] constexpr BufferIndex getBufferSize() const;
 
   void deleteTree();
 

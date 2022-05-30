@@ -11,6 +11,7 @@
 #include <jpcc/process/JPCCConditionalRemoval.h>
 #include <jpcc/process/JPCCNormalEstimation.h>
 #include <jpcc/octree/OctreeContainerCounter.h>
+#include <jpcc/octree/OctreeNBuf.h>
 #include <jpcc/visualization/JPCCVisualizer.h>
 
 #include "AppParameter.h"
@@ -31,10 +32,10 @@ using namespace jpcc::visualization;
 
 using PointT = PointNormal;
 
-using OctreePointCloudT = OctreePointCloud<PointT,
-                                           OctreeContainerCounter,
-                                           OctreeContainerEmpty,
-                                           OctreeBase<OctreeContainerCounter, OctreeContainerEmpty>>;
+using OctreeCounterT = OctreePointCloud<PointT,
+                                        OctreeContainerCounter,
+                                        OctreeContainerEmpty,
+                                        OctreeNBuf<3, OctreeContainerCounter, OctreeContainerEmpty>>;
 
 void previewOnly(const AppParameter& parameter, StopwatchUserTime& clock) {
   JPCCVisualizer<PointT>::Ptr viewer = jpcc::make_shared<JPCCVisualizer<PointT>>(parameter.visualizerParameter);
@@ -82,13 +83,9 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
     previewOnly(parameter, clock);
     return;
   }
-  OctreePointCloudT octree(parameter.resolution);
-  OctreePointCloudT backgroundOctree(parameter.resolution);
-  OctreePointCloudT dynamicOctree(parameter.resolution);
+  OctreeCounterT octreeCounter(parameter.resolution);
 
-  octree.defineBoundingBox(parameter.resolution * 2);
-  backgroundOctree.defineBoundingBox(parameter.resolution * 2);
-  dynamicOctree.defineBoundingBox(parameter.resolution * 2);
+  octreeCounter.defineBoundingBox(parameter.resolution * 2);
 
   const DatasetReader<PointT>::Ptr   reader = newReader<PointT>(parameter.reader, parameter.dataset);
   PreProcessor<PointT>               preProcessor(parameter.preProcess);
@@ -99,7 +96,7 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
 
   size_t groupOfFramesSize = 32;
   size_t frameNumber       = parameter.dataset.getStartFrameNumber();
-  size_t endFrameNumber    = parameter.dataset.getEndFrameNumber();
+  size_t endFrameNumber    = frameNumber + 32;
 
   while (frameNumber < endFrameNumber) {
     GroupOfFrame<PointT> frames;
@@ -125,41 +122,41 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
         split<PointT>(frame, indices, dynamic, frame);
       }
 
-      octree.setInputCloud(frame);
-      octree.addPointsFromInputCloud();
-      backgroundOctree.setInputCloud(background);
-      backgroundOctree.addPointsFromInputCloud();
-      dynamicOctree.setInputCloud(dynamic);
-      dynamicOctree.addPointsFromInputCloud();
+      octreeCounter.switchBuffers(0);
+      octreeCounter.setInputCloud(background);
+      octreeCounter.addPointsFromInputCloud();
+
+      octreeCounter.switchBuffers(1);
+      octreeCounter.setInputCloud(dynamic);
+      octreeCounter.addPointsFromInputCloud();
+
+      octreeCounter.switchBuffers(2);
+      octreeCounter.setInputCloud(frame);
+      octreeCounter.addPointsFromInputCloud();
+
+      cout << background->size() << "," << dynamic->size() << "," << frame->size() << endl;
     }
     frameNumber += groupOfFramesSize;
   }
 
-  map<size_t, array<size_t, 3>> countCounter;
+  map<size_t, array<size_t, octreeCounter.getBufferSize()>> countCounter;
 
-  for (auto it = octree.leaf_depth_begin(), end = octree.leaf_depth_end(); it != end; ++it) {
-    const size_t count = it.getLeafContainer().getCount();
-    countCounter.try_emplace(count, array<size_t, 3>{0, 0, 0});
-    countCounter.at(count).at(0) = countCounter.at(count).at(0) + 1;
-  }
-  for (auto it = backgroundOctree.leaf_depth_begin(), end = backgroundOctree.leaf_depth_end(); it != end; ++it) {
-    const size_t count = it.getLeafContainer().getCount();
-    countCounter.try_emplace(count, array<size_t, 3>{0, 0, 0});
-    countCounter.at(count).at(1) = countCounter.at(count).at(1) + 1;
-  }
-  for (auto it = dynamicOctree.leaf_depth_begin(), end = dynamicOctree.leaf_depth_end(); it != end; ++it) {
-    const size_t count = it.getLeafContainer().getCount();
-    countCounter.try_emplace(count, array<size_t, 3>{0, 0, 0});
-    countCounter.at(count).at(2) = countCounter.at(count).at(2) + 1;
+  for (BufferIndex bufferIndex = 0; bufferIndex < octreeCounter.getBufferSize(); bufferIndex++) {
+    octreeCounter.switchBuffers(bufferIndex);
+    for (auto it = octreeCounter.leaf_depth_begin(), end = octreeCounter.leaf_depth_end(); it != end; ++it) {
+      const size_t count = it.getLeafContainer().getCount();
+      countCounter.try_emplace(count, array<size_t, octreeCounter.getBufferSize()>{0, 0, 0});
+      countCounter.at(count).at(bufferIndex) = countCounter.at(count).at(bufferIndex) + 1;
+    }
   }
   ofstream ofs(parameter.outputCSVPath);
   ofs << "Occupancy Count"
       << ","
-      << "Count"
-      << ","
       << "Count (Background)"
       << ","
-      << "Count (Dynamic)" << endl;
+      << "Count (Dynamic)"
+      << ","
+      << "Count (Other)" << endl;
   for (const auto& [occupancyCount, countArray] : countCounter) {
     ofs << occupancyCount << "," << countArray.at(0) << "," << countArray.at(1) << "," << countArray.at(2) << endl;
   }

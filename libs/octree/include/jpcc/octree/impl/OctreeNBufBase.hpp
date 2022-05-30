@@ -260,7 +260,7 @@ BufferIndex OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::getBu
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <BufferIndex BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
-BufferIndex OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::getBufferSize() const {
+constexpr BufferIndex OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::getBufferSize() const {
   return BUFFER_SIZE;
 }
 
