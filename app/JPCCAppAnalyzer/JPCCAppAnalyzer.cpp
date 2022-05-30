@@ -114,7 +114,7 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
       auto dynamic    = jpcc::make_shared<Frame<PointT>>();
       {
         auto indices = jpcc::make_shared<Indices>();
-        backgroundFilter->setInputCloud(frames.at(0));
+        backgroundFilter->setInputCloud(frame);
         backgroundFilter->filter(*indices);
         split<PointT>(frame, indices, background, frame);
       }
