@@ -9,7 +9,7 @@
 
 namespace jpcc::io {
 
-template <typename PointT = Point>
+template <typename PointT>
 class PlyReader : public DatasetReader<PointT> {
  public:
   using GroupOfFrame = jpcc::GroupOfFrame<PointT>;

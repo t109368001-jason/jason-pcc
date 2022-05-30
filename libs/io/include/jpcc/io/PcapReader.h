@@ -11,7 +11,7 @@
 
 namespace jpcc::io {
 
-template <typename PointT = Point>
+template <typename PointT>
 class PcapReader : public DatasetStreamReader<PointT> {
  public:
   using Frame        = jpcc::Frame<PointT>;

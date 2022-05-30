@@ -9,7 +9,7 @@
 
 namespace jpcc::io {
 
-template <typename PointT = Point>
+template <typename PointT>
 class DatasetStreamReader : public DatasetReader<PointT> {
  public:
   using Ptr          = shared_ptr<DatasetStreamReader>;

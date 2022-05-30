@@ -53,7 +53,7 @@ using ChildIndex = uint16_t;
 
 using ChildPattern = std::bitset<8>;
 
-template <BufferIndex BUFFER_SIZE = 2, typename BranchContainerT = pcl::octree::OctreeContainerEmpty>
+template <BufferIndex BUFFER_SIZE, typename BranchContainerT = pcl::octree::OctreeContainerEmpty>
 class OctreeNBufBranchNode : public pcl::octree::OctreeNode {
  public:
   using BranchContainer = BranchContainerT;

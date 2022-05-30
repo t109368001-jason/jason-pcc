@@ -17,14 +17,16 @@ using namespace jpcc;
 using namespace jpcc::io;
 using namespace jpcc::process;
 
-void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
-  const DatasetReader<>::Ptr reader = newReader<>(parameter.inputReader, parameter.inputDataset);
-  PreProcessor<>             preProcessor(parameter.preProcess);
+using PointT = Point;
 
-  GroupOfFrame<> frames;
-  size_t         groupOfFramesSize = 32;
-  size_t         frameNumber       = parameter.inputDataset.getStartFrameNumber();
-  const size_t   endFrameNumber    = parameter.inputDataset.getEndFrameNumber();
+void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
+  const DatasetReader<PointT>::Ptr reader = newReader<PointT>(parameter.inputReader, parameter.inputDataset);
+  PreProcessor<PointT>             preProcessor(parameter.preProcess);
+
+  GroupOfFrame<PointT> frames;
+  size_t               groupOfFramesSize = 32;
+  size_t               frameNumber       = parameter.inputDataset.getStartFrameNumber();
+  const size_t         endFrameNumber    = parameter.inputDataset.getEndFrameNumber();
   while (frameNumber < endFrameNumber) {
     size_t groupOfFramesSize_ = endFrameNumber - frameNumber;
     if (groupOfFramesSize_ < groupOfFramesSize) { groupOfFramesSize = groupOfFramesSize_; }
@@ -34,7 +36,7 @@ void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
     preProcessor.process(frames, nullptr, parameter.parallel);
     clock.stop();
 
-    savePly(frames, parameter.outputDataset.getFilePath(), parameter.parallel);
+    savePly<PointT>(frames, parameter.outputDataset.getFilePath(), parameter.parallel);
 
     frameNumber += groupOfFramesSize;
   }

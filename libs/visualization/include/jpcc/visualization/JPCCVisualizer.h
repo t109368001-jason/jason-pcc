@@ -11,7 +11,7 @@
 
 namespace jpcc::visualization {
 
-template <typename PointT = Point>
+template <typename PointT>
 class JPCCVisualizer : public JPCCVisualizerBase {
  public:
   using Ptr                = shared_ptr<JPCCVisualizer>;

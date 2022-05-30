@@ -8,7 +8,7 @@
 
 namespace jpcc::process {
 
-template <typename PointT = Point, bool singlePointVoxel = false>
+template <typename PointT, bool singlePointVoxel = false>
 class OctreePointCloudOperation
     : public pcl::octree::OctreePointCloud<
           PointT,

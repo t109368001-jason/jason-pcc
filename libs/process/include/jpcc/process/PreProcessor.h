@@ -10,7 +10,7 @@
 
 namespace jpcc::process {
 
-template <typename PointT = Point>
+template <typename PointT>
 class PreProcessor {
  public:
   using Ptr                = shared_ptr<PreProcessor>;

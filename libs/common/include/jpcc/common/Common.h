@@ -26,12 +26,12 @@ using IndicesPtr = shared_ptr<Indices>;
 using Point       = pcl::PointXYZ;
 using PointNormal = pcl::PointNormal;
 
-template <typename PointT = Point>
+template <typename PointT>
 using Frame = pcl::PointCloud<PointT>;
-template <typename PointT = Point>
+template <typename PointT>
 using FramePtr = typename Frame<PointT>::Ptr;
 
-template <typename PointT = Point>
+template <typename PointT>
 using GroupOfFrame = std::vector<FramePtr<PointT>>;
 
 }  // namespace jpcc

@@ -7,7 +7,7 @@
 
 namespace jpcc::process {
 
-template <typename PointT = Point>
+template <typename PointT>
 class JPCCNormalEstimation {
  public:
   using Ptr              = shared_ptr<JPCCNormalEstimation>;

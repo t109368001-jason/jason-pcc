@@ -6,7 +6,7 @@
 
 namespace jpcc::io {
 
-template <typename PointT = Point>
+template <typename PointT>
 [[nodiscard]] typename DatasetReader<PointT>::Ptr newReader(const DatasetReaderParameter& param,
                                                             const DatasetParameter&       datasetParam);
 

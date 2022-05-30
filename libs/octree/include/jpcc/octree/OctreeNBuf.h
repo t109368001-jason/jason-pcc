@@ -11,7 +11,7 @@
 
 namespace jpcc::octree {
 
-template <BufferIndex BUFFER_SIZE   = 2,
+template <BufferIndex BUFFER_SIZE,
           typename LeafContainerT   = pcl::octree::OctreeContainerPointIndices,
           typename BranchContainerT = pcl::octree::OctreeContainerEmpty>
 class OctreeNBuf : public virtual OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT> {
