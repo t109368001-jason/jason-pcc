@@ -96,7 +96,7 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
 
   size_t groupOfFramesSize = 32;
   size_t frameNumber       = parameter.dataset.getStartFrameNumber();
-  size_t endFrameNumber    = frameNumber + 32;
+  size_t endFrameNumber    = parameter.dataset.getEndFrameNumber();
 
   while (frameNumber < endFrameNumber) {
     GroupOfFrame<PointT> frames;
@@ -133,8 +133,6 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
       octreeCounter.switchBuffers(2);
       octreeCounter.setInputCloud(frame);
       octreeCounter.addPointsFromInputCloud();
-
-      cout << background->size() << "," << dynamic->size() << "," << frame->size() << endl;
     }
     frameNumber += groupOfFramesSize;
   }
