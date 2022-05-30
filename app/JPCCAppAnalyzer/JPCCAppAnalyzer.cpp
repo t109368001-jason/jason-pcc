@@ -36,11 +36,51 @@ using OctreePointCloudT = OctreePointCloud<PointT,
                                            OctreeContainerEmpty,
                                            OctreeBase<OctreeContainerCounter, OctreeContainerEmpty>>;
 
+void previewOnly(const AppParameter& parameter, StopwatchUserTime& clock) {
+  JPCCVisualizer<PointT>::Ptr viewer = jpcc::make_shared<JPCCVisualizer<PointT>>(parameter.visualizerParameter);
+  viewer->addParameter(parameter);
+
+  const DatasetReader<PointT>::Ptr   reader = newReader<PointT>(parameter.reader, parameter.dataset);
+  PreProcessor<PointT>               preProcessor(parameter.preProcess);
+  const JPCCNormalEstimation<PointT> normalEstimation(parameter.jpccNormalEstimation);
+
+  auto backgroundFilter = jpcc::make_shared<JPCCConditionalRemoval<PointT>>(parameter.background);
+  auto dynamicFilter    = jpcc::make_shared<JPCCConditionalRemoval<PointT>>(parameter.dynamic);
+
+  GroupOfFrame<PointT> frames;
+  auto                 background = jpcc::make_shared<Frame<PointT>>();
+  auto                 dynamic    = jpcc::make_shared<Frame<PointT>>();
+  clock.start();
+  reader->loadAll(parameter.dataset.getStartFrameNumber(), 1, frames, parameter.parallel);
+  preProcessor.process(frames, nullptr, parameter.parallel);
+  normalEstimation.computeInPlaceAll(frames, parameter.parallel);
+  process::quantize(frames, parameter.resolution, parameter.parallel);
+  clock.stop();
+  {
+    auto indices = jpcc::make_shared<Indices>();
+    backgroundFilter->setInputCloud(frames.at(0));
+    backgroundFilter->filter(*indices);
+    split<PointT>(frames.at(0), indices, background, frames.at(0));
+  }
+  {
+    auto indices = jpcc::make_shared<Indices>();
+    dynamicFilter->setInputCloud(frames.at(0));
+    dynamicFilter->filter(*indices);
+    split<PointT>(frames.at(0), indices, dynamic, frames.at(0));
+  }
+  viewer->enqueue({
+      {"cloud", frames},                                 //
+      {"background", GroupOfFrame<PointT>{background}},  //
+      {"dynamic", GroupOfFrame<PointT>{dynamic}},        //
+  });
+  viewer->nextFrame();
+  viewer->spin();
+}
+
 void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
-  JPCCVisualizer<PointT>::Ptr viewer;
   if (parameter.previewOnly) {
-    viewer = jpcc::make_shared<JPCCVisualizer<PointT>>(parameter.visualizerParameter);
-    viewer->addParameter(parameter);
+    previewOnly(parameter, clock);
+    return;
   }
   OctreePointCloudT octree(parameter.resolution);
   OctreePointCloudT backgroundOctree(parameter.resolution);
@@ -56,38 +96,6 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
 
   auto backgroundFilter = jpcc::make_shared<JPCCConditionalRemoval<PointT>>(parameter.background);
   auto dynamicFilter    = jpcc::make_shared<JPCCConditionalRemoval<PointT>>(parameter.dynamic);
-
-  if (parameter.previewOnly) {
-    GroupOfFrame<PointT> frames;
-    auto                 background = jpcc::make_shared<Frame<PointT>>();
-    auto                 dynamic    = jpcc::make_shared<Frame<PointT>>();
-    clock.start();
-    reader->loadAll(parameter.dataset.getStartFrameNumber(), 1, frames, parameter.parallel);
-    preProcessor.process(frames, nullptr, parameter.parallel);
-    normalEstimation.computeInPlaceAll(frames, parameter.parallel);
-    process::quantize(frames, parameter.resolution, parameter.parallel);
-    clock.stop();
-    {
-      auto indices = jpcc::make_shared<Indices>();
-      backgroundFilter->setInputCloud(frames.at(0));
-      backgroundFilter->filter(*indices);
-      split<PointT>(frames.at(0), indices, background, frames.at(0));
-    }
-    {
-      auto indices = jpcc::make_shared<Indices>();
-      dynamicFilter->setInputCloud(frames.at(0));
-      dynamicFilter->filter(*indices);
-      split<PointT>(frames.at(0), indices, dynamic, frames.at(0));
-    }
-    viewer->enqueue({
-        {"cloud", frames},                                 //
-        {"background", GroupOfFrame<PointT>{background}},  //
-        {"dynamic", GroupOfFrame<PointT>{dynamic}},        //
-    });
-    viewer->nextFrame();
-    viewer->spin();
-    return;
-  }
 
   size_t groupOfFramesSize = 32;
   size_t frameNumber       = parameter.dataset.getStartFrameNumber();
