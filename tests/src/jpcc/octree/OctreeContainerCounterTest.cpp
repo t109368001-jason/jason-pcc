@@ -5,21 +5,20 @@
 
 #include "test_data/octree/TestOctree.h"
 
-#define PCL_NO_PRECOMPILE
-#include <pcl/octree/octree_pointcloud.h>
+#include <jpcc/octree/OctreePointCloud.h>
 
 using namespace std;
 using namespace pcl::octree;
 
 namespace jpcc::octree {
 
-using OctreePointCloud = OctreePointCloud<Point,
-                                          OctreeContainerCounter,
-                                          OctreeContainerEmpty,
-                                          OctreeBase<OctreeContainerCounter, OctreeContainerEmpty>>;
+using OctreePointCloudT = OctreePointCloud<Point,
+                                           OctreeContainerCounter,
+                                           OctreeContainerEmpty,
+                                           OctreeBase<OctreeContainerCounter, OctreeContainerEmpty>>;
 
 TEST(OctreeContainerCounterTest, getChildPattern) {
-  OctreePointCloud octree(RESOLUTION);
+  OctreePointCloudT octree(RESOLUTION);
 
   octree.defineBoundingBox(BOUNDING_BOX);
 

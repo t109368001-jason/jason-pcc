@@ -24,8 +24,7 @@
 
 #include "AppParameter.h"
 
-#define PCL_NO_PRECOMPILE
-#include <pcl/octree/octree_pointcloud.h>
+#include <jpcc/octree/OctreePointCloud.h>
 
 #define BUFFER_SIZE 8
 

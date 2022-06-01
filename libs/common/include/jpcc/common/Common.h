@@ -20,6 +20,7 @@ using pcl::make_shared;
 using pcl::shared_ptr;
 
 using index_t    = pcl::index_t;
+using uindex_t   = pcl::uindex_t;
 using Indices    = pcl::Indices;
 using IndicesPtr = shared_ptr<Indices>;
 
