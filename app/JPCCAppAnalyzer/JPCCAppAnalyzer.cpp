@@ -10,13 +10,10 @@
 #include <jpcc/process/PreProcessor.h>
 #include <jpcc/process/JPCCConditionalRemoval.h>
 #include <jpcc/process/JPCCNormalEstimation.h>
-#include <jpcc/octree/OctreeContainerCounter.h>
-#include <jpcc/octree/OctreeNBuf.h>
+#include <jpcc/octree/OctreeCounter.h>
 #include <jpcc/visualization/JPCCVisualizer.h>
 
 #include "AppParameter.h"
-
-#include <jpcc/octree/OctreePointCloud.h>
 
 using namespace std;
 using namespace std::chrono;
@@ -29,12 +26,8 @@ using namespace jpcc::process;
 using namespace jpcc::octree;
 using namespace jpcc::visualization;
 
-using PointT = PointNormal;
-
-using OctreeCounterT = OctreePointCloud<PointT,
-                                        OctreeContainerCounter,
-                                        OctreeContainerEmpty,
-                                        OctreeNBuf<3, OctreeContainerCounter, OctreeContainerEmpty>>;
+using PointT         = PointNormal;
+using OctreeCounterT = OctreeCounter<PointT, 3>;
 
 void previewOnly(const AppParameter& parameter, StopwatchUserTime& clock) {
   JPCCVisualizer<PointT>::Ptr viewer = jpcc::make_shared<JPCCVisualizer<PointT>>(parameter.visualizerParameter);
@@ -83,8 +76,6 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
     return;
   }
   OctreeCounterT octreeCounter(parameter.resolution);
-
-  octreeCounter.defineBoundingBox(parameter.resolution * 2);
 
   const DatasetReader<PointT>::Ptr   reader = newReader<PointT>(parameter.reader, parameter.dataset);
   PreProcessor<PointT>               preProcessor(parameter.preProcess);
@@ -136,16 +127,8 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
     frameNumber += groupOfFramesSize;
   }
 
-  map<size_t, array<size_t, octreeCounter.getBufferSize()>> countCounter;
+  OctreeCounterT::CountMap countMap = octreeCounter.getOccupancyCountToVoxelCount();
 
-  for (BufferIndex bufferIndex = 0; bufferIndex < octreeCounter.getBufferSize(); bufferIndex++) {
-    octreeCounter.switchBuffers(bufferIndex);
-    for (auto it = octreeCounter.leaf_depth_begin(), end = octreeCounter.leaf_depth_end(); it != end; ++it) {
-      const size_t count = it.getLeafContainer().getCount();
-      countCounter.try_emplace(count, array<size_t, octreeCounter.getBufferSize()>{0, 0, 0});
-      countCounter.at(count).at(bufferIndex) = countCounter.at(count).at(bufferIndex) + 1;
-    }
-  }
   ofstream ofs(parameter.outputCSVPath);
   ofs << "Occupancy Count"
       << ","
@@ -154,7 +137,7 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
       << "Count (Dynamic)"
       << ","
       << "Count (Other)" << endl;
-  for (const auto& [occupancyCount, countArray] : countCounter) {
+  for (const auto& [occupancyCount, countArray] : countMap) {
     ofs << occupancyCount << "," << countArray.at(0) << "," << countArray.at(1) << "," << countArray.at(2) << endl;
   }
 }
