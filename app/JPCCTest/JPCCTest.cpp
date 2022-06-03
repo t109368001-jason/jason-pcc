@@ -116,9 +116,7 @@ void test(const AppParameter& parameter, StopwatchUserTime& clock) {
 
         for (size_t i = 0; i < frames.size(); i++) {
           try {
-            octreePointCloud.switchBuffers(bufferIndex);
-            octreePointCloud.deleteBuffer(bufferIndex);
-            octreePointCloud.setFrame(frameBuffer.at(bufferIndex));
+            octreePointCloud.setFrame(bufferIndex, frameBuffer.at(bufferIndex));
 
             startFrameNumber += 1;
             bufferIndex = (bufferIndex + 1) % BUFFER_SIZE;
@@ -134,9 +132,7 @@ void test(const AppParameter& parameter, StopwatchUserTime& clock) {
           frameBuffer.at(bufferIndex) = frames.at(0);
           calcNormal(frameBuffer.at(bufferIndex));
 
-          octreePointCloud.switchBuffers(bufferIndex);
-          octreePointCloud.deleteBuffer(bufferIndex);
-          octreePointCloud.setFrame(frameBuffer.at(bufferIndex));
+          octreePointCloud.setFrame(bufferIndex, frameBuffer.at(bufferIndex));
 
           {
             const auto indices       = jpcc::make_shared<Indices>();

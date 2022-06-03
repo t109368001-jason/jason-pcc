@@ -100,8 +100,7 @@ TEST(OctreeNBufTest, reuseBuffer) {
     }
     {
       Indices indices;
-      octreePointCloud.deleteBuffer(bufferIndex);
-      octreePointCloud.setFrame(getTestCloud(0));
+      octreePointCloud.setFrame(bufferIndex, getTestCloud(0));
       octreePointCloud.getIndicesByFilter(
           [filter, bufferIndex](auto&& bufferPattern) {
             return filter(bufferIndex, std::forward<decltype(bufferPattern)>(bufferPattern));

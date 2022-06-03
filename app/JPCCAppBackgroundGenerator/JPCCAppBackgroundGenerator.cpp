@@ -57,9 +57,7 @@ void backgroundGenerator(const AppParameter& parameter, StopwatchUserTime& clock
     for (size_t i = 0; i < frames.size(); i++) {
       if (i != 0) { bufferIndex = (bufferIndex + 1) % BUFFER_SIZE; }
       frameBuffer.at(bufferIndex) = frames.at(i);
-      octreePointCloud.switchBuffers(bufferIndex);
-      octreePointCloud.deleteBuffer(bufferIndex);
-      octreePointCloud.setFrame(frameBuffer.at(bufferIndex));
+      octreePointCloud.setFrame(bufferIndex, frameBuffer.at(bufferIndex));
     }
 
     JPCCOctreePointCloud<Point, OctreeContainerPointIndex, BranchContainerT,

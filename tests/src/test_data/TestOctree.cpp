@@ -9,8 +9,7 @@ getTestOctree() {
   JPCCOctreePointCloud<Point, OctreeContainerPointIndices, OctreeContainerEmpty, OctreeNBuf<BUFFER_SIZE>>
       octreePointCloud(RESOLUTION);
   for (BufferIndex bufferIndex = 0; bufferIndex < BUFFER_SIZE; ++bufferIndex) {
-    octreePointCloud.switchBuffers(bufferIndex);
-    octreePointCloud.setFrame(getTestCloud(bufferIndex));
+    octreePointCloud.setFrame(bufferIndex, getTestCloud(bufferIndex));
   }
   return octreePointCloud;
 }

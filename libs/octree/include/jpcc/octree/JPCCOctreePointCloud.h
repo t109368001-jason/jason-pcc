@@ -3,6 +3,7 @@
 #include <pcl/octree/octree_base.h>
 
 #include <jpcc/common/Common.h>
+#include <jpcc/octree/OctreeNBuf.h>
 #include <jpcc/octree/OctreePointCloud.h>
 
 namespace jpcc::octree {
@@ -19,6 +20,8 @@ class JPCCOctreePointCloud : public OctreePointCloud<PointT, LeafContainerT, Bra
   JPCCOctreePointCloud(double resolution);
 
   void setFrame(FramePtr frame);
+
+  void setFrame(BufferIndex bufferIndex, FramePtr frame);
 };
 
 }  // namespace jpcc::octree

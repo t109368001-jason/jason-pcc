@@ -13,20 +13,14 @@ OctreePointCloudOperation<PointT, quantize>::OctreePointCloudOperation(double re
 template <typename PointT, bool quantize>
 void OctreePointCloudOperation<PointT, quantize>::setSource(FramePtr source) {
   source_ = source;
-  this->switchBuffers(0);
-  this->deleteBuffer(0);
-  this->setInputCloud(source_);
-  this->addPointsFromInputCloud();
+  this->setFrame(0, source_);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, bool quantize>
 void OctreePointCloudOperation<PointT, quantize>::setTarget(FramePtr target) {
   target_ = target;
-  this->switchBuffers(1);
-  this->deleteBuffer(1);
-  this->setInputCloud(target_);
-  this->addPointsFromInputCloud();
+  this->setFrame(1, target_);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
