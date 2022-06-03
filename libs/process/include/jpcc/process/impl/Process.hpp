@@ -49,8 +49,7 @@ void quantize(const FramePtr<PointT>& frame, const double resolution) {
                                                                pcl::octree::OctreeContainerEmpty, OctreeT>;
 
   OctreePointCloudT octreePointCloud(resolution);
-  octreePointCloud.setInputCloud(frame);
-  octreePointCloud.addPointsFromInputCloud();
+  octreePointCloud.setFrame(frame);
 
   auto indices = make_shared<Indices>();
   for (auto it = octreePointCloud.begin(), it_a_end = octreePointCloud.end(); it != it_a_end; ++it) {

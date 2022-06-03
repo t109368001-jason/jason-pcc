@@ -7,7 +7,6 @@
 namespace jpcc::octree {
 
 #define RESOLUTION 0.5
-#define BOUNDING_BOX 1.0
 
 jpcc::octree::JPCCOctreePointCloud<
     Point,

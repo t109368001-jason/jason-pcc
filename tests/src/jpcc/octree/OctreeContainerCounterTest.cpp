@@ -20,11 +20,8 @@ using OctreePointCloudT = JPCCOctreePointCloud<Point,
 TEST(OctreeContainerCounterTest, getChildPattern) {
   OctreePointCloudT octreePointCloud(RESOLUTION);
 
-  octreePointCloud.defineBoundingBox(BOUNDING_BOX);
-
   for (BufferIndex bufferIndex = 0; bufferIndex < BUFFER_SIZE; ++bufferIndex) {
-    octreePointCloud.setInputCloud(getTestCloud(bufferIndex));
-    octreePointCloud.addPointsFromInputCloud();
+    octreePointCloud.setFrame(getTestCloud(bufferIndex));
   }
   vector<size_t> counts = getCounts();
 

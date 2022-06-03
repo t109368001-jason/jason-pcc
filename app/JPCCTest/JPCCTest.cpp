@@ -92,7 +92,6 @@ void test(const AppParameter& parameter, StopwatchUserTime& clock) {
           return e < parameter.float2;
         };
         OctreePointCloudT octreePointCloud(0.1);
-        octreePointCloud.defineBoundingBox(octreePointCloud.getResolution() * 2);
 
         clock.start();
         reader->loadAll(startFrameNumber, BUFFER_SIZE - 1, frames, parameter.parallel);
@@ -119,8 +118,7 @@ void test(const AppParameter& parameter, StopwatchUserTime& clock) {
           try {
             octreePointCloud.switchBuffers(bufferIndex);
             octreePointCloud.deleteBuffer(bufferIndex);
-            octreePointCloud.setInputCloud(frameBuffer.at(bufferIndex));
-            octreePointCloud.addPointsFromInputCloud();
+            octreePointCloud.setFrame(frameBuffer.at(bufferIndex));
 
             startFrameNumber += 1;
             bufferIndex = (bufferIndex + 1) % BUFFER_SIZE;
@@ -138,8 +136,7 @@ void test(const AppParameter& parameter, StopwatchUserTime& clock) {
 
           octreePointCloud.switchBuffers(bufferIndex);
           octreePointCloud.deleteBuffer(bufferIndex);
-          octreePointCloud.setInputCloud(frameBuffer.at(bufferIndex));
-          octreePointCloud.addPointsFromInputCloud();
+          octreePointCloud.setFrame(frameBuffer.at(bufferIndex));
 
           {
             const auto indices       = jpcc::make_shared<Indices>();

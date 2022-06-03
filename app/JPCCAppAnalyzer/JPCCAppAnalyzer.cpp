@@ -113,16 +113,13 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
       }
 
       octreeCounter.switchBuffers(0);
-      octreeCounter.setInputCloud(background);
-      octreeCounter.addPointsFromInputCloud();
+      octreeCounter.setFrame(background);
 
       octreeCounter.switchBuffers(1);
-      octreeCounter.setInputCloud(dynamic);
-      octreeCounter.addPointsFromInputCloud();
+      octreeCounter.setFrame(dynamic);
 
       octreeCounter.switchBuffers(2);
-      octreeCounter.setInputCloud(frame);
-      octreeCounter.addPointsFromInputCloud();
+      octreeCounter.setFrame(frame);
     }
     frameNumber += groupOfFramesSize;
   }

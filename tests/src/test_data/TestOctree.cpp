@@ -8,11 +8,9 @@ JPCCOctreePointCloud<Point, OctreeContainerPointIndices, OctreeContainerEmpty, O
 getTestOctree() {
   JPCCOctreePointCloud<Point, OctreeContainerPointIndices, OctreeContainerEmpty, OctreeNBuf<BUFFER_SIZE>>
       octreePointCloud(RESOLUTION);
-  octreePointCloud.defineBoundingBox(BOUNDING_BOX);
   for (BufferIndex bufferIndex = 0; bufferIndex < BUFFER_SIZE; ++bufferIndex) {
     octreePointCloud.switchBuffers(bufferIndex);
-    octreePointCloud.setInputCloud(getTestCloud(bufferIndex));
-    octreePointCloud.addPointsFromInputCloud();
+    octreePointCloud.setFrame(getTestCloud(bufferIndex));
   }
   return octreePointCloud;
 }

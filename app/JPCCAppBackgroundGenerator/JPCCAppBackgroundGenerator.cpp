@@ -46,8 +46,6 @@ void backgroundGenerator(const AppParameter& parameter, StopwatchUserTime& clock
     array<FramePtr<PointT>, BUFFER_SIZE> frameBuffer;
     OctreePointCloudT                    octreePointCloud(parameter.filterResolution);
 
-    octreePointCloud.defineBoundingBox(octreePointCloud.getResolution() * 2);
-
     GroupOfFrame<PointT> frames;
 
     clock.start();
@@ -61,8 +59,7 @@ void backgroundGenerator(const AppParameter& parameter, StopwatchUserTime& clock
       frameBuffer.at(bufferIndex) = frames.at(i);
       octreePointCloud.switchBuffers(bufferIndex);
       octreePointCloud.deleteBuffer(bufferIndex);
-      octreePointCloud.setInputCloud(frameBuffer.at(bufferIndex));
-      octreePointCloud.addPointsFromInputCloud();
+      octreePointCloud.setFrame(frameBuffer.at(bufferIndex));
     }
 
     JPCCOctreePointCloud<Point, OctreeContainerPointIndex, BranchContainerT,
