@@ -4,16 +4,17 @@ namespace jpcc::octree {
 
 using namespace pcl::octree;
 
-OctreePointCloud<Point, OctreeContainerPointIndices, OctreeContainerEmpty, OctreeNBuf<BUFFER_SIZE>> getTestOctree() {
-  OctreePointCloud<Point, OctreeContainerPointIndices, OctreeContainerEmpty, OctreeNBuf<BUFFER_SIZE>> octree(
-      RESOLUTION);
-  octree.defineBoundingBox(BOUNDING_BOX);
+JPCCOctreePointCloud<Point, OctreeContainerPointIndices, OctreeContainerEmpty, OctreeNBuf<BUFFER_SIZE>>
+getTestOctree() {
+  JPCCOctreePointCloud<Point, OctreeContainerPointIndices, OctreeContainerEmpty, OctreeNBuf<BUFFER_SIZE>>
+      octreePointCloud(RESOLUTION);
+  octreePointCloud.defineBoundingBox(BOUNDING_BOX);
   for (BufferIndex bufferIndex = 0; bufferIndex < BUFFER_SIZE; ++bufferIndex) {
-    octree.switchBuffers(bufferIndex);
-    octree.setInputCloud(getTestCloud(bufferIndex));
-    octree.addPointsFromInputCloud();
+    octreePointCloud.switchBuffers(bufferIndex);
+    octreePointCloud.setInputCloud(getTestCloud(bufferIndex));
+    octreePointCloud.addPointsFromInputCloud();
   }
-  return octree;
+  return octreePointCloud;
 }
 
 }  // namespace jpcc::octree

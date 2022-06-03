@@ -3,13 +3,13 @@
 #include <jpcc/common/Common.h>
 #include <jpcc/octree/OctreeNBuf.h>
 
-#include <jpcc/octree/OctreePointCloud.h>
+#include <jpcc/octree/JPCCOctreePointCloud.h>
 
 namespace jpcc::process {
 
 template <typename PointT, bool singlePointVoxel = false>
 class OctreePointCloudOperation
-    : public jpcc::octree::OctreePointCloud<
+    : public jpcc::octree::JPCCOctreePointCloud<
           PointT,
           typename std::conditional<singlePointVoxel,
                                     pcl::octree::OctreeContainerPointIndex,
@@ -31,12 +31,12 @@ class OctreePointCloudOperation
                                                                    pcl::octree::OctreeContainerPointIndices>::type,
                                          pcl::octree::OctreeContainerEmpty>;
   using OctreePointCloudT =
-      jpcc::octree::OctreePointCloud<PointT,
-                                     typename std::conditional<singlePointVoxel,
-                                                               pcl::octree::OctreeContainerPointIndex,
-                                                               pcl::octree::OctreeContainerPointIndices>::type,
-                                     pcl::octree::OctreeContainerEmpty,
-                                     OctreeNBufT>;
+      jpcc::octree::JPCCOctreePointCloud<PointT,
+                                         typename std::conditional<singlePointVoxel,
+                                                                   pcl::octree::OctreeContainerPointIndex,
+                                                                   pcl::octree::OctreeContainerPointIndices>::type,
+                                         pcl::octree::OctreeContainerEmpty,
+                                         OctreeNBufT>;
 
  protected:
   FramePtr source_;

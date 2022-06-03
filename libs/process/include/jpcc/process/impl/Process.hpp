@@ -7,7 +7,7 @@
 
 #include <jpcc/octree/OctreeNBuf.h>
 
-#include <jpcc/octree/OctreePointCloud.h>
+#include <jpcc/octree/JPCCOctreePointCloud.h>
 
 namespace jpcc::process {
 
@@ -45,15 +45,15 @@ void split(const FramePtr<PointT>& input,
 template <typename PointT>
 void quantize(const FramePtr<PointT>& frame, const double resolution) {
   using OctreeT = pcl::octree::OctreeBase<pcl::octree::OctreeContainerPointIndex, pcl::octree::OctreeContainerEmpty>;
-  using OctreePointCloudT = jpcc::octree::OctreePointCloud<PointT, pcl::octree::OctreeContainerPointIndex,
-                                                           pcl::octree::OctreeContainerEmpty, OctreeT>;
+  using OctreePointCloudT = jpcc::octree::JPCCOctreePointCloud<PointT, pcl::octree::OctreeContainerPointIndex,
+                                                               pcl::octree::OctreeContainerEmpty, OctreeT>;
 
-  OctreePointCloudT octree(resolution);
-  octree.setInputCloud(frame);
-  octree.addPointsFromInputCloud();
+  OctreePointCloudT octreePointCloud(resolution);
+  octreePointCloud.setInputCloud(frame);
+  octreePointCloud.addPointsFromInputCloud();
 
   auto indices = make_shared<Indices>();
-  for (auto it = octree.begin(), it_a_end = octree.end(); it != it_a_end; ++it) {
+  for (auto it = octreePointCloud.begin(), it_a_end = octreePointCloud.end(); it != it_a_end; ++it) {
     const pcl::octree::OctreeNode* node = it.getCurrentOctreeNode();
     if (node->getNodeType() == pcl::octree::LEAF_NODE) {
       indices->push_back(

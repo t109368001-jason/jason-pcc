@@ -8,13 +8,13 @@
 
 #include <jpcc/octree/OctreeContainerCounter.h>
 #include <jpcc/octree/OctreeNBuf.h>
-#include <jpcc/octree/OctreePointCloud.h>
+#include <jpcc/octree/JPCCOctreePointCloud.h>
 
 namespace jpcc::octree {
 
 template <typename PointT, BufferIndex BUFFER_SIZE = 1>
 class OctreeCounter
-    : public OctreePointCloud<
+    : public JPCCOctreePointCloud<
           PointT,
           OctreeContainerCounter,
           pcl::octree::OctreeContainerEmpty,
@@ -27,7 +27,7 @@ class OctreeCounter
       typename std::conditional_t<BUFFER_SIZE == 1,
                                   pcl::octree::OctreeBase<OctreeContainerCounter, pcl::octree::OctreeContainerEmpty>,
                                   OctreeNBuf<BUFFER_SIZE, OctreeContainerCounter, pcl::octree::OctreeContainerEmpty>>;
-  using OctreePointCloud = OctreePointCloud<
+  using JPCCOctreePointCloud = JPCCOctreePointCloud<
       PointT,
       OctreeContainerCounter,
       pcl::octree::OctreeContainerEmpty,

@@ -12,7 +12,7 @@
 
 #include "AppParameter.h"
 
-#include <jpcc/octree/OctreePointCloud.h>
+#include <jpcc/octree/JPCCOctreePointCloud.h>
 
 using namespace std;
 using namespace std::chrono;
@@ -31,7 +31,7 @@ using PointT            = jpcc::PointNormal;
 using LeafContainerT    = OctreeContainerPointIndices;
 using BranchContainerT  = OctreeContainerEmpty;
 using OctreeNBufT       = OctreeNBuf<BUFFER_SIZE, LeafContainerT, BranchContainerT>;
-using OctreePointCloudT = OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeNBufT>;
+using OctreePointCloudT = JPCCOctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeNBufT>;
 
 void backgroundGenerator(const AppParameter& parameter, StopwatchUserTime& clock) {
   size_t frameNumber = parameter.dataset.getStartFrameNumber();
@@ -44,9 +44,9 @@ void backgroundGenerator(const AppParameter& parameter, StopwatchUserTime& clock
   {
     BufferIndex                          bufferIndex = 0;
     array<FramePtr<PointT>, BUFFER_SIZE> frameBuffer;
-    OctreePointCloudT                    octree(parameter.filterResolution);
+    OctreePointCloudT                    octreePointCloud(parameter.filterResolution);
 
-    octree.defineBoundingBox(octree.getResolution() * 2);
+    octreePointCloud.defineBoundingBox(octreePointCloud.getResolution() * 2);
 
     GroupOfFrame<PointT> frames;
 
@@ -59,14 +59,14 @@ void backgroundGenerator(const AppParameter& parameter, StopwatchUserTime& clock
     for (size_t i = 0; i < frames.size(); i++) {
       if (i != 0) { bufferIndex = (bufferIndex + 1) % BUFFER_SIZE; }
       frameBuffer.at(bufferIndex) = frames.at(i);
-      octree.switchBuffers(bufferIndex);
-      octree.deleteBuffer(bufferIndex);
-      octree.setInputCloud(frameBuffer.at(bufferIndex));
-      octree.addPointsFromInputCloud();
+      octreePointCloud.switchBuffers(bufferIndex);
+      octreePointCloud.deleteBuffer(bufferIndex);
+      octreePointCloud.setInputCloud(frameBuffer.at(bufferIndex));
+      octreePointCloud.addPointsFromInputCloud();
     }
 
-    OctreePointCloud<Point, OctreeContainerPointIndex, BranchContainerT,
-                     OctreeNBuf<1, OctreeContainerPointIndex, BranchContainerT>>
+    JPCCOctreePointCloud<Point, OctreeContainerPointIndex, BranchContainerT,
+                         OctreeNBuf<1, OctreeContainerPointIndex, BranchContainerT>>
         staticOctree(parameter.backgroundResolution);
     staticOctree.setInputCloud(staticCloud_);
     OctreeNBufT::LeafBranchCallback callback = [&](const ChildIndex               childIndex,
@@ -88,7 +88,7 @@ void backgroundGenerator(const AppParameter& parameter, StopwatchUserTime& clock
       }
     };
 
-    octree.forEachLeafBranch(callback);
+    octreePointCloud.forEachLeafBranch(callback);
   }
 
   pcl::io::savePLYFile(parameter.getOutputPath(), *staticCloud_);

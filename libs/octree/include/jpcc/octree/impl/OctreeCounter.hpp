@@ -8,7 +8,7 @@ namespace jpcc::octree {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, BufferIndex BUFFER_SIZE>
-OctreeCounter<PointT, BUFFER_SIZE>::OctreeCounter(const double resolution) : OctreePointCloud(resolution) {
+OctreeCounter<PointT, BUFFER_SIZE>::OctreeCounter(const double resolution) : JPCCOctreePointCloud(resolution) {
   this->defineBoundingBox(resolution * 2);
 }
 

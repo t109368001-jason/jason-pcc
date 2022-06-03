@@ -24,7 +24,7 @@
 
 #include "AppParameter.h"
 
-#include <jpcc/octree/OctreePointCloud.h>
+#include <jpcc/octree/JPCCOctreePointCloud.h>
 
 #define BUFFER_SIZE 8
 
@@ -43,7 +43,7 @@ using namespace jpcc::visualization;
 
 using PointT            = jpcc::PointNormal;
 using OctreeNBufT       = OctreeNBuf<BUFFER_SIZE, OctreeContainerPointIndices, OctreeContainerEmpty>;
-using OctreePointCloudT = OctreePointCloud<PointT, OctreeContainerPointIndices, OctreeContainerEmpty, OctreeNBufT>;
+using OctreePointCloudT = JPCCOctreePointCloud<PointT, OctreeContainerPointIndices, OctreeContainerEmpty, OctreeNBufT>;
 
 void test(const AppParameter& parameter, StopwatchUserTime& clock) {
   const auto viewer = jpcc::make_shared<JPCCVisualizer<PointT>>(parameter.visualizerParameter);
@@ -91,8 +91,8 @@ void test(const AppParameter& parameter, StopwatchUserTime& clock) {
           float e = (float)((matrix.transpose() * normal).array().acos().mean() / M_PI * 180.0);
           return e < parameter.float2;
         };
-        OctreePointCloudT octree(0.1);
-        octree.defineBoundingBox(octree.getResolution() * 2);
+        OctreePointCloudT octreePointCloud(0.1);
+        octreePointCloud.defineBoundingBox(octreePointCloud.getResolution() * 2);
 
         clock.start();
         reader->loadAll(startFrameNumber, BUFFER_SIZE - 1, frames, parameter.parallel);
@@ -117,10 +117,10 @@ void test(const AppParameter& parameter, StopwatchUserTime& clock) {
 
         for (size_t i = 0; i < frames.size(); i++) {
           try {
-            octree.switchBuffers(bufferIndex);
-            octree.deleteBuffer(bufferIndex);
-            octree.setInputCloud(frameBuffer.at(bufferIndex));
-            octree.addPointsFromInputCloud();
+            octreePointCloud.switchBuffers(bufferIndex);
+            octreePointCloud.deleteBuffer(bufferIndex);
+            octreePointCloud.setInputCloud(frameBuffer.at(bufferIndex));
+            octreePointCloud.addPointsFromInputCloud();
 
             startFrameNumber += 1;
             bufferIndex = (bufferIndex + 1) % BUFFER_SIZE;
@@ -136,16 +136,16 @@ void test(const AppParameter& parameter, StopwatchUserTime& clock) {
           frameBuffer.at(bufferIndex) = frames.at(0);
           calcNormal(frameBuffer.at(bufferIndex));
 
-          octree.switchBuffers(bufferIndex);
-          octree.deleteBuffer(bufferIndex);
-          octree.setInputCloud(frameBuffer.at(bufferIndex));
-          octree.addPointsFromInputCloud();
+          octreePointCloud.switchBuffers(bufferIndex);
+          octreePointCloud.deleteBuffer(bufferIndex);
+          octreePointCloud.setInputCloud(frameBuffer.at(bufferIndex));
+          octreePointCloud.addPointsFromInputCloud();
 
           {
             const auto indices       = jpcc::make_shared<Indices>();
             const auto staticCloud_  = jpcc::make_shared<Frame<PointT>>();
             const auto dynamicCloud_ = jpcc::make_shared<Frame<PointT>>();
-            octree.process(func, *indices);
+            octreePointCloud.process(func, *indices);
 
             process::split<PointT>(frames.at(0), indices, staticCloud_, dynamicCloud_);
 

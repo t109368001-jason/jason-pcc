@@ -11,19 +11,20 @@ using namespace pcl::octree;
 
 TEST(OctreeNBufTest, getChildPattern) {
   // given
-  OctreePointCloud<Point, OctreeContainerPointIndices, OctreeContainerEmpty, OctreeNBuf<BUFFER_SIZE>> octree =
-      getTestOctree();
+  JPCCOctreePointCloud<Point, OctreeContainerPointIndices, OctreeContainerEmpty, OctreeNBuf<BUFFER_SIZE>>
+      octreePointCloud = getTestOctree();
   // then
-  EXPECT_EQ(octree.getBufferSize(), BUFFER_SIZE);
-  EXPECT_EQ(octree.getTreeDepth(), 1);
+  EXPECT_EQ(octreePointCloud.getBufferSize(), BUFFER_SIZE);
+  EXPECT_EQ(octreePointCloud.getTreeDepth(), 1);
 
   for (BufferIndex bufferIndex = 0; bufferIndex < BUFFER_SIZE; ++bufferIndex) {
-    octree.switchBuffers(bufferIndex);
+    octreePointCloud.switchBuffers(bufferIndex);
     const ChildPattern& childPattern =
-        dynamic_cast<const OctreeNBuf<BUFFER_SIZE>::BranchNode*>(octree.getRootNode())->getChildPattern(bufferIndex);
+        dynamic_cast<const OctreeNBuf<BUFFER_SIZE>::BranchNode*>(octreePointCloud.getRootNode())
+            ->getChildPattern(bufferIndex);
     const ChildPattern& currentChildPattern =
-        dynamic_cast<const OctreeNBuf<BUFFER_SIZE>::BranchNode*>(octree.getRootNode())
-            ->getChildPattern(octree.getBufferIndex());
+        dynamic_cast<const OctreeNBuf<BUFFER_SIZE>::BranchNode*>(octreePointCloud.getRootNode())
+            ->getChildPattern(octreePointCloud.getBufferIndex());
     EXPECT_EQ(childPattern.to_string(), getTestChildPattern(bufferIndex).to_string());
     EXPECT_EQ(childPattern, currentChildPattern);
   }
@@ -31,13 +32,14 @@ TEST(OctreeNBufTest, getChildPattern) {
 
 TEST(OctreeNBufTest, getBufferPattern) {
   // given
-  const OctreePointCloud<Point, OctreeContainerPointIndices, OctreeContainerEmpty, OctreeNBuf<BUFFER_SIZE>>& octree =
-      getTestOctree();
+  const JPCCOctreePointCloud<Point, OctreeContainerPointIndices, OctreeContainerEmpty, OctreeNBuf<BUFFER_SIZE>>&
+      octreePointCloud = getTestOctree();
   // then
   for (ChildIndex childIndex = 0; childIndex < 8; childIndex++) {
     const OctreeNBuf<BUFFER_SIZE>::BufferPattern bufferPattern =
-        dynamic_cast<const OctreeNBuf<BUFFER_SIZE>::BranchNode*>(octree.getRootNode())->getBufferPattern(childIndex);
-    for (BufferIndex bufferIndex = 0; bufferIndex < octree.getBufferSize(); bufferIndex++) {
+        dynamic_cast<const OctreeNBuf<BUFFER_SIZE>::BranchNode*>(octreePointCloud.getRootNode())
+            ->getBufferPattern(childIndex);
+    for (BufferIndex bufferIndex = 0; bufferIndex < octreePointCloud.getBufferSize(); bufferIndex++) {
       EXPECT_EQ(bufferPattern.test(bufferIndex), getTestChildPattern(bufferIndex)[childIndex]);
     }
   }
@@ -45,16 +47,16 @@ TEST(OctreeNBufTest, getBufferPattern) {
 
 TEST(OctreeNBufTest, getIndicesByFilter) {
   // given
-  OctreePointCloud<Point, OctreeContainerPointIndices, OctreeContainerEmpty, OctreeNBuf<BUFFER_SIZE>> octree =
-      getTestOctree();
-  auto filter = [](BufferIndex b, const OctreeNBuf<BUFFER_SIZE>::BufferPattern& bufferPattern) {
+  JPCCOctreePointCloud<Point, OctreeContainerPointIndices, OctreeContainerEmpty, OctreeNBuf<BUFFER_SIZE>>
+       octreePointCloud = getTestOctree();
+  auto filter           = [](BufferIndex b, const OctreeNBuf<BUFFER_SIZE>::BufferPattern& bufferPattern) {
     return bufferPattern.test(b);
   };
   // then
-  for (BufferIndex bufferIndex = 0; bufferIndex < octree.getBufferSize(); bufferIndex++) {
+  for (BufferIndex bufferIndex = 0; bufferIndex < octreePointCloud.getBufferSize(); bufferIndex++) {
     Indices indices;
-    octree.switchBuffers(bufferIndex);
-    octree.getIndicesByFilter(
+    octreePointCloud.switchBuffers(bufferIndex);
+    octreePointCloud.getIndicesByFilter(
         [filter, bufferIndex](auto&& bufferPattern) {
           return filter(bufferIndex, std::forward<decltype(bufferPattern)>(bufferPattern));
         },
@@ -65,31 +67,31 @@ TEST(OctreeNBufTest, getIndicesByFilter) {
 
 TEST(OctreeNBufTest, deleteBuffer) {
   // given
-  OctreePointCloud<Point, OctreeContainerPointIndices, OctreeContainerEmpty, OctreeNBuf<BUFFER_SIZE>> octree =
-      getTestOctree();
+  JPCCOctreePointCloud<Point, OctreeContainerPointIndices, OctreeContainerEmpty, OctreeNBuf<BUFFER_SIZE>>
+      octreePointCloud = getTestOctree();
 
   // then
-  for (BufferIndex bufferIndex = 0; bufferIndex < octree.getBufferSize(); bufferIndex++) {
+  for (BufferIndex bufferIndex = 0; bufferIndex < octreePointCloud.getBufferSize(); bufferIndex++) {
     Indices indices;
-    octree.deleteBuffer(bufferIndex);
-    EXPECT_EQ(octree.getLeafCount(bufferIndex), 0);
-    EXPECT_EQ(octree.getBranchCount(bufferIndex), 1);
+    octreePointCloud.deleteBuffer(bufferIndex);
+    EXPECT_EQ(octreePointCloud.getLeafCount(bufferIndex), 0);
+    EXPECT_EQ(octreePointCloud.getBranchCount(bufferIndex), 1);
   }
 }
 
 TEST(OctreeNBufTest, reuseBuffer) {
   // given
-  OctreePointCloud<Point, OctreeContainerPointIndices, OctreeContainerEmpty, OctreeNBuf<BUFFER_SIZE>> octree =
-      getTestOctree();
-  auto filter = [](BufferIndex b, const OctreeNBuf<BUFFER_SIZE>::BufferPattern& bufferPattern) {
+  JPCCOctreePointCloud<Point, OctreeContainerPointIndices, OctreeContainerEmpty, OctreeNBuf<BUFFER_SIZE>>
+       octreePointCloud = getTestOctree();
+  auto filter           = [](BufferIndex b, const OctreeNBuf<BUFFER_SIZE>::BufferPattern& bufferPattern) {
     return bufferPattern.test(b);
   };
   // then
-  for (BufferIndex bufferIndex = 0; bufferIndex < octree.getBufferSize(); bufferIndex++) {
-    octree.switchBuffers(bufferIndex);
+  for (BufferIndex bufferIndex = 0; bufferIndex < octreePointCloud.getBufferSize(); bufferIndex++) {
+    octreePointCloud.switchBuffers(bufferIndex);
     {
       Indices indices;
-      octree.getIndicesByFilter(
+      octreePointCloud.getIndicesByFilter(
           [filter, bufferIndex](auto&& bufferPattern) {
             return filter(bufferIndex, std::forward<decltype(bufferPattern)>(bufferPattern));
           },
@@ -98,10 +100,10 @@ TEST(OctreeNBufTest, reuseBuffer) {
     }
     {
       Indices indices;
-      octree.deleteBuffer(bufferIndex);
-      octree.setInputCloud(getTestCloud(0));
-      octree.addPointsFromInputCloud();
-      octree.getIndicesByFilter(
+      octreePointCloud.deleteBuffer(bufferIndex);
+      octreePointCloud.setInputCloud(getTestCloud(0));
+      octreePointCloud.addPointsFromInputCloud();
+      octreePointCloud.getIndicesByFilter(
           [filter, bufferIndex](auto&& bufferPattern) {
             return filter(bufferIndex, std::forward<decltype(bufferPattern)>(bufferPattern));
           },
