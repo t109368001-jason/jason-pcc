@@ -6,6 +6,7 @@
 #include <jpcc/io/Reader.h>
 #include <jpcc/io/PlyIO.h>
 #include <jpcc/process/PreProcessor.h>
+#include <jpcc/process/JPCCNormalEstimation.h>
 
 #include "AppParameter.h"
 
@@ -17,11 +18,14 @@ using namespace jpcc;
 using namespace jpcc::io;
 using namespace jpcc::process;
 
-using PointT = Point;
-
+template <typename PointT>
 void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
-  const DatasetReader<PointT>::Ptr reader = newReader<PointT>(parameter.inputReader, parameter.inputDataset);
-  PreProcessor<PointT>             preProcessor(parameter.preProcess);
+  const typename DatasetReader<PointT>::Ptr  reader = newReader<PointT>(parameter.inputReader, parameter.inputDataset);
+  PreProcessor<PointT>                       preProcessor(parameter.preProcess);
+  typename JPCCNormalEstimation<PointT>::Ptr normalEstimation;
+  if constexpr (is_same_v<PointT, PointNormal>) {
+    normalEstimation = jpcc::make_shared<JPCCNormalEstimation<PointT>>(parameter.jpccNormalEstimation);
+  }
 
   GroupOfFrame<PointT> frames;
   size_t               groupOfFramesSize = 32;
@@ -34,11 +38,20 @@ void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
     clock.start();
     reader->loadAll(frameNumber, groupOfFramesSize, frames, parameter.parallel);
     preProcessor.process(frames, nullptr, parameter.parallel);
+    if constexpr (is_same_v<PointT, PointNormal>) { normalEstimation->computeInPlaceAll(frames, parameter.parallel); }
     clock.stop();
 
     savePly<PointT>(frames, parameter.outputDataset.getFilePath(), parameter.parallel);
 
     frameNumber += groupOfFramesSize;
+  }
+}
+
+void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
+  if (parameter.jpccNormalEstimation.enable) {
+    parse<PointNormal>(parameter, clock);
+  } else {
+    parse<Point>(parameter, clock);
   }
 }
 

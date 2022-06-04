@@ -11,8 +11,9 @@ namespace jpcc::process {
 
 class JPCCNormalEstimationParameter : public virtual Parameter {
  public:
-  int radiusSearch;
-  int kSearch;
+  bool enable;
+  int  radiusSearch;
+  int  kSearch;
 
   JPCCNormalEstimationParameter();
 

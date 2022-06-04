@@ -25,6 +25,7 @@ AppParameter::AppParameter() :
   opts_.add(inputReader.getOpts());
   opts_.add(outputDataset.getOpts());
   opts_.add(preProcess.getOpts());
+  opts_.add(jpccNormalEstimation.getOpts());
 }
 
 void AppParameter::notify() {
@@ -32,6 +33,7 @@ void AppParameter::notify() {
   inputReader.notify();
   outputDataset.notify(false);
   preProcess.notify();
+  jpccNormalEstimation.notify();
   const filesystem::path& path = filesystem::path(outputDataset.getFilePath(0));
   if (!filesystem::exists(path.parent_path())) { filesystem::create_directories(path.parent_path()); }
 }
@@ -44,6 +46,7 @@ ostream& operator<<(ostream& out, const AppParameter& obj) {
   out << obj.inputReader;
   out << obj.outputDataset;
   out << obj.preProcess;
+  out << obj.jpccNormalEstimation;
   return out;
 }
 

@@ -9,6 +9,7 @@ namespace jpcc::process {
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 JPCCNormalEstimation<PointT>::JPCCNormalEstimation(JPCCNormalEstimationParameter param) : param_(std::move(param)) {
+  if (!param_.enable) { BOOST_THROW_EXCEPTION(std::logic_error(std::string("Normal Estimation not enabled"))); }
   normalEstimation_.setRadiusSearch(param_.radiusSearch);
   normalEstimation_.setKSearch(param_.kSearch);
 }
