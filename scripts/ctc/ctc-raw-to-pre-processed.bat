@@ -1,0 +1,1 @@
+start ./bin/JPCCAppDatasetParser.exe --configs ./cfg/app/DatasetParser/ZX-XS-20220330-to-ctc-pre-processed.cfg
