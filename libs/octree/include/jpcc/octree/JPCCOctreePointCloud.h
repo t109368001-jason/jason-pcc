@@ -22,6 +22,10 @@ class JPCCOctreePointCloud : public OctreePointCloud<PointT, LeafContainerT, Bra
   void setFrame(FramePtr frame);
 
   void setFrame(BufferIndex bufferIndex, FramePtr frame);
+
+  void addFrame(FramePtr frame);
+
+  void addFrame(BufferIndex bufferIndex, FramePtr frame);
 };
 
 }  // namespace jpcc::octree

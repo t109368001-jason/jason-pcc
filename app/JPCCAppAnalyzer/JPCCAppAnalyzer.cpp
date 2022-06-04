@@ -112,9 +112,9 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
         split<PointT>(frame, indices, dynamic, frame);
       }
 
-      octreeCounter.setFrame(0, background);
-      octreeCounter.setFrame(1, dynamic);
-      octreeCounter.setFrame(2, frame);
+      octreeCounter.addFrame(0, background);
+      octreeCounter.addFrame(1, dynamic);
+      octreeCounter.addFrame(2, frame);
     }
     frameNumber += groupOfFramesSize;
   }

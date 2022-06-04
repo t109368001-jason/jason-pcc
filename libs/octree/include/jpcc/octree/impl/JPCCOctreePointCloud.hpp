@@ -34,4 +34,28 @@ void JPCCOctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::se
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT, typename LeafContainerT, typename BranchContainerT, typename OctreeT>
+void JPCCOctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::addFrame(FramePtr frame) {
+  if constexpr (is_n_buf_octree_v<OctreeT>) {
+    this->setInputCloud(frame);
+    this->addPointsFromInputCloud();
+  } else {
+    this->setInputCloud(frame);
+    this->addPointsFromInputCloud();
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT, typename LeafContainerT, typename BranchContainerT, typename OctreeT>
+void JPCCOctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::addFrame(BufferIndex bufferIndex,
+                                                                                       FramePtr    frame) {
+  if constexpr (is_n_buf_octree_v<OctreeT>) {
+    this->switchBuffers(bufferIndex);
+    addFrame(frame);
+  } else {
+    static_assert(false, "addFrame(BufferIndex, FramePtr) only support for OctreeNBuf, please use addFrame(FramePtr)");
+  }
+}
+
 }  // namespace jpcc::octree
