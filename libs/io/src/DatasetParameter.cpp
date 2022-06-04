@@ -85,7 +85,15 @@ void DatasetParameter::notify(bool isInput) {
   filePaths.resize(files.size());
   for (size_t i = 0; i < files.size(); i++) {
     filePaths.at(i) = folderPath / files.at(i);
-    if (isInput && type != "ply") { assert(exists(filePaths.at(i))); }
+    if (isInput) {
+      if (type == "ply") {
+        char fileName[4096];
+        sprintf(fileName, filePaths.at(i).string().c_str(), startFrameNumbers.at(i));
+        assert(exists(path(fileName)));
+      } else {
+        assert(exists(filePaths.at(i)));
+      }
+    }
   }
   if (!transforms_.empty()) {
     assert(type != "ply");
