@@ -33,9 +33,7 @@ void previewOnly(const AppParameter& parameter, StopwatchUserTime& clock) {
   JPCCVisualizer<PointT>::Ptr viewer = jpcc::make_shared<JPCCVisualizer<PointT>>(parameter.visualizerParameter);
   viewer->addParameter(parameter);
 
-  const DatasetReader<PointT>::Ptr   reader = newReader<PointT>(parameter.reader, parameter.dataset);
-  PreProcessor<PointT>               preProcessor(parameter.preProcess);
-  const JPCCNormalEstimation<PointT> normalEstimation(parameter.jpccNormalEstimation);
+  const DatasetReader<PointT>::Ptr reader = newReader<PointT>(parameter.reader, parameter.dataset);
 
   auto backgroundFilter = jpcc::make_shared<JPCCConditionalRemoval<PointT>>(parameter.background);
   auto dynamicFilter    = jpcc::make_shared<JPCCConditionalRemoval<PointT>>(parameter.dynamic);
@@ -45,8 +43,6 @@ void previewOnly(const AppParameter& parameter, StopwatchUserTime& clock) {
   auto                 dynamic    = jpcc::make_shared<Frame<PointT>>();
   clock.start();
   reader->loadAll(parameter.dataset.getStartFrameNumber(), 1, frames, parameter.parallel);
-  preProcessor.process(frames, nullptr, parameter.parallel);
-  normalEstimation.computeInPlaceAll(frames, parameter.parallel);
   process::quantize<PointT>(frames, parameter.resolution, parameter.parallel);
   clock.stop();
   {
@@ -70,16 +66,10 @@ void previewOnly(const AppParameter& parameter, StopwatchUserTime& clock) {
   viewer->spin();
 }
 
-void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
-  if (parameter.previewOnly) {
-    previewOnly(parameter, clock);
-    return;
-  }
+void analyzeVoxelOccupancyCountToVoxelCount(const AppParameter& parameter, StopwatchUserTime& clock) {
   OctreeCounterT octreeCounter(parameter.resolution);
 
-  const DatasetReader<PointT>::Ptr   reader = newReader<PointT>(parameter.reader, parameter.dataset);
-  PreProcessor<PointT>               preProcessor(parameter.preProcess);
-  const JPCCNormalEstimation<PointT> normalEstimation(parameter.jpccNormalEstimation);
+  const DatasetReader<PointT>::Ptr reader = newReader<PointT>(parameter.reader, parameter.dataset);
 
   auto backgroundFilter = jpcc::make_shared<JPCCConditionalRemoval<PointT>>(parameter.background);
   auto dynamicFilter    = jpcc::make_shared<JPCCConditionalRemoval<PointT>>(parameter.dynamic);
@@ -92,8 +82,6 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
     GroupOfFrame<PointT> frames;
     clock.start();
     reader->loadAll(frameNumber, groupOfFramesSize, frames, parameter.parallel);
-    preProcessor.process(frames, nullptr, parameter.parallel);
-    normalEstimation.computeInPlaceAll(frames, parameter.parallel);
     process::quantize<PointT>(frames, parameter.resolution, parameter.parallel);
     clock.stop();
     for (auto& frame : frames) {
@@ -121,21 +109,29 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
 
   OctreeCounterT::CountMap countMap = octreeCounter.getOccupancyCountToVoxelCount();
 
-  ofstream ofs(parameter.outputCSVPath);
-  ofs << "Occupancy Count"
+  ofstream ofs("./bin/analyze-[Voxel Occupancy Count-Voxel Count]");
+  ofs << "Voxel Occupancy Count"
       << ","
-      << "Count (Background)"
+      << "Voxel Count (Background)"
       << ","
-      << "Count (Dynamic)"
+      << "Voxel Count (Dynamic)"
       << ","
-      << "Count (Other)" << endl;
+      << "Voxel Count (Other)" << endl;
   for (const auto& [occupancyCount, countArray] : countMap) {
     ofs << occupancyCount << "," << countArray.at(0) << "," << countArray.at(1) << "," << countArray.at(2) << endl;
   }
 }
 
+void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
+  if (parameter.previewOnly) {
+    previewOnly(parameter, clock);
+    return;
+  }
+  analyzeVoxelOccupancyCountToVoxelCount(parameter, clock);
+}
+
 int main(int argc, char* argv[]) {
-  cout << "JPCC App Ground Segmentation Start" << endl;
+  cout << "JPCC App Analyzer Start" << endl;
 
   AppParameter parameter;
   try {
@@ -167,6 +163,6 @@ int main(int argc, char* argv[]) {
     cout << "Peak memory: " << getPeakMemory() << " KB\n";
   } catch (exception& e) { cerr << e.what() << endl; }
 
-  cout << "JPCC App Ground Segmentation End" << endl;
+  cout << "JPCC App Analyzer End" << endl;
   return 0;
 }

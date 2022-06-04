@@ -18,13 +18,10 @@ class AppParameter : public Parameter {
   bool                                     parallel;
   bool                                     previewOnly;
   double                                   resolution;
-  std::string                              outputCSVPath;
   io::DatasetParameter                     dataset;
   io::DatasetReaderParameter               reader;
-  process::PreProcessParameter             preProcess;
   process::JPCCConditionalRemovalParameter background;
   process::JPCCConditionalRemovalParameter dynamic;
-  process::JPCCNormalEstimationParameter   jpccNormalEstimation;
   visualization::VisualizerParameter       visualizerParameter;
 
   AppParameter();

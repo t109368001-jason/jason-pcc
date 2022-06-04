@@ -11,40 +11,32 @@ using namespace po;
 #define PARALLEL_OPT ".parallel"
 #define PREVIEW_ONLY_OPT ".previewOnly"
 #define RESOLUTION_OPT ".resolution"
-#define OUTPUT_CSV_PATH_OPT ".outputCSVPath"
 
 AppParameter::AppParameter() :
     Parameter(APP_OPT_PREFIX, __FUNCTION__),
     parallel(false),
     previewOnly(false),
     resolution(0.1),
-    outputCSVPath(),
     dataset(),
     reader(),
-    preProcess(),
     background(string("background.") + JPCC_CONDITIONAL_REMOVAL_OPT_PREFIX, "JPCCConditionalRemovalParameter"),
     dynamic(string("dynamic.") + JPCC_CONDITIONAL_REMOVAL_OPT_PREFIX, "JPCCConditionalRemovalParameter"),
     visualizerParameter() {
-  opts_.add_options()                                                //
-      (string(prefix_ + PARALLEL_OPT).c_str(),                       //
-       value<bool>(&parallel)->default_value(parallel),              //
-       "parallel")                                                   //
-      (string(prefix_ + PREVIEW_ONLY_OPT).c_str(),                   //
-       value<bool>(&previewOnly)->default_value(previewOnly),        //
-       "previewOnly")                                                //
-      (string(prefix_ + RESOLUTION_OPT).c_str(),                     //
-       value<double>(&resolution)->default_value(resolution),        //
-       "resolution")                                                 //
-      (string(prefix_ + OUTPUT_CSV_PATH_OPT).c_str(),                //
-       value<string>(&outputCSVPath)->default_value(outputCSVPath),  //
-       "outputCSVPath")                                              //
+  opts_.add_options()                                          //
+      (string(prefix_ + PARALLEL_OPT).c_str(),                 //
+       value<bool>(&parallel)->default_value(parallel),        //
+       "parallel")                                             //
+      (string(prefix_ + PREVIEW_ONLY_OPT).c_str(),             //
+       value<bool>(&previewOnly)->default_value(previewOnly),  //
+       "previewOnly")                                          //
+      (string(prefix_ + RESOLUTION_OPT).c_str(),               //
+       value<double>(&resolution)->default_value(resolution),  //
+       "resolution")                                           //
       ;
   opts_.add(dataset.getOpts());
   opts_.add(reader.getOpts());
-  opts_.add(preProcess.getOpts());
   opts_.add(background.getOpts());
   opts_.add(dynamic.getOpts());
-  opts_.add(jpccNormalEstimation.getOpts());
   opts_.add(visualizerParameter.getOpts());
 }
 
@@ -52,36 +44,32 @@ void AppParameter::getShowTexts(vector<std::string>& showTexts) const {
   showTexts.push_back(prefix_ + RESOLUTION_OPT ": " + to_string(resolution));
   dataset.getShowTexts(showTexts);
   reader.getShowTexts(showTexts);
-  preProcess.getShowTexts(showTexts);
   background.getShowTexts(showTexts);
   dynamic.getShowTexts(showTexts);
-  jpccNormalEstimation.getShowTexts(showTexts);
   visualizerParameter.getShowTexts(showTexts);
 }
 
 void AppParameter::notify() {
   dataset.notify();
+  if (!dataset.preProcessed) {
+    BOOST_THROW_EXCEPTION(std::logic_error(std::string("only support pre-processed dataset")));
+  }
   reader.notify();
-  preProcess.notify();
   background.notify();
   dynamic.notify();
-  jpccNormalEstimation.notify();
   visualizerParameter.notify();
 }
 
 ostream& operator<<(ostream& out, const AppParameter& obj) {
-  obj.coutParameters(out)                       //
-      (PARALLEL_OPT, obj.parallel)              //
-      (PREVIEW_ONLY_OPT, obj.previewOnly)       //
-      (RESOLUTION_OPT, obj.resolution)          //
-      (OUTPUT_CSV_PATH_OPT, obj.outputCSVPath)  //
+  obj.coutParameters(out)                  //
+      (PARALLEL_OPT, obj.parallel)         //
+      (PREVIEW_ONLY_OPT, obj.previewOnly)  //
+      (RESOLUTION_OPT, obj.resolution)     //
       ;
   out << obj.dataset;
   out << obj.reader;
-  out << obj.preProcess;
   out << obj.background;
   out << obj.dynamic;
-  out << obj.jpccNormalEstimation;
   out << obj.visualizerParameter;
   return out;
 }
