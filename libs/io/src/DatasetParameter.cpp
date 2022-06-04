@@ -13,6 +13,7 @@ using namespace Eigen;
 #define NAME_OPT ".name"
 #define SENSOR_OPT ".sensor"
 #define TYPE_OPT ".type"
+#define PRE_PROCESSED_OPT ".preProcessed"
 #define FOLDER_PREFIX_OPT ".folderPrefix"
 #define FOLDER_OPT ".folder"
 #define FILES_OPT ".files"
@@ -25,6 +26,7 @@ DatasetParameter::DatasetParameter() : DatasetParameter(DATASET_OPT_PREFIX, __FU
 
 DatasetParameter::DatasetParameter(const string& prefix, const string& caption) :
     Parameter(prefix, caption),
+    preProcessed(false),
     folderPrefix("../../dataset/"),
     files(),
     frameCounts(),
@@ -34,7 +36,10 @@ DatasetParameter::DatasetParameter(const string& prefix, const string& caption) 
   opts_.add_options()                                                                                            //
       (string(prefix_ + NAME_OPT).c_str(), value<string>(&name), "name")                                         //
       (string(prefix_ + SENSOR_OPT).c_str(), value<string>(&sensor), "sensor")                                   //
-      (string(prefix_ + TYPE_OPT).c_str(), value<string>(&type), "dataset type")                                 //
+      (string(prefix_ + TYPE_OPT).c_str(),                                                                       //
+       value<bool>(&preProcessed)->default_value(preProcessed),                                                  //
+       "preProcessed")                                                                                           //
+      (string(prefix_ + PRE_PROCESSED_OPT).c_str(), value<string>(&type), "dataset type")                        //
       (string(prefix_ + FOLDER_PREFIX_OPT).c_str(),                                                              //
        value<string>(&folderPrefix)->default_value(folderPrefix),                                                //
        "dataset folder prefix")                                                                                  //
@@ -67,6 +72,7 @@ void DatasetParameter::notify() { notify(true); }
 void DatasetParameter::notify(bool isInput) {
   assert(!name.empty());
   assert(!type.empty());
+  if (preProcessed) { assert(type == "ply"); }
   assert(!folderPrefix.empty());
   assert(!folder.empty());
   assert(frameCounts.size() == files.size());

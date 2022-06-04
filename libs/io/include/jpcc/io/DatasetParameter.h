@@ -19,6 +19,7 @@ class DatasetParameter : public virtual Parameter {
   std::string                              name;
   std::string                              sensor;
   std::string                              type;
+  bool                                     preProcessed;
   std::string                              folderPrefix;
   std::string                              folder;
   std::filesystem::path                    folderPath;
