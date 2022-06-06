@@ -2,21 +2,21 @@
 #include <chrono>
 #include <iostream>
 #include <vector>
-#include <map>
 
 #include <jpcc/common/Common.h>
 #include <jpcc/common/ParameterParser.h>
 #include <jpcc/io/Reader.h>
-#include <jpcc/process/PreProcessor.h>
 #include <jpcc/process/JPCCConditionalRemoval.h>
-#include <jpcc/process/JPCCNormalEstimation.h>
-#include <jpcc/octree/OctreeCounter.h>
+#include <jpcc/process/Process.h>
 #include <jpcc/visualization/JPCCVisualizer.h>
 
 #include "AppParameter.h"
+#include "VoxelOccupancyCountToVoxelCount.h"
+#include "VoxelPointCountToVoxelCount.h"
 
 using namespace std;
 using namespace std::chrono;
+using namespace std::filesystem;
 using namespace pcl::octree;
 using namespace pcc;
 using namespace pcc::chrono;
@@ -26,8 +26,7 @@ using namespace jpcc::process;
 using namespace jpcc::octree;
 using namespace jpcc::visualization;
 
-using PointT         = PointNormal;
-using OctreeCounterT = OctreeCounter<PointT, 3>;
+using PointT = PointNormal;
 
 void previewOnly(const AppParameter& parameter, StopwatchUserTime& clock) {
   JPCCVisualizer<PointT>::Ptr viewer = jpcc::make_shared<JPCCVisualizer<PointT>>(parameter.visualizerParameter);
@@ -43,7 +42,6 @@ void previewOnly(const AppParameter& parameter, StopwatchUserTime& clock) {
   auto                 dynamic    = jpcc::make_shared<Frame<PointT>>();
   clock.start();
   reader->loadAll(parameter.dataset.getStartFrameNumber(), 1, frames, parameter.parallel);
-  process::quantize<PointT>(frames, parameter.resolution, parameter.parallel);
   clock.stop();
   {
     auto indices = jpcc::make_shared<Indices>();
@@ -66,8 +64,11 @@ void previewOnly(const AppParameter& parameter, StopwatchUserTime& clock) {
   viewer->spin();
 }
 
-void analyzeVoxelOccupancyCountToVoxelCount(const AppParameter& parameter, StopwatchUserTime& clock) {
-  OctreeCounterT octreeCounter(parameter.resolution);
+void analyze(const AppParameter& parameter, StopwatchUserTime& clock, const Analyzer::Ptr& analyzer) {
+  if (!parameter.forceReRun && analyzer->exists()) {
+    cout << analyzer->getFilename() << " already exists, skip analyze." << endl;
+    return;
+  }
 
   const DatasetReader<PointT>::Ptr reader = newReader<PointT>(parameter.reader, parameter.dataset);
 
@@ -82,7 +83,6 @@ void analyzeVoxelOccupancyCountToVoxelCount(const AppParameter& parameter, Stopw
     GroupOfFrame<PointT> frames;
     clock.start();
     reader->loadAll(frameNumber, groupOfFramesSize, frames, parameter.parallel);
-    process::quantize<PointT>(frames, parameter.resolution, parameter.parallel);
     clock.stop();
     for (auto& frame : frames) {
       auto background = jpcc::make_shared<Frame<PointT>>();
@@ -100,26 +100,11 @@ void analyzeVoxelOccupancyCountToVoxelCount(const AppParameter& parameter, Stopw
         split<PointT>(frame, indices, dynamic, frame);
       }
 
-      octreeCounter.addFrame(0, background);
-      octreeCounter.addFrame(1, dynamic);
-      octreeCounter.addFrame(2, frame);
+      analyzer->compute(background, dynamic, frame);
     }
     frameNumber += groupOfFramesSize;
   }
-
-  OctreeCounterT::CountMap countMap = octreeCounter.getOccupancyCountToVoxelCount();
-
-  ofstream ofs("./bin/analyze-[Voxel Occupancy Count-Voxel Count]");
-  ofs << "Voxel Occupancy Count"
-      << ","
-      << "Voxel Count (Background)"
-      << ","
-      << "Voxel Count (Dynamic)"
-      << ","
-      << "Voxel Count (Other)" << endl;
-  for (const auto& [occupancyCount, countArray] : countMap) {
-    ofs << occupancyCount << "," << countArray.at(0) << "," << countArray.at(1) << "," << countArray.at(2) << endl;
-  }
+  analyzer->finalCompute();
 }
 
 void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
@@ -127,7 +112,18 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
     previewOnly(parameter, clock);
     return;
   }
-  analyzeVoxelOccupancyCountToVoxelCount(parameter, clock);
+
+  vector<Analyzer::Ptr> analyzers = {
+      //
+      jpcc::make_shared<VoxelOccupancyCountToVoxelCount>(  //
+          "./bin/analyze-[Voxel Occupancy Count-Voxel Count].csv",
+          parameter.resolution),                       //
+      jpcc::make_shared<VoxelPointCountToVoxelCount>(  //
+          "./bin/analyze-[Voxel Point Count-Voxel Count].csv",
+          parameter.resolution),  //
+  };
+
+  for (const Analyzer::Ptr& analyzer : analyzers) { analyze(parameter, clock, analyzer); }
 }
 
 int main(int argc, char* argv[]) {

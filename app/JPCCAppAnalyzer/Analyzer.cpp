@@ -1,0 +1,15 @@
+#include "Analyzer.h"
+
+#include <filesystem>
+
+using namespace std::filesystem;
+
+namespace jpcc {
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+Analyzer::Analyzer(std::string filename) : filename_(std::move(filename)) {}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+std::string Analyzer::getFilename() { return filename_; }
+
+}  // namespace jpcc

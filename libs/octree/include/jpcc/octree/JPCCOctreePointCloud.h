@@ -14,18 +14,19 @@ template <typename PointT,
           typename OctreeT          = pcl::octree::OctreeBase<LeafContainerT, BranchContainerT>>
 class JPCCOctreePointCloud : public OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT> {
  public:
-  using Frame    = jpcc::Frame<PointT>;
-  using FramePtr = typename Frame::Ptr;
+  using Frame         = jpcc::Frame<PointT>;
+  using FramePtr      = typename Frame::Ptr;
+  using FrameConstPtr = typename Frame::ConstPtr;
 
   JPCCOctreePointCloud(double resolution);
 
-  void setFrame(FramePtr frame);
+  void setFrame(FrameConstPtr frame);
 
-  void setFrame(BufferIndex bufferIndex, FramePtr frame);
+  void setFrame(BufferIndex bufferIndex, FrameConstPtr frame);
 
-  void addFrame(FramePtr frame);
+  void addFrame(FrameConstPtr frame);
 
-  void addFrame(BufferIndex bufferIndex, FramePtr frame);
+  void addFrame(BufferIndex bufferIndex, FrameConstPtr frame);
 };
 
 }  // namespace jpcc::octree

@@ -10,6 +10,7 @@ using namespace po;
 #define APP_OPT_PREFIX "app"
 #define PARALLEL_OPT ".parallel"
 #define PREVIEW_ONLY_OPT ".previewOnly"
+#define FORCE_RE_RUN_OPT ".forceReRun"
 #define RESOLUTION_OPT ".resolution"
 
 AppParameter::AppParameter() :
@@ -28,6 +29,9 @@ AppParameter::AppParameter() :
        "parallel")                                             //
       (string(prefix_ + PREVIEW_ONLY_OPT).c_str(),             //
        value<bool>(&previewOnly)->default_value(previewOnly),  //
+       "parallel")                                             //
+      (string(prefix_ + FORCE_RE_RUN_OPT).c_str(),             //
+       value<bool>(&forceReRun)->default_value(forceReRun),    //
        "previewOnly")                                          //
       (string(prefix_ + RESOLUTION_OPT).c_str(),               //
        value<double>(&resolution)->default_value(resolution),  //
@@ -64,6 +68,7 @@ ostream& operator<<(ostream& out, const AppParameter& obj) {
   obj.coutParameters(out)                  //
       (PARALLEL_OPT, obj.parallel)         //
       (PREVIEW_ONLY_OPT, obj.previewOnly)  //
+      (FORCE_RE_RUN_OPT, obj.forceReRun)   //
       (RESOLUTION_OPT, obj.resolution)     //
       ;
   out << obj.dataset;

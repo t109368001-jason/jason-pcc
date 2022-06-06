@@ -17,6 +17,7 @@ class AppParameter : public Parameter {
  public:
   bool                                     parallel;
   bool                                     previewOnly;
+  bool                                     forceReRun;
   double                                   resolution;
   io::DatasetParameter                     dataset;
   io::DatasetReaderParameter               reader;

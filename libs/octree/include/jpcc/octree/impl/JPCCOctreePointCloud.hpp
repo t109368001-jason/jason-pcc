@@ -11,7 +11,7 @@ JPCCOctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::JPCCOct
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename LeafContainerT, typename BranchContainerT, typename OctreeT>
-void JPCCOctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::setFrame(FramePtr frame) {
+void JPCCOctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::setFrame(FrameConstPtr frame) {
   if constexpr (is_n_buf_octree_v<OctreeT>) {
     this->deleteBuffer(this->getBufferIndex());
     this->setInputCloud(frame);
@@ -24,8 +24,8 @@ void JPCCOctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::se
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename LeafContainerT, typename BranchContainerT, typename OctreeT>
-void JPCCOctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::setFrame(BufferIndex bufferIndex,
-                                                                                       FramePtr    frame) {
+void JPCCOctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::setFrame(BufferIndex   bufferIndex,
+                                                                                       FrameConstPtr frame) {
   if constexpr (is_n_buf_octree_v<OctreeT>) {
     this->switchBuffers(bufferIndex);
     setFrame(frame);
@@ -36,7 +36,7 @@ void JPCCOctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::se
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename LeafContainerT, typename BranchContainerT, typename OctreeT>
-void JPCCOctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::addFrame(FramePtr frame) {
+void JPCCOctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::addFrame(FrameConstPtr frame) {
   if constexpr (is_n_buf_octree_v<OctreeT>) {
     this->setInputCloud(frame);
     this->addPointsFromInputCloud();
@@ -48,8 +48,8 @@ void JPCCOctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::ad
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename LeafContainerT, typename BranchContainerT, typename OctreeT>
-void JPCCOctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::addFrame(BufferIndex bufferIndex,
-                                                                                       FramePtr    frame) {
+void JPCCOctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::addFrame(BufferIndex   bufferIndex,
+                                                                                       FrameConstPtr frame) {
   if constexpr (is_n_buf_octree_v<OctreeT>) {
     this->switchBuffers(bufferIndex);
     addFrame(frame);
