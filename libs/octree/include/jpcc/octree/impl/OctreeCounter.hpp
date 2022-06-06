@@ -34,7 +34,7 @@ OctreeCounter<PointT, BUFFER_SIZE>::getOccupancyCountToVoxelCount() {
     }
     return countArrayMap;
   } else {
-    static_assert(false, "invalid template type");
+    static_assert(dependent_false_v<CountMap>, "invalid template type");
   }
 }
 

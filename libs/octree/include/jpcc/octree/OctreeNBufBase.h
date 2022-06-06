@@ -51,16 +51,12 @@
 
 namespace jpcc::octree {
 
+template <typename, typename = void>
+struct is_n_buf_octree : std::false_type {};
+
 template <typename T>
-struct is_n_buf_octree {
-  template <typename U, void (U::*)(BufferIndex)>
-  struct SFINAE {};
-  template <typename U>
-  static char Test(SFINAE<U, &U::switchBuffers>*);
-  template <typename U>
-  static int        Test(...);
-  static const bool value = sizeof(Test<T>(0)) == sizeof(char);
-};
+struct is_n_buf_octree<T, std::void_t<decltype(&T::switchBuffers)>>
+    : std::is_same<void, decltype(std::declval<T>().switchBuffers(std::declval<BufferIndex>()))> {};
 
 template <class T>
 inline constexpr bool is_n_buf_octree_v = is_n_buf_octree<T>::value;

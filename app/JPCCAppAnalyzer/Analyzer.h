@@ -11,7 +11,7 @@ namespace jpcc {
 class Analyzer {
  public:
   using Ptr           = shared_ptr<Analyzer>;
-  using Frame         = Frame<PointNormal>;
+  using Frame         = jpcc::Frame<PointNormal>;
   using FrameConstPtr = typename Frame::ConstPtr;
 
  protected:

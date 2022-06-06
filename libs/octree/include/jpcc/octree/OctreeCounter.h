@@ -27,7 +27,7 @@ class OctreeCounter
       typename std::conditional_t<BUFFER_SIZE == 1,
                                   pcl::octree::OctreeBase<OctreeContainerCounter, pcl::octree::OctreeContainerEmpty>,
                                   OctreeNBuf<BUFFER_SIZE, OctreeContainerCounter, pcl::octree::OctreeContainerEmpty>>;
-  using JPCCOctreePointCloud = JPCCOctreePointCloud<
+  using JPCCOctreePointCloud = octree::JPCCOctreePointCloud<
       PointT,
       OctreeContainerCounter,
       pcl::octree::OctreeContainerEmpty,

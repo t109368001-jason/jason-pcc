@@ -14,6 +14,8 @@ template <typename PointT,
           typename OctreeT          = pcl::octree::OctreeBase<LeafContainerT, BranchContainerT>>
 class JPCCOctreePointCloud : public OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT> {
  public:
+  using OctreePointCloud = octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>;
+
   using Frame         = jpcc::Frame<PointT>;
   using FramePtr      = typename Frame::Ptr;
   using FrameConstPtr = typename Frame::ConstPtr;

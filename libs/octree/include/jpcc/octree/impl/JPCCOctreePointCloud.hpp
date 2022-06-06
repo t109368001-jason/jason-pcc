@@ -30,7 +30,7 @@ void JPCCOctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::se
     this->switchBuffers(bufferIndex);
     setFrame(frame);
   } else {
-    static_assert(false, "setFrame only support for OctreeNBuf, please use setFrame");
+    static_assert(dependent_false_v<OctreeT>, "setFrame only support for OctreeNBuf, please use setFrame");
   }
 }
 
@@ -54,7 +54,8 @@ void JPCCOctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::ad
     this->switchBuffers(bufferIndex);
     addFrame(frame);
   } else {
-    static_assert(false, "addFrame(BufferIndex, FramePtr) only support for OctreeNBuf, please use addFrame(FramePtr)");
+    static_assert(dependent_false_v<OctreeT>,
+                  "addFrame(BufferIndex, FramePtr) only support for OctreeNBuf, please use addFrame(FramePtr)");
   }
 }
 
