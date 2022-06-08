@@ -5,7 +5,7 @@ namespace jpcc::octree {
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename LeafContainerT, typename BranchContainerT, typename OctreeT>
 JPCCOctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::JPCCOctreePointCloud(double resolution) :
-    OctreePointCloud(resolution) {
+    Base(resolution) {
   this->defineBoundingBox(resolution * 2);
 }
 
@@ -63,15 +63,15 @@ void jpcc::octree::JPCCOctreePointCloud<PointT, LeafContainerT, BranchContainerT
     uindex_t point_idx_arg) {
   OctreeKey key;
 
-  assert(point_idx_arg < input_->size());
+  assert(point_idx_arg < this->input_->size());
 
-  const PointT& point = (*input_)[point_idx_arg];
+  const PointT& point = (*this->input_)[point_idx_arg];
 
   // make sure bounding box is big enough
-  adoptBoundingBoxToPoint(point);
+  this->adoptBoundingBoxToPoint(point);
 
   // generate key
-  genOctreeKeyforPoint(point, key);
+  this->genOctreeKeyforPoint(point, key);
 
   LeafNode*   leaf_node;
   BranchNode* parent_branch_of_leaf_node;
@@ -82,7 +82,7 @@ void jpcc::octree::JPCCOctreePointCloud<PointT, LeafContainerT, BranchContainerT
     // get amount of objects in leaf container
     std::size_t leaf_obj_count = (*leaf_node)->getSize();
 
-    while (leaf_obj_count >= max_objs_per_leaf_ && depth_mask) {
+    while (leaf_obj_count >= this->max_objs_per_leaf_ && depth_mask) {
       // index to branch child
       unsigned char child_idx = key.getChildIdxWithDepthMask(depth_mask * 2);
 
@@ -123,9 +123,9 @@ void jpcc::octree::JPCCOctreePointCloud<PointT, LeafContainerT, BranchContainerT
     OctreeKey new_index_key;
 
     for (const auto& leafIndex : leafIndices) {
-      const PointT& point_from_index = (*input_)[leafIndex];
+      const PointT& point_from_index = (*this->input_)[leafIndex];
       // generate key
-      genOctreeKeyforPoint(point_from_index, new_index_key);
+      this->genOctreeKeyforPoint(point_from_index, new_index_key);
 
       LeafNode*   newLeaf;
       BranchNode* newBranchParent;

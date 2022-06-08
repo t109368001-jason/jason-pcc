@@ -14,7 +14,7 @@ namespace jpcc::octree {
 
 template <typename PointT, BufferIndex BUFFER_SIZE = 1>
 class OctreeCounter
-    : public jpcc::octree::JPCCOctreePointCloud<
+    : public JPCCOctreePointCloud<
           PointT,
           OctreeContainerCounter,
           pcl::octree::OctreeContainerEmpty,
@@ -23,6 +23,15 @@ class OctreeCounter
               pcl::octree::OctreeBase<OctreeContainerCounter, pcl::octree::OctreeContainerEmpty>,
               OctreeNBuf<BUFFER_SIZE, OctreeContainerCounter, pcl::octree::OctreeContainerEmpty>>::type> {
  public:
+  using Base = jpcc::octree::JPCCOctreePointCloud<
+      PointT,
+      OctreeContainerCounter,
+      pcl::octree::OctreeContainerEmpty,
+      typename std::conditional<
+          BUFFER_SIZE == 1,
+          pcl::octree::OctreeBase<OctreeContainerCounter, pcl::octree::OctreeContainerEmpty>,
+          OctreeNBuf<BUFFER_SIZE, OctreeContainerCounter, pcl::octree::OctreeContainerEmpty>>::type>;
+
   using CountMap = std::conditional_t<
       (BUFFER_SIZE > 0),
       std::conditional_t<BUFFER_SIZE == 1, std::map<size_t, size_t>, std::map<size_t, std::array<size_t, BUFFER_SIZE>>>,
