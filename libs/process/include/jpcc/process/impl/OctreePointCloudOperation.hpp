@@ -7,7 +7,7 @@ namespace jpcc::process {
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, bool quantize>
 OctreePointCloudOperation<PointT, quantize>::OctreePointCloudOperation(double resolution) :
-    OctreePointCloudT(resolution) {}
+    OctreePointCloudOperation<PointT, quantize>::Base(resolution) {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, bool quantize>
@@ -29,7 +29,7 @@ FramePtr<PointT> OctreePointCloudOperation<PointT, quantize>::targetAndNotSource
   auto indices = make_shared<Indices>();
   this->switchBuffers(1);
   this->getIndicesByFilter(
-      [](const typename OctreeNBufT::BufferPattern& bufferPattern) { return !bufferPattern.test(0); }, *indices);
+      [](const typename OctreeBase::BufferPattern& bufferPattern) { return !bufferPattern.test(0); }, *indices);
 
   auto output = make_shared<Frame>();
 
