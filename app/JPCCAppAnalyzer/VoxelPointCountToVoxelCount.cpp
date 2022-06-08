@@ -36,6 +36,7 @@ void VoxelPointCountToVoxelCount::finalCompute() {
   for (const auto& [occupancyCount, countArray] : countMap) {
     ofs << occupancyCount << "," << countArray.at(0) << "," << countArray.at(1) << "," << countArray.at(2) << endl;
   }
+  octreeCounter_.deleteTree();
 }
 
 }  // namespace jpcc

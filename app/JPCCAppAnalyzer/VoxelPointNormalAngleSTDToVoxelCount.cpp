@@ -86,6 +86,7 @@ void VoxelPointNormalAngleSTDToVoxelCount::finalCompute() {
     ofs << angleSTD << "," << countArray.at(0) << "," << countArray.at(1) << "," << countArray.at(2) << ","
         << countArray.at(3) << "," << countArray.at(4) << "," << countArray.at(5) << endl;
   }
+  octree_.deleteTree();
 }
 
 }  // namespace jpcc
