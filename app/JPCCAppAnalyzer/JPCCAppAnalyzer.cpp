@@ -14,6 +14,7 @@
 #include "VoxelOccupancyCountToVoxelCount.h"
 #include "VoxelPointCountToVoxelCount.h"
 #include "VoxelPointNormalAngleSTDToVoxelCount.h"
+#include "VoxelOccupancyIntervalSTDToVoxelCount.h"
 
 using namespace std;
 using namespace std::chrono;
@@ -134,15 +135,18 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
   }
   vector<Analyzer::Ptr> analyzers = {
       //
-      jpcc::make_shared<VoxelOccupancyCountToVoxelCount>(            //
-          "./bin/analyze-VoxelOccupancyCountToVoxelCount.csv",       //
-          parameter.resolution),                                     //
-      jpcc::make_shared<VoxelPointCountToVoxelCount>(                //
-          "./bin/analyze-VoxelPointCountToVoxelCount.csv",           //
-          parameter.resolution),                                     //
-      jpcc::make_shared<VoxelPointNormalAngleSTDToVoxelCount>(       //
-          "./bin/analyze-VoxelPointNormalAngleSTDToVoxelCount.csv",  //
-          parameter.resolution),                                     //
+      jpcc::make_shared<VoxelOccupancyCountToVoxelCount>(             //
+          "./bin/analyze-VoxelOccupancyCountToVoxelCount.csv",        //
+          parameter.resolution),                                      //
+      jpcc::make_shared<VoxelPointCountToVoxelCount>(                 //
+          "./bin/analyze-VoxelPointCountToVoxelCount.csv",            //
+          parameter.resolution),                                      //
+      jpcc::make_shared<VoxelPointNormalAngleSTDToVoxelCount>(        //
+          "./bin/analyze-VoxelPointNormalAngleSTDToVoxelCount.csv",   //
+          parameter.resolution),                                      //
+      jpcc::make_shared<VoxelOccupancyIntervalSTDToVoxelCount>(       //
+          "./bin/analyze-VoxelOccupancyIntervalSTDToVoxelCount.csv",  //
+          parameter.resolution),                                      //
   };
   if (parameter.analyzeParallel) {
     analyze(parameter, clock, analyzers);
