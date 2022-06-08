@@ -1,4 +1,4 @@
-#include "VoxelPointNormalSTDToVoxelCount.h"
+#include "VoxelPointNormalAngleSTDToVoxelCount.h"
 
 #include <cmath>
 #include <filesystem>
@@ -12,21 +12,23 @@ using namespace jpcc::octree;
 namespace jpcc {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-VoxelPointNormalSTDToVoxelCount::VoxelPointNormalSTDToVoxelCount(std::string filename, double resolution) :
+VoxelPointNormalAngleSTDToVoxelCount::VoxelPointNormalAngleSTDToVoxelCount(std::string filename, double resolution) :
     Analyzer(std::move(filename)), octree_(resolution) {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-bool VoxelPointNormalSTDToVoxelCount::exists() { return filesystem::exists(path(filename_)); }
+bool VoxelPointNormalAngleSTDToVoxelCount::exists() { return filesystem::exists(path(filename_)); }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void VoxelPointNormalSTDToVoxelCount::compute(FrameConstPtr background, FrameConstPtr dynamic, FrameConstPtr other) {
+void VoxelPointNormalAngleSTDToVoxelCount::compute(FrameConstPtr background,
+                                                   FrameConstPtr dynamic,
+                                                   FrameConstPtr other) {
   octree_.addFrame(0, background);
   octree_.addFrame(1, dynamic);
   octree_.addFrame(2, other);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void VoxelPointNormalSTDToVoxelCount::finalCompute() {
+void VoxelPointNormalAngleSTDToVoxelCount::finalCompute() {
   std::map<int, std::array<size_t, BUFFER_SIZE * 2>> countMap;
   for (BufferIndex bufferIndex = 0; bufferIndex < BUFFER_SIZE; bufferIndex++) {
     octree_.switchBuffers(bufferIndex);
@@ -54,19 +56,32 @@ void VoxelPointNormalSTDToVoxelCount::finalCompute() {
   }
 
   std::ofstream ofs(filename_);
-  ofs << "Voxel Point Normal STD (azimuth/zenith)"
+  ofs << ""
       << ","
-      << "Voxel Count (Background/azimuth)"
+      << "azimuth"
       << ","
-      << "Voxel Count (Dynamic/azimuth)"
+      << "azimuth"
       << ","
-      << "Voxel Count (Other/azimuth)"
+      << "azimuth"
       << ","
-      << "Voxel Count (Background/zenith)"
+      << "zenith"
       << ","
-      << "Voxel Count (Dynamic/zenith)"
+      << "zenith"
       << ","
-      << "Voxel Count (Other/zenith)" << endl;
+      << "zenith" << endl;
+  ofs << "Voxel Point Normal Angle STD"
+      << ","
+      << "Voxel Count (Background)"
+      << ","
+      << "Voxel Count (Dynamic)"
+      << ","
+      << "Voxel Count (Other)"
+      << ","
+      << "Voxel Count (Background)"
+      << ","
+      << "Voxel Count (Dynamic)"
+      << ","
+      << "Voxel Count (Other)" << endl;
   for (const auto& [angleSTD, countArray] : countMap) {
     ofs << angleSTD << "," << countArray.at(0) << "," << countArray.at(1) << "," << countArray.at(2) << ","
         << countArray.at(3) << "," << countArray.at(4) << "," << countArray.at(5) << endl;

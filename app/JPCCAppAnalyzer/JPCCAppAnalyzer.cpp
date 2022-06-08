@@ -13,7 +13,7 @@
 #include "AppParameter.h"
 #include "VoxelOccupancyCountToVoxelCount.h"
 #include "VoxelPointCountToVoxelCount.h"
-#include "VoxelPointNormalSTDToVoxelCount.h"
+#include "VoxelPointNormalAngleSTDToVoxelCount.h"
 
 using namespace std;
 using namespace std::chrono;
@@ -115,15 +115,15 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
   }
   vector<Analyzer::Ptr> analyzers = {
       //
-      jpcc::make_shared<VoxelOccupancyCountToVoxelCount>(  //
-          "./bin/analyze-[Voxel Occupancy Count-Voxel Count].csv",
-          parameter.resolution),                       //
-      jpcc::make_shared<VoxelPointCountToVoxelCount>(  //
-          "./bin/analyze-[Voxel Point Count-Voxel Count].csv",
-          parameter.resolution),                           //
-      jpcc::make_shared<VoxelPointNormalSTDToVoxelCount>(  //
-          "./bin/analyze-[Voxel Point Normal STD-Voxel Count].csv",
-          parameter.resolution),  //
+      jpcc::make_shared<VoxelOccupancyCountToVoxelCount>(            //
+          "./bin/analyze-VoxelOccupancyCountToVoxelCount.csv",       //
+          parameter.resolution),                                     //
+      jpcc::make_shared<VoxelPointCountToVoxelCount>(                //
+          "./bin/analyze-VoxelPointCountToVoxelCount.csv",           //
+          parameter.resolution),                                     //
+      jpcc::make_shared<VoxelPointNormalAngleSTDToVoxelCount>(       //
+          "./bin/analyze-VoxelPointNormalAngleSTDToVoxelCount.csv",  //
+          parameter.resolution),                                     //
   };
 
   for (const Analyzer::Ptr& analyzer : analyzers) { analyze(parameter, clock, analyzer); }

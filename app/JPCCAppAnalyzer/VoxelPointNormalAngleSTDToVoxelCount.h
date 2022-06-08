@@ -10,7 +10,7 @@
 
 namespace jpcc {
 
-class VoxelPointNormalSTDToVoxelCount : public Analyzer {
+class VoxelPointNormalAngleSTDToVoxelCount : public Analyzer {
  public:
   static constexpr octree::BufferIndex BUFFER_SIZE = 3;
 
@@ -24,7 +24,7 @@ class VoxelPointNormalSTDToVoxelCount : public Analyzer {
   OctreeT octree_;
 
  public:
-  VoxelPointNormalSTDToVoxelCount(std::string filename, double resolution);
+  VoxelPointNormalAngleSTDToVoxelCount(std::string filename, double resolution);
 
   bool exists() override;
 
