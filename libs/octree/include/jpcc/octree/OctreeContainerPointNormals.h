@@ -11,7 +11,7 @@ namespace jpcc::octree {
 class OctreeContainerPointNormals : public pcl::octree::OctreeContainerBase {
  public:
   static constexpr int AZIMUTH_INDEX = 0;
-  static constexpr int ZENITH_INDEX  = 0;
+  static constexpr int ZENITH_INDEX  = 1;
 
  protected:
   Eigen::MatrixX2d angles_;
