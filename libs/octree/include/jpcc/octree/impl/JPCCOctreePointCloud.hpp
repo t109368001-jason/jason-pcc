@@ -5,7 +5,7 @@ namespace jpcc::octree {
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename LeafContainerT, typename BranchContainerT, typename OctreeT>
 JPCCOctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::JPCCOctreePointCloud(double resolution) :
-    JPCCOctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::Base(resolution) {
+    Base(resolution) {
   this->defineBoundingBox(resolution * 2);
 }
 

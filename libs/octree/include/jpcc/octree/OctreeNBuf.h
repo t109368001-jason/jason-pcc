@@ -16,12 +16,12 @@ template <BufferIndex BUFFER_SIZE,
           typename BranchContainerT = pcl::octree::OctreeContainerEmpty>
 class OctreeNBuf : public virtual OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT> {
  public:
-  using OctreeNBufBaseT = OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>;
+  using Base = OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>;
 
-  using OctreeNode    = typename OctreeNBufBaseT::OctreeNode;
-  using LeafNode      = typename OctreeNBufBaseT::LeafNode;
-  using BranchNode    = typename OctreeNBufBaseT::BranchNode;
-  using BufferPattern = typename OctreeNBufBaseT::BufferPattern;
+  using OctreeNode    = typename Base::OctreeNode;
+  using LeafNode      = typename Base::LeafNode;
+  using BranchNode    = typename Base::BranchNode;
+  using BufferPattern = typename Base::BufferPattern;
 
   using BufferIndices      = std::array<int, BUFFER_SIZE>;
   using Filter1            = std::function<bool(const BufferPattern& bufferPattern)>;

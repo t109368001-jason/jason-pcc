@@ -66,7 +66,7 @@ template <BufferIndex BUFFER_SIZE,
           typename BranchContainerT = pcl::octree::OctreeContainerEmpty>
 class OctreeNBufBase {
  public:
-  using OctreeT    = OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>;
+  using ThisT      = OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>;
   using BranchNode = OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>;
   using LeafNode   = pcl::octree::OctreeLeafNode<LeafContainerT>;
   using OctreeNode = pcl::octree::OctreeNode;
@@ -79,17 +79,17 @@ class OctreeNBufBase {
   using OctreeKey = pcl::octree::OctreeKey;
   using uindex_t  = unsigned int;
 
-  using Iterator                   = pcl::octree::OctreeDepthFirstIterator<OctreeT>;
-  using LeafNodeDepthFirstIterator = pcl::octree::OctreeLeafNodeDepthFirstIterator<OctreeT>;
-  using DepthFirstIterator         = pcl::octree::OctreeDepthFirstIterator<OctreeT>;
-  using BreadthFirstIterator       = pcl::octree::OctreeBreadthFirstIterator<OctreeT>;
-  using LeafNodeBreadthIterator    = pcl::octree::OctreeLeafNodeBreadthFirstIterator<OctreeT>;
+  using Iterator                   = pcl::octree::OctreeDepthFirstIterator<ThisT>;
+  using LeafNodeDepthFirstIterator = pcl::octree::OctreeLeafNodeDepthFirstIterator<ThisT>;
+  using DepthFirstIterator         = pcl::octree::OctreeDepthFirstIterator<ThisT>;
+  using BreadthFirstIterator       = pcl::octree::OctreeBreadthFirstIterator<ThisT>;
+  using LeafNodeBreadthIterator    = pcl::octree::OctreeLeafNodeBreadthFirstIterator<ThisT>;
 
-  friend class pcl::octree::OctreeIteratorBase<OctreeT>;
-  friend class pcl::octree::OctreeDepthFirstIterator<OctreeT>;
-  friend class pcl::octree::OctreeBreadthFirstIterator<OctreeT>;
-  friend class pcl::octree::OctreeLeafNodeDepthFirstIterator<OctreeT>;
-  friend class pcl::octree::OctreeLeafNodeBreadthFirstIterator<OctreeT>;
+  friend class pcl::octree::OctreeIteratorBase<ThisT>;
+  friend class pcl::octree::OctreeDepthFirstIterator<ThisT>;
+  friend class pcl::octree::OctreeBreadthFirstIterator<ThisT>;
+  friend class pcl::octree::OctreeLeafNodeDepthFirstIterator<ThisT>;
+  friend class pcl::octree::OctreeLeafNodeBreadthFirstIterator<ThisT>;
 
  protected:
   size_t leaf_count_;

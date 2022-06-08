@@ -6,8 +6,7 @@ namespace jpcc::process {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, bool quantize>
-OctreePointCloudOperation<PointT, quantize>::OctreePointCloudOperation(double resolution) :
-    OctreePointCloudOperation<PointT, quantize>::Base(resolution) {}
+OctreePointCloudOperation<PointT, quantize>::OctreePointCloudOperation(double resolution) : Base(resolution) {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, bool quantize>
