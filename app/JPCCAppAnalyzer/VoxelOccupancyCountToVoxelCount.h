@@ -3,8 +3,6 @@
 #include <fstream>
 #include <string>
 
-#include <jpcc/octree/OctreeCounter.h>
-
 #include "VoxelPointCountToVoxelCount.h"
 
 namespace jpcc {

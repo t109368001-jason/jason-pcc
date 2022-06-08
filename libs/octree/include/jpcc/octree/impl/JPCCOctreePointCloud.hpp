@@ -58,5 +58,83 @@ void JPCCOctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::ad
                   "addFrame(BufferIndex, FramePtr) only support for OctreeNBuf, please use addFrame(FramePtr)");
   }
 }
+template <typename PointT, typename LeafContainerT, typename BranchContainerT, typename OctreeT>
+void jpcc::octree::JPCCOctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::addPointIdx(
+    uindex_t point_idx_arg) {
+  OctreeKey key;
+
+  assert(point_idx_arg < input_->size());
+
+  const PointT& point = (*input_)[point_idx_arg];
+
+  // make sure bounding box is big enough
+  adoptBoundingBoxToPoint(point);
+
+  // generate key
+  genOctreeKeyforPoint(point, key);
+
+  LeafNode*   leaf_node;
+  BranchNode* parent_branch_of_leaf_node;
+  auto        depth_mask =
+      this->createLeafRecursive(key, this->depth_mask_, this->root_node_, leaf_node, parent_branch_of_leaf_node);
+
+  if (this->dynamic_depth_enabled_ && depth_mask) {
+    // get amount of objects in leaf container
+    std::size_t leaf_obj_count = (*leaf_node)->getSize();
+
+    while (leaf_obj_count >= max_objs_per_leaf_ && depth_mask) {
+      // index to branch child
+      unsigned char child_idx = key.getChildIdxWithDepthMask(depth_mask * 2);
+
+      expandLeafNode(leaf_node, parent_branch_of_leaf_node, child_idx, depth_mask);
+
+      depth_mask =
+          this->createLeafRecursive(key, this->depth_mask_, this->root_node_, leaf_node, parent_branch_of_leaf_node);
+      leaf_obj_count = (*leaf_node)->getSize();
+    }
+  }
+
+  (*leaf_node)->addPointIndex(point_idx_arg);
+  if constexpr (has_add_point_v<LeafContainerT, PointT>) { (*leaf_node)->addPoint(point); }
+}
+
+template <typename PointT, typename LeafContainerT, typename BranchContainerT, typename OctreeT>
+void jpcc::octree::JPCCOctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::expandLeafNode(
+    LeafNode* leaf_node, BranchNode* parent_branch, unsigned char child_idx, uindex_t depth_mask) {
+  if (depth_mask) {
+    // get amount of objects in leaf container
+    std::size_t leaf_obj_count = (*leaf_node)->getSize();
+
+    // copy leaf data
+    Indices leafIndices;
+    leafIndices.reserve(leaf_obj_count);
+
+    (*leaf_node)->getPointIndices(leafIndices);
+
+    // delete current leaf node
+    this->deleteBranchChild(*parent_branch, child_idx);
+    this->leaf_count_--;
+
+    // create new branch node
+    BranchNode* childBranch = this->createBranchChild(*parent_branch, child_idx);
+    this->branch_count_++;
+
+    // add data to new branch
+    OctreeKey new_index_key;
+
+    for (const auto& leafIndex : leafIndices) {
+      const PointT& point_from_index = (*input_)[leafIndex];
+      // generate key
+      genOctreeKeyforPoint(point_from_index, new_index_key);
+
+      LeafNode*   newLeaf;
+      BranchNode* newBranchParent;
+      this->createLeafRecursive(new_index_key, depth_mask, childBranch, newLeaf, newBranchParent);
+
+      (*newLeaf)->addPointIndex(leafIndex);
+      if constexpr (has_add_point_v<LeafContainerT, PointT>) { (*newLeaf)->addPoint(point_from_index); }
+    }
+  }
+}
 
 }  // namespace jpcc::octree

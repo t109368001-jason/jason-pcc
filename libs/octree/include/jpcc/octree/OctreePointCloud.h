@@ -371,7 +371,10 @@ class OctreePointCloud : public OctreeT {
    * \param[in] child_idx child index of leaf node (in parent branch)
    * \param[in] depth_mask of leaf node to be expanded
    */
-  void expandLeafNode(LeafNode* leaf_node, BranchNode* parent_branch, unsigned char child_idx, uindex_t depth_mask);
+  virtual void expandLeafNode(LeafNode*     leaf_node,
+                              BranchNode*   parent_branch,
+                              unsigned char child_idx,
+                              uindex_t      depth_mask);
 
   /** \brief Get point at index from input pointcloud dataset
    * \param[in] index_arg index representing the point in the dataset given by \a
