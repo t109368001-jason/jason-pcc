@@ -9,6 +9,7 @@ using namespace po;
 
 #define APP_OPT_PREFIX "app"
 #define PARALLEL_OPT ".parallel"
+#define ANALYZE_PARALLEL_OPT ".analyzeParallel"
 #define PREVIEW_ONLY_OPT ".previewOnly"
 #define FORCE_RE_RUN_OPT ".forceReRun"
 #define RESOLUTION_OPT ".resolution"
@@ -16,6 +17,7 @@ using namespace po;
 AppParameter::AppParameter() :
     Parameter(APP_OPT_PREFIX, __FUNCTION__),
     parallel(false),
+    analyzeParallel(false),
     previewOnly(false),
     resolution(0.1),
     dataset(),
@@ -23,19 +25,22 @@ AppParameter::AppParameter() :
     background(string("background.") + JPCC_CONDITIONAL_REMOVAL_OPT_PREFIX, "JPCCConditionalRemovalParameter"),
     dynamic(string("dynamic.") + JPCC_CONDITIONAL_REMOVAL_OPT_PREFIX, "JPCCConditionalRemovalParameter"),
     visualizerParameter() {
-  opts_.add_options()                                          //
-      (string(prefix_ + PARALLEL_OPT).c_str(),                 //
-       value<bool>(&parallel)->default_value(parallel),        //
-       "parallel")                                             //
-      (string(prefix_ + PREVIEW_ONLY_OPT).c_str(),             //
-       value<bool>(&previewOnly)->default_value(previewOnly),  //
-       "parallel")                                             //
-      (string(prefix_ + FORCE_RE_RUN_OPT).c_str(),             //
-       value<bool>(&forceReRun)->default_value(forceReRun),    //
-       "previewOnly")                                          //
-      (string(prefix_ + RESOLUTION_OPT).c_str(),               //
-       value<double>(&resolution)->default_value(resolution),  //
-       "resolution")                                           //
+  opts_.add_options()                                                  //
+      (string(prefix_ + PARALLEL_OPT).c_str(),                         //
+       value<bool>(&parallel)->default_value(parallel),                //
+       "parallel")                                                     //
+      (string(prefix_ + ANALYZE_PARALLEL_OPT).c_str(),                 //
+       value<bool>(&analyzeParallel)->default_value(analyzeParallel),  //
+       "analyzeParallel")                                              //
+      (string(prefix_ + PREVIEW_ONLY_OPT).c_str(),                     //
+       value<bool>(&previewOnly)->default_value(previewOnly),          //
+       "previewOnly")                                                  //
+      (string(prefix_ + FORCE_RE_RUN_OPT).c_str(),                     //
+       value<bool>(&forceReRun)->default_value(forceReRun),            //
+       "forceReRun")                                                   //
+      (string(prefix_ + RESOLUTION_OPT).c_str(),                       //
+       value<double>(&resolution)->default_value(resolution),          //
+       "resolution")                                                   //
       ;
   opts_.add(dataset.getOpts());
   opts_.add(reader.getOpts());
@@ -65,11 +70,12 @@ void AppParameter::notify() {
 }
 
 ostream& operator<<(ostream& out, const AppParameter& obj) {
-  obj.coutParameters(out)                  //
-      (PARALLEL_OPT, obj.parallel)         //
-      (PREVIEW_ONLY_OPT, obj.previewOnly)  //
-      (FORCE_RE_RUN_OPT, obj.forceReRun)   //
-      (RESOLUTION_OPT, obj.resolution)     //
+  obj.coutParameters(out)                          //
+      (PARALLEL_OPT, obj.parallel)                 //
+      (ANALYZE_PARALLEL_OPT, obj.analyzeParallel)  //
+      (PREVIEW_ONLY_OPT, obj.previewOnly)          //
+      (FORCE_RE_RUN_OPT, obj.forceReRun)           //
+      (RESOLUTION_OPT, obj.resolution)             //
       ;
   out << obj.dataset;
   out << obj.reader;

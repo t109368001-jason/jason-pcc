@@ -65,11 +65,17 @@ void previewOnly(const AppParameter& parameter, StopwatchUserTime& clock) {
   viewer->spin();
 }
 
-void analyze(const AppParameter& parameter, StopwatchUserTime& clock, const Analyzer::Ptr& analyzer) {
-  if (!parameter.forceReRun && analyzer->exists()) {
-    cout << analyzer->getFilename() << " already exists, skip analyze." << endl;
-    return;
-  }
+void analyze(const AppParameter& parameter, StopwatchUserTime& clock, vector<Analyzer::Ptr> analyzers) {
+  analyzers.erase(std::remove_if(analyzers.begin(), analyzers.end(),
+                                 [&parameter](const auto& analyzer) {
+                                   if (!parameter.forceReRun && analyzer->exists()) {
+                                     cout << analyzer->getFilename() << " already exists, skip analyze." << endl;
+                                     return true;
+                                   }
+                                   return false;
+                                 }),
+                  analyzers.end());
+  if (analyzers.empty()) { return; }
 
   const DatasetReader<PointT>::Ptr reader = newReader<PointT>(parameter.reader, parameter.dataset);
 
@@ -101,11 +107,24 @@ void analyze(const AppParameter& parameter, StopwatchUserTime& clock, const Anal
         split<PointT>(frame, indices, dynamic, frame);
       }
 
-      analyzer->compute(background, dynamic, frame);
+      auto analyzerCompute = [&background, &dynamic, &frame](const auto& analyzer) {
+        analyzer->compute(background, dynamic, frame);
+      };
+      if (parameter.parallel) {
+        for_each(execution::par_unseq, analyzers.begin(), analyzers.end(), analyzerCompute);
+      } else {
+        for_each(analyzers.begin(), analyzers.end(), analyzerCompute);
+      }
     }
     frameNumber += groupOfFramesSize;
   }
-  analyzer->finalCompute();
+
+  auto analyzerFinalCompute = [](const auto& analyzer) { analyzer->finalCompute(); };
+  if (parameter.parallel) {
+    for_each(execution::par_unseq, analyzers.begin(), analyzers.end(), analyzerFinalCompute);
+  } else {
+    for_each(analyzers.begin(), analyzers.end(), analyzerFinalCompute);
+  }
 }
 
 void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
@@ -125,8 +144,11 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
           "./bin/analyze-VoxelPointNormalAngleSTDToVoxelCount.csv",  //
           parameter.resolution),                                     //
   };
-
-  for (const Analyzer::Ptr& analyzer : analyzers) { analyze(parameter, clock, analyzer); }
+  if (parameter.analyzeParallel) {
+    analyze(parameter, clock, analyzers);
+  } else {
+    for (const Analyzer::Ptr& analyzer : analyzers) { analyze(parameter, clock, vector<Analyzer::Ptr>{analyzer}); }
+  }
 }
 
 int main(int argc, char* argv[]) {
