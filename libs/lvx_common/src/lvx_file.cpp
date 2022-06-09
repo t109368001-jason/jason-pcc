@@ -417,9 +417,9 @@ int LvxFileHandle::parsePacketsOfFrameXYZ(
     LivoxRawPoint*     raw_point         = reinterpret_cast<LivoxRawPoint*>(eth_packet->data);
     ExtrinsicParameter extrinsic         = GetExtrinsicParameter(detail_packet->device_index);
     while (points_per_packet) {
-      float x = raw_point->x / 1000.0f;
-      float y = raw_point->y / 1000.0f;
-      float z = raw_point->z / 1000.0f;
+      float x = raw_point->x;
+      float y = raw_point->y;
+      float z = raw_point->z;
       if (extrinsic.enable) {
         float x_ = x;
         float y_ = y;
