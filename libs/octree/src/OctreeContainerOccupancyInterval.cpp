@@ -9,7 +9,7 @@ namespace jpcc::octree {
 OctreeContainerOccupancyInterval::OctreeContainerOccupancyInterval() : count_(0), occupancyIntervals_() {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void OctreeContainerOccupancyInterval::reset() {}
+void OctreeContainerOccupancyInterval::reset() { occupancyIntervals_.conservativeResize(0, NoChange); }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void OctreeContainerOccupancyInterval::addPointIndex(const index_t& index) { appendCount(); }
