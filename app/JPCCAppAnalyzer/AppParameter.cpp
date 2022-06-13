@@ -1,10 +1,13 @@
 #include "AppParameter.h"
 
+#include <filesystem>
+
 #include <boost/algorithm/string.hpp>
 
 namespace jpcc {
 
 using namespace std;
+using namespace std::filesystem;
 using namespace po;
 
 #define APP_OPT_PREFIX "app"
@@ -13,12 +16,14 @@ using namespace po;
 #define PREVIEW_ONLY_OPT ".previewOnly"
 #define FORCE_RE_RUN_OPT ".forceReRun"
 #define RESOLUTION_OPT ".resolution"
+#define OUTPUT_DIR_OPT ".outputDir"
 
 AppParameter::AppParameter() :
     Parameter(APP_OPT_PREFIX, __FUNCTION__),
     parallel(false),
     analyzeParallel(false),
     previewOnly(false),
+    forceReRun(false),
     resolution(0.1),
     dataset(),
     reader(),
@@ -41,6 +46,9 @@ AppParameter::AppParameter() :
       (string(prefix_ + RESOLUTION_OPT).c_str(),                       //
        value<double>(&resolution)->default_value(resolution),          //
        "resolution")                                                   //
+      (string(prefix_ + OUTPUT_DIR_OPT).c_str(),                       //
+       value<string>(&outputDir)->default_value(outputDir),            //
+       "outputDir")                                                    //
       ;
   opts_.add(dataset.getOpts());
   opts_.add(reader.getOpts());
@@ -67,6 +75,8 @@ void AppParameter::notify() {
   background.notify();
   dynamic.notify();
   visualizerParameter.notify();
+  if (!exists(outputDir)) { create_directory(outputDir); }
+  assert(exists(outputDir) && is_directory(outputDir));
 }
 
 ostream& operator<<(ostream& out, const AppParameter& obj) {

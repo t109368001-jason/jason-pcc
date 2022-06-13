@@ -1,5 +1,6 @@
 #pragma once
 
+#include <filesystem>
 #include <fstream>
 #include <string>
 #include <utility>
@@ -15,18 +16,18 @@ class Analyzer {
   using FrameConstPtr = typename Frame::ConstPtr;
 
  protected:
-  std::string filename_;
+  std::filesystem::path filepath_;
 
  public:
-  Analyzer(std::string filename);
+  Analyzer(const std::string& outputDir, const std::string& filename);
 
-  virtual bool exists() = 0;
+  [[nodiscard]] const std::filesystem::path& getFilepath() const;
+
+  [[nodiscard]] bool exists();
 
   virtual void compute(FrameConstPtr background, FrameConstPtr dynamic, FrameConstPtr other) = 0;
 
   virtual void finalCompute() = 0;
-
-  std::string getFilename();
 };
 
 }  // namespace jpcc

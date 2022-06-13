@@ -2,14 +2,21 @@
 
 #include <filesystem>
 
+using namespace std;
 using namespace std::filesystem;
 
 namespace jpcc {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-Analyzer::Analyzer(std::string filename) : filename_(std::move(filename)) {}
+Analyzer::Analyzer(const string& outputDir, const string& filename) : filepath_() {
+  filepath_ = outputDir;
+  filepath_ /= filename;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-std::string Analyzer::getFilename() { return filename_; }
+const std::filesystem::path& Analyzer::getFilepath() const { return filepath_; }
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+bool Analyzer::exists() { return filesystem::exists(filepath_); }
 
 }  // namespace jpcc

@@ -24,9 +24,7 @@ class VoxelOccupancyIntervalSTDToVoxelCount : public Analyzer {
   OctreeT octree_;
 
  public:
-  VoxelOccupancyIntervalSTDToVoxelCount(std::string filename, double resolution);
-
-  bool exists() override;
+  VoxelOccupancyIntervalSTDToVoxelCount(const std::string& outputDir, double resolution);
 
   void compute(FrameConstPtr background, FrameConstPtr dynamic, FrameConstPtr other) override;
 

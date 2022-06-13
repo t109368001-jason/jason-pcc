@@ -1,8 +1,5 @@
 #include "VoxelOccupancyCountToVoxelCount.h"
 
-#include <filesystem>
-#include <utility>
-
 #include <pcl/io/io.h>
 
 #include <jpcc/process/Process.h>
@@ -13,8 +10,10 @@ using namespace std::filesystem;
 namespace jpcc {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-VoxelOccupancyCountToVoxelCount::VoxelOccupancyCountToVoxelCount(string filename, const double resolution) :
-    VoxelPointCountToVoxelCount(std::move(filename), resolution), resolution_(resolution) {}
+VoxelOccupancyCountToVoxelCount::VoxelOccupancyCountToVoxelCount(const string& outputDir, const double resolution) :
+    VoxelPointCountToVoxelCount(
+        outputDir, "VoxelOccupancyCountToVoxelCount[" + to_string(resolution) + "].csv", resolution),
+    resolution_(resolution) {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void VoxelOccupancyCountToVoxelCount::compute(FrameConstPtr background, FrameConstPtr dynamic, FrameConstPtr other) {
@@ -36,7 +35,7 @@ void VoxelOccupancyCountToVoxelCount::compute(FrameConstPtr background, FrameCon
 //////////////////////////////////////////////////////////////////////////////////////////////
 void VoxelOccupancyCountToVoxelCount::finalCompute() {
   octree::OctreeCounter<PointNormal, 3>::CountMap countMap = octreeCounter_.getOccupancyCountToVoxelCount();
-  std::ofstream                                   ofs(filename_);
+  std::ofstream                                   ofs(filepath_);
   ofs << "Voxel Occupancy Count"
       << ","
       << "Voxel Count (Background)"

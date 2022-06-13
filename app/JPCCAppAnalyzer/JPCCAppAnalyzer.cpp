@@ -70,7 +70,7 @@ void analyze(const AppParameter& parameter, StopwatchUserTime& clock, vector<Ana
   analyzers.erase(std::remove_if(analyzers.begin(), analyzers.end(),
                                  [&parameter](const auto& analyzer) {
                                    if (!parameter.forceReRun && analyzer->exists()) {
-                                     cout << analyzer->getFilename() << " already exists, skip analyze." << endl;
+                                     cout << analyzer->getFilepath() << " already exists, skip analyze." << endl;
                                      return true;
                                    }
                                    return false;
@@ -134,19 +134,10 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
     return;
   }
   vector<Analyzer::Ptr> analyzers = {
-      //
-      jpcc::make_shared<VoxelOccupancyCountToVoxelCount>(             //
-          "./bin/analyze-VoxelOccupancyCountToVoxelCount.csv",        //
-          parameter.resolution),                                      //
-      jpcc::make_shared<VoxelPointCountToVoxelCount>(                 //
-          "./bin/analyze-VoxelPointCountToVoxelCount.csv",            //
-          parameter.resolution),                                      //
-      jpcc::make_shared<VoxelPointNormalAngleSTDToVoxelCount>(        //
-          "./bin/analyze-VoxelPointNormalAngleSTDToVoxelCount.csv",   //
-          parameter.resolution),                                      //
-      jpcc::make_shared<VoxelOccupancyIntervalSTDToVoxelCount>(       //
-          "./bin/analyze-VoxelOccupancyIntervalSTDToVoxelCount.csv",  //
-          parameter.resolution),                                      //
+      jpcc::make_shared<VoxelOccupancyCountToVoxelCount>(parameter.outputDir, parameter.resolution),
+      jpcc::make_shared<VoxelPointCountToVoxelCount>(parameter.outputDir, parameter.resolution),
+      jpcc::make_shared<VoxelPointNormalAngleSTDToVoxelCount>(parameter.outputDir, parameter.resolution),
+      jpcc::make_shared<VoxelOccupancyIntervalSTDToVoxelCount>(parameter.outputDir, parameter.resolution),
   };
   if (parameter.analyzeParallel) {
     analyze(parameter, clock, analyzers);

@@ -12,7 +12,7 @@ class VoxelOccupancyCountToVoxelCount : public VoxelPointCountToVoxelCount {
   double resolution_;
 
  public:
-  VoxelOccupancyCountToVoxelCount(std::string filename, double resolution);
+  VoxelOccupancyCountToVoxelCount(const std::string& outputDir, double resolution);
 
   void compute(FrameConstPtr background, FrameConstPtr dynamic, FrameConstPtr other) override;
 

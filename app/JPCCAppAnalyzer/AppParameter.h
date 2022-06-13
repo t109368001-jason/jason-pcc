@@ -20,6 +20,7 @@ class AppParameter : public Parameter {
   bool                                     previewOnly;
   bool                                     forceReRun;
   double                                   resolution;
+  std::string                              outputDir;
   io::DatasetParameter                     dataset;
   io::DatasetReaderParameter               reader;
   process::JPCCConditionalRemovalParameter background;

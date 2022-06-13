@@ -1,19 +1,20 @@
 #include "VoxelPointCountToVoxelCount.h"
 
-#include <filesystem>
-#include <utility>
-
 using namespace std;
 using namespace std::filesystem;
 
 namespace jpcc {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-VoxelPointCountToVoxelCount::VoxelPointCountToVoxelCount(std::string filename, double resolution) :
-    Analyzer(std::move(filename)), octreeCounter_(resolution) {}
+VoxelPointCountToVoxelCount::VoxelPointCountToVoxelCount(const std::string& outputDir,
+                                                         const std::string& filename,
+                                                         const double       resolution) :
+    Analyzer(outputDir, filename), octreeCounter_(resolution) {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-bool VoxelPointCountToVoxelCount::exists() { return filesystem::exists(path(filename_)); }
+VoxelPointCountToVoxelCount::VoxelPointCountToVoxelCount(const std::string& outputDir, const double resolution) :
+    VoxelPointCountToVoxelCount(
+        outputDir, "VoxelPointCountToVoxelCount[" + to_string(resolution) + "].csv", resolution) {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void VoxelPointCountToVoxelCount::compute(FrameConstPtr background, FrameConstPtr dynamic, FrameConstPtr other) {
@@ -25,7 +26,7 @@ void VoxelPointCountToVoxelCount::compute(FrameConstPtr background, FrameConstPt
 //////////////////////////////////////////////////////////////////////////////////////////////
 void VoxelPointCountToVoxelCount::finalCompute() {
   octree::OctreeCounter<PointNormal, 3>::CountMap countMap = octreeCounter_.getOccupancyCountToVoxelCount();
-  std::ofstream                                   ofs(filename_);
+  std::ofstream                                   ofs(filepath_);
   ofs << "Voxel Point Count"
       << ","
       << "Voxel Count (Background)"

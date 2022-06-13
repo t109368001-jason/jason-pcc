@@ -1,9 +1,7 @@
 #include "VoxelPointNormalAngleSTDToVoxelCount.h"
 
 #include <cmath>
-#include <filesystem>
 #include <map>
-#include <utility>
 
 using namespace std;
 using namespace std::filesystem;
@@ -12,11 +10,10 @@ using namespace jpcc::octree;
 namespace jpcc {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-VoxelPointNormalAngleSTDToVoxelCount::VoxelPointNormalAngleSTDToVoxelCount(std::string filename, double resolution) :
-    Analyzer(std::move(filename)), octree_(resolution) {}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-bool VoxelPointNormalAngleSTDToVoxelCount::exists() { return filesystem::exists(path(filename_)); }
+VoxelPointNormalAngleSTDToVoxelCount::VoxelPointNormalAngleSTDToVoxelCount(const std::string& outputDir,
+                                                                           const double       resolution) :
+    Analyzer(outputDir, "VoxelPointNormalAngleSTDToVoxelCount[" + to_string(resolution) + "].csv"),
+    octree_(resolution) {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void VoxelPointNormalAngleSTDToVoxelCount::compute(FrameConstPtr background,
@@ -55,7 +52,7 @@ void VoxelPointNormalAngleSTDToVoxelCount::finalCompute() {
     }
   }
 
-  std::ofstream ofs(filename_);
+  std::ofstream ofs(filepath_);
   ofs << ""
       << ","
       << "azimuth"

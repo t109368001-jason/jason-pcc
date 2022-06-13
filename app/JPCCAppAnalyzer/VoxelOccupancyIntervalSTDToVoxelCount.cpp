@@ -1,9 +1,7 @@
 #include "VoxelOccupancyIntervalSTDToVoxelCount.h"
 
 #include <cmath>
-#include <filesystem>
 #include <map>
-#include <utility>
 
 using namespace std;
 using namespace std::filesystem;
@@ -12,11 +10,10 @@ using namespace jpcc::octree;
 namespace jpcc {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-VoxelOccupancyIntervalSTDToVoxelCount::VoxelOccupancyIntervalSTDToVoxelCount(std::string filename, double resolution) :
-    Analyzer(std::move(filename)), octree_(resolution) {}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-bool VoxelOccupancyIntervalSTDToVoxelCount::exists() { return filesystem::exists(path(filename_)); }
+VoxelOccupancyIntervalSTDToVoxelCount::VoxelOccupancyIntervalSTDToVoxelCount(const std::string& outputDir,
+                                                                             const double       resolution) :
+    Analyzer(outputDir, "VoxelOccupancyIntervalSTDToVoxelCount[" + to_string(resolution) + "].csv"),
+    octree_(resolution) {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void VoxelOccupancyIntervalSTDToVoxelCount::compute(FrameConstPtr background,
@@ -55,7 +52,7 @@ void VoxelOccupancyIntervalSTDToVoxelCount::finalCompute() {
     }
   }
 
-  std::ofstream ofs(filename_);
+  std::ofstream ofs(filepath_);
   ofs << "Voxel Occupancy Interval STD"
       << ","
       << "Voxel Count (Background)"
