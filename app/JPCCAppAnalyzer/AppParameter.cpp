@@ -75,7 +75,7 @@ void AppParameter::notify() {
   background.notify();
   dynamic.notify();
   visualizerParameter.notify();
-  if (!exists(outputDir)) { create_directory(outputDir); }
+  if (!exists(outputDir)) { create_directories(outputDir); }
   assert(exists(outputDir) && is_directory(outputDir));
 }
 
@@ -86,6 +86,7 @@ ostream& operator<<(ostream& out, const AppParameter& obj) {
       (PREVIEW_ONLY_OPT, obj.previewOnly)          //
       (FORCE_RE_RUN_OPT, obj.forceReRun)           //
       (RESOLUTION_OPT, obj.resolution)             //
+      (OUTPUT_DIR_OPT, obj.outputDir)              //
       ;
   out << obj.dataset;
   out << obj.reader;
