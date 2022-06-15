@@ -25,6 +25,8 @@ class AppParameter : public Parameter {
   io::DatasetReaderParameter               reader;
   process::JPCCConditionalRemovalParameter background;
   process::JPCCConditionalRemovalParameter dynamic;
+  process::PreProcessParameter             preProcess;
+  process::JPCCNormalEstimationParameter   normalEstimation;
   visualization::VisualizerParameter       visualizerParameter;
 
   AppParameter();

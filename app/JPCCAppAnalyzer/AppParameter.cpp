@@ -3,6 +3,7 @@
 #include <filesystem>
 
 #include <boost/algorithm/string.hpp>
+#include <boost/filesystem.hpp>
 
 namespace jpcc {
 
@@ -29,6 +30,8 @@ AppParameter::AppParameter() :
     reader(),
     background(string("background.") + JPCC_CONDITIONAL_REMOVAL_OPT_PREFIX, "JPCCConditionalRemovalParameter"),
     dynamic(string("dynamic.") + JPCC_CONDITIONAL_REMOVAL_OPT_PREFIX, "JPCCConditionalRemovalParameter"),
+    preProcess(),
+    normalEstimation(),
     visualizerParameter() {
   opts_.add_options()                                                  //
       (string(prefix_ + PARALLEL_OPT).c_str(),                         //
@@ -54,6 +57,8 @@ AppParameter::AppParameter() :
   opts_.add(reader.getOpts());
   opts_.add(background.getOpts());
   opts_.add(dynamic.getOpts());
+  opts_.add(preProcess.getOpts());
+  opts_.add(normalEstimation.getOpts());
   opts_.add(visualizerParameter.getOpts());
 }
 
@@ -63,18 +68,21 @@ void AppParameter::getShowTexts(vector<std::string>& showTexts) const {
   reader.getShowTexts(showTexts);
   background.getShowTexts(showTexts);
   dynamic.getShowTexts(showTexts);
+  preProcess.getShowTexts(showTexts);
+  normalEstimation.getShowTexts(showTexts);
   visualizerParameter.getShowTexts(showTexts);
 }
 
 void AppParameter::notify() {
   dataset.notify();
-  if (!dataset.preProcessed) {
-    BOOST_THROW_EXCEPTION(std::logic_error(std::string("only support pre-processed dataset")));
-  }
   reader.notify();
   background.notify();
   dynamic.notify();
+  preProcess.notify();
+  normalEstimation.notify();
   visualizerParameter.notify();
+  if (!boost::iends_with(outputDir, "/")) { outputDir += "/"; }
+  if (!dataset.preProcessed) { outputDir = outputDir + to_string(reader.frequency) + "/"; }
   if (!exists(outputDir)) { create_directories(outputDir); }
   assert(exists(outputDir) && is_directory(outputDir));
 }
@@ -92,6 +100,8 @@ ostream& operator<<(ostream& out, const AppParameter& obj) {
   out << obj.reader;
   out << obj.background;
   out << obj.dynamic;
+  out << obj.preProcess;
+  out << obj.normalEstimation;
   out << obj.visualizerParameter;
   return out;
 }

@@ -1,5 +1,6 @@
 #include <array>
 #include <chrono>
+#include <filesystem>
 #include <iostream>
 #include <vector>
 
@@ -7,6 +8,8 @@
 #include <jpcc/common/ParameterParser.h>
 #include <jpcc/io/Reader.h>
 #include <jpcc/process/JPCCConditionalRemoval.h>
+#include <jpcc/process/JPCCNormalEstimation.h>
+#include <jpcc/process/PreProcessor.h>
 #include <jpcc/process/Process.h>
 #include <jpcc/visualization/JPCCVisualizer.h>
 
@@ -30,11 +33,18 @@ using namespace jpcc::visualization;
 
 using PointT = PointNormal;
 
-void previewOnly(const AppParameter& parameter, StopwatchUserTime& clock) {
+void previewOnly(const AppParameter& parameter) {
   JPCCVisualizer<PointT>::Ptr viewer = jpcc::make_shared<JPCCVisualizer<PointT>>(parameter.visualizerParameter);
   viewer->addParameter(parameter);
 
-  const DatasetReader<PointT>::Ptr reader = newReader<PointT>(parameter.reader, parameter.dataset);
+  const DatasetReader<PointT>::Ptr  reader = newReader<PointT>(parameter.reader, parameter.dataset);
+  PreProcessor<PointT>::Ptr         preProcessor;
+  JPCCNormalEstimation<PointT>::Ptr normalEstimation;
+
+  if (!parameter.dataset.preProcessed) {
+    preProcessor     = jpcc::make_shared<PreProcessor<PointT>>(parameter.preProcess);
+    normalEstimation = jpcc::make_shared<JPCCNormalEstimation<PointT>>(parameter.normalEstimation);
+  }
 
   auto backgroundFilter = jpcc::make_shared<JPCCConditionalRemoval<PointT>>(parameter.background);
   auto dynamicFilter    = jpcc::make_shared<JPCCConditionalRemoval<PointT>>(parameter.dynamic);
@@ -42,9 +52,11 @@ void previewOnly(const AppParameter& parameter, StopwatchUserTime& clock) {
   GroupOfFrame<PointT> frames;
   auto                 background = jpcc::make_shared<Frame<PointT>>();
   auto                 dynamic    = jpcc::make_shared<Frame<PointT>>();
-  clock.start();
   reader->loadAll(parameter.dataset.getStartFrameNumber(), 1, frames, parameter.parallel);
-  clock.stop();
+  if (!parameter.dataset.preProcessed) {
+    preProcessor->process(frames, nullptr, parameter.parallel);
+    normalEstimation->computeInPlaceAll(frames, parameter.parallel);
+  }
   {
     auto indices = jpcc::make_shared<Indices>();
     backgroundFilter->setInputCloud(frames.at(0));
@@ -78,7 +90,14 @@ void analyze(const AppParameter& parameter, StopwatchUserTime& clock, vector<Ana
                   analyzers.end());
   if (analyzers.empty()) { return; }
 
-  const DatasetReader<PointT>::Ptr reader = newReader<PointT>(parameter.reader, parameter.dataset);
+  const DatasetReader<PointT>::Ptr  reader = newReader<PointT>(parameter.reader, parameter.dataset);
+  PreProcessor<PointT>::Ptr         preProcessor;
+  JPCCNormalEstimation<PointT>::Ptr normalEstimation;
+
+  if (!parameter.dataset.preProcessed) {
+    preProcessor     = jpcc::make_shared<PreProcessor<PointT>>(parameter.preProcess);
+    normalEstimation = jpcc::make_shared<JPCCNormalEstimation<PointT>>(parameter.normalEstimation);
+  }
 
   auto backgroundFilter = jpcc::make_shared<JPCCConditionalRemoval<PointT>>(parameter.background);
   auto dynamicFilter    = jpcc::make_shared<JPCCConditionalRemoval<PointT>>(parameter.dynamic);
@@ -89,9 +108,11 @@ void analyze(const AppParameter& parameter, StopwatchUserTime& clock, vector<Ana
 
   while (frameNumber < endFrameNumber) {
     GroupOfFrame<PointT> frames;
-    clock.start();
     reader->loadAll(frameNumber, groupOfFramesSize, frames, parameter.parallel);
-    clock.stop();
+    if (!parameter.dataset.preProcessed) {
+      preProcessor->process(frames, nullptr, parameter.parallel);
+      normalEstimation->computeInPlaceAll(frames, parameter.parallel);
+    }
     for (auto& frame : frames) {
       auto background = jpcc::make_shared<Frame<PointT>>();
       auto dynamic    = jpcc::make_shared<Frame<PointT>>();
@@ -108,9 +129,11 @@ void analyze(const AppParameter& parameter, StopwatchUserTime& clock, vector<Ana
         split<PointT>(frame, indices, dynamic, frame);
       }
 
+      clock.start();
       auto analyzerCompute = [&background, &dynamic, &frame](const auto& analyzer) {
         analyzer->compute(background, dynamic, frame);
       };
+      clock.stop();
       if (parameter.parallel) {
         for_each(execution::par_unseq, analyzers.begin(), analyzers.end(), analyzerCompute);
       } else {
@@ -130,9 +153,10 @@ void analyze(const AppParameter& parameter, StopwatchUserTime& clock, vector<Ana
 
 void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
   if (parameter.previewOnly) {
-    previewOnly(parameter, clock);
+    previewOnly(parameter);
     return;
   }
+
   vector<Analyzer::Ptr> analyzers = {
       jpcc::make_shared<VoxelOccupancyCountToVoxelCount>(parameter.outputDir, parameter.resolution),
       jpcc::make_shared<VoxelPointCountToVoxelCount>(parameter.outputDir, parameter.resolution),
