@@ -1,6 +1,7 @@
 import pathlib
 import re
 
+import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 
@@ -36,9 +37,15 @@ def set_default_axes(axes: plt.Axes, file_info):
     axes.set_yscale('log')
 
 
-def build_figure(file_info):
-    fig, axes = plt.subplots(figsize=fig_size)
-    set_default_axes(file_info, axes)
+def build_figure(file_info, rows=1, cols=1):
+    fig, axes = plt.subplots(rows, cols, figsize=(fig_size[0] * cols, fig_size[1] * rows))
+    fig: plt.Figure
+    fig.suptitle(f'frequency={float(file_info["frequency"]):g},resolution={float(file_info["resolution"]):g}')
+    if isinstance(axes, np.ndarray):
+        for a in axes:
+            set_default_axes(a, file_info)
+    else:
+        set_default_axes(axes, file_info)
     return fig, axes
 
 
@@ -80,9 +87,7 @@ def plot_voxel_occupancy_count_to_voxel_count(file_info):
 def plot_voxel_point_normal_angle_std_to_voxel_count(file_info):
     csv = pd.read_csv(file_info["filepath"], skiprows=2, header=None)
 
-    fig, (axes_azimuth, axes_zenith) = plt.subplots(1, 2, figsize=(fig_size[0] * 2, fig_size[1]))
-    set_default_axes(file_info, axes_azimuth)
-    set_default_axes(file_info, axes_zenith)
+    fig, (axes_azimuth, axes_zenith) = build_figure(file_info, 1, 2)
 
     axes_azimuth.set_title(format_title(file_info["title"]).replace("Angle", "Azimuth"), fontsize=title_fontsize)
     axes_azimuth.set_xlabel(format_label(file_info["x_label"]).replace("Angle", "Azimuth"), fontsize=axis_fontsize)
