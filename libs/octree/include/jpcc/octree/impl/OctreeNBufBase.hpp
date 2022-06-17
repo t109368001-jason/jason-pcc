@@ -43,75 +43,6 @@ OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::~OctreeNBufBase()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <BufferIndex BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
-typename OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::Iterator
-OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::begin(uindex_t maxDepth) {
-  return Iterator(this, maxDepth);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <BufferIndex BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
-typename OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::Iterator
-OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::end() {
-  return Iterator(this, 0, nullptr);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <BufferIndex BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
-typename OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::LeafNodeDepthFirstIterator
-OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::leaf_depth_begin(uindex_t maxDepth) {
-  return LeafNodeDepthFirstIterator(this, maxDepth);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <BufferIndex BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
-typename OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::LeafNodeDepthFirstIterator
-OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::leaf_depth_end() {
-  return LeafNodeDepthFirstIterator(this, 0, nullptr);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <BufferIndex BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
-typename OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::DepthFirstIterator
-OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::depth_begin(uindex_t maxDepth) {
-  return DepthFirstIterator(this, maxDepth);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <BufferIndex BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
-typename OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::DepthFirstIterator
-OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::depth_end() {
-  return DepthFirstIterator(this, 0, nullptr);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <BufferIndex BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
-typename OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::BreadthFirstIterator
-OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::breadth_begin(uindex_t maxDepth) {
-  return BreadthFirstIterator(this, maxDepth);
-}
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <BufferIndex BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
-typename OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::BreadthFirstIterator
-OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::breadth_end() {
-  return BreadthFirstIterator(this, 0, nullptr);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <BufferIndex BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
-typename OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::LeafNodeBreadthIterator
-OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::leaf_breadth_begin(uindex_t maxDepth) {
-  return LeafNodeBreadthIterator(this, maxDepth ? maxDepth : this->octree_depth_);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <BufferIndex BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
-typename OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::LeafNodeBreadthIterator
-OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::leaf_breadth_end() {
-  return LeafNodeBreadthIterator(this, 0, nullptr);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <BufferIndex BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
 OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>&
 OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::operator=(const OctreeNBufBase& source) {
   if (this == &source) { return *this; }
@@ -254,6 +185,14 @@ size_t OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::getBranchC
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <BufferIndex BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
+bool OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::branchHasChild(const BranchNode& branchNode,
+                                                                                   ChildIndex        childIndex) const {
+  // test occupancyByte for child existence
+  return (branchNode.getChildPtr(bufferIndex_, childIndex) != nullptr);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <BufferIndex BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
 BufferIndex OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::getBufferIndex() const {
   return bufferIndex_;
 }
@@ -346,14 +285,6 @@ void OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::removeLeaf(c
     // we changed the octree structure -> dirty
     tree_dirty_flag_ = true;
   }
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <BufferIndex BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
-bool OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::branchHasChild(const BranchNode& branchNode,
-                                                                                   ChildIndex        childIndex) const {
-  // test occupancyByte for child existence
-  return (branchNode.getChildPtr(bufferIndex_, childIndex) != nullptr);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

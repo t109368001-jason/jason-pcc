@@ -79,18 +79,6 @@ class OctreeNBufBase {
   using OctreeKey = pcl::octree::OctreeKey;
   using uindex_t  = unsigned int;
 
-  using Iterator                   = pcl::octree::OctreeDepthFirstIterator<ThisT>;
-  using LeafNodeDepthFirstIterator = pcl::octree::OctreeLeafNodeDepthFirstIterator<ThisT>;
-  using DepthFirstIterator         = pcl::octree::OctreeDepthFirstIterator<ThisT>;
-  using BreadthFirstIterator       = pcl::octree::OctreeBreadthFirstIterator<ThisT>;
-  using LeafNodeBreadthIterator    = pcl::octree::OctreeLeafNodeBreadthFirstIterator<ThisT>;
-
-  friend class pcl::octree::OctreeIteratorBase<ThisT>;
-  friend class pcl::octree::OctreeDepthFirstIterator<ThisT>;
-  friend class pcl::octree::OctreeBreadthFirstIterator<ThisT>;
-  friend class pcl::octree::OctreeLeafNodeDepthFirstIterator<ThisT>;
-  friend class pcl::octree::OctreeLeafNodeBreadthFirstIterator<ThisT>;
-
  protected:
   size_t leaf_count_;
 
@@ -120,21 +108,6 @@ class OctreeNBufBase {
   OctreeNBufBase(const OctreeNBufBase& source);
 
   virtual ~OctreeNBufBase();
-
-  [[nodiscard]] Iterator begin(uindex_t maxDepth = 0);
-  [[nodiscard]] Iterator end();
-
-  [[nodiscard]] LeafNodeDepthFirstIterator leaf_depth_begin(uindex_t maxDepth = 0);
-  [[nodiscard]] LeafNodeDepthFirstIterator leaf_depth_end();
-
-  [[nodiscard]] DepthFirstIterator depth_begin(uindex_t maxDepth = 0);
-  [[nodiscard]] DepthFirstIterator depth_end();
-
-  [[nodiscard]] BreadthFirstIterator breadth_begin(uindex_t maxDepth = 0);
-  [[nodiscard]] BreadthFirstIterator breadth_end();
-
-  [[nodiscard]] LeafNodeBreadthIterator leaf_breadth_begin(uindex_t maxDepth = 0u);
-  [[nodiscard]] LeafNodeBreadthIterator leaf_breadth_end();
 
   OctreeNBufBase& operator=(const OctreeNBufBase& source);
 
@@ -166,6 +139,8 @@ class OctreeNBufBase {
 
   [[nodiscard]] size_t getBranchCount(BufferIndex bufferIndex) const;
 
+  [[nodiscard]] bool branchHasChild(const BranchNode& branchNode, ChildIndex childIndex) const;
+
   [[nodiscard]] BufferIndex getBufferIndex() const;
 
   [[nodiscard]] constexpr BufferIndex getBufferSize() const;
@@ -184,8 +159,6 @@ class OctreeNBufBase {
   [[nodiscard]] bool existLeaf(const OctreeKey& key) const;
 
   void removeLeaf(const OctreeKey& key);
-
-  [[nodiscard]] bool branchHasChild(const BranchNode& branchNode, ChildIndex childIndex) const;
 
   [[nodiscard]] pcl::octree::OctreeNode* getBranchChildPtr(const BranchNode& branchNode, ChildIndex childIndex);
 

@@ -18,6 +18,7 @@
 #include "VoxelPointCountToVoxelCount.h"
 #include "VoxelPointNormalAngleSTDToVoxelCount.h"
 #include "VoxelOccupancyIntervalSTDToVoxelCount.h"
+#include "VoxelOccludedPercentageToVoxelCount.h"
 
 using namespace std;
 using namespace std::chrono;
@@ -162,6 +163,8 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
       jpcc::make_shared<VoxelPointCountToVoxelCount>(parameter.outputDir, parameter.resolution),
       jpcc::make_shared<VoxelPointNormalAngleSTDToVoxelCount>(parameter.outputDir, parameter.resolution),
       jpcc::make_shared<VoxelOccupancyIntervalSTDToVoxelCount>(parameter.outputDir, parameter.resolution),
+      jpcc::make_shared<VoxelOccludedPercentageToVoxelCount>(parameter.outputDir, parameter.resolution,
+                                                             parameter.quantCount),
   };
   if (parameter.analyzeParallel) {
     analyze(parameter, clock, analyzers);

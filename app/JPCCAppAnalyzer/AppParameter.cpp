@@ -18,6 +18,7 @@ using namespace po;
 #define FORCE_RE_RUN_OPT ".forceReRun"
 #define RESOLUTION_OPT ".resolution"
 #define OUTPUT_DIR_OPT ".outputDir"
+#define QUANT_COUNT_OPT ".quantCount"
 
 AppParameter::AppParameter() :
     Parameter(APP_OPT_PREFIX, __FUNCTION__),
@@ -26,6 +27,7 @@ AppParameter::AppParameter() :
     previewOnly(false),
     forceReRun(false),
     resolution(0.1),
+    quantCount(10),
     dataset(),
     reader(),
     background(string("background.") + JPCC_CONDITIONAL_REMOVAL_OPT_PREFIX, "JPCCConditionalRemovalParameter"),
@@ -52,6 +54,9 @@ AppParameter::AppParameter() :
       (string(prefix_ + OUTPUT_DIR_OPT).c_str(),                       //
        value<string>(&outputDir)->default_value(outputDir),            //
        "outputDir")                                                    //
+      (string(prefix_ + QUANT_COUNT_OPT).c_str(),                      //
+       value<size_t>(&quantCount)->default_value(quantCount),          //
+       "quantCount")                                                   //
       ;
   opts_.add(dataset.getOpts());
   opts_.add(reader.getOpts());
@@ -82,7 +87,7 @@ void AppParameter::notify() {
   normalEstimation.notify();
   visualizerParameter.notify();
   if (!boost::iends_with(outputDir, "/")) { outputDir += "/"; }
-  if (!dataset.preProcessed) { outputDir = outputDir + to_string(reader.frequency) + "/"; }
+  outputDir = outputDir + to_string(reader.frequency) + "/";
   if (!exists(outputDir)) { create_directories(outputDir); }
   assert(exists(outputDir) && is_directory(outputDir));
 }
@@ -95,6 +100,7 @@ ostream& operator<<(ostream& out, const AppParameter& obj) {
       (FORCE_RE_RUN_OPT, obj.forceReRun)           //
       (RESOLUTION_OPT, obj.resolution)             //
       (OUTPUT_DIR_OPT, obj.outputDir)              //
+      (QUANT_COUNT_OPT, obj.quantCount)            //
       ;
   out << obj.dataset;
   out << obj.reader;

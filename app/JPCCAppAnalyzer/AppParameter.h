@@ -21,6 +21,7 @@ class AppParameter : public Parameter {
   bool                                     forceReRun;
   double                                   resolution;
   std::string                              outputDir;
+  size_t                                   quantCount;
   io::DatasetParameter                     dataset;
   io::DatasetReaderParameter               reader;
   process::JPCCConditionalRemovalParameter background;

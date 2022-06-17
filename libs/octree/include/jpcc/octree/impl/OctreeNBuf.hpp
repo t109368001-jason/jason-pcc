@@ -4,6 +4,75 @@ namespace jpcc::octree {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <BufferIndex BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
+typename OctreeNBuf<BUFFER_SIZE, LeafContainerT, BranchContainerT>::Iterator
+OctreeNBuf<BUFFER_SIZE, LeafContainerT, BranchContainerT>::begin(uindex_t maxDepth) {
+  return Iterator(this, maxDepth);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <BufferIndex BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
+typename OctreeNBuf<BUFFER_SIZE, LeafContainerT, BranchContainerT>::Iterator
+OctreeNBuf<BUFFER_SIZE, LeafContainerT, BranchContainerT>::end() {
+  return Iterator(this, 0, nullptr);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <BufferIndex BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
+typename OctreeNBuf<BUFFER_SIZE, LeafContainerT, BranchContainerT>::LeafNodeDepthFirstIterator
+OctreeNBuf<BUFFER_SIZE, LeafContainerT, BranchContainerT>::leaf_depth_begin(uindex_t maxDepth) {
+  return LeafNodeDepthFirstIterator(this, maxDepth);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <BufferIndex BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
+typename OctreeNBuf<BUFFER_SIZE, LeafContainerT, BranchContainerT>::LeafNodeDepthFirstIterator
+OctreeNBuf<BUFFER_SIZE, LeafContainerT, BranchContainerT>::leaf_depth_end() {
+  return LeafNodeDepthFirstIterator(this, 0, nullptr);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <BufferIndex BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
+typename OctreeNBuf<BUFFER_SIZE, LeafContainerT, BranchContainerT>::DepthFirstIterator
+OctreeNBuf<BUFFER_SIZE, LeafContainerT, BranchContainerT>::depth_begin(uindex_t maxDepth) {
+  return DepthFirstIterator(this, maxDepth);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <BufferIndex BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
+typename OctreeNBuf<BUFFER_SIZE, LeafContainerT, BranchContainerT>::DepthFirstIterator
+OctreeNBuf<BUFFER_SIZE, LeafContainerT, BranchContainerT>::depth_end() {
+  return DepthFirstIterator(this, 0, nullptr);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <BufferIndex BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
+typename OctreeNBuf<BUFFER_SIZE, LeafContainerT, BranchContainerT>::BreadthFirstIterator
+OctreeNBuf<BUFFER_SIZE, LeafContainerT, BranchContainerT>::breadth_begin(uindex_t maxDepth) {
+  return BreadthFirstIterator(this, maxDepth);
+}
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <BufferIndex BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
+typename OctreeNBuf<BUFFER_SIZE, LeafContainerT, BranchContainerT>::BreadthFirstIterator
+OctreeNBuf<BUFFER_SIZE, LeafContainerT, BranchContainerT>::breadth_end() {
+  return BreadthFirstIterator(this, 0, nullptr);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <BufferIndex BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
+typename OctreeNBuf<BUFFER_SIZE, LeafContainerT, BranchContainerT>::LeafNodeBreadthIterator
+OctreeNBuf<BUFFER_SIZE, LeafContainerT, BranchContainerT>::leaf_breadth_begin(uindex_t maxDepth) {
+  return LeafNodeBreadthIterator(this, maxDepth ? maxDepth : this->octree_depth_);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <BufferIndex BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
+typename OctreeNBuf<BUFFER_SIZE, LeafContainerT, BranchContainerT>::LeafNodeBreadthIterator
+OctreeNBuf<BUFFER_SIZE, LeafContainerT, BranchContainerT>::leaf_breadth_end() {
+  return LeafNodeBreadthIterator(this, 0, nullptr);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <BufferIndex BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
 void OctreeNBuf<BUFFER_SIZE, LeafContainerT, BranchContainerT>::getIndicesByFilter(const Filter1& filter,
                                                                                    Indices&       indices) const {
   getIndicesByFilterRecursive(this->root_node_, filter, indices);
