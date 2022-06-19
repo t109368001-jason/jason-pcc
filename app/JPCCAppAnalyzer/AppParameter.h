@@ -16,7 +16,6 @@ namespace jpcc {
 class AppParameter : public Parameter {
  public:
   bool                                     parallel;
-  bool                                     analyzeParallel;
   bool                                     previewOnly;
   bool                                     forceReRun;
   std::vector<float>                       frequencies;

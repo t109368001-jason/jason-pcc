@@ -13,7 +13,6 @@ using namespace po;
 
 #define APP_OPT_PREFIX "app"
 #define PARALLEL_OPT ".parallel"
-#define ANALYZE_PARALLEL_OPT ".analyzeParallel"
 #define PREVIEW_ONLY_OPT ".previewOnly"
 #define FORCE_RE_RUN_OPT ".forceReRun"
 #define FREQUENCIES_OPT ".frequencies"
@@ -24,7 +23,6 @@ using namespace po;
 AppParameter::AppParameter() :
     Parameter(APP_OPT_PREFIX, __FUNCTION__),
     parallel(false),
-    analyzeParallel(false),
     previewOnly(false),
     forceReRun(false),
     frequencies(),
@@ -41,9 +39,6 @@ AppParameter::AppParameter() :
       (string(prefix_ + PARALLEL_OPT).c_str(),                         //
        value<bool>(&parallel)->default_value(parallel),                //
        "parallel")                                                     //
-      (string(prefix_ + ANALYZE_PARALLEL_OPT).c_str(),                 //
-       value<bool>(&analyzeParallel)->default_value(analyzeParallel),  //
-       "analyzeParallel")                                              //
       (string(prefix_ + PREVIEW_ONLY_OPT).c_str(),                     //
        value<bool>(&previewOnly)->default_value(previewOnly),          //
        "previewOnly")                                                  //
@@ -97,7 +92,6 @@ void AppParameter::notify() {
 ostream& operator<<(ostream& out, const AppParameter& obj) {
   obj.coutParameters(out)                            //
       (PARALLEL_OPT, obj.parallel)                   //
-      (ANALYZE_PARALLEL_OPT, obj.analyzeParallel)    //
       (PREVIEW_ONLY_OPT, obj.previewOnly)            //
       (FORCE_RE_RUN_OPT, obj.forceReRun)             //
       (FREQUENCIES_OPT, obj.frequencies)             //
