@@ -84,6 +84,10 @@ void analyze(const AppParameter& parameter, StopwatchUserTime& clock, const Anal
     cout << analyzer->getFilepath() << " already exists, skip analyze." << endl;
     return;
   }
+  if (!analyzer->tryLockFile()) {
+    cout << analyzer->getFilepath() << " running, skip analyze." << endl;
+    return;
+  }
 
   const DatasetReader<PointT>::Ptr  reader = newReader<PointT>(parameter.reader, parameter.dataset);
   PreProcessor<PointT>::Ptr         preProcessor;

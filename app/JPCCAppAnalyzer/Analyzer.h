@@ -19,6 +19,7 @@ class Analyzer {
   float                 frequency_;
   double                resolution_;
   std::filesystem::path filepath_;
+  bool                  hasLock;
 
  public:
   Analyzer(const float&       frequency,
@@ -27,9 +28,13 @@ class Analyzer {
            const std::string& title,
            const std::string& otherParameters = "");
 
+  ~Analyzer();
+
   [[nodiscard]] const std::filesystem::path& getFilepath() const;
 
   [[nodiscard]] bool exists();
+
+  bool tryLockFile();
 
   virtual void compute(FrameConstPtr background, FrameConstPtr dynamic, FrameConstPtr other) = 0;
 

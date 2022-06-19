@@ -35,28 +35,28 @@ AppParameter::AppParameter() :
     preProcess(),
     normalEstimation(),
     visualizerParameter() {
-  opts_.add_options()                                                  //
-      (string(prefix_ + PARALLEL_OPT).c_str(),                         //
-       value<bool>(&parallel)->default_value(parallel),                //
-       "parallel")                                                     //
-      (string(prefix_ + PREVIEW_ONLY_OPT).c_str(),                     //
-       value<bool>(&previewOnly)->default_value(previewOnly),          //
-       "previewOnly")                                                  //
-      (string(prefix_ + FORCE_RE_RUN_OPT).c_str(),                     //
-       value<bool>(&forceReRun)->default_value(forceReRun),            //
-       "forceReRun")                                                   //
-      (string(prefix_ + FREQUENCIES_OPT).c_str(),                      //
-       value<vector<float>>(&frequencies),                             //
-       "frequencies")                                                  //
-      (string(prefix_ + RESOLUTIONS_OPT).c_str(),                      //
-       value<vector<double>>(&resolutions),                            //
-       "resolutions")                                                  //
-      (string(prefix_ + QUANT_RESOLUTIONS_OPT).c_str(),                //
-       value<vector<size_t>>(&quantResolutions),                       //
-       "quantResolutions")                                             //
-      (string(prefix_ + OUTPUT_DIR_OPT).c_str(),                       //
-       value<string>(&outputDir)->default_value(outputDir),            //
-       "outputDir")                                                    //
+  opts_.add_options()                                          //
+      (string(prefix_ + PARALLEL_OPT).c_str(),                 //
+       value<bool>(&parallel)->default_value(parallel),        //
+       "parallel")                                             //
+      (string(prefix_ + PREVIEW_ONLY_OPT).c_str(),             //
+       value<bool>(&previewOnly)->default_value(previewOnly),  //
+       "previewOnly")                                          //
+      (string(prefix_ + FORCE_RE_RUN_OPT).c_str(),             //
+       value<bool>(&forceReRun)->default_value(forceReRun),    //
+       "forceReRun")                                           //
+      (string(prefix_ + FREQUENCIES_OPT).c_str(),              //
+       value<vector<float>>(&frequencies),                     //
+       "frequencies")                                          //
+      (string(prefix_ + RESOLUTIONS_OPT).c_str(),              //
+       value<vector<double>>(&resolutions),                    //
+       "resolutions")                                          //
+      (string(prefix_ + QUANT_RESOLUTIONS_OPT).c_str(),        //
+       value<vector<size_t>>(&quantResolutions),               //
+       "quantResolutions")                                     //
+      (string(prefix_ + OUTPUT_DIR_OPT).c_str(),               //
+       value<string>(&outputDir)->default_value(outputDir),    //
+       "outputDir")                                            //
       ;
   opts_.add(dataset.getOpts());
   opts_.add(reader.getOpts());
