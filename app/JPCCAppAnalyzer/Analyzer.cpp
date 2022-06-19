@@ -19,8 +19,7 @@ Analyzer::Analyzer(const float&       frequency,
   stringstream subFolder;
   subFolder << "[" << to_string(frequency_) << "]"   //
             << "[" << to_string(resolution_) << "]"  //
-            << otherParameters                       //
-            << ".csv";                               //
+            << otherParameters;                      //
 
   outputPath /= subFolder.str();
 
