@@ -26,7 +26,7 @@ Analyzer::Analyzer(const float&       frequency,
 
   if (!filesystem::exists(outputPath)) { create_directories(outputPath); }
 
-  filepath_ = outputPath / (otherParameters + ".csv");
+  filepath_ = outputPath / (title + ".csv");
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
