@@ -17,15 +17,16 @@ Analyzer::Analyzer(const float&       frequency,
   path outputPath = outputDir;
 
   stringstream subFolder;
-  subFolder << "[" << to_string(frequency_) << "]"   //
-            << "[" << to_string(resolution_) << "]"  //
-            << otherParameters;                      //
+  subFolder << "[" << to_string(frequency_) << "]"    //
+            << "[" << to_string(resolution_) << "]";  //
 
   outputPath /= subFolder.str();
 
   if (!filesystem::exists(outputPath)) { create_directories(outputPath); }
 
-  filepath_ = outputPath / (title + ".csv");
+  string filename = title + otherParameters + ".csv";
+
+  filepath_ = outputPath / filename;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
