@@ -15,7 +15,8 @@ VoxelOccludedPercentageToVoxelCount::VoxelOccludedPercentageToVoxelCount(const f
                                                                          const double&      resolution,
                                                                          const std::string& outputDir,
                                                                          const size_t       quantCount) :
-    Analyzer(frequency, resolution, outputDir, "VoxelOccludedPercentageToVoxelCount"),
+    Analyzer(
+        frequency, resolution, outputDir, "VoxelOccludedPercentageToVoxelCount", "[" + to_string(quantCount) + "]"),
     quantCount_(quantCount),
     octree_(resolution) {}
 
