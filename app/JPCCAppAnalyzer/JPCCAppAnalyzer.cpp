@@ -154,11 +154,10 @@ void main_(AppParameter& parameter, StopwatchUserTime& clock) {
       if (frequency == 10.0) {
         for (const auto& quantResolution : parameter.quantResolutions) {
           if (quantResolution > resolution) { continue; }
-          auto quantCount = (size_t)(resolution / (double)quantResolution);
 
           analyzers.push_back(  //
               jpcc::make_shared<VoxelOccludedPercentageToVoxelCount>(frequency, resolution, parameter.outputDir,
-                                                                     quantCount)  //
+                                                                     quantResolution)  //
           );
         }
       }

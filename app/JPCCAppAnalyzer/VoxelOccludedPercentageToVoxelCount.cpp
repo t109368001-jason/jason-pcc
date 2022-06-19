@@ -14,10 +14,11 @@ namespace jpcc {
 VoxelOccludedPercentageToVoxelCount::VoxelOccludedPercentageToVoxelCount(const float&       frequency,
                                                                          const double&      resolution,
                                                                          const std::string& outputDir,
-                                                                         const size_t       quantCount) :
+                                                                         const size_t       quantResolution) :
     Analyzer(
         frequency, resolution, outputDir, "VoxelOccludedPercentageToVoxelCount", "[" + to_string(quantCount) + "]"),
-    quantCount_(quantCount),
+    quantResolution_(quantResolution),
+    quantCount_((size_t)(resolution / (double)quantResolution)),
     octree_(resolution) {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
