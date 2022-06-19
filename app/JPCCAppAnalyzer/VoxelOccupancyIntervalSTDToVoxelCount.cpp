@@ -10,10 +10,10 @@ using namespace jpcc::octree;
 namespace jpcc {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-VoxelOccupancyIntervalSTDToVoxelCount::VoxelOccupancyIntervalSTDToVoxelCount(const std::string& outputDir,
-                                                                             const double       resolution) :
-    Analyzer(outputDir, "VoxelOccupancyIntervalSTDToVoxelCount[" + to_string(resolution) + "].csv"),
-    octree_(resolution) {}
+VoxelOccupancyIntervalSTDToVoxelCount::VoxelOccupancyIntervalSTDToVoxelCount(const float&       frequency,
+                                                                             const double&      resolution,
+                                                                             const std::string& outputDir) :
+    Analyzer(frequency, resolution, outputDir, "VoxelOccupancyIntervalSTDToVoxelCount"), octree_(resolution) {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void VoxelOccupancyIntervalSTDToVoxelCount::compute(FrameConstPtr background,

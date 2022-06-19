@@ -10,10 +10,10 @@ using namespace std::filesystem;
 namespace jpcc {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-VoxelOccupancyCountToVoxelCount::VoxelOccupancyCountToVoxelCount(const string& outputDir, const double resolution) :
-    VoxelPointCountToVoxelCount(
-        outputDir, "VoxelOccupancyCountToVoxelCount[" + to_string(resolution) + "].csv", resolution),
-    resolution_(resolution) {}
+VoxelOccupancyCountToVoxelCount::VoxelOccupancyCountToVoxelCount(const float&  frequency,
+                                                                 const double& resolution,
+                                                                 const string& outputDir) :
+    VoxelPointCountToVoxelCount(frequency, resolution, outputDir, "VoxelOccupancyCountToVoxelCount") {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void VoxelOccupancyCountToVoxelCount::compute(FrameConstPtr background, FrameConstPtr dynamic, FrameConstPtr other) {

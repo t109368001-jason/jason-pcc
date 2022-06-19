@@ -16,8 +16,9 @@ using namespace po;
 #define ANALYZE_PARALLEL_OPT ".analyzeParallel"
 #define PREVIEW_ONLY_OPT ".previewOnly"
 #define FORCE_RE_RUN_OPT ".forceReRun"
-#define RESOLUTION_OPT ".resolution"
-#define QUANT_COUNT_OPT ".quantCount"
+#define FREQUENCIES_OPT ".frequencies"
+#define RESOLUTIONS_OPT ".resolutions"
+#define QUANT_RESOLUTIONS_OPT ".quantResolutions"
 #define OUTPUT_DIR_OPT ".outputDir"
 
 AppParameter::AppParameter() :
@@ -26,8 +27,9 @@ AppParameter::AppParameter() :
     analyzeParallel(false),
     previewOnly(false),
     forceReRun(false),
-    resolution(100),
-    quantCount(5),
+    frequencies(),
+    resolutions(100),
+    quantResolutions(5),
     dataset(),
     reader(),
     background(string("background.") + JPCC_CONDITIONAL_REMOVAL_OPT_PREFIX, "JPCCConditionalRemovalParameter"),
@@ -48,12 +50,15 @@ AppParameter::AppParameter() :
       (string(prefix_ + FORCE_RE_RUN_OPT).c_str(),                     //
        value<bool>(&forceReRun)->default_value(forceReRun),            //
        "forceReRun")                                                   //
-      (string(prefix_ + RESOLUTION_OPT).c_str(),                       //
-       value<double>(&resolution)->default_value(resolution),          //
-       "resolution")                                                   //
-      (string(prefix_ + QUANT_COUNT_OPT).c_str(),                      //
-       value<size_t>(&quantCount)->default_value(quantCount),          //
-       "quantCount")                                                   //
+      (string(prefix_ + FREQUENCIES_OPT).c_str(),                      //
+       value<vector<float>>(&frequencies),                             //
+       "frequencies")                                                  //
+      (string(prefix_ + RESOLUTIONS_OPT).c_str(),                      //
+       value<vector<double>>(&resolutions),                            //
+       "resolutions")                                                  //
+      (string(prefix_ + QUANT_RESOLUTIONS_OPT).c_str(),                //
+       value<vector<size_t>>(&quantResolutions),                       //
+       "quantResolutions")                                             //
       (string(prefix_ + OUTPUT_DIR_OPT).c_str(),                       //
        value<string>(&outputDir)->default_value(outputDir),            //
        "outputDir")                                                    //
@@ -68,7 +73,6 @@ AppParameter::AppParameter() :
 }
 
 void AppParameter::getShowTexts(vector<std::string>& showTexts) const {
-  showTexts.push_back(prefix_ + RESOLUTION_OPT ": " + to_string(resolution));
   dataset.getShowTexts(showTexts);
   reader.getShowTexts(showTexts);
   background.getShowTexts(showTexts);
@@ -87,20 +91,19 @@ void AppParameter::notify() {
   normalEstimation.notify();
   visualizerParameter.notify();
   if (!boost::iends_with(outputDir, "/")) { outputDir += "/"; }
-  outputDir = outputDir + to_string(reader.frequency) + "/";
-  if (!exists(outputDir)) { create_directories(outputDir); }
   assert(exists(outputDir) && is_directory(outputDir));
 }
 
 ostream& operator<<(ostream& out, const AppParameter& obj) {
-  obj.coutParameters(out)                          //
-      (PARALLEL_OPT, obj.parallel)                 //
-      (ANALYZE_PARALLEL_OPT, obj.analyzeParallel)  //
-      (PREVIEW_ONLY_OPT, obj.previewOnly)          //
-      (FORCE_RE_RUN_OPT, obj.forceReRun)           //
-      (RESOLUTION_OPT, obj.resolution)             //
-      (QUANT_COUNT_OPT, obj.quantCount)            //
-      (OUTPUT_DIR_OPT, obj.outputDir)              //
+  obj.coutParameters(out)                            //
+      (PARALLEL_OPT, obj.parallel)                   //
+      (ANALYZE_PARALLEL_OPT, obj.analyzeParallel)    //
+      (PREVIEW_ONLY_OPT, obj.previewOnly)            //
+      (FORCE_RE_RUN_OPT, obj.forceReRun)             //
+      (FREQUENCIES_OPT, obj.frequencies)             //
+      (RESOLUTIONS_OPT, obj.resolutions)             //
+      (QUANT_RESOLUTIONS_OPT, obj.quantResolutions)  //
+      (OUTPUT_DIR_OPT, obj.outputDir)                //
       ;
   out << obj.dataset;
   out << obj.reader;

@@ -79,17 +79,11 @@ void previewOnly(const AppParameter& parameter) {
   viewer->spin();
 }
 
-void analyze(const AppParameter& parameter, StopwatchUserTime& clock, vector<Analyzer::Ptr> analyzers) {
-  analyzers.erase(std::remove_if(analyzers.begin(), analyzers.end(),
-                                 [&parameter](const auto& analyzer) {
-                                   if (!parameter.forceReRun && analyzer->exists()) {
-                                     cout << analyzer->getFilepath() << " already exists, skip analyze." << endl;
-                                     return true;
-                                   }
-                                   return false;
-                                 }),
-                  analyzers.end());
-  if (analyzers.empty()) { return; }
+void analyze(const AppParameter& parameter, StopwatchUserTime& clock, const Analyzer::Ptr& analyzer) {
+  if (!parameter.forceReRun && analyzer->exists()) {
+    cout << analyzer->getFilepath() << " already exists, skip analyze." << endl;
+    return;
+  }
 
   const DatasetReader<PointT>::Ptr  reader = newReader<PointT>(parameter.reader, parameter.dataset);
   PreProcessor<PointT>::Ptr         preProcessor;
@@ -131,47 +125,44 @@ void analyze(const AppParameter& parameter, StopwatchUserTime& clock, vector<Ana
       }
 
       clock.start();
-      auto analyzerCompute = [&background, &dynamic, &frame](const auto& analyzer) {
-        analyzer->compute(background, dynamic, frame);
-      };
-      if (parameter.parallel) {
-        for_each(execution::par_unseq, analyzers.begin(), analyzers.end(), analyzerCompute);
-      } else {
-        for_each(analyzers.begin(), analyzers.end(), analyzerCompute);
-      }
+      analyzer->compute(background, dynamic, frame);
       clock.stop();
     }
     frameNumber += groupOfFramesSize;
   }
 
   clock.start();
-  auto analyzerFinalCompute = [](const auto& analyzer) { analyzer->finalCompute(); };
-  if (parameter.parallel) {
-    for_each(execution::par_unseq, analyzers.begin(), analyzers.end(), analyzerFinalCompute);
-  } else {
-    for_each(analyzers.begin(), analyzers.end(), analyzerFinalCompute);
-  }
+  analyzer->finalCompute();
   clock.stop();
 }
 
-void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
+void main_(AppParameter& parameter, StopwatchUserTime& clock) {
   if (parameter.previewOnly) {
     previewOnly(parameter);
     return;
   }
+  for (const auto& frequency : parameter.frequencies) {
+    parameter.reader.frequency = frequency;
+    for (const auto& resolution : parameter.resolutions) {
+      vector<Analyzer::Ptr> analyzers = {
+          jpcc::make_shared<VoxelOccupancyCountToVoxelCount>(frequency, resolution, parameter.outputDir),
+          jpcc::make_shared<VoxelPointCountToVoxelCount>(frequency, resolution, parameter.outputDir),
+          jpcc::make_shared<VoxelPointNormalAngleSTDToVoxelCount>(frequency, resolution, parameter.outputDir),
+          jpcc::make_shared<VoxelOccupancyIntervalSTDToVoxelCount>(frequency, resolution, parameter.outputDir),
+      };
+      if (frequency == 10.0) {
+        for (const auto& quantResolution : parameter.quantResolutions) {
+          if (quantResolution > resolution) { continue; }
+          auto quantCount = (size_t)(resolution / (double)quantResolution);
 
-  vector<Analyzer::Ptr> analyzers = {
-      jpcc::make_shared<VoxelOccupancyCountToVoxelCount>(parameter.outputDir, parameter.resolution),
-      jpcc::make_shared<VoxelPointCountToVoxelCount>(parameter.outputDir, parameter.resolution),
-      jpcc::make_shared<VoxelPointNormalAngleSTDToVoxelCount>(parameter.outputDir, parameter.resolution),
-      jpcc::make_shared<VoxelOccupancyIntervalSTDToVoxelCount>(parameter.outputDir, parameter.resolution),
-      jpcc::make_shared<VoxelOccludedPercentageToVoxelCount>(parameter.outputDir, parameter.resolution,
-                                                             parameter.quantCount),
-  };
-  if (parameter.analyzeParallel) {
-    analyze(parameter, clock, analyzers);
-  } else {
-    for (const Analyzer::Ptr& analyzer : analyzers) { analyze(parameter, clock, vector<Analyzer::Ptr>{analyzer}); }
+          analyzers.push_back(  //
+              jpcc::make_shared<VoxelOccludedPercentageToVoxelCount>(frequency, resolution, parameter.outputDir,
+                                                                     quantCount)  //
+          );
+        }
+      }
+      for (const Analyzer::Ptr& analyzer : analyzers) { analyze(parameter, clock, analyzer); }
+    }
   }
 }
 

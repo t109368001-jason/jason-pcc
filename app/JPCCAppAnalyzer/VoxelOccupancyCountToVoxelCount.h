@@ -8,11 +8,8 @@
 namespace jpcc {
 
 class VoxelOccupancyCountToVoxelCount : public VoxelPointCountToVoxelCount {
- protected:
-  double resolution_;
-
  public:
-  VoxelOccupancyCountToVoxelCount(const std::string& outputDir, double resolution);
+  VoxelOccupancyCountToVoxelCount(const float& frequency, const double& resolution, const std::string& outputDir);
 
   void compute(FrameConstPtr background, FrameConstPtr dynamic, FrameConstPtr other) override;
 

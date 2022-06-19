@@ -11,10 +11,11 @@ using namespace jpcc::octree;
 namespace jpcc {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-VoxelOccludedPercentageToVoxelCount::VoxelOccludedPercentageToVoxelCount(const std::string& outputDir,
-                                                                         const double       resolution,
+VoxelOccludedPercentageToVoxelCount::VoxelOccludedPercentageToVoxelCount(const float&       frequency,
+                                                                         const double&      resolution,
+                                                                         const std::string& outputDir,
                                                                          const size_t       quantCount) :
-    Analyzer(outputDir, "VoxelOccludedPercentageToVoxelCount[" + to_string(resolution) + "].csv"),
+    Analyzer(frequency, resolution, outputDir, "VoxelOccludedPercentageToVoxelCount"),
     quantCount_(quantCount),
     octree_(resolution) {}
 

@@ -24,7 +24,7 @@ class VoxelPointNormalAngleSTDToVoxelCount : public Analyzer {
   OctreeT octree_;
 
  public:
-  VoxelPointNormalAngleSTDToVoxelCount(const std::string& outputDir, double resolution);
+  VoxelPointNormalAngleSTDToVoxelCount(const float& frequency, const double& resolution, const std::string& outputDir);
 
   void compute(FrameConstPtr background, FrameConstPtr dynamic, FrameConstPtr other) override;
 

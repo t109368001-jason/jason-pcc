@@ -19,9 +19,10 @@ class AppParameter : public Parameter {
   bool                                     analyzeParallel;
   bool                                     previewOnly;
   bool                                     forceReRun;
-  double                                   resolution;
+  std::vector<float>                       frequencies;
+  std::vector<double>                      resolutions;
+  std::vector<size_t>                      quantResolutions;
   std::string                              outputDir;
-  size_t                                   quantCount;
   io::DatasetParameter                     dataset;
   io::DatasetReaderParameter               reader;
   process::JPCCConditionalRemovalParameter background;

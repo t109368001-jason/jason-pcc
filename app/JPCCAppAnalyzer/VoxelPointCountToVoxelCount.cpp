@@ -6,15 +6,17 @@ using namespace std::filesystem;
 namespace jpcc {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-VoxelPointCountToVoxelCount::VoxelPointCountToVoxelCount(const std::string& outputDir,
-                                                         const std::string& filename,
-                                                         const double       resolution) :
-    Analyzer(outputDir, filename), octreeCounter_(resolution) {}
+VoxelPointCountToVoxelCount::VoxelPointCountToVoxelCount(const float&       frequency,
+                                                         const double&      resolution,
+                                                         const std::string& outputDir,
+                                                         const std::string& title) :
+    Analyzer(frequency, resolution, outputDir, title), octreeCounter_(resolution) {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-VoxelPointCountToVoxelCount::VoxelPointCountToVoxelCount(const std::string& outputDir, const double resolution) :
-    VoxelPointCountToVoxelCount(
-        outputDir, "VoxelPointCountToVoxelCount[" + to_string(resolution) + "].csv", resolution) {}
+VoxelPointCountToVoxelCount::VoxelPointCountToVoxelCount(const float&       frequency,
+                                                         const double&      resolution,
+                                                         const std::string& outputDir) :
+    VoxelPointCountToVoxelCount(frequency, resolution, outputDir, "VoxelPointCountToVoxelCount") {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void VoxelPointCountToVoxelCount::compute(FrameConstPtr background, FrameConstPtr dynamic, FrameConstPtr other) {

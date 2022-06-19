@@ -26,7 +26,10 @@ class VoxelOccludedPercentageToVoxelCount : public Analyzer {
   OctreeT      octree_;
 
  public:
-  VoxelOccludedPercentageToVoxelCount(const std::string& outputDir, double resolution, size_t quantCount);
+  VoxelOccludedPercentageToVoxelCount(const float&       frequency,
+                                      const double&      resolution,
+                                      const std::string& outputDir,
+                                      size_t             quantCount);
 
   void compute(FrameConstPtr background, FrameConstPtr dynamic, FrameConstPtr other) override;
 

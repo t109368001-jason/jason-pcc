@@ -10,10 +10,10 @@ using namespace jpcc::octree;
 namespace jpcc {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-VoxelPointNormalAngleSTDToVoxelCount::VoxelPointNormalAngleSTDToVoxelCount(const std::string& outputDir,
-                                                                           const double       resolution) :
-    Analyzer(outputDir, "VoxelPointNormalAngleSTDToVoxelCount[" + to_string(resolution) + "].csv"),
-    octree_(resolution) {}
+VoxelPointNormalAngleSTDToVoxelCount::VoxelPointNormalAngleSTDToVoxelCount(const float&       frequency,
+                                                                           const double&      resolution,
+                                                                           const std::string& outputDir) :
+    Analyzer(frequency, resolution, outputDir, "VoxelPointNormalAngleSTDToVoxelCount"), octree_(resolution) {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void VoxelPointNormalAngleSTDToVoxelCount::compute(FrameConstPtr background,

@@ -16,10 +16,16 @@ class Analyzer {
   using FrameConstPtr = typename Frame::ConstPtr;
 
  protected:
+  float                 frequency_;
+  double                resolution_;
   std::filesystem::path filepath_;
 
  public:
-  Analyzer(const std::string& outputDir, const std::string& filename);
+  Analyzer(const float&       frequency,
+           const double&      resolution,
+           const std::string& outputDir,
+           const std::string& title,
+           const std::string& otherParameters = "");
 
   [[nodiscard]] const std::filesystem::path& getFilepath() const;
 

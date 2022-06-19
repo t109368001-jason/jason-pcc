@@ -13,10 +13,14 @@ class VoxelPointCountToVoxelCount : public Analyzer {
  protected:
   octree::OctreeCounter<PointNormal, 3> octreeCounter_;
 
- public:
-  VoxelPointCountToVoxelCount(const std::string& outputDir, const std::string& filename, double resolution);
+ protected:
+  VoxelPointCountToVoxelCount(const float&       frequency,
+                              const double&      resolution,
+                              const std::string& outputDir,
+                              const std::string& title);
 
-  VoxelPointCountToVoxelCount(const std::string& outputDir, double resolution);
+ public:
+  VoxelPointCountToVoxelCount(const float& frequency, const double& resolution, const std::string& outputDir);
 
   void compute(FrameConstPtr background, FrameConstPtr dynamic, FrameConstPtr other) override;
 
