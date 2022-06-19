@@ -22,8 +22,8 @@ class VoxelOccludedPercentageToVoxelCount : public Analyzer {
       octree::OctreeNBuf<BUFFER_SIZE, octree::OctreeContainerOccludedCount, pcl::octree::OctreeContainerEmpty>>;
 
  protected:
-  size_t  quantCount_;
-  OctreeT octree_;
+  const size_t quantCount_;
+  OctreeT      octree_;
 
  public:
   VoxelOccludedPercentageToVoxelCount(const std::string& outputDir, double resolution, size_t quantCount);

@@ -130,10 +130,10 @@ void analyze(const AppParameter& parameter, StopwatchUserTime& clock, vector<Ana
         split<PointT>(frame, indices, dynamic, frame);
       }
 
+      clock.start();
       auto analyzerCompute = [&background, &dynamic, &frame](const auto& analyzer) {
         analyzer->compute(background, dynamic, frame);
       };
-      clock.start();
       if (parameter.parallel) {
         for_each(execution::par_unseq, analyzers.begin(), analyzers.end(), analyzerCompute);
       } else {
@@ -144,12 +144,14 @@ void analyze(const AppParameter& parameter, StopwatchUserTime& clock, vector<Ana
     frameNumber += groupOfFramesSize;
   }
 
+  clock.start();
   auto analyzerFinalCompute = [](const auto& analyzer) { analyzer->finalCompute(); };
   if (parameter.parallel) {
     for_each(execution::par_unseq, analyzers.begin(), analyzers.end(), analyzerFinalCompute);
   } else {
     for_each(analyzers.begin(), analyzers.end(), analyzerFinalCompute);
   }
+  clock.stop();
 }
 
 void main_(const AppParameter& parameter, StopwatchUserTime& clock) {

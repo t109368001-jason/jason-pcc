@@ -1,7 +1,8 @@
 #pragma once
 
-#include <array>
-#include <list>
+#include <boost/dynamic_bitset.hpp>
+
+#include <Eigen/Dense>
 
 #include <pcl/octree/octree_container.h>
 
@@ -11,9 +12,7 @@ namespace jpcc::octree {
 
 class OctreeContainerOccludedCount : public pcl::octree::OctreeContainerBase {
  public:
-  using Count1D = std::vector<size_t>;
-  using Count2D = std::vector<Count1D>;
-  using Count3D = std::vector<Count2D>;
+  using Count3D = boost::dynamic_bitset<>;
 
  protected:
   Count3D                count3D_;
@@ -28,15 +27,13 @@ class OctreeContainerOccludedCount : public pcl::octree::OctreeContainerBase {
 
   void compute(const Eigen::Vector3f& min_pt, const Eigen::Vector3f& max_pt, size_t quantCount);
 
-  float getMinimumOccludedPercentage();
+  float getMinimumOccludedPercentage(size_t quantCount);
 
-  float getXYOccludedPercentage();
+  float getXYOccludedPercentage(size_t quantCount);
 
-  float getXZOccludedPercentage();
+  float getXZOccludedPercentage(size_t quantCount);
 
-  float getYZOccludedPercentage();
-
-  void initCountMatrix(size_t quantCount);
+  float getYZOccludedPercentage(size_t quantCount);
 };
 
 }  // namespace jpcc::octree

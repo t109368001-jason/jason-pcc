@@ -6,7 +6,7 @@ using namespace Eigen;
 namespace jpcc::octree {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-OctreeContainerOccludedCount::OctreeContainerOccludedCount() : pointBuffer_() {}
+OctreeContainerOccludedCount::OctreeContainerOccludedCount() : count3D_(), pointBuffer_() {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void OctreeContainerOccludedCount::reset() { pointBuffer_.clear(); }
@@ -16,30 +16,37 @@ void OctreeContainerOccludedCount::addPoint(const PointNormal& point) { pointBuf
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void OctreeContainerOccludedCount::compute(const Vector3f& min_pt, const Vector3f& max_pt, const size_t quantCount) {
-  if (count3D_.empty()) { initCountMatrix(quantCount); }
+  if (count3D_.empty()) { count3D_.resize(quantCount * quantCount * quantCount); }
   for (const PointNormal& point : pointBuffer_) {
-    int xIndex = (int)((point.x - min_pt.x()) / (max_pt.x() - min_pt.x()) * (float)quantCount);
-    int yIndex = (int)((point.y - min_pt.y()) / (max_pt.y() - min_pt.y()) * (float)quantCount);
-    int zIndex = (int)((point.z - min_pt.z()) / (max_pt.z() - min_pt.z()) * (float)quantCount);
-    count3D_.at(xIndex).at(yIndex).at(zIndex) = 1;
+    auto   xIndex = (size_t)((point.x - min_pt.x()) / (max_pt.x() - min_pt.x()) * (float)quantCount);
+    auto   yIndex = (size_t)((point.y - min_pt.y()) / (max_pt.y() - min_pt.y()) * (float)quantCount);
+    auto   zIndex = (size_t)((point.z - min_pt.z()) / (max_pt.z() - min_pt.z()) * (float)quantCount);
+    size_t index  = xIndex * quantCount * quantCount + yIndex * quantCount + zIndex;
+
+    count3D_.set(index);
   }
   pointBuffer_.clear();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-float OctreeContainerOccludedCount::getMinimumOccludedPercentage() {
-  vector<float> occludedPercentage = {getXYOccludedPercentage(), getXZOccludedPercentage(), getYZOccludedPercentage()};
+float OctreeContainerOccludedCount::getMinimumOccludedPercentage(const size_t quantCount) {
+  vector<float> occludedPercentage = {
+      getXYOccludedPercentage(quantCount),  //
+      getXZOccludedPercentage(quantCount),  //
+      getYZOccludedPercentage(quantCount),  //
+  };
   return *max_element(occludedPercentage.begin(), occludedPercentage.end());
 }
 
-float OctreeContainerOccludedCount::getXYOccludedPercentage() {
+float OctreeContainerOccludedCount::getXYOccludedPercentage(const size_t quantCount) {
   size_t total    = 0;
   size_t occluded = 0;
-  for (size_t x = 0; x < count3D_.size(); x++) {  // NOLINT(modernize-loop-convert)
-    for (size_t y = 0; y < count3D_.size(); y++) {
+  for (size_t xIndex = 0; xIndex < quantCount; xIndex++) {
+    for (size_t yIndex = 0; yIndex < quantCount; yIndex++) {
       size_t count = 0;
-      for (size_t z = 0; z < count3D_.size(); z++) {
-        if (count3D_.at(x).at(y).at(z) > 0) { count++; }
+      for (size_t zIndex = 0; zIndex < quantCount; zIndex++) {
+        size_t index = xIndex * quantCount * quantCount + yIndex * quantCount + zIndex;
+        if (count3D_.test(index)) { count++; }
       }
       if (count > 0) {
         total += count;
@@ -51,14 +58,15 @@ float OctreeContainerOccludedCount::getXYOccludedPercentage() {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-float OctreeContainerOccludedCount::getXZOccludedPercentage() {
+float OctreeContainerOccludedCount::getXZOccludedPercentage(const size_t quantCount) {
   size_t total    = 0;
   size_t occluded = 0;
-  for (size_t x = 0; x < count3D_.size(); x++) {  // NOLINT(modernize-loop-convert)
-    for (size_t z = 0; z < count3D_.size(); z++) {
+  for (size_t xIndex = 0; xIndex < quantCount; xIndex++) {
+    for (size_t zIndex = 0; zIndex < quantCount; zIndex++) {
       size_t count = 0;
-      for (size_t y = 0; y < count3D_.size(); y++) {
-        if (count3D_.at(x).at(y).at(z) > 0) { count++; }
+      for (size_t yIndex = 0; yIndex < quantCount; yIndex++) {
+        size_t index = xIndex * quantCount * quantCount + yIndex * quantCount + zIndex;
+        if (count3D_.test(index)) { count++; }
       }
       if (count > 0) {
         total += count;
@@ -70,14 +78,15 @@ float OctreeContainerOccludedCount::getXZOccludedPercentage() {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-float OctreeContainerOccludedCount::getYZOccludedPercentage() {
+float OctreeContainerOccludedCount::getYZOccludedPercentage(const size_t quantCount) {
   size_t total    = 0;
   size_t occluded = 0;
-  for (size_t y = 0; y < count3D_.size(); y++) {
-    for (size_t z = 0; z < count3D_.size(); z++) {
+  for (size_t yIndex = 0; yIndex < quantCount; yIndex++) {
+    for (size_t zIndex = 0; zIndex < quantCount; zIndex++) {
       size_t count = 0;
-      for (size_t x = 0; x < count3D_.size(); x++) {  // NOLINT(modernize-loop-convert)
-        if (count3D_.at(x).at(y).at(z) > 0) { count++; }
+      for (size_t xIndex = 0; xIndex < quantCount; xIndex++) {
+        size_t index = xIndex * quantCount * quantCount + yIndex * quantCount + zIndex;
+        if (count3D_.test(index)) { count++; }
       }
       if (count > 0) {
         total += count;
@@ -86,20 +95,6 @@ float OctreeContainerOccludedCount::getYZOccludedPercentage() {
     }
   }
   return (float)occluded / (float)total * 100.0f;
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-void OctreeContainerOccludedCount::initCountMatrix(const size_t quantCount) {
-  count3D_.resize(quantCount);
-  count3D_.shrink_to_fit();
-  for (Count2D& count2D : count3D_) {
-    count2D.resize(quantCount);
-    count2D.shrink_to_fit();
-    for (Count1D& count1D : count2D) {
-      count1D.resize(quantCount);
-      count1D.shrink_to_fit();
-    }
-  }
 }
 
 }  // namespace jpcc::octree

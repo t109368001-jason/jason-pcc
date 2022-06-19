@@ -17,8 +17,8 @@ using namespace po;
 #define PREVIEW_ONLY_OPT ".previewOnly"
 #define FORCE_RE_RUN_OPT ".forceReRun"
 #define RESOLUTION_OPT ".resolution"
-#define OUTPUT_DIR_OPT ".outputDir"
 #define QUANT_COUNT_OPT ".quantCount"
+#define OUTPUT_DIR_OPT ".outputDir"
 
 AppParameter::AppParameter() :
     Parameter(APP_OPT_PREFIX, __FUNCTION__),
@@ -26,8 +26,8 @@ AppParameter::AppParameter() :
     analyzeParallel(false),
     previewOnly(false),
     forceReRun(false),
-    resolution(0.1),
-    quantCount(10),
+    resolution(100),
+    quantCount(5),
     dataset(),
     reader(),
     background(string("background.") + JPCC_CONDITIONAL_REMOVAL_OPT_PREFIX, "JPCCConditionalRemovalParameter"),
@@ -51,12 +51,12 @@ AppParameter::AppParameter() :
       (string(prefix_ + RESOLUTION_OPT).c_str(),                       //
        value<double>(&resolution)->default_value(resolution),          //
        "resolution")                                                   //
-      (string(prefix_ + OUTPUT_DIR_OPT).c_str(),                       //
-       value<string>(&outputDir)->default_value(outputDir),            //
-       "outputDir")                                                    //
       (string(prefix_ + QUANT_COUNT_OPT).c_str(),                      //
        value<size_t>(&quantCount)->default_value(quantCount),          //
        "quantCount")                                                   //
+      (string(prefix_ + OUTPUT_DIR_OPT).c_str(),                       //
+       value<string>(&outputDir)->default_value(outputDir),            //
+       "outputDir")                                                    //
       ;
   opts_.add(dataset.getOpts());
   opts_.add(reader.getOpts());
@@ -99,8 +99,8 @@ ostream& operator<<(ostream& out, const AppParameter& obj) {
       (PREVIEW_ONLY_OPT, obj.previewOnly)          //
       (FORCE_RE_RUN_OPT, obj.forceReRun)           //
       (RESOLUTION_OPT, obj.resolution)             //
-      (OUTPUT_DIR_OPT, obj.outputDir)              //
       (QUANT_COUNT_OPT, obj.quantCount)            //
+      (OUTPUT_DIR_OPT, obj.outputDir)              //
       ;
   out << obj.dataset;
   out << obj.reader;

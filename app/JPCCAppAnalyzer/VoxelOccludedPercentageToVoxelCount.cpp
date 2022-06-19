@@ -45,7 +45,7 @@ void VoxelOccludedPercentageToVoxelCount::finalCompute() {
     for (auto it = octree_.leaf_depth_begin(), end = octree_.leaf_depth_end(); it != end; ++it) {
       OctreeContainerOccludedCount& leafNode = it.getLeafContainer();
 
-      int percentage = (int)leafNode.getMinimumOccludedPercentage();
+      int percentage = (int)leafNode.getMinimumOccludedPercentage(quantCount_);
 
       countMap.try_emplace(percentage, std::array<size_t, BUFFER_SIZE>{0, 0, 0});
       countMap.at(percentage).at(bufferIndex)++;
