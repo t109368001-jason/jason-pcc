@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include <boost/dynamic_bitset.hpp>
 
 #include <Eigen/Dense>
@@ -15,8 +17,8 @@ class OctreeContainerOccludedCount : public pcl::octree::OctreeContainerBase {
   using Count3D = boost::dynamic_bitset<>;
 
  protected:
-  Count3D                count3D_;
-  std::list<PointNormal> pointBuffer_;
+  Count3D                  count3D_;
+  std::vector<PointNormal> pointBuffer_;
 
  public:
   OctreeContainerOccludedCount();
