@@ -174,6 +174,7 @@ void main_(AppParameter& parameter) {
         clockWall.start();
         analyze(parameter, clockUser, analyzer);
         clockWall.stop();
+        cout << analyzer->getFilepath() << " finished." << endl;
 
         auto totalWall      = duration_cast<milliseconds>(clockWall.count()).count();
         auto totalUserSelf  = duration_cast<milliseconds>(clockUser.self.count()).count();
