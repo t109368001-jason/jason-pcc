@@ -13,8 +13,8 @@ legend_fontsize = 16
 folder = pathlib.Path("../../result/jason-pcc/analyzer/")
 
 file_info_pattern = re.compile(
-    r'(?P<filepath>.*analyzer[/\\]*(?P<frequency>[\d.]*)[/\\]*'
-    r'(?P<title>(?P<x_label>[a-zA-Z]*)To(?P<y_label>[a-zA-Z]*))\[(?P<resolution>[\d.]*)].*)')
+    r'(?P<filepath>.*analyzer[/\\]*\[(?P<frequency>[\d.]*)]\[(?P<resolution>[\d.]*)][/\\]*'
+    r'(?P<title>(?P<x_label>[a-zA-Z]*)To(?P<y_label>[a-zA-Z]*))(?:\[(?P<other_parameters>[\d.[\]]*)])*\.csv)')
 
 
 def to_spaced_camelcase(text):
@@ -118,6 +118,22 @@ def plot_voxel_occupancy_interval_std_to_voxel_count(file_info):
     csv = pd.read_csv(file_info["filepath"])
 
     fig, axes = build_figure(file_info)
+    axes.set_xscale('linear')
+    axes.set_xlim(0, 100)
+
+    plot_lines(axes=axes,
+               x=csv["Voxel Occluded Percentage"],
+               background=csv["Voxel Count (Background)"],
+               dynamic=csv["Voxel Count (Dynamic)"],
+               other=csv["Voxel Count (Other)"])
+
+    fig.savefig(pathlib.Path(file_info["filepath"]).with_suffix(".png"))
+
+
+def plot__voxel_occluded_percentage_to_voxel_count(file_info):
+    csv = pd.read_csv(file_info["filepath"])
+
+    fig, axes = build_figure(file_info)
 
     plot_lines(axes=axes,
                x=csv["Voxel Occupancy Interval STD"],
@@ -132,6 +148,13 @@ def files_to_file_infos(files):
     file_infos = [file_info_pattern.match(str(file)) for file in files]
     file_infos = [file_info for file_info in file_infos if file_info is not None]
     file_infos = [file_info.groupdict() for file_info in file_infos]
+    for file_info in file_infos:
+        if "other_parameters" not in file_info:
+            continue
+        if file_info["other_parameters"] is None:
+            file_info["other_parameters"] = []
+            continue
+        file_info["other_parameters"] = file_info["other_parameters"].split("][")
     return file_infos
 
 
@@ -149,6 +172,8 @@ def main():
             plot_voxel_point_normal_angle_std_to_voxel_count(file_info)
         elif "VoxelOccupancyIntervalSTDToVoxelCount" == file_info["title"]:
             plot_voxel_occupancy_interval_std_to_voxel_count(file_info)
+        elif "VoxelOccludedPercentageToVoxelCount" == file_info["title"]:
+            plot__voxel_occluded_percentage_to_voxel_count(file_info)
 
 
 if __name__ == '__main__':
