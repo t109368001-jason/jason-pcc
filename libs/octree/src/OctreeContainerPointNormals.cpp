@@ -1,15 +1,17 @@
 #include <jpcc/octree/OctreeContainerPointNormals.h>
 
 using namespace std;
-using namespace Eigen;
 
 namespace jpcc::octree {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-OctreeContainerPointNormals::OctreeContainerPointNormals() : angles_() {}
+OctreeContainerPointNormals::OctreeContainerPointNormals() : azimuths_(), zeniths_() {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void OctreeContainerPointNormals::reset() { angles_.conservativeResize(0, NoChange); }
+void OctreeContainerPointNormals::reset() {
+  azimuths_.clear();
+  zeniths_.clear();
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void OctreeContainerPointNormals::addPoint(const PointNormal& point) {
@@ -33,15 +35,14 @@ void OctreeContainerPointNormals::addPoint(const PointNormal& point) {
   assert(!isnan(azimuth));
   assert(!isnan(zenith));
 
-  angles_.conservativeResize(angles_.rows() + 1, NoChange);
-  angles_(angles_.rows() - 1, AZIMUTH_INDEX) = azimuth;
-  angles_(angles_.rows() - 1, ZENITH_INDEX)  = zenith;
+  azimuths_.push_back(azimuth);
+  zeniths_.push_back(zenith);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-Eigen::VectorXd OctreeContainerPointNormals::getAzimuths() { return angles_.col(AZIMUTH_INDEX); }
+const std::vector<double>& OctreeContainerPointNormals::getAzimuths() const { return azimuths_; }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-Eigen::VectorXd OctreeContainerPointNormals::getZeniths() { return angles_.col(ZENITH_INDEX); }
+const std::vector<double>& OctreeContainerPointNormals::getZeniths() const { return azimuths_; }
 
 }  // namespace jpcc::octree

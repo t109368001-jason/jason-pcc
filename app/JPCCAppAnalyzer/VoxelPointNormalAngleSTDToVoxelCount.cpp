@@ -3,6 +3,8 @@
 #include <cmath>
 #include <map>
 
+#include <Eigen/Dense>
+
 using namespace std;
 using namespace std::filesystem;
 using namespace jpcc::octree;
@@ -30,8 +32,13 @@ void VoxelPointNormalAngleSTDToVoxelCount::finalCompute() {
   for (BufferIndex bufferIndex = 0; bufferIndex < BUFFER_SIZE; bufferIndex++) {
     octree_.switchBuffers(bufferIndex);
     for (auto it = octree_.leaf_depth_begin(), end = octree_.leaf_depth_end(); it != end; ++it) {
-      const Eigen::VectorXd azimuths = it.getLeafContainer().getAzimuths();
-      const Eigen::VectorXd zeniths  = it.getLeafContainer().getZeniths();
+      const std::vector<double>& azimuths_ = it.getLeafContainer().getAzimuths();
+      const std::vector<double>& zeniths_  = it.getLeafContainer().getZeniths();
+
+      const Eigen::VectorXd azimuths =
+          Eigen::Map<const Eigen::VectorXd, Eigen::Unaligned>(azimuths_.data(), azimuths_.size());
+      const Eigen::VectorXd zeniths =
+          Eigen::Map<const Eigen::VectorXd, Eigen::Unaligned>(azimuths_.data(), azimuths_.size());
 
       double azimuthSTD = std::sqrt((azimuths.array() - azimuths.mean()).square().sum() / (double)azimuths.size()) *
                           TO_DEGREE_MULTIPLIER;

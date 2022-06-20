@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Eigen/Dense>
-
 #include <pcl/octree/octree_container.h>
 
 #include <jpcc/common/Common.h>
@@ -9,12 +7,9 @@
 namespace jpcc::octree {
 
 class OctreeContainerPointNormals : public pcl::octree::OctreeContainerBase {
- public:
-  static constexpr int AZIMUTH_INDEX = 0;
-  static constexpr int ZENITH_INDEX  = 1;
-
  protected:
-  Eigen::MatrixX2d angles_;
+  std::vector<double> azimuths_;
+  std::vector<double> zeniths_;
 
  public:
   OctreeContainerPointNormals();
@@ -23,9 +18,9 @@ class OctreeContainerPointNormals : public pcl::octree::OctreeContainerBase {
 
   void addPoint(const PointNormal& point);
 
-  Eigen::VectorXd getAzimuths();
+  const std::vector<double>& getAzimuths() const;
 
-  Eigen::VectorXd getZeniths();
+  const std::vector<double>& getZeniths() const;
 };
 
 }  // namespace jpcc::octree
