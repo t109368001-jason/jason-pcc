@@ -88,6 +88,7 @@ void analyze(const AppParameter& parameter, StopwatchUserTime& clock, const Anal
     cout << analyzer->getFilepath() << " running, skip analyze." << endl;
     return;
   }
+  cout << analyzer->getFilepath() << " start" << endl;
 
   const DatasetReader<PointT>::Ptr  reader = newReader<PointT>(parameter.reader, parameter.dataset);
   PreProcessor<PointT>::Ptr         preProcessor;
@@ -138,6 +139,7 @@ void analyze(const AppParameter& parameter, StopwatchUserTime& clock, const Anal
   clock.start();
   analyzer->finalCompute();
   clock.stop();
+  cout << analyzer->getFilepath() << " end" << endl;
 }
 
 void main_(AppParameter& parameter) {
@@ -174,7 +176,6 @@ void main_(AppParameter& parameter) {
         clockWall.start();
         analyze(parameter, clockUser, analyzer);
         clockWall.stop();
-        cout << analyzer->getFilepath() << " finished." << endl;
 
         auto totalWall      = duration_cast<milliseconds>(clockWall.count()).count();
         auto totalUserSelf  = duration_cast<milliseconds>(clockUser.self.count()).count();
