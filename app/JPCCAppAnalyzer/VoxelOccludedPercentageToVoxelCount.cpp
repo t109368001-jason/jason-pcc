@@ -59,7 +59,7 @@ void VoxelOccludedPercentageToVoxelCount::finalCompute() {
   }
 
   std::ofstream ofs(filepath_);
-  ofs << "Voxel Point Count"
+  ofs << "Voxel Occluded Percentage"
       << ","
       << "Voxel Count (Background)"
       << ","
