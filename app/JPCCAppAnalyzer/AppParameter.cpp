@@ -86,7 +86,6 @@ void AppParameter::notify() {
   normalEstimation.notify();
   visualizerParameter.notify();
   if (!boost::iends_with(outputDir, "/")) { outputDir += "/"; }
-  assert(exists(outputDir) && is_directory(outputDir));
 }
 
 ostream& operator<<(ostream& out, const AppParameter& obj) {
