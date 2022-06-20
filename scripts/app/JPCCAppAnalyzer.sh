@@ -3,4 +3,4 @@ set -ex
 
 mkdir -p ./logs
 
-./bin/JPCCAppAnalyzer --configs ./cfg/app/Analyzer/ctc-pre-processed.cfg |& tee ./logs/JPCCAppAnalyzer.log
+./bin/JPCCAppAnalyzer --configs ./cfg/app/Analyzer/ctc-raw.cfg |& tee ./logs/JPCCAppAnalyzer.log
