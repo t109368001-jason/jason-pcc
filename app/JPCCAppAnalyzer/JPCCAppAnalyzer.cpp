@@ -148,6 +148,8 @@ void main_(AppParameter& parameter, StopwatchUserTime& clock) {
   for (const auto& frequency : parameter.frequencies) {
     parameter.reader.frequency = frequency;
     parameter.reader.notify();
+    cout << "\n========== current parameter ==========\n" << endl;
+    cout << parameter << endl;
     for (const auto& resolution : parameter.resolutions) {
       vector<Analyzer::Ptr> analyzers = {
           jpcc::make_shared<VoxelOccupancyCountToVoxelCount>(frequency, resolution, parameter.outputDir),
