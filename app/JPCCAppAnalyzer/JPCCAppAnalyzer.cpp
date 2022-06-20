@@ -80,14 +80,6 @@ void previewOnly(const AppParameter& parameter) {
 }
 
 void analyze(const AppParameter& parameter, StopwatchUserTime& clock, const Analyzer::Ptr& analyzer) {
-  if (!parameter.forceReRun && analyzer->exists()) {
-    cout << analyzer->getFilepath() << " already exists, skip analyze." << endl;
-    return;
-  }
-  if (!analyzer->tryLockFile()) {
-    cout << analyzer->getFilepath() << " running, skip analyze." << endl;
-    return;
-  }
   cout << analyzer->getFilepath() << " start" << endl;
 
   const DatasetReader<PointT>::Ptr  reader = newReader<PointT>(parameter.reader, parameter.dataset);
@@ -170,6 +162,14 @@ void main_(AppParameter& parameter) {
         }
       }
       for (const Analyzer::Ptr& analyzer : analyzers) {
+        if (!parameter.forceReRun && analyzer->exists()) {
+          cout << analyzer->getFilepath() << " already exists, skip analyze." << endl;
+          continue;
+        }
+        if (!analyzer->tryLockFile()) {
+          cout << analyzer->getFilepath() << " running, skip analyze." << endl;
+          continue;
+        }
         Stopwatch<steady_clock> clockWall;
         StopwatchUserTime       clockUser;
 
