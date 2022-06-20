@@ -118,11 +118,9 @@ def plot_voxel_occupancy_interval_std_to_voxel_count(file_info):
     csv = pd.read_csv(file_info["filepath"])
 
     fig, axes = build_figure(file_info)
-    axes.set_xscale('linear')
-    axes.set_xlim(0, 100)
 
     plot_lines(axes=axes,
-               x=csv["Voxel Occluded Percentage"],
+               x=csv["Voxel Occupancy Interval STD"],
                background=csv["Voxel Count (Background)"],
                dynamic=csv["Voxel Count (Dynamic)"],
                other=csv["Voxel Count (Other)"])
@@ -130,13 +128,15 @@ def plot_voxel_occupancy_interval_std_to_voxel_count(file_info):
     fig.savefig(pathlib.Path(file_info["filepath"]).with_suffix(".png"))
 
 
-def plot__voxel_occluded_percentage_to_voxel_count(file_info):
+def plot_voxel_occluded_percentage_to_voxel_count(file_info):
     csv = pd.read_csv(file_info["filepath"])
 
     fig, axes = build_figure(file_info)
+    axes.set_xscale('linear')
+    axes.set_xlim(0, 100)
 
     plot_lines(axes=axes,
-               x=csv["Voxel Occupancy Interval STD"],
+               x=csv["Voxel Occluded Percentage"],
                background=csv["Voxel Count (Background)"],
                dynamic=csv["Voxel Count (Dynamic)"],
                other=csv["Voxel Count (Other)"])
@@ -173,7 +173,7 @@ def main():
         elif "VoxelOccupancyIntervalSTDToVoxelCount" == file_info["title"]:
             plot_voxel_occupancy_interval_std_to_voxel_count(file_info)
         elif "VoxelOccludedPercentageToVoxelCount" == file_info["title"]:
-            plot__voxel_occluded_percentage_to_voxel_count(file_info)
+            plot_voxel_occluded_percentage_to_voxel_count(file_info)
 
 
 if __name__ == '__main__':
