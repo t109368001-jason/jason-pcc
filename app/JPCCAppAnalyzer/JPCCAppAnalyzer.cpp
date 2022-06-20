@@ -140,7 +140,7 @@ void analyze(const AppParameter& parameter, StopwatchUserTime& clock, const Anal
   clock.stop();
 }
 
-void main_(AppParameter& parameter, StopwatchUserTime& clock) {
+void main_(AppParameter& parameter) {
   if (parameter.previewOnly) {
     previewOnly(parameter);
     return;
@@ -167,7 +167,22 @@ void main_(AppParameter& parameter, StopwatchUserTime& clock) {
           );
         }
       }
-      for (const Analyzer::Ptr& analyzer : analyzers) { analyze(parameter, clock, analyzer); }
+      for (const Analyzer::Ptr& analyzer : analyzers) {
+        Stopwatch<steady_clock> clockWall;
+        StopwatchUserTime       clockUser;
+
+        clockWall.start();
+        analyze(parameter, clockUser, analyzer);
+        clockWall.stop();
+
+        auto totalWall      = duration_cast<milliseconds>(clockWall.count()).count();
+        auto totalUserSelf  = duration_cast<milliseconds>(clockUser.self.count()).count();
+        auto totalUserChild = duration_cast<milliseconds>(clockUser.children.count()).count();
+        cout << "Processing time (wall): " << (float)totalWall / 1000.0 << " s\n";
+        cout << "Processing time (user.self): " << (float)totalUserSelf / 1000.0 << " s\n";
+        cout << "Processing time (user.children): " << (float)totalUserChild / 1000.0 << " s\n";
+        cout << "Peak memory: " << getPeakMemory() << " KB\n";
+      }
     }
   }
 }
@@ -189,20 +204,7 @@ int main(int argc, char* argv[]) {
   try {
     ParameterParser pp;
     // Timers to count elapsed wall/user time
-    Stopwatch<steady_clock> clockWall;
-    StopwatchUserTime       clockUser;
-
-    clockWall.start();
-    main_(parameter, clockUser);
-    clockWall.stop();
-
-    auto totalWall      = duration_cast<milliseconds>(clockWall.count()).count();
-    auto totalUserSelf  = duration_cast<milliseconds>(clockUser.self.count()).count();
-    auto totalUserChild = duration_cast<milliseconds>(clockUser.children.count()).count();
-    cout << "Processing time (wall): " << (float)totalWall / 1000.0 << " s\n";
-    cout << "Processing time (user.self): " << (float)totalUserSelf / 1000.0 << " s\n";
-    cout << "Processing time (user.children): " << (float)totalUserChild / 1000.0 << " s\n";
-    cout << "Peak memory: " << getPeakMemory() << " KB\n";
+    main_(parameter);
   } catch (exception& e) { cerr << e.what() << endl; }
 
   cout << "JPCC App Analyzer End" << endl;
