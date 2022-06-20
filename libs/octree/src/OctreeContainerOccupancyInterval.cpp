@@ -1,7 +1,6 @@
 #include <jpcc/octree/OctreeContainerOccupancyInterval.h>
 
 using namespace std;
-using namespace Eigen;
 
 namespace jpcc::octree {
 
@@ -9,23 +8,20 @@ namespace jpcc::octree {
 OctreeContainerOccupancyInterval::OctreeContainerOccupancyInterval() : count_(0), occupancyIntervals_() {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void OctreeContainerOccupancyInterval::reset() { occupancyIntervals_.conservativeResize(0, NoChange); }
+void OctreeContainerOccupancyInterval::reset() { occupancyIntervals_.clear(); }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void OctreeContainerOccupancyInterval::addPointIndex(const index_t& index) { appendCount(); }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void OctreeContainerOccupancyInterval::appendCount() {
-  if (count_ != 0) {
-    occupancyIntervals_.conservativeResize(occupancyIntervals_.rows() + 1, NoChange);
-    occupancyIntervals_(occupancyIntervals_.rows() - 1, NoChange) = count_;
-  }
+  if (count_ != 0) { occupancyIntervals_.push_back(count_); }
 
   count_ = 0;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-Eigen::VectorXi OctreeContainerOccupancyInterval::getOccupancyIntervals() const { return occupancyIntervals_; }
+const std::vector<int>& OctreeContainerOccupancyInterval::getOccupancyIntervals() const { return occupancyIntervals_; }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 OctreeContainerOccupancyInterval& OctreeContainerOccupancyInterval::operator++() {

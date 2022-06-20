@@ -3,6 +3,8 @@
 #include <cmath>
 #include <map>
 
+#include <Eigen/Dense>
+
 using namespace std;
 using namespace std::filesystem;
 using namespace jpcc::octree;
@@ -37,7 +39,10 @@ void VoxelOccupancyIntervalSTDToVoxelCount::finalCompute() {
   for (BufferIndex bufferIndex = 0; bufferIndex < BUFFER_SIZE; bufferIndex++) {
     octree_.switchBuffers(bufferIndex);
     for (auto it = octree_.leaf_depth_begin(), end = octree_.leaf_depth_end(); it != end; ++it) {
-      const Eigen::VectorXi occupancyIntervals = it.getLeafContainer().getOccupancyIntervals();
+      const std::vector<int>& occupancyIntervals_ = it.getLeafContainer().getOccupancyIntervals();
+
+      const Eigen::VectorXi occupancyIntervals =
+          Eigen::Map<const Eigen::VectorXi, Eigen::Unaligned>(occupancyIntervals_.data(), occupancyIntervals_.size());
 
       double occupancyIntervalSTD = std::sqrt((occupancyIntervals.array() - occupancyIntervals.mean()).square().sum() /
                                               (double)occupancyIntervals.size());

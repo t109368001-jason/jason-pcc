@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Eigen/Dense>
-
 #include <pcl/octree/octree_container.h>
 
 #include <jpcc/common/Common.h>
@@ -10,8 +8,8 @@ namespace jpcc::octree {
 
 class OctreeContainerOccupancyInterval : public pcl::octree::OctreeContainerBase {
  protected:
-  int             count_;
-  Eigen::VectorXi occupancyIntervals_;
+  int              count_;
+  std::vector<int> occupancyIntervals_;
 
  public:
   OctreeContainerOccupancyInterval();
@@ -22,7 +20,7 @@ class OctreeContainerOccupancyInterval : public pcl::octree::OctreeContainerBase
 
   void appendCount();
 
-  [[nodiscard]] Eigen::VectorXi getOccupancyIntervals() const;
+  [[nodiscard]] const std::vector<int>& getOccupancyIntervals() const;
 
   OctreeContainerOccupancyInterval& operator++();
 };
