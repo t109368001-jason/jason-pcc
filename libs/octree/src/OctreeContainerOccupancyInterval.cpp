@@ -16,8 +16,10 @@ void OctreeContainerOccupancyInterval::addPointIndex(const index_t& index) { app
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void OctreeContainerOccupancyInterval::appendCount() {
-  occupancyIntervals_.conservativeResize(occupancyIntervals_.rows() + 1, NoChange);
-  occupancyIntervals_(occupancyIntervals_.rows() - 1, NoChange) = count_;
+  if (count_ != 0) {
+    occupancyIntervals_.conservativeResize(occupancyIntervals_.rows() + 1, NoChange);
+    occupancyIntervals_(occupancyIntervals_.rows() - 1, NoChange) = count_;
+  }
 
   count_ = 0;
 }
