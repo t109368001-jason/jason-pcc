@@ -40,6 +40,7 @@ void VoxelOccupancyIntervalSTDToVoxelCount::finalCompute() {
     octree_.switchBuffers(bufferIndex);
     for (auto it = octree_.leaf_depth_begin(), end = octree_.leaf_depth_end(); it != end; ++it) {
       const std::vector<int>& occupancyIntervals_ = it.getLeafContainer().getOccupancyIntervals();
+      if (occupancyIntervals_.empty()) { continue; }
 
       const Eigen::VectorXi occupancyIntervals =
           Eigen::Map<const Eigen::VectorXi, Eigen::Unaligned>(occupancyIntervals_.data(), occupancyIntervals_.size());
