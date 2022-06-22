@@ -87,7 +87,7 @@ def plot_voxel_occupancy_count_to_voxel_count(file_info):
 def plot_voxel_point_normal_angle_std_to_voxel_count(file_info):
     csv = pd.read_csv(file_info["filepath"], skiprows=2, header=None)
 
-    fig, (axes_azimuth, axes_zenith) = build_figure(file_info, 1, 2)
+    fig, (axes_azimuth, axes_zenith) = build_figure(file_info, 2, 1)
 
     axes_azimuth.set_title(format_title(file_info["title"]).replace("Angle", "Azimuth"), fontsize=title_fontsize)
     axes_azimuth.set_xlabel(format_label(file_info["x_label"]).replace("Angle", "Azimuth"), fontsize=axis_fontsize)
