@@ -10,6 +10,8 @@ title_fontsize = 24
 axis_fontsize = 20
 legend_fontsize = 16
 
+skip_exists = True
+
 folder = pathlib.Path("../../result/jason-pcc/")
 
 file_info_pattern = re.compile(
@@ -57,6 +59,10 @@ def plot_lines(axes, x, background, dynamic, other):
 
 
 def plot_voxel_point_count_to_voxel_count(file_info):
+    png_path = pathlib.Path(file_info["filepath"]).with_suffix(".png")
+    if png_path.exists() and skip_exists:
+        return
+
     csv = pd.read_csv(file_info["filepath"])
 
     fig, axes = build_figure(file_info)
@@ -67,10 +73,14 @@ def plot_voxel_point_count_to_voxel_count(file_info):
                dynamic=csv["Voxel Count (Dynamic)"],
                other=csv["Voxel Count (Other)"])
 
-    fig.savefig(pathlib.Path(file_info["filepath"]).with_suffix(".png"))
+    fig.savefig(png_path)
 
 
 def plot_voxel_occupancy_count_to_voxel_count(file_info):
+    png_path = pathlib.Path(file_info["filepath"]).with_suffix(".png")
+    if png_path.exists() and skip_exists:
+        return
+
     csv = pd.read_csv(file_info["filepath"])
 
     fig, axes = build_figure(file_info)
@@ -81,10 +91,14 @@ def plot_voxel_occupancy_count_to_voxel_count(file_info):
                dynamic=csv["Voxel Count (Dynamic)"],
                other=csv["Voxel Count (Other)"])
 
-    fig.savefig(pathlib.Path(file_info["filepath"]).with_suffix(".png"))
+    fig.savefig(png_path)
 
 
 def plot_voxel_point_normal_angle_std_to_voxel_count(file_info):
+    png_path = pathlib.Path(file_info["filepath"]).with_suffix(".png")
+    if png_path.exists() and skip_exists:
+        return
+
     csv = pd.read_csv(file_info["filepath"], skiprows=2, header=None)
 
     fig, (axes_azimuth, axes_zenith) = build_figure(file_info, 2, 1)
@@ -111,10 +125,14 @@ def plot_voxel_point_normal_angle_std_to_voxel_count(file_info):
                dynamic=csv.iloc[:, 5],
                other=csv.iloc[:, 6])
 
-    fig.savefig(pathlib.Path(file_info["filepath"]).with_suffix(".png"))
+    fig.savefig(png_path)
 
 
 def plot_voxel_occupancy_interval_std_to_voxel_count(file_info):
+    png_path = pathlib.Path(file_info["filepath"]).with_suffix(".png")
+    if png_path.exists() and skip_exists:
+        return
+
     csv = pd.read_csv(file_info["filepath"])
 
     fig, axes = build_figure(file_info)
@@ -125,10 +143,14 @@ def plot_voxel_occupancy_interval_std_to_voxel_count(file_info):
                dynamic=csv["Voxel Count (Dynamic)"],
                other=csv["Voxel Count (Other)"])
 
-    fig.savefig(pathlib.Path(file_info["filepath"]).with_suffix(".png"))
+    fig.savefig(png_path)
 
 
 def plot_voxel_occluded_percentage_to_voxel_count(file_info):
+    png_path = pathlib.Path(file_info["filepath"]).with_suffix(".png")
+    if png_path.exists() and skip_exists:
+        return
+
     csv = pd.read_csv(file_info["filepath"])
 
     fig, axes = build_figure(file_info)
@@ -141,7 +163,25 @@ def plot_voxel_occluded_percentage_to_voxel_count(file_info):
                dynamic=csv["Voxel Count (Dynamic)"],
                other=csv["Voxel Count (Other)"])
 
-    fig.savefig(pathlib.Path(file_info["filepath"]).with_suffix(".png"))
+    fig.savefig(png_path)
+
+
+def plot_voxel_occupancy_change_count_to_voxel_count(file_info):
+    png_path = pathlib.Path(file_info["filepath"]).with_suffix(".png")
+    if png_path.exists() and skip_exists:
+        return
+
+    csv = pd.read_csv(file_info["filepath"])
+
+    fig, axes = build_figure(file_info)
+
+    plot_lines(axes=axes,
+               x=csv["Voxel Occupancy Change Count"],
+               background=csv["Voxel Count (Background)"],
+               dynamic=csv["Voxel Count (Dynamic)"],
+               other=csv["Voxel Count (Other)"])
+
+    fig.savefig(png_path)
 
 
 def files_to_file_infos(files):
@@ -174,6 +214,8 @@ def main():
             plot_voxel_occupancy_interval_std_to_voxel_count(file_info)
         elif "VoxelOccludedPercentageToVoxelCount" == file_info["title"]:
             plot_voxel_occluded_percentage_to_voxel_count(file_info)
+        elif "VoxelOccupancyChangeCountToVoxelCount" == file_info["title"]:
+            plot_voxel_occupancy_change_count_to_voxel_count(file_info)
 
 
 if __name__ == '__main__':
