@@ -1,9 +1,9 @@
 #!/bin/bash
 set -ex
 
-mkdir -p ./logs
-
 OUTPUT_DIR=../../result/jason-pcc/analyzer[CR-R-100000][CR-Z-5000][ROR-R-500][ROR-N-1]/
+
+mkdir -p ${OUTPUT_DIR}
 
 ./bin/JPCCAppAnalyzer \
   --preProcess.jpccConditionalRemoval.conditions "r < 100000" \
