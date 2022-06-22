@@ -10,10 +10,10 @@ title_fontsize = 24
 axis_fontsize = 20
 legend_fontsize = 16
 
-folder = pathlib.Path("../../result/jason-pcc/analyzer/")
+folder = pathlib.Path("../../result/jason-pcc/")
 
 file_info_pattern = re.compile(
-    r'(?P<filepath>.*analyzer[/\\]*\[(?P<frequency>[\d.]*)]\[(?P<resolution>[\d.]*)][/\\]*'
+    r'(?P<filepath>.*analyzer([^/^\\].*)[/\\]*\[(?P<frequency>[\d.]*)]\[(?P<resolution>[\d.]*)][/\\]*'
     r'(?P<title>(?P<x_label>[a-zA-Z]*)To(?P<y_label>[a-zA-Z]*))(?:\[(?P<other_parameters>[\d.[\]]*)])*\.csv)')
 
 
