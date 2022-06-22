@@ -72,41 +72,43 @@ void LvxReader<PointT>::load_(const size_t datasetIndex,
 
   std::vector<int64_t> lastTimestamps(lvx->GetDeviceCount());
 
-  const int ret = lvx->parsePacketsOfFrameXYZ(
-      [&](const int64_t timestampNS, const uint8_t deviceIndex, const float x, const float y, const float z) {
-        if (x < 0.001 && y < 0.001 && z < 0.001) { return; }
-        const int64_t timestamp = timestampNS / 1000000;
-        if (frameBuffer.empty()) {
-          // new frame
-          const auto frame    = jpcc::make_shared<Frame>();
-          frame->header.stamp = (int64_t)((float)timestamp / this->param_.interval * this->param_.interval);
-          frame->reserve(capacity_);
-          frameBuffer.push_back(frame);
-        }
-        int64_t index = (timestamp - (int64_t)frameBuffer.front()->header.stamp) / (int64_t)this->param_.interval;
-        if (index < 0) {
-          for (int i = -1; i >= index; i--) {
-            // new frame
-            const auto frame    = jpcc::make_shared<Frame>();
-            frame->header.stamp = frameBuffer.front()->header.stamp + (int64_t)(this->param_.interval * (float)i);
-            frame->reserve(capacity_);
-            frameBuffer.insert(frameBuffer.begin(), frame);
-          }
-          index = 0;
-        } else if (index >= frameBuffer.size()) {
-          for (size_t i = frameBuffer.size(); i <= index; i++) {
-            // new frame
-            const auto frame    = jpcc::make_shared<Frame>();
-            frame->header.stamp = frameBuffer.front()->header.stamp + (int64_t)(this->param_.interval * (float)i);
-            frame->reserve(capacity_);
-            frameBuffer.push_back(frame);
-          }
-        }
-        // emplace_back points only, improve performance
-        // frameBuffer.at(index)->emplace_back(x, y, z);
-        frameBuffer.at(index)->points.emplace_back(x, y, z);
-        lastTimestamps.at(deviceIndex) = timestamp;
-      });
+  const int ret = lvx->parsePacketsOfFrameXYZ([&](const int64_t timestampNS, const uint8_t deviceIndex, const float x,
+                                                  const float y, const float z, const uint8_t reflectivity) {
+    if (x < 0.001 && y < 0.001 && z < 0.001) { return; }
+    const int64_t timestamp = timestampNS / 1000000;
+    if (frameBuffer.empty()) {
+      // new frame
+      const auto frame    = jpcc::make_shared<Frame>();
+      frame->header.stamp = (int64_t)((float)timestamp / this->param_.interval * this->param_.interval);
+      frame->reserve(capacity_);
+      frameBuffer.push_back(frame);
+    }
+    int64_t index = (timestamp - (int64_t)frameBuffer.front()->header.stamp) / (int64_t)this->param_.interval;
+    if (index < 0) {
+      for (int i = -1; i >= index; i--) {
+        // new frame
+        const auto frame    = jpcc::make_shared<Frame>();
+        frame->header.stamp = frameBuffer.front()->header.stamp + (int64_t)(this->param_.interval * (float)i);
+        frame->reserve(capacity_);
+        frameBuffer.insert(frameBuffer.begin(), frame);
+      }
+      index = 0;
+    } else if (index >= frameBuffer.size()) {
+      for (size_t i = frameBuffer.size(); i <= index; i++) {
+        // new frame
+        const auto frame    = jpcc::make_shared<Frame>();
+        frame->header.stamp = frameBuffer.front()->header.stamp + (int64_t)(this->param_.interval * (float)i);
+        frame->reserve(capacity_);
+        frameBuffer.push_back(frame);
+      }
+    }
+    // emplace_back points only, improve performance
+    // frameBuffer.at(index)->emplace_back(x, y, z);
+    PointT point(x, y, z);
+    point.data[3] = reflectivity;
+    frameBuffer.at(index)->points.push_back(point);
+    lastTimestamps.at(deviceIndex) = timestamp;
+  });
   assert(ret == 0 || ret == livox_ros::kLvxFileAtEnd);
 
   if (ret == livox_ros::kLvxFileAtEnd) {

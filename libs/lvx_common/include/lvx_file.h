@@ -199,7 +199,8 @@ class LvxFileHandle {
   int                 GetFileVersion() { return file_ver_; }
 
   int parsePacketsOfFrameXYZ(
-      std::function<void(int64_t timestampNS, uint8_t deviceIndex, float x, float y, float z)> pointCallback);
+      std::function<void(int64_t timestampNS, uint8_t deviceIndex, float x, float y, float z, uint8_t reflectivity)>
+          pointCallback);
 
  private:
   std::fstream                    lvx_file_;

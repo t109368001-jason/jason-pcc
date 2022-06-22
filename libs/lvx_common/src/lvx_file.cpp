@@ -361,7 +361,8 @@ int LvxFileHandle::GetLvxFileReadProgress() {
 }
 
 int LvxFileHandle::parsePacketsOfFrameXYZ(
-    std::function<void(int64_t timestampNS, uint8_t deviceIndex, float x, float y, float z)> pointCallback) {
+    std::function<void(int64_t timestampNS, uint8_t deviceIndex, float x, float y, float z, uint8_t reflectivity)>
+        pointCallback) {
   int file_state = GetPacketsOfFrame(&buffer_);
   if (file_state != 0) { return file_state; }
 
@@ -432,7 +433,7 @@ int LvxFileHandle::parsePacketsOfFrameXYZ(
         z = x_ * extrinsic.rotation[2][0] + y_ * extrinsic.rotation[2][1] + z_ * extrinsic.rotation[2][2] +
             extrinsic.trans[2];
       }
-      pointCallback(timestamp.stamp, detail_packet->device_index, x, y, z);
+      pointCallback(timestamp.stamp, detail_packet->device_index, x, y, z, raw_point->reflectivity);
 
       switch (eth_packet->data_type) {
         case kCartesian: ++raw_point; break;

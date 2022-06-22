@@ -30,7 +30,19 @@ void DatasetStreamReader<PointT>::load(const size_t  datasetIndex,
         currentFrameNumber++;
         continue;
       }
-      if (transform) { pcl::transformPointCloud(*frameBuffer.front(), *frameBuffer.front(), *transform); }
+      if (transform) {
+        // pcl::transformPointCloud(*frameBuffer.front(), *frameBuffer.front(), *transform);
+        const Eigen::Matrix<float, 4, 4>& tf = *transform;
+        std::for_each(frameBuffer.front()->begin(), frameBuffer.front()->end(), [&tf](PointT& p) {
+          const float x = static_cast<float>(tf(0, 0) * p.x + tf(0, 1) * p.y + tf(0, 2) * p.z + tf(0, 3));
+          const float y = static_cast<float>(tf(1, 0) * p.x + tf(1, 1) * p.y + tf(1, 2) * p.z + tf(1, 3));
+          const float z = static_cast<float>(tf(2, 0) * p.x + tf(2, 1) * p.y + tf(2, 2) * p.z + tf(2, 3));
+
+          p.x = x;
+          p.y = y;
+          p.z = z;
+        });
+      }
       frameBuffer.front()->header.seq                  = currentFrameNumber;
       frames.at(currentFrameNumber - startFrameNumber) = frameBuffer.front();
       std::cout << this->datasetParam_.getFilePath(datasetIndex) << ":" << currentFrameNumber << " "

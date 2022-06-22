@@ -90,6 +90,11 @@ bool Condition::predictVector3fMap(pcl::Vector3fMapConst& vector3fMap) const {
     case Y: val = vector3fMap(1); break;
     case Z: val = vector3fMap(2); break;
     case R: val = vector3fMap.norm(); break;
+    case PROD: {
+      Vector4f v(vector3fMap(0), vector3fMap(1), vector3fMap(2), 1);
+      val = coefficient->transpose() * v;
+      break;
+    }
     default: return false;
   }
 
@@ -100,7 +105,7 @@ bool Condition::predictVector3fMap(pcl::Vector3fMapConst& vector3fMap) const {
 bool Condition::predictVector4fMap(pcl::Vector4fMapConst& vector4fMap) const {
   double val;
   switch (type) {
-    case PROD: val = coefficient->transpose() * vector4fMap; break;
+    case REFLECTIVITY: val = vector4fMap(3); break;
     default: return false;
   }
 
