@@ -10,4 +10,4 @@ mkdir -p ${OUTPUT_DIR}
   --preProcess.radiusOutlierRemoval.radius 500 \
   --preProcess.radiusOutlierRemoval.minNeighborsInRadius 1 \
   --app.outputDir ${OUTPUT_DIR} \
-  --configs ./cfg/app/Analyzer/ctc-raw.cfg |& tee ${OUTPUT_DIR}JPCCAppAnalyzer.log
+  --configs ./cfg/app/Analyzer/ctc-raw.cfg |& tee ${OUTPUT_DIR}JPCCAppAnalyzer-$(date +%Y%m%d-%H%M%S).log
