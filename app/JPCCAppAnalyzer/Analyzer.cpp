@@ -31,9 +31,7 @@ Analyzer::Analyzer(const float&       frequency,
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-Analyzer::~Analyzer() {
-  if (hasLock) { remove(filepath_.string() + ".lock"); }
-}
+Analyzer::~Analyzer() { releaseLockFile(); }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 const std::filesystem::path& Analyzer::getFilepath() const { return filepath_; }
@@ -49,6 +47,11 @@ bool Analyzer::tryLockFile() {
     hasLock = true;
   }
   return result;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void Analyzer::releaseLockFile() {
+  if (hasLock) { remove(filepath_.string() + ".lock"); }
 }
 
 }  // namespace jpcc

@@ -186,6 +186,8 @@ void main_(AppParameter& parameter) {
         cout << "Processing time (user.self): " << (float)totalUserSelf / 1000.0 << " s\n";
         cout << "Processing time (user.children): " << (float)totalUserChild / 1000.0 << " s\n";
         cout << "Peak memory: " << getPeakMemory() << " KB\n";
+
+        analyzer->releaseLockFile();
       }
     }
   }

@@ -36,6 +36,8 @@ class Analyzer {
 
   bool tryLockFile();
 
+  void releaseLockFile();
+
   virtual void compute(FrameConstPtr background, FrameConstPtr dynamic, FrameConstPtr other) = 0;
 
   virtual void finalCompute() = 0;
