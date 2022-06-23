@@ -73,7 +73,7 @@ void LvxReader<PointT>::load_(const size_t datasetIndex,
   std::vector<int64_t> lastTimestamps(lvx->GetDeviceCount());
 
   const int ret = lvx->parsePacketsOfFrameXYZ([&](const int64_t timestampNS, const uint8_t deviceIndex, const float x,
-                                                  const float y, const float z, const uint8_t reflectivity) {
+                                                  const float y, const float z, const Reflectivity reflectivity) {
     if (x < 0.001 && y < 0.001 && z < 0.001) { return; }
     const int64_t timestamp = timestampNS / 1000000;
     if (frameBuffer.empty()) {

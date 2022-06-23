@@ -27,6 +27,8 @@ using IndicesPtr = shared_ptr<Indices>;
 using Point       = pcl::PointXYZ;
 using PointNormal = pcl::PointNormal;
 
+using Reflectivity = uint8_t;
+
 template <typename PointT>
 using Frame = pcl::PointCloud<PointT>;
 template <typename PointT>
