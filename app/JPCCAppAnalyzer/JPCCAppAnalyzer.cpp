@@ -20,6 +20,7 @@
 #include "VoxelOccupancyIntervalSTDToVoxelCount.h"
 #include "VoxelOccludedPercentageToVoxelCount.h"
 #include "VoxelOccupancyChangeCountToVoxelCount.h"
+#include "VoxelReflectivitySTDToVoxelCount.h"
 
 using namespace std;
 using namespace std::chrono;
@@ -152,6 +153,7 @@ void main_(AppParameter& parameter) {
           jpcc::make_shared<VoxelPointNormalAngleSTDToVoxelCount>(frequency, resolution, parameter.outputDir),
           jpcc::make_shared<VoxelOccupancyIntervalSTDToVoxelCount>(frequency, resolution, parameter.outputDir),
           jpcc::make_shared<VoxelOccupancyChangeCountToVoxelCount>(frequency, resolution, parameter.outputDir),
+          jpcc::make_shared<VoxelReflectivitySTDToVoxelCount>(frequency, resolution, parameter.outputDir),
       };
       if (frequency == 10.0) {
         for (const auto& quantResolution : parameter.quantResolutions) {
