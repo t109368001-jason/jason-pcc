@@ -12,7 +12,7 @@ using namespace pcl::octree;
 
 namespace jpcc::octree {
 
-using OctreePointCloudT = JPCCOctreePointCloud<Point,
+using OctreePointCloudT = JPCCOctreePointCloud<PointXYZINormal,
                                                OctreeContainerCounter,
                                                OctreeContainerEmpty,
                                                OctreeBase<OctreeContainerCounter, OctreeContainerEmpty>>;

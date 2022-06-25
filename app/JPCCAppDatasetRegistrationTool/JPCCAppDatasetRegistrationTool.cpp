@@ -21,10 +21,8 @@ using namespace jpcc::io;
 using namespace jpcc::process;
 using namespace jpcc::visualization;
 
-using PointT = Point;
-
 void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
-  const auto   viewer    = jpcc::make_shared<JPCCVisualizer<PointT>>(parameter.visualizerParameter);
+  const auto   viewer    = jpcc::make_shared<JPCCVisualizer>(parameter.visualizerParameter);
   const string primaryId = "0";
 
   viewer->addParameter(parameter);
@@ -34,14 +32,14 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
   viewer->setColor("2", 0.0, 1.0, 0.0);
   viewer->setColor("3", 0.0, 0.0, 1.0);
 
-  const DatasetReader<PointT>::Ptr reader = newReader<PointT>(parameter.reader, parameter.dataset);
-  PreProcessor<PointT>             preProcessor(parameter.preProcess);
+  const DatasetReader::Ptr reader = newReader(parameter.reader, parameter.dataset);
+  PreProcessor             preProcessor(parameter.preProcess);
 
-  GroupOfFrame<PointT> frames0;
-  GroupOfFrame<PointT> frames1;
-  GroupOfFrame<PointT> frames2;
-  GroupOfFrame<PointT> frames3;
-  const auto           framesMap = jpcc::make_shared<PreProcessor<PointT>::GroupOfFrameMap>();
+  GroupOfFrame frames0;
+  GroupOfFrame frames1;
+  GroupOfFrame frames2;
+  GroupOfFrame frames3;
+  const auto   framesMap = jpcc::make_shared<PreProcessor::GroupOfFrameMap>();
 
   size_t startFrameNumber0 = parameter.dataset.getStartFrameNumber();
   size_t startFrameNumber1 = parameter.dataset.getStartFrameNumber();

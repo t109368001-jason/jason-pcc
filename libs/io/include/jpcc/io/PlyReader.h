@@ -9,11 +9,7 @@
 
 namespace jpcc::io {
 
-template <typename PointT>
-class PlyReader : public DatasetReader<PointT> {
- public:
-  using GroupOfFrame = jpcc::GroupOfFrame<PointT>;
-
+class PlyReader : public DatasetReader {
  public:
   PlyReader(DatasetReaderParameter param, DatasetParameter datasetParam);
 
@@ -26,5 +22,3 @@ class PlyReader : public DatasetReader<PointT> {
 };
 
 }  // namespace jpcc::io
-
-#include <jpcc/io/impl/PlyReader.hpp>

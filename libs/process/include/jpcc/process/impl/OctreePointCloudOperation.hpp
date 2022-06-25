@@ -5,26 +5,26 @@
 namespace jpcc::process {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT, bool quantize>
-OctreePointCloudOperation<PointT, quantize>::OctreePointCloudOperation(double resolution) : Base(resolution) {}
+template <bool quantize>
+OctreePointCloudOperation<quantize>::OctreePointCloudOperation(double resolution) : Base(resolution) {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT, bool quantize>
-void OctreePointCloudOperation<PointT, quantize>::setSource(FramePtr source) {
+template <bool quantize>
+void OctreePointCloudOperation<quantize>::setSource(FramePtr source) {
   source_ = source;
   this->setFrame(0, source_);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT, bool quantize>
-void OctreePointCloudOperation<PointT, quantize>::setTarget(FramePtr target) {
+template <bool quantize>
+void OctreePointCloudOperation<quantize>::setTarget(FramePtr target) {
   target_ = target;
   this->setFrame(1, target_);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT, bool quantize>
-FramePtr<PointT> OctreePointCloudOperation<PointT, quantize>::targetAndNotSource() {
+template <bool quantize>
+FramePtr OctreePointCloudOperation<quantize>::targetAndNotSource() {
   auto indices = make_shared<Indices>();
   this->switchBuffers(1);
   this->getIndicesByFilter(
@@ -32,7 +32,7 @@ FramePtr<PointT> OctreePointCloudOperation<PointT, quantize>::targetAndNotSource
 
   auto output = make_shared<Frame>();
 
-  split<PointT>(target_, indices, output, nullptr);
+  split(target_, indices, output, nullptr);
   return output;
 }
 

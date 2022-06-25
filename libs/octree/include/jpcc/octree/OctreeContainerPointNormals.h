@@ -16,7 +16,7 @@ class OctreeContainerPointNormals : public pcl::octree::OctreeContainerBase {
 
   void reset() override;
 
-  void addPoint(const PointNormal& point);
+  void addPoint(const PointXYZINormal& point);
 
   const std::vector<double>& getAzimuths() const;
 

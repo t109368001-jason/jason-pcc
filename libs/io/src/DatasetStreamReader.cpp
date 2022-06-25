@@ -1,20 +1,18 @@
-#pragma once
+#include <jpcc/io/DatasetStreamReader.h>
 
 #include <pcl/common/transforms.h>
 
 namespace jpcc::io {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-DatasetStreamReader<PointT>::DatasetStreamReader(DatasetReaderParameter param, DatasetParameter datasetParam) :
-    DatasetReader<PointT>::DatasetReader(param, datasetParam), frameBuffers_(this->datasetParam_.count()) {}
+DatasetStreamReader::DatasetStreamReader(DatasetReaderParameter param, DatasetParameter datasetParam) :
+    DatasetReader::DatasetReader(param, datasetParam), frameBuffers_(this->datasetParam_.count()) {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-void DatasetStreamReader<PointT>::load(const size_t  datasetIndex,
-                                       const size_t  startFrameNumber,
-                                       const size_t  groupOfFramesSize,
-                                       GroupOfFrame& frames) {
+void DatasetStreamReader::load(const size_t  datasetIndex,
+                               const size_t  startFrameNumber,
+                               const size_t  groupOfFramesSize,
+                               GroupOfFrame& frames) {
   const size_t                endFrameNumber     = startFrameNumber + groupOfFramesSize;
   size_t&                     currentFrameNumber = this->currentFrameNumbers_.at(datasetIndex);
   GroupOfFrame&               frameBuffer        = frameBuffers_.at(datasetIndex);
@@ -33,7 +31,7 @@ void DatasetStreamReader<PointT>::load(const size_t  datasetIndex,
       if (transform) {
         // pcl::transformPointCloud(*frameBuffer.front(), *frameBuffer.front(), *transform);
         const Eigen::Matrix<float, 4, 4>& tf = *transform;
-        std::for_each(frameBuffer.front()->begin(), frameBuffer.front()->end(), [&tf](PointT& p) {
+        std::for_each(frameBuffer.front()->begin(), frameBuffer.front()->end(), [&tf](PointXYZINormal& p) {
           const float x = static_cast<float>(tf(0, 0) * p.x + tf(0, 1) * p.y + tf(0, 2) * p.z + tf(0, 3));
           const float y = static_cast<float>(tf(1, 0) * p.x + tf(1, 1) * p.y + tf(1, 2) * p.z + tf(1, 3));
           const float z = static_cast<float>(tf(2, 0) * p.x + tf(2, 1) * p.y + tf(2, 2) * p.z + tf(2, 3));
@@ -58,8 +56,8 @@ void DatasetStreamReader<PointT>::load(const size_t  datasetIndex,
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-bool DatasetStreamReader<PointT>::isEof_(const size_t datasetIndex) const {
+
+bool DatasetStreamReader::isEof_(const size_t datasetIndex) const {
   return !this->isOpen() ||
          (this->currentFrameNumbers_.at(datasetIndex) >= this->datasetParam_.getEndFrameNumbers(datasetIndex));
 }

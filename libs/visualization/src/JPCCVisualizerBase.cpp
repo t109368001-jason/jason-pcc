@@ -43,7 +43,7 @@ JPCCVisualizerBase::JPCCVisualizerBase(const VisualizerParameter& param) :
   registerKeyboardCallback([this](const auto& event) { this->handleKeyboardEvent(event); });
 
   registerPointPickingCallback([](const auto& event) {
-    Point point;
+    pcl::PointXYZ point;
     event.getPoint(point.x, point.y, point.z);
     cout << "picked point=" << point << endl;
   });

@@ -11,7 +11,7 @@ namespace jpcc {
 
 class VoxelPointCountToVoxelCount : public Analyzer {
  protected:
-  octree::OctreeCounter<PointNormal, 3> octreeCounter_;
+  octree::OctreeCounter<3> octreeCounter_;
 
  protected:
   VoxelPointCountToVoxelCount(const float&       frequency,

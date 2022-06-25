@@ -10,16 +10,12 @@
 
 namespace jpcc::process {
 
-template <typename PointT>
 class PreProcessor {
  public:
   using Ptr                = shared_ptr<PreProcessor>;
-  using Frame              = jpcc::Frame<PointT>;
-  using FramePtr           = typename Frame::Ptr;
-  using GroupOfFrame       = jpcc::GroupOfFrame<PointT>;
   using GroupOfFrameMap    = std::map<std::string, GroupOfFrame>;
   using GroupOfFrameMapPtr = shared_ptr<GroupOfFrameMap>;
-  using Filter             = pcl::FilterIndices<PointT>;
+  using Filter             = pcl::FilterIndices<PointXYZINormal>;
   using FilterPtr          = typename Filter::Ptr;
 
  protected:
@@ -34,12 +30,10 @@ class PreProcessor {
 
   void applyAlgorithm(const std::string& algorithm,
                       GroupOfFrame&      groupOfFrame,
-                      GroupOfFrame&      removed  = nullptr,
+                      GroupOfFrame&      removed  = GroupOfFrame{},
                       bool               parallel = false) const;
 
   void applyAlgorithm(const std::string& algorithm, FramePtr frame, FramePtr removed = nullptr) const;
 };
 
 }  // namespace jpcc::process
-
-#include <jpcc/process/impl/PreProcessor.hpp>

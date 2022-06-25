@@ -25,17 +25,17 @@ void VoxelOccupancyCountToVoxelCount::compute(FrameConstPtr background, FrameCon
   pcl::copyPointCloud(*dynamic, *quantizedDynamic);
   pcl::copyPointCloud(*other, *quantizedOther);
 
-  process::quantize<PointNormal>(quantizedBackground, resolution_);
-  process::quantize<PointNormal>(quantizedDynamic, resolution_);
-  process::quantize<PointNormal>(quantizedOther, resolution_);
+  process::quantize(quantizedBackground, resolution_);
+  process::quantize(quantizedDynamic, resolution_);
+  process::quantize(quantizedOther, resolution_);
 
   VoxelPointCountToVoxelCount::compute(quantizedBackground, quantizedDynamic, quantizedOther);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void VoxelOccupancyCountToVoxelCount::finalCompute() {
-  octree::OctreeCounter<PointNormal, 3>::CountMap countMap = octreeCounter_.getOccupancyCountToVoxelCount();
-  std::ofstream                                   ofs(filepath_);
+  octree::OctreeCounter<3>::CountMap countMap = octreeCounter_.getOccupancyCountToVoxelCount();
+  std::ofstream                      ofs(filepath_);
   ofs << "Voxel Occupancy Count"
       << ","
       << "Voxel Count (Background)"

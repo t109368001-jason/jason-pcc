@@ -9,7 +9,7 @@ namespace jpcc::octree {
 #define RESOLUTION 0.5
 
 jpcc::octree::JPCCOctreePointCloud<
-    Point,
+    PointXYZINormal,
     pcl::octree::OctreeContainerPointIndices,
     pcl::octree::OctreeContainerEmpty,
     OctreeNBuf<BUFFER_SIZE, pcl::octree::OctreeContainerPointIndices, pcl::octree::OctreeContainerEmpty>>

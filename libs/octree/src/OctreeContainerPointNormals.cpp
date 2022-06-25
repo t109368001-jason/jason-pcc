@@ -14,7 +14,7 @@ void OctreeContainerPointNormals::reset() {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void OctreeContainerPointNormals::addPoint(const PointNormal& point) {
+void OctreeContainerPointNormals::addPoint(const PointXYZINormal& point) {
   if (isnan(point.normal_x)) { return; }
   double azimuth;
   if (point.normal_x > 0) {

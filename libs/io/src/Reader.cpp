@@ -1,4 +1,4 @@
-#pragma once
+#include <jpcc/io/Reader.h>
 
 #include <stdexcept>
 
@@ -9,15 +9,13 @@
 namespace jpcc::io {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-typename DatasetReader<PointT>::Ptr newReader(const DatasetReaderParameter& param,
-                                              const DatasetParameter&       datasetParam) {
+typename DatasetReader::Ptr newReader(const DatasetReaderParameter& param, const DatasetParameter& datasetParam) {
   if (datasetParam.type == "pcap") {
-    return jpcc::make_shared<PcapReader<PointT>>(param, datasetParam);
+    return jpcc::make_shared<PcapReader>(param, datasetParam);
   } else if (datasetParam.type == "lvx") {
-    return jpcc::make_shared<LvxReader<PointT>>(param, datasetParam);
+    return jpcc::make_shared<LvxReader>(param, datasetParam);
   } else if (datasetParam.type == "ply") {
-    return jpcc::make_shared<PlyReader<PointT>>(param, datasetParam);
+    return jpcc::make_shared<PlyReader>(param, datasetParam);
   } else {
     BOOST_THROW_EXCEPTION(std::logic_error(std::string("Not Implemented ")));
   }

@@ -13,8 +13,8 @@ ChildPattern getTestChildPattern(BufferIndex bufferSelector) {
   return childPatterns.at(bufferSelector);
 }
 
-FramePtr<Point> getTestCloud(BufferIndex bufferSelector) {
-  auto cloud = jpcc::make_shared<Frame<Point>>();
+FramePtr getTestCloud(BufferIndex bufferSelector) {
+  auto cloud = jpcc::make_shared<Frame>();
   if (getTestChildPattern(bufferSelector).test(7)) { cloud->emplace_back(0.5, 0.5, 0.5); }
   if (getTestChildPattern(bufferSelector).test(6)) { cloud->emplace_back(0.5, 0.5, 0.0); }
   if (getTestChildPattern(bufferSelector).test(5)) { cloud->emplace_back(0.5, 0.0, 0.5); }

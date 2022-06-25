@@ -3,13 +3,12 @@
 namespace jpcc::octree {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT, BufferIndex BUFFER_SIZE>
-OctreeCounter<PointT, BUFFER_SIZE>::OctreeCounter(const double resolution) : Base(resolution) {}
+template <BufferIndex BUFFER_SIZE>
+OctreeCounter<BUFFER_SIZE>::OctreeCounter(const double resolution) : Base(resolution) {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT, BufferIndex BUFFER_SIZE>
-typename OctreeCounter<PointT, BUFFER_SIZE>::CountMap
-OctreeCounter<PointT, BUFFER_SIZE>::getOccupancyCountToVoxelCount() {
+template <BufferIndex BUFFER_SIZE>
+typename OctreeCounter<BUFFER_SIZE>::CountMap OctreeCounter<BUFFER_SIZE>::getOccupancyCountToVoxelCount() {
   if constexpr (std::is_same_v<CountMap, std::map<size_t, size_t>>) {
     std::map<size_t, size_t> countMap;
     for (auto it = this->leaf_depth_begin(), end = this->leaf_depth_end(); it != end; ++it) {

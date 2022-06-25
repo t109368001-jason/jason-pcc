@@ -1,4 +1,4 @@
-#pragma once
+#include <jpcc/io/LvxReader.h>
 
 #include <fstream>
 #include <stdexcept>
@@ -9,9 +9,8 @@
 namespace jpcc::io {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-LvxReader<PointT>::LvxReader(DatasetReaderParameter param, DatasetParameter datasetParam) :
-    DatasetStreamReader<PointT>(std::move(param), std::move(datasetParam)) {
+LvxReader::LvxReader(DatasetReaderParameter param, DatasetParameter datasetParam) :
+    DatasetStreamReader(std::move(param), std::move(datasetParam)) {
   assert(this->datasetParam_.type == "lvx");
   if (this->datasetParam_.sensor == "mid-100") {
     capacity_ = (size_t)((double)(100000 * 3) / this->param_.frequency * 1.05);
@@ -31,8 +30,7 @@ LvxReader<PointT>::LvxReader(DatasetReaderParameter param, DatasetParameter data
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-void LvxReader<PointT>::open_(const size_t datasetIndex, const size_t startFrameNumber) {
+void LvxReader::open_(const size_t datasetIndex, const size_t startFrameNumber) {
   if (lvxs_.at(datasetIndex) && this->currentFrameNumbers_.at(datasetIndex) <= startFrameNumber) { return; }
   lvxs_.at(datasetIndex)    = nullptr;
   const std::string lvxPath = this->datasetParam_.getFilePath(datasetIndex);
@@ -48,23 +46,19 @@ void LvxReader<PointT>::open_(const size_t datasetIndex, const size_t startFrame
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-bool LvxReader<PointT>::isOpen_(const size_t datasetIndex) const {
-  return static_cast<bool>(lvxs_.at(datasetIndex));
-}
+
+bool LvxReader::isOpen_(const size_t datasetIndex) const { return static_cast<bool>(lvxs_.at(datasetIndex)); }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-bool LvxReader<PointT>::isEof_(const size_t datasetIndex) const {
-  return DatasetStreamReader<PointT>::isEof_(datasetIndex) ||
+
+bool LvxReader::isEof_(const size_t datasetIndex) const {
+  return DatasetStreamReader::isEof_(datasetIndex) ||
          lvxs_.at(datasetIndex)->GetFileState() == livox_ros::kLvxFileAtEnd;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-void LvxReader<PointT>::load_(const size_t datasetIndex,
-                              const size_t startFrameNumber,
-                              const size_t groupOfFramesSize) {
+
+void LvxReader::load_(const size_t datasetIndex, const size_t startFrameNumber, const size_t groupOfFramesSize) {
   assert(groupOfFramesSize > 0);
   size_t&                currentFrameNumber = this->currentFrameNumbers_.at(datasetIndex);
   LvxHandler*            lvx                = lvxs_.at(datasetIndex).get();
@@ -104,8 +98,8 @@ void LvxReader<PointT>::load_(const size_t datasetIndex,
     }
     // emplace_back points only, improve performance
     // frameBuffer.at(index)->emplace_back(x, y, z);
-    PointT point(x, y, z);
-    point.data[3] = reflectivity;
+    PointXYZINormal point(x, y, z);
+    point.intensity = reflectivity;
     frameBuffer.at(index)->points.push_back(point);
     lastTimestamps.at(deviceIndex) = timestamp;
   });

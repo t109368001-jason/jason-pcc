@@ -3,6 +3,7 @@
 #include <fstream>
 #include <string>
 
+#include <jpcc/common/Common.h>
 #include <jpcc/octree/JPCCOctreePointCloud.h>
 #include <jpcc/octree/OctreeContainerOccupancyChangeCount.h>
 
@@ -15,7 +16,7 @@ class VoxelOccupancyChangeCountToVoxelCount : public Analyzer {
   static constexpr octree::BufferIndex BUFFER_SIZE = 3;
 
   using OctreeT = octree::JPCCOctreePointCloud<
-      PointNormal,
+      PointXYZINormal,
       octree::OctreeContainerOccupancyChangeCount,
       pcl::octree::OctreeContainerEmpty,
       octree::OctreeNBuf<BUFFER_SIZE, octree::OctreeContainerOccupancyChangeCount, pcl::octree::OctreeContainerEmpty>>;

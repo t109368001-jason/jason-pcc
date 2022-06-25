@@ -1,4 +1,4 @@
-#pragma once
+#include <jpcc/io/PlyIO.h>
 
 #include <algorithm>
 #include <execution>
@@ -8,12 +8,11 @@
 namespace jpcc::io {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-void loadPly(GroupOfFrame<PointT>& frames,
-             const std::string&    filePath,
-             const size_t          startFrameNumber,
-             const size_t          endFrameNumber,
-             const bool            parallel) {
+void loadPly(GroupOfFrame&      frames,
+             const std::string& filePath,
+             const size_t       startFrameNumber,
+             const size_t       endFrameNumber,
+             const bool         parallel) {
   const size_t frameCount = endFrameNumber - startFrameNumber;
   frames.clear();
   frames.resize(frameCount);
@@ -23,7 +22,7 @@ void loadPly(GroupOfFrame<PointT>& frames,
     char fileName[4096];
     sprintf(fileName, filePath.c_str(), frameNumber);
     auto& frame = frames.at(frameNumber - startFrameNumber);
-    frame       = jpcc::make_shared<Frame<PointT>>();
+    frame       = jpcc::make_shared<Frame>();
 
     const int result = pcl::io::load(std::string(fileName), *frame);
     assert(result != -1);
@@ -38,9 +37,8 @@ void loadPly(GroupOfFrame<PointT>& frames,
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-void savePly(const GroupOfFrame<PointT>& frames, const std::string& filePath, const bool parallel) {
-  auto func = [&](const FramePtr<PointT>& frame) {
+void savePly(const GroupOfFrame& frames, const std::string& filePath, const bool parallel) {
+  auto func = [&](const FramePtr& frame) {
     char fileName[4096];
     sprintf(fileName, filePath.c_str(), frame->header.seq);
 

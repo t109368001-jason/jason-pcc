@@ -3,6 +3,7 @@
 #include <fstream>
 #include <string>
 
+#include <jpcc/common/Common.h>
 #include <jpcc/octree/JPCCOctreePointCloud.h>
 #include <jpcc/octree/OctreeContainerPointNormals.h>
 
@@ -15,7 +16,7 @@ class VoxelPointNormalAngleSTDToVoxelCount : public Analyzer {
   static constexpr octree::BufferIndex BUFFER_SIZE = 3;
 
   using OctreeT = octree::JPCCOctreePointCloud<
-      PointNormal,
+      PointXYZINormal,
       octree::OctreeContainerPointNormals,
       pcl::octree::OctreeContainerEmpty,
       octree::OctreeNBuf<BUFFER_SIZE, octree::OctreeContainerPointNormals, pcl::octree::OctreeContainerEmpty>>;

@@ -11,13 +11,7 @@
 
 namespace jpcc::io {
 
-template <typename PointT>
-class PcapReader : public DatasetStreamReader<PointT> {
- public:
-  using Frame        = jpcc::Frame<PointT>;
-  using FramePtr     = typename Frame::Ptr;
-  using GroupOfFrame = jpcc::GroupOfFrame<PointT>;
-
+class PcapReader : public DatasetStreamReader {
  protected:
   int                                                      maxNumLasers_;
   std::vector<float>                                       verticals_;
@@ -46,5 +40,3 @@ class PcapReader : public DatasetStreamReader<PointT> {
 };
 
 }  // namespace jpcc::io
-
-#include <jpcc/io/impl/PcapReader.hpp>

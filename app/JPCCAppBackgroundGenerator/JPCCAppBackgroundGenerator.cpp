@@ -3,6 +3,8 @@
 #include <iostream>
 #include <vector>
 
+#include <pcl/io/ply_io.h>
+
 #include <jpcc/common/ParameterParser.h>
 #include <jpcc/io/Reader.h>
 #include <jpcc/process/JPCCNormalEstimation.h>
@@ -27,26 +29,25 @@ using namespace jpcc::process;
 
 #define BUFFER_SIZE 100
 
-using PointT            = jpcc::PointNormal;
 using LeafContainerT    = OctreeContainerPointIndices;
 using BranchContainerT  = OctreeContainerEmpty;
 using OctreeNBufT       = OctreeNBuf<BUFFER_SIZE, LeafContainerT, BranchContainerT>;
-using OctreePointCloudT = JPCCOctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeNBufT>;
+using OctreePointCloudT = JPCCOctreePointCloud<PointXYZINormal, LeafContainerT, BranchContainerT, OctreeNBufT>;
 
 void backgroundGenerator(const AppParameter& parameter, StopwatchUserTime& clock) {
   size_t frameNumber = parameter.dataset.getStartFrameNumber();
 
-  const DatasetReader<PointT>::Ptr   reader = newReader<PointT>(parameter.reader, parameter.dataset);
-  const PreProcessor<PointT>         preProcessor(parameter.preProcess);
-  const JPCCNormalEstimation<PointT> normalEstimation(parameter.jpccNormalEstimation);
+  const DatasetReader::Ptr   reader = newReader(parameter.reader, parameter.dataset);
+  const PreProcessor         preProcessor(parameter.preProcess);
+  const JPCCNormalEstimation normalEstimation(parameter.jpccNormalEstimation);
 
-  auto staticCloud_ = jpcc::make_shared<Frame<Point>>();
+  auto staticCloud_ = jpcc::make_shared<Frame>();
   {
-    BufferIndex                          bufferIndex = 0;
-    array<FramePtr<PointT>, BUFFER_SIZE> frameBuffer;
-    OctreePointCloudT                    octreePointCloud(parameter.filterResolution);
+    BufferIndex                  bufferIndex = 0;
+    array<FramePtr, BUFFER_SIZE> frameBuffer;
+    OctreePointCloudT            octreePointCloud(parameter.filterResolution);
 
-    GroupOfFrame<PointT> frames;
+    GroupOfFrame frames;
 
     clock.start();
     reader->loadAll(frameNumber, BUFFER_SIZE, frames, parameter.parallel);
@@ -60,7 +61,7 @@ void backgroundGenerator(const AppParameter& parameter, StopwatchUserTime& clock
       octreePointCloud.setFrame(bufferIndex, frameBuffer.at(bufferIndex));
     }
 
-    JPCCOctreePointCloud<Point, OctreeContainerPointIndex, BranchContainerT,
+    JPCCOctreePointCloud<PointXYZINormal, OctreeContainerPointIndex, BranchContainerT,
                          OctreeNBuf<1, OctreeContainerPointIndex, BranchContainerT>>
         staticOctree(parameter.backgroundResolution);
     staticOctree.setInputCloud(staticCloud_);
@@ -74,7 +75,7 @@ void backgroundGenerator(const AppParameter& parameter, StopwatchUserTime& clock
                                     ->getContainer()
                                     .getPointIndicesVector();
             for_each(_indices.begin(), _indices.end(), [&](const auto& index) {
-              Point point;
+              PointXYZINormal point;
               pcl::copyPoint(frameBuffer.at(_bufferIndex)->at(index), point);
               if (!staticOctree.isVoxelOccupiedAtPoint(point)) { staticOctree.addPointToCloud(point, staticCloud_); }
             });

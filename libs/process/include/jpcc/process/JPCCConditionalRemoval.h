@@ -1,18 +1,16 @@
 #pragma once
 
-#include <pcl/filters/filter_indices.h>
-
 #include <jpcc/common/Common.h>
 #include <jpcc/process/JPCCConditionalRemovalParameter.h>
 
+#define PCL_NO_PRECOMPILE
+#include <pcl/filters/filter_indices.h>
+
 namespace jpcc::process {
 
-template <typename PointT>
-class JPCCConditionalRemoval : public virtual pcl::FilterIndices<PointT> {
+class JPCCConditionalRemoval : public virtual pcl::FilterIndices<PointXYZINormal> {
  public:
-  using Ptr      = shared_ptr<JPCCConditionalRemoval>;
-  using Frame    = jpcc::Frame<PointT>;
-  using FramePtr = typename Frame::Ptr;
+  using Ptr = shared_ptr<JPCCConditionalRemoval>;
 
  protected:
   JPCCConditionalRemovalParameter param_;
@@ -25,5 +23,3 @@ class JPCCConditionalRemoval : public virtual pcl::FilterIndices<PointT> {
 };
 
 }  // namespace jpcc::process
-
-#include <jpcc/process/impl/JPCCConditionalRemoval.hpp>

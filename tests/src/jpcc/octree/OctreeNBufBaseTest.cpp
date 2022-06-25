@@ -11,7 +11,7 @@ using namespace pcl::octree;
 
 TEST(OctreeNBufTest, getChildPattern) {
   // given
-  JPCCOctreePointCloud<Point, OctreeContainerPointIndices, OctreeContainerEmpty, OctreeNBuf<BUFFER_SIZE>>
+  JPCCOctreePointCloud<PointXYZINormal, OctreeContainerPointIndices, OctreeContainerEmpty, OctreeNBuf<BUFFER_SIZE>>
       octreePointCloud = getTestOctree();
   // then
   EXPECT_EQ(octreePointCloud.getBufferSize(), BUFFER_SIZE);
@@ -32,8 +32,8 @@ TEST(OctreeNBufTest, getChildPattern) {
 
 TEST(OctreeNBufTest, getBufferPattern) {
   // given
-  const JPCCOctreePointCloud<Point, OctreeContainerPointIndices, OctreeContainerEmpty, OctreeNBuf<BUFFER_SIZE>>&
-      octreePointCloud = getTestOctree();
+  const JPCCOctreePointCloud<PointXYZINormal, OctreeContainerPointIndices, OctreeContainerEmpty,
+                             OctreeNBuf<BUFFER_SIZE>>& octreePointCloud = getTestOctree();
   // then
   for (ChildIndex childIndex = 0; childIndex < 8; childIndex++) {
     const OctreeNBuf<BUFFER_SIZE>::BufferPattern bufferPattern =
@@ -47,7 +47,7 @@ TEST(OctreeNBufTest, getBufferPattern) {
 
 TEST(OctreeNBufTest, getIndicesByFilter) {
   // given
-  JPCCOctreePointCloud<Point, OctreeContainerPointIndices, OctreeContainerEmpty, OctreeNBuf<BUFFER_SIZE>>
+  JPCCOctreePointCloud<PointXYZINormal, OctreeContainerPointIndices, OctreeContainerEmpty, OctreeNBuf<BUFFER_SIZE>>
        octreePointCloud = getTestOctree();
   auto filter           = [](BufferIndex b, const OctreeNBuf<BUFFER_SIZE>::BufferPattern& bufferPattern) {
     return bufferPattern.test(b);
@@ -67,7 +67,7 @@ TEST(OctreeNBufTest, getIndicesByFilter) {
 
 TEST(OctreeNBufTest, deleteBuffer) {
   // given
-  JPCCOctreePointCloud<Point, OctreeContainerPointIndices, OctreeContainerEmpty, OctreeNBuf<BUFFER_SIZE>>
+  JPCCOctreePointCloud<PointXYZINormal, OctreeContainerPointIndices, OctreeContainerEmpty, OctreeNBuf<BUFFER_SIZE>>
       octreePointCloud = getTestOctree();
 
   // then
@@ -81,7 +81,7 @@ TEST(OctreeNBufTest, deleteBuffer) {
 
 TEST(OctreeNBufTest, reuseBuffer) {
   // given
-  JPCCOctreePointCloud<Point, OctreeContainerPointIndices, OctreeContainerEmpty, OctreeNBuf<BUFFER_SIZE>>
+  JPCCOctreePointCloud<PointXYZINormal, OctreeContainerPointIndices, OctreeContainerEmpty, OctreeNBuf<BUFFER_SIZE>>
        octreePointCloud = getTestOctree();
   auto filter           = [](BufferIndex b, const OctreeNBuf<BUFFER_SIZE>::BufferPattern& bufferPattern) {
     return bufferPattern.test(b);

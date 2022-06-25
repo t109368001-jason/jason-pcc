@@ -19,6 +19,7 @@
 #include <jpcc/common/ParameterParser.h>
 #include <jpcc/io/Reader.h>
 #include <jpcc/octree/OctreeNBuf.h>
+#include <jpcc/process/Process.h>
 #include <jpcc/process/PreProcessor.h>
 #include <jpcc/visualization/JPCCVisualizer.h>
 
@@ -41,12 +42,12 @@ using namespace jpcc::octree;
 using namespace jpcc::process;
 using namespace jpcc::visualization;
 
-using PointT            = jpcc::PointNormal;
-using OctreeNBufT       = OctreeNBuf<BUFFER_SIZE, OctreeContainerPointIndices, OctreeContainerEmpty>;
-using OctreePointCloudT = JPCCOctreePointCloud<PointT, OctreeContainerPointIndices, OctreeContainerEmpty, OctreeNBufT>;
+using OctreeNBufT = OctreeNBuf<BUFFER_SIZE, OctreeContainerPointIndices, OctreeContainerEmpty>;
+using OctreePointCloudT =
+    JPCCOctreePointCloud<PointXYZINormal, OctreeContainerPointIndices, OctreeContainerEmpty, OctreeNBufT>;
 
 void test(const AppParameter& parameter, StopwatchUserTime& clock) {
-  const auto viewer = jpcc::make_shared<JPCCVisualizer<PointT>>(parameter.visualizerParameter);
+  const auto viewer = jpcc::make_shared<JPCCVisualizer>(parameter.visualizerParameter);
 
   atomic_bool  run(true);
   atomic_bool  hasFirstFrame(false);
@@ -64,18 +65,18 @@ void test(const AppParameter& parameter, StopwatchUserTime& clock) {
   auto datasetLoading = [&] {
     try {
       while (run) {
-        const DatasetReader<PointT>::Ptr reader = newReader<PointT>(parameter.reader, parameter.dataset);
-        PreProcessor<PointT>             preProcessor(parameter.preProcess);
+        const DatasetReader::Ptr reader = newReader(parameter.reader, parameter.dataset);
+        PreProcessor             preProcessor(parameter.preProcess);
 
-        GroupOfFrame<PointT> frames;
-        const auto           framesMap = jpcc::make_shared<JPCCVisualizer<PointT>::GroupOfFrameMap>();
+        GroupOfFrame frames;
+        const auto   framesMap = jpcc::make_shared<JPCCVisualizer::GroupOfFrameMap>();
 
         size_t       startFrameNumber = parameter.dataset.getStartFrameNumber();
         const size_t endFrameNumber   = startFrameNumber + parameter.dataset.getFrameCounts();
 
         BufferIndex bufferIndex = 0;
 
-        array<FramePtr<PointT>, BUFFER_SIZE> frameBuffer;
+        array<FramePtr, BUFFER_SIZE> frameBuffer;
 
         OctreeNBufT::Filter3 func = [&](const BufferIndex _bufferIndex, const OctreeNBufT::BufferPattern& bufferPattern,
                                         const OctreeNBufT::BufferIndices& bufferIndices) {
@@ -99,8 +100,8 @@ void test(const AppParameter& parameter, StopwatchUserTime& clock) {
         clock.stop();
 
         auto range      = boost::counting_range<size_t>(0, frames.size());
-        auto calcNormal = [&](const FramePtr<PointT>& frame) {
-          NormalEstimation<PointT, PointT> ne;
+        auto calcNormal = [&](const FramePtr& frame) {
+          NormalEstimation<PointXYZINormal, PointXYZINormal> ne;
           //          ne.setRadiusSearch(parameter.float1);
           ne.setKSearch(parameter.int1);
           ne.setInputCloud(frame);
@@ -136,14 +137,14 @@ void test(const AppParameter& parameter, StopwatchUserTime& clock) {
 
           {
             const auto indices       = jpcc::make_shared<Indices>();
-            const auto staticCloud_  = jpcc::make_shared<Frame<PointT>>();
-            const auto dynamicCloud_ = jpcc::make_shared<Frame<PointT>>();
+            const auto staticCloud_  = jpcc::make_shared<Frame>();
+            const auto dynamicCloud_ = jpcc::make_shared<Frame>();
             octreePointCloud.process(func, *indices);
 
-            process::split<PointT>(frames.at(0), indices, staticCloud_, dynamicCloud_);
+            process::split(frames.at(0), indices, staticCloud_, dynamicCloud_);
 
-            framesMap->insert_or_assign(primaryId, GroupOfFrame<PointT>{staticCloud_});
-            framesMap->insert_or_assign(dynamicId, GroupOfFrame<PointT>{dynamicCloud_});
+            framesMap->insert_or_assign(primaryId, GroupOfFrame{staticCloud_});
+            framesMap->insert_or_assign(dynamicId, GroupOfFrame{dynamicCloud_});
 
             viewer->enqueue(*framesMap);
           }

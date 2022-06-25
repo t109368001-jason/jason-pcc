@@ -1,4 +1,4 @@
-#pragma once
+#include <jpcc/io/DatasetReader.h>
 
 #include <algorithm>
 #include <execution>
@@ -6,24 +6,19 @@
 namespace jpcc::io {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-DatasetReader<PointT>::DatasetReader(DatasetReaderParameter param, DatasetParameter datasetParam) :
+DatasetReader::DatasetReader(DatasetReaderParameter param, DatasetParameter datasetParam) :
     DatasetReaderBase(param, datasetParam) {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-void DatasetReader<PointT>::loadAll(const size_t  startFrameNumber,
-                                    const size_t  groupOfFramesSize,
-                                    GroupOfFrame& frames) {
+void DatasetReader::loadAll(const size_t startFrameNumber, const size_t groupOfFramesSize, GroupOfFrame& frames) {
   loadAll(startFrameNumber, groupOfFramesSize, frames, false);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-void DatasetReader<PointT>::loadAll(const size_t  startFrameNumber,
-                                    const size_t  groupOfFramesSize,
-                                    GroupOfFrame& frames,
-                                    const bool    parallel) {
+void DatasetReader::loadAll(const size_t  startFrameNumber,
+                            const size_t  groupOfFramesSize,
+                            GroupOfFrame& frames,
+                            const bool    parallel) {
   assert(groupOfFramesSize > 0);
 
   open(startFrameNumber);

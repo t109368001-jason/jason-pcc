@@ -1,4 +1,4 @@
-#pragma once
+#include <jpcc/process/JPCCNormalEstimation.h>
 
 #include <algorithm>
 #include <execution>
@@ -7,25 +7,22 @@
 namespace jpcc::process {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-JPCCNormalEstimation<PointT>::JPCCNormalEstimation(JPCCNormalEstimationParameter param) : param_(std::move(param)) {
+JPCCNormalEstimation::JPCCNormalEstimation(JPCCNormalEstimationParameter param) : param_(std::move(param)) {
   if (!param_.enable) { BOOST_THROW_EXCEPTION(std::logic_error(std::string("Normal Estimation not enabled"))); }
   normalEstimation_.setRadiusSearch(param_.radiusSearch);
   normalEstimation_.setKSearch(param_.kSearch);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-void JPCCNormalEstimation<PointT>::computeInPlace(FramePtr& frame) const {
+void JPCCNormalEstimation::computeInPlace(FramePtr& frame) const {
   NormalEstimation ne(normalEstimation_);
   ne.setInputCloud(frame);
   ne.compute(*frame);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-jpcc::Frame<PointNormal>::Ptr JPCCNormalEstimation<PointT>::compute(FramePtr& frame) const {
-  auto             output = jpcc::make_shared<jpcc::Frame<PointNormal>>();
+jpcc::FramePtr JPCCNormalEstimation::compute(FramePtr& frame) const {
+  auto             output = jpcc::make_shared<jpcc::Frame>();
   NormalEstimation ne(normalEstimation_);
   ne.setInputCloud(frame);
   ne.compute(*output);
@@ -33,8 +30,7 @@ jpcc::Frame<PointNormal>::Ptr JPCCNormalEstimation<PointT>::compute(FramePtr& fr
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-void JPCCNormalEstimation<PointT>::computeInPlaceAll(GroupOfFrame& frames, bool parallel) const {
+void JPCCNormalEstimation::computeInPlaceAll(GroupOfFrame& frames, bool parallel) const {
   if (parallel) {
     std::for_each(std::execution::par_unseq, frames.begin(), frames.end(),
                   [this](FramePtr& frame) { this->computeInPlace(frame); });
@@ -44,9 +40,8 @@ void JPCCNormalEstimation<PointT>::computeInPlaceAll(GroupOfFrame& frames, bool 
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-jpcc::GroupOfFrame<PointNormal> JPCCNormalEstimation<PointT>::computeAll(GroupOfFrame& frames, bool parallel) const {
-  jpcc::GroupOfFrame<PointNormal> outputs;
+jpcc::GroupOfFrame JPCCNormalEstimation::computeAll(GroupOfFrame& frames, bool parallel) const {
+  jpcc::GroupOfFrame outputs;
   outputs.resize(frames.size());
   if (parallel) {
     std::transform(std::execution::par_unseq, frames.begin(), frames.end(), outputs.begin(),

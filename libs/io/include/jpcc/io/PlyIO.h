@@ -7,16 +7,12 @@
 
 namespace jpcc::io {
 
-template <typename PointT>
-void loadPly(GroupOfFrame<PointT>& frames,
-             const std::string&    filePath,
-             size_t                startFrameNumber,
-             size_t                endFrameNumber,
-             bool                  parallel = false);
+void loadPly(GroupOfFrame&      frames,
+             const std::string& filePath,
+             size_t             startFrameNumber,
+             size_t             endFrameNumber,
+             bool               parallel = false);
 
-template <typename PointT>
-void savePly(const GroupOfFrame<PointT>& frames, const std::string& filePath, bool parallel = false);
+void savePly(const GroupOfFrame& frames, const std::string& filePath, bool parallel = false);
 
 }  // namespace jpcc::io
-
-#include <jpcc/io/impl/PlyIO.hpp>

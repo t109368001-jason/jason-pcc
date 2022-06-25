@@ -7,10 +7,10 @@
 
 namespace jpcc::process {
 
-template <typename PointT, bool singlePointVoxel = false>
+template <bool singlePointVoxel = false>
 class OctreePointCloudOperation
     : public octree::JPCCOctreePointCloud<
-          PointT,
+          PointXYZINormal,
           typename std::conditional<singlePointVoxel,
                                     pcl::octree::OctreeContainerPointIndex,
                                     pcl::octree::OctreeContainerPointIndices>::type,
@@ -22,7 +22,7 @@ class OctreePointCloudOperation
                              pcl::octree::OctreeContainerEmpty>> {
  public:
   using Base = octree::JPCCOctreePointCloud<
-      PointT,
+      PointXYZINormal,
       typename std::conditional<singlePointVoxel,
                                 pcl::octree::OctreeContainerPointIndex,
                                 pcl::octree::OctreeContainerPointIndices>::type,
@@ -39,9 +39,6 @@ class OctreePointCloudOperation
                                         pcl::octree::OctreeContainerEmpty>;
 
   using Ptr          = shared_ptr<OctreePointCloudOperation>;
-  using Frame        = jpcc::Frame<PointT>;
-  using FramePtr     = typename Frame::Ptr;
-  using GroupOfFrame = jpcc::GroupOfFrame<PointT>;
 
  protected:
   FramePtr source_;

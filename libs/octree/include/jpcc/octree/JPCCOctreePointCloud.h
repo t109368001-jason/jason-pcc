@@ -22,10 +22,6 @@ class JPCCOctreePointCloud : public OctreePointCloud<PointT, LeafContainerT, Bra
 
   using OctreeKey = typename Base::OctreeKey;
 
-  using Frame         = jpcc::Frame<PointT>;
-  using FramePtr      = typename Frame::Ptr;
-  using FrameConstPtr = typename Frame::ConstPtr;
-
   JPCCOctreePointCloud(double resolution);
 
   void setFrame(FrameConstPtr frame);

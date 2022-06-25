@@ -3,6 +3,7 @@
 #include <fstream>
 #include <string>
 
+#include <jpcc/common/Common.h>
 #include <jpcc/octree/JPCCOctreePointCloud.h>
 #include <jpcc/octree/OctreeContainerOccludedCount.h>
 #include <jpcc/octree/OctreeNBuf.h>
@@ -16,7 +17,7 @@ class VoxelOccludedPercentageToVoxelCount : public Analyzer {
   static constexpr octree::BufferIndex BUFFER_SIZE = 3;
 
   using OctreeT = octree::JPCCOctreePointCloud<
-      PointNormal,
+      PointXYZINormal,
       octree::OctreeContainerOccludedCount,
       pcl::octree::OctreeContainerEmpty,
       octree::OctreeNBuf<BUFFER_SIZE, octree::OctreeContainerOccludedCount, pcl::octree::OctreeContainerEmpty>>;

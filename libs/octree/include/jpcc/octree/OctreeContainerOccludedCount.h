@@ -17,15 +17,15 @@ class OctreeContainerOccludedCount : public pcl::octree::OctreeContainerBase {
   using Count3D = boost::dynamic_bitset<>;
 
  protected:
-  Count3D                  count3D_;
-  std::vector<PointNormal> pointBuffer_;
+  Count3D                      count3D_;
+  std::vector<PointXYZINormal> pointBuffer_;
 
  public:
   OctreeContainerOccludedCount();
 
   void reset() override;
 
-  void addPoint(const PointNormal& point);
+  void addPoint(const PointXYZINormal& point);
 
   void compute(const Eigen::Vector3f& min_pt, const Eigen::Vector3f& max_pt, size_t quantCount);
 

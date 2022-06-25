@@ -18,19 +18,16 @@ using namespace jpcc;
 using namespace jpcc::io;
 using namespace jpcc::process;
 
-template <typename PointT>
 void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
-  const typename DatasetReader<PointT>::Ptr  reader = newReader<PointT>(parameter.inputReader, parameter.inputDataset);
-  PreProcessor<PointT>                       preProcessor(parameter.preProcess);
-  typename JPCCNormalEstimation<PointT>::Ptr normalEstimation;
-  if constexpr (is_same_v<PointT, PointNormal>) {
-    normalEstimation = jpcc::make_shared<JPCCNormalEstimation<PointT>>(parameter.jpccNormalEstimation);
-  }
+  const typename DatasetReader::Ptr  reader = newReader(parameter.inputReader, parameter.inputDataset);
+  PreProcessor                       preProcessor(parameter.preProcess);
+  typename JPCCNormalEstimation::Ptr normalEstimation =
+      jpcc::make_shared<JPCCNormalEstimation>(parameter.jpccNormalEstimation);
 
-  GroupOfFrame<PointT> frames;
-  size_t               groupOfFramesSize = 32;
-  size_t               frameNumber       = parameter.inputDataset.getStartFrameNumber();
-  const size_t         endFrameNumber    = parameter.inputDataset.getEndFrameNumber();
+  GroupOfFrame frames;
+  size_t       groupOfFramesSize = 32;
+  size_t       frameNumber       = parameter.inputDataset.getStartFrameNumber();
+  const size_t endFrameNumber    = parameter.inputDataset.getEndFrameNumber();
   while (frameNumber < endFrameNumber) {
     size_t groupOfFramesSize_ = endFrameNumber - frameNumber;
     if (groupOfFramesSize_ < groupOfFramesSize) { groupOfFramesSize = groupOfFramesSize_; }
@@ -38,20 +35,12 @@ void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
     clock.start();
     reader->loadAll(frameNumber, groupOfFramesSize, frames, parameter.parallel);
     preProcessor.process(frames, nullptr, parameter.parallel);
-    if constexpr (is_same_v<PointT, PointNormal>) { normalEstimation->computeInPlaceAll(frames, parameter.parallel); }
+    normalEstimation->computeInPlaceAll(frames, parameter.parallel);
     clock.stop();
 
-    savePly<PointT>(frames, parameter.outputDataset.getFilePath(), parameter.parallel);
+    savePly(frames, parameter.outputDataset.getFilePath(), parameter.parallel);
 
     frameNumber += groupOfFramesSize;
-  }
-}
-
-void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
-  if (parameter.jpccNormalEstimation.enable) {
-    parse<PointNormal>(parameter, clock);
-  } else {
-    parse<Point>(parameter, clock);
   }
 }
 

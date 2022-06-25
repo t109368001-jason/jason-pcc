@@ -4,6 +4,8 @@
 #include <thread>
 #include <vector>
 
+#include <pcl/io/ply_io.h>
+
 #include <jpcc/common/ParameterParser.h>
 #include <jpcc/io/Reader.h>
 #include <jpcc/process/PreProcessor.h>
@@ -21,17 +23,15 @@ using namespace jpcc::io;
 using namespace jpcc::process;
 using namespace jpcc::visualization;
 
-using PointT = Point;
-
 void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
-  const auto viewer = jpcc::make_shared<JPCCVisualizer<PointT>>(parameter.visualizerParameter);
-  OctreePointCloudOperation<PointT>::Ptr octreePointCloudOperation;
+  const auto                       viewer = jpcc::make_shared<JPCCVisualizer>(parameter.visualizerParameter);
+  OctreePointCloudOperation<>::Ptr octreePointCloudOperation;
 
-  FramePtr<PointT> background;
+  FramePtr background;
   if (!parameter.backgroundPath.empty() && std::filesystem::exists(parameter.backgroundPath)) {
-    background = jpcc::make_shared<Frame<PointT>>();
+    background = jpcc::make_shared<Frame>();
     pcl::io::loadPLYFile(parameter.backgroundPath, *background);
-    octreePointCloudOperation = jpcc::make_shared<OctreePointCloudOperation<PointT>>(0.1);
+    octreePointCloudOperation = jpcc::make_shared<OctreePointCloudOperation<>>(0.1);
     octreePointCloudOperation->setSource(background);
   }
 
@@ -45,18 +45,18 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
 
   auto datasetLoading = [&] {
     try {
-      const DatasetReader<PointT>::Ptr reader = newReader<PointT>(parameter.reader, parameter.dataset);
-      PreProcessor<PointT>             preProcessor(parameter.preProcess);
+      const DatasetReader::Ptr reader = newReader(parameter.reader, parameter.dataset);
+      PreProcessor             preProcessor(parameter.preProcess);
 
-      GroupOfFrame<PointT> frames;
-      const auto           framesMap         = jpcc::make_shared<PreProcessor<PointT>::GroupOfFrameMap>();
-      const size_t         groupOfFramesSize = 32;
-      size_t               startFrameNumber  = parameter.dataset.getStartFrameNumber();
+      GroupOfFrame frames;
+      const auto   framesMap         = jpcc::make_shared<PreProcessor::GroupOfFrameMap>();
+      const size_t groupOfFramesSize = 32;
+      size_t       startFrameNumber  = parameter.dataset.getStartFrameNumber();
       reader->loadAll(startFrameNumber, 1, frames, parameter.parallel);
       startFrameNumber++;
       preProcessor.process(frames, framesMap, parameter.parallel);
       if (octreePointCloudOperation) {
-        framesMap->insert_or_assign(backgroundId, GroupOfFrame<PointT>{background});
+        framesMap->insert_or_assign(backgroundId, GroupOfFrame{background});
         octreePointCloudOperation->setTarget(frames.at(0));
         frames.at(0) = octreePointCloudOperation->targetAndNotSource();
       }
@@ -72,7 +72,7 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
         while (run && viewer->isFull()) { this_thread::sleep_for(100ms); }
 
         if (octreePointCloudOperation) {
-          GroupOfFrame<PointT> backgrounds(frames.size());
+          GroupOfFrame backgrounds(frames.size());
           fill(backgrounds.begin(), backgrounds.end(), background);
           framesMap->insert_or_assign(backgroundId, backgrounds);
           for_each(frames.begin(), frames.end(), [&](auto& frame) {

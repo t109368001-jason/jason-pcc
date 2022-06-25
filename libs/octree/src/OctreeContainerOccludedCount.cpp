@@ -12,12 +12,12 @@ OctreeContainerOccludedCount::OctreeContainerOccludedCount() : count3D_(), point
 void OctreeContainerOccludedCount::reset() { pointBuffer_.clear(); }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void OctreeContainerOccludedCount::addPoint(const PointNormal& point) { pointBuffer_.push_back(point); }
+void OctreeContainerOccludedCount::addPoint(const PointXYZINormal& point) { pointBuffer_.push_back(point); }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void OctreeContainerOccludedCount::compute(const Vector3f& min_pt, const Vector3f& max_pt, const size_t quantCount) {
   if (count3D_.empty()) { count3D_.resize(quantCount * quantCount * quantCount); }
-  for (const PointNormal& point : pointBuffer_) {
+  for (const PointXYZINormal& point : pointBuffer_) {
     auto   xIndex = (size_t)((point.x - min_pt.x()) / (max_pt.x() - min_pt.x()) * (float)quantCount);
     auto   yIndex = (size_t)((point.y - min_pt.y()) / (max_pt.y() - min_pt.y()) * (float)quantCount);
     auto   zIndex = (size_t)((point.z - min_pt.z()) / (max_pt.z() - min_pt.z()) * (float)quantCount);

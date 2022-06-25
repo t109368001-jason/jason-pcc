@@ -7,13 +7,9 @@
 
 namespace jpcc::io {
 
-template <typename PointT>
 class DatasetReader : public DatasetReaderBase {
  public:
-  using Ptr          = shared_ptr<DatasetReader>;
-  using Frame        = jpcc::Frame<PointT>;
-  using FramePtr     = typename Frame::Ptr;
-  using GroupOfFrame = jpcc::GroupOfFrame<PointT>;
+  using Ptr = shared_ptr<DatasetReader>;
 
  public:
   DatasetReader(DatasetReaderParameter param, DatasetParameter datasetParam);
@@ -31,5 +27,3 @@ class DatasetReader : public DatasetReaderBase {
 };
 
 }  // namespace jpcc::io
-
-#include <jpcc/io/impl/DatasetReader.hpp>

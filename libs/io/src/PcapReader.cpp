@@ -1,4 +1,4 @@
-#pragma once
+#include <jpcc/io/PcapReader.h>
 
 #include <stdexcept>
 #include <utility>
@@ -92,9 +92,8 @@ struct DataPacket {
 #pragma pack(pop)
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-PcapReader<PointT>::PcapReader(DatasetReaderParameter param, DatasetParameter datasetParam) :
-    DatasetStreamReader<PointT>(std::move(param), std::move(datasetParam)) {
+PcapReader::PcapReader(DatasetReaderParameter param, DatasetParameter datasetParam) :
+    DatasetStreamReader(std::move(param), std::move(datasetParam)) {
   assert(this->datasetParam_.type == "pcap");
   if (this->datasetParam_.sensor == "vlp16") {
     maxNumLasers_ = VLP16_MAX_NUM_LASERS;
@@ -129,8 +128,7 @@ PcapReader<PointT>::PcapReader(DatasetReaderParameter param, DatasetParameter da
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-void PcapReader<PointT>::open_(const size_t datasetIndex, const size_t startFrameNumber) {
+void PcapReader::open_(const size_t datasetIndex, const size_t startFrameNumber) {
   if (pcaps_.at(datasetIndex) && this->currentFrameNumbers_.at(datasetIndex) <= startFrameNumber) { return; }
   const std::string pcapPath = this->datasetParam_.getFilePath(datasetIndex);
 
@@ -145,22 +143,13 @@ void PcapReader<PointT>::open_(const size_t datasetIndex, const size_t startFram
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-bool PcapReader<PointT>::isOpen_(const size_t datasetIndex) const {
-  return static_cast<bool>(pcaps_.at(datasetIndex));
-}
+bool PcapReader::isOpen_(const size_t datasetIndex) const { return static_cast<bool>(pcaps_.at(datasetIndex)); }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-bool PcapReader<PointT>::isEof_(const size_t datasetIndex) const {
-  return DatasetStreamReader<PointT>::isEof_(datasetIndex);
-}
+bool PcapReader::isEof_(const size_t datasetIndex) const { return DatasetStreamReader::isEof_(datasetIndex); }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-void PcapReader<PointT>::load_(const size_t datasetIndex,
-                               const size_t startFrameNumber,
-                               const size_t groupOfFramesSize) {
+void PcapReader::load_(const size_t datasetIndex, const size_t startFrameNumber, const size_t groupOfFramesSize) {
   assert(groupOfFramesSize > 0);
   size_t&       currentFrameNumber = this->currentFrameNumbers_.at(datasetIndex);
   void* const   pcap               = pcaps_.at(datasetIndex).get();
@@ -172,12 +161,11 @@ void PcapReader<PointT>::load_(const size_t datasetIndex,
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-int PcapReader<PointT>::parseDataPacket(const size_t  startFrameNumber,
-                                        size_t&       currentFrameNumber,
-                                        void* const   pcap,
-                                        uint16_t&     lastAzimuth100,
-                                        GroupOfFrame& frameBuffer) {
+int PcapReader::parseDataPacket(const size_t  startFrameNumber,
+                                size_t&       currentFrameNumber,
+                                void* const   pcap,
+                                uint16_t&     lastAzimuth100,
+                                GroupOfFrame& frameBuffer) {
   // Retrieve Header and Data from PCAP
   const unsigned char* data;
   const int            ret = pcapNextEx(pcap, &data);

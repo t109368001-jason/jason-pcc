@@ -1,20 +1,17 @@
 #pragma once
 
-#include <pcl/features/normal_3d.h>
-
 #include <jpcc/common/Common.h>
 #include <jpcc/process/JPCCNormalEstimationParameter.h>
 
+#define PCL_NO_PRECOMPILE
+#include <pcl/features/normal_3d.h>
+
 namespace jpcc::process {
 
-template <typename PointT>
 class JPCCNormalEstimation {
  public:
   using Ptr              = shared_ptr<JPCCNormalEstimation>;
-  using Frame            = jpcc::Frame<PointT>;
-  using FramePtr         = typename Frame::Ptr;
-  using GroupOfFrame     = jpcc::GroupOfFrame<PointT>;
-  using NormalEstimation = pcl::NormalEstimation<PointT, PointNormal>;
+  using NormalEstimation = pcl::NormalEstimation<PointXYZINormal, PointXYZINormal>;
 
  protected:
   JPCCNormalEstimationParameter param_;
@@ -25,13 +22,11 @@ class JPCCNormalEstimation {
 
   void computeInPlace(FramePtr& frame) const;
 
-  [[nodiscard]] jpcc::Frame<PointNormal>::Ptr compute(FramePtr& frame) const;
+  [[nodiscard]] jpcc::FramePtr compute(FramePtr& frame) const;
 
   void computeInPlaceAll(GroupOfFrame& frames, bool parallel = false) const;
 
-  [[nodiscard]] jpcc::GroupOfFrame<PointNormal> computeAll(GroupOfFrame& frames, bool parallel = false) const;
+  [[nodiscard]] jpcc::GroupOfFrame computeAll(GroupOfFrame& frames, bool parallel = false) const;
 };
 
 }  // namespace jpcc::process
-
-#include <jpcc/process/impl/JPCCNormalEstimation.hpp>

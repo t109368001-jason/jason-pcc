@@ -6,9 +6,10 @@
 #include <vector>
 #include <string>
 
-#include <pcl/visualization/pcl_visualizer.h>
-
 #include <jpcc/visualization/VisualizerParameter.h>
+
+#define PCL_NO_PRECOMPILE
+#include <pcl/visualization/pcl_visualizer.h>
 
 namespace jpcc::visualization {
 

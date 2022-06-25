@@ -11,9 +11,7 @@ namespace jpcc {
 
 class Analyzer {
  public:
-  using Ptr           = shared_ptr<Analyzer>;
-  using Frame         = jpcc::Frame<PointNormal>;
-  using FrameConstPtr = typename Frame::ConstPtr;
+  using Ptr = shared_ptr<Analyzer>;
 
  protected:
   float                 frequency_;

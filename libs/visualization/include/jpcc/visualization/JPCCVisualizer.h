@@ -4,23 +4,17 @@
 #include <queue>
 #include <string>
 
-#include <pcl/visualization/pcl_visualizer.h>
-
 #include <jpcc/common/Common.h>
 #include <jpcc/visualization/JPCCVisualizerBase.h>
 
 namespace jpcc::visualization {
 
-template <typename PointT>
 class JPCCVisualizer : public JPCCVisualizerBase {
  public:
   using Ptr                = shared_ptr<JPCCVisualizer>;
-  using Frame              = jpcc::Frame<PointT>;
-  using FramePtr           = typename Frame::Ptr;
-  using GroupOfFrame       = jpcc::GroupOfFrame<PointT>;
   using GroupOfFrameMap    = std::map<std::string, GroupOfFrame>;
   using FrameQueue         = std::queue<FramePtr>;
-  using PointCloudColor    = pcl::visualization::PointCloudColorHandler<PointT>;
+  using PointCloudColor    = pcl::visualization::PointCloudColorHandler<PointXYZINormal>;
   using PointCloudColorPtr = typename PointCloudColor::Ptr;
 
  protected:
@@ -50,5 +44,3 @@ class JPCCVisualizer : public JPCCVisualizerBase {
 };
 
 }  // namespace jpcc::visualization
-
-#include <jpcc/visualization/impl/JPCCVisualizer.hpp>

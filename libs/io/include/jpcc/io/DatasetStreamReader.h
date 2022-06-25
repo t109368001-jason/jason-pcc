@@ -9,13 +9,9 @@
 
 namespace jpcc::io {
 
-template <typename PointT>
-class DatasetStreamReader : public DatasetReader<PointT> {
+class DatasetStreamReader : public DatasetReader {
  public:
-  using Ptr          = shared_ptr<DatasetStreamReader>;
-  using Frame        = jpcc::Frame<PointT>;
-  using FramePtr     = typename Frame::Ptr;
-  using GroupOfFrame = jpcc::GroupOfFrame<PointT>;
+  using Ptr = shared_ptr<DatasetStreamReader>;
 
  protected:
   std::vector<GroupOfFrame> frameBuffers_;
@@ -36,5 +32,3 @@ class DatasetStreamReader : public DatasetReader<PointT> {
 };
 
 }  // namespace jpcc::io
-
-#include <jpcc/io/impl/DatasetStreamReader.hpp>
