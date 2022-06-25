@@ -45,8 +45,6 @@ void DatasetStreamReader<PointT>::load(const size_t  datasetIndex,
       }
       frameBuffer.front()->header.seq                  = currentFrameNumber;
       frames.at(currentFrameNumber - startFrameNumber) = frameBuffer.front();
-      std::cout << this->datasetParam_.getFilePath(datasetIndex) << ":" << currentFrameNumber << " "
-                << *frames.at(currentFrameNumber - startFrameNumber) << std::endl;
       frameBuffer.erase(frameBuffer.begin());
       currentFrameNumber++;
     }

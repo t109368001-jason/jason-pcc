@@ -56,6 +56,9 @@ void DatasetReader<PointT>::loadAll(const size_t  startFrameNumber,
     }
     frame->width  = static_cast<uint32_t>(frame->size());
     frame->height = 1;
+    std::cout << "reader read "
+              << "frameNumber=" << frame->header.seq << ", "
+              << "points=" << frame->size() << std::endl;
   }
 }
 
