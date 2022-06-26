@@ -1,6 +1,5 @@
 #include <jpcc/process/JPCCConditionalRemoval.h>
 
-#include <algorithm>
 #include <utility>
 
 namespace jpcc::process {

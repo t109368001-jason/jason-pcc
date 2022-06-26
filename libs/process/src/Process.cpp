@@ -1,6 +1,5 @@
 #include <jpcc/process/Process.h>
 
-#include <algorithm>
 #include <execution>
 
 #define PCL_NO_PRECOMPILE

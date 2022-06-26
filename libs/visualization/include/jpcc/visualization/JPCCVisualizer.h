@@ -22,9 +22,9 @@ class JPCCVisualizer : public JPCCVisualizerBase {
   std::map<std::string, FrameQueue> queueMap_;
 
  public:
-  JPCCVisualizer(VisualizerParameter param);
+  JPCCVisualizer(const VisualizerParameter& param);
 
-  void updateOrAddCloud(FramePtr cloud, const PointCloudColor& color, const std::string& id);
+  void updateOrAddCloud(const FramePtr& cloud, const PointCloudColor& color, const std::string& id);
 
   int updateText(int* windowSize) override;
 
@@ -38,7 +38,7 @@ class JPCCVisualizer : public JPCCVisualizerBase {
 
   void enqueue(const GroupOfFrameMap& framesMap);
 
-  [[nodiscard]] PointCloudColorPtr getCloudColor(const std::string& id, FramePtr cloud);
+  [[nodiscard]] PointCloudColorPtr getCloudColor(const std::string& id, const FramePtr& cloud);
 
   bool isFull();
 };

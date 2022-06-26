@@ -5,10 +5,10 @@
 namespace jpcc::visualization {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-JPCCVisualizer::JPCCVisualizer(VisualizerParameter param) : JPCCVisualizerBase(param) {}
+JPCCVisualizer::JPCCVisualizer(const VisualizerParameter& param) : JPCCVisualizerBase(param) {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void JPCCVisualizer::updateOrAddCloud(const FramePtr cloud, const PointCloudColor& color, const std::string& id) {
+void JPCCVisualizer::updateOrAddCloud(const FramePtr& cloud, const PointCloudColor& color, const std::string& id) {
   if (!updatePointCloud(cloud, color, id)) {
     addPointCloud(cloud, color, id);
     setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, param_.pointSize, id);
@@ -23,7 +23,7 @@ int JPCCVisualizer::updateText(int* windowSize) {
     textHeight = windowSize[1] - lineHeight_;
   }
 
-  int lines = ((frameMap_.find(primaryId_) != frameMap_.end()) ? 2 : 0) + frameMap_.size();
+  size_t lines = ((frameMap_.find(primaryId_) != frameMap_.end()) ? 2 : 0) + frameMap_.size();
   lines++;  // default fps line
 
   textHeight = std::min<int>(textHeight, lineHeight_ * lines);
@@ -106,7 +106,8 @@ void JPCCVisualizer::enqueue(const JPCCVisualizer::GroupOfFrameMap& framesMap) {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-typename JPCCVisualizer::PointCloudColorPtr JPCCVisualizer::getCloudColor(const std::string& id, const FramePtr cloud) {
+typename JPCCVisualizer::PointCloudColorPtr JPCCVisualizer::getCloudColor(const std::string& id,
+                                                                          const FramePtr&    cloud) {
   if (fieldColorMap_.find(id) != fieldColorMap_.end()) {
     return jpcc::make_shared<pcl::visualization::PointCloudColorHandlerGenericField<PointXYZINormal>>(
         cloud, fieldColorMap_.at(id));

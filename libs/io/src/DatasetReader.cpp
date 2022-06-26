@@ -10,11 +10,6 @@ DatasetReader::DatasetReader(DatasetReaderParameter param, DatasetParameter data
     DatasetReaderBase(param, datasetParam) {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void DatasetReader::loadAll(const size_t startFrameNumber, const size_t groupOfFramesSize, GroupOfFrame& frames) {
-  loadAll(startFrameNumber, groupOfFramesSize, frames, false);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
 void DatasetReader::loadAll(const size_t  startFrameNumber,
                             const size_t  groupOfFramesSize,
                             GroupOfFrame& frames,

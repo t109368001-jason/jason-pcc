@@ -14,9 +14,7 @@ class DatasetReader : public DatasetReaderBase {
  public:
   DatasetReader(DatasetReaderParameter param, DatasetParameter datasetParam);
 
-  void loadAll(size_t startFrameNumber, size_t groupOfFramesSize, GroupOfFrame& frames);
-
-  void loadAll(size_t startFrameNumber, size_t groupOfFramesSize, GroupOfFrame& frames, bool parallel);
+  void loadAll(size_t startFrameNumber, size_t groupOfFramesSize, GroupOfFrame& frames, bool parallel = false);
 
   virtual void load(size_t datasetIndex, size_t startFrameNumber, size_t groupOfFramesSize, GroupOfFrame& frames) = 0;
 

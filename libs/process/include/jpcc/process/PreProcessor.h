@@ -30,7 +30,7 @@ class PreProcessor {
 
   void applyAlgorithm(const std::string& algorithm,
                       GroupOfFrame&      groupOfFrame,
-                      GroupOfFrame&      removed  = GroupOfFrame{},
+                      GroupOfFrame&      removed,
                       bool               parallel = false) const;
 
   void applyAlgorithm(const std::string& algorithm, FramePtr frame, FramePtr removed = nullptr) const;

@@ -38,7 +38,7 @@ class OctreePointCloudOperation
                                                                   pcl::octree::OctreeContainerPointIndices>::type,
                                         pcl::octree::OctreeContainerEmpty>;
 
-  using Ptr          = shared_ptr<OctreePointCloudOperation>;
+  using Ptr = shared_ptr<OctreePointCloudOperation>;
 
  protected:
   FramePtr source_;
