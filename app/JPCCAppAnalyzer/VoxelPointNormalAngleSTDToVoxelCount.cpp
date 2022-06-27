@@ -38,12 +38,13 @@ void VoxelPointNormalAngleSTDToVoxelCount::finalCompute() {
       const Eigen::VectorXd azimuths =
           Eigen::Map<const Eigen::VectorXd, Eigen::Unaligned>(azimuths_.data(), azimuths_.size());
       const Eigen::VectorXd zeniths =
-          Eigen::Map<const Eigen::VectorXd, Eigen::Unaligned>(azimuths_.data(), azimuths_.size());
+          Eigen::Map<const Eigen::VectorXd, Eigen::Unaligned>(zeniths_.data(), zeniths_.size());
 
-      double azimuthSTD = std::sqrt((azimuths.array() - azimuths.mean()).square().sum() / (double)azimuths.size()) *
-                          TO_DEGREE_MULTIPLIER;
-      double zenithSTD =
-          std::sqrt((zeniths.array() - zeniths.mean()).square().sum() / (double)zeniths.size()) * TO_DEGREE_MULTIPLIER;
+      double azimuthSTD = std::sqrt((azimuths.array() - azimuths.mean()).square().sum() / (double)azimuths.size());
+      double zenithSTD  = std::sqrt((zeniths.array() - zeniths.mean()).square().sum() / (double)zeniths.size());
+
+      azimuthSTD *= TO_DEGREE_MULTIPLIER;
+      zenithSTD *= TO_DEGREE_MULTIPLIER;
 
       assert(!isnan(azimuthSTD));
       assert(!isnan(zenithSTD));

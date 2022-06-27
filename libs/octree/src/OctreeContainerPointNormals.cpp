@@ -35,6 +35,8 @@ void OctreeContainerPointNormals::addPoint(const PointXYZINormal& point) {
   assert(!isnan(azimuth));
   assert(!isnan(zenith));
 
+  if (azimuth < 0) { azimuth += M_PI + M_PI; }
+
   azimuths_.push_back(azimuth);
   zeniths_.push_back(zenith);
 }
@@ -43,6 +45,6 @@ void OctreeContainerPointNormals::addPoint(const PointXYZINormal& point) {
 const std::vector<double>& OctreeContainerPointNormals::getAzimuths() const { return azimuths_; }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-const std::vector<double>& OctreeContainerPointNormals::getZeniths() const { return azimuths_; }
+const std::vector<double>& OctreeContainerPointNormals::getZeniths() const { return zeniths_; }
 
 }  // namespace jpcc::octree
