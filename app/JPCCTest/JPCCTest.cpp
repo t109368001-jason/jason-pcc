@@ -107,7 +107,7 @@ void test(const AppParameter& parameter, StopwatchUserTime& clock) {
           ne.setInputCloud(frame);
           ne.compute(*frame);
         };
-        std::copy(frames.begin(), frames.end(), frameBuffer.begin());
+        copy(frames.begin(), frames.end(), frameBuffer.begin());
         if (parameter.parallel) {
           for_each(execution::par_unseq, range.begin(), range.end(),
                    [&](const size_t i) { calcNormal(frameBuffer.at(i)); });

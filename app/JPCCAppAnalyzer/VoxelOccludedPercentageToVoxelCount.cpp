@@ -11,10 +11,10 @@ using namespace jpcc::octree;
 namespace jpcc {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-VoxelOccludedPercentageToVoxelCount::VoxelOccludedPercentageToVoxelCount(const float&       frequency,
-                                                                         const double&      resolution,
-                                                                         const std::string& outputDir,
-                                                                         const size_t       quantResolution) :
+VoxelOccludedPercentageToVoxelCount::VoxelOccludedPercentageToVoxelCount(const float&  frequency,
+                                                                         const double& resolution,
+                                                                         const string& outputDir,
+                                                                         const size_t  quantResolution) :
     Analyzer(frequency,
              resolution,
              outputDir,
@@ -53,12 +53,12 @@ void VoxelOccludedPercentageToVoxelCount::finalCompute() {
 
       int percentage = (int)leafNode.getMinimumOccludedPercentage(quantCount_);
 
-      countMap.try_emplace(percentage, std::array<size_t, BUFFER_SIZE>{0, 0, 0});
+      countMap.try_emplace(percentage, array<size_t, BUFFER_SIZE>{0, 0, 0});
       countMap.at(percentage).at(bufferIndex)++;
     }
   }
 
-  std::ofstream ofs(filepath_);
+  ofstream ofs(filepath_);
   ofs << "Voxel Occluded Percentage"
       << ","
       << "Voxel Count (Background)"

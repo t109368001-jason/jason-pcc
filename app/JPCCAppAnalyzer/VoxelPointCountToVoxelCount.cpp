@@ -6,16 +6,16 @@ using namespace std::filesystem;
 namespace jpcc {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-VoxelPointCountToVoxelCount::VoxelPointCountToVoxelCount(const float&       frequency,
-                                                         const double&      resolution,
-                                                         const std::string& outputDir,
-                                                         const std::string& title) :
+VoxelPointCountToVoxelCount::VoxelPointCountToVoxelCount(const float&  frequency,
+                                                         const double& resolution,
+                                                         const string& outputDir,
+                                                         const string& title) :
     Analyzer(frequency, resolution, outputDir, title), octreeCounter_(resolution) {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-VoxelPointCountToVoxelCount::VoxelPointCountToVoxelCount(const float&       frequency,
-                                                         const double&      resolution,
-                                                         const std::string& outputDir) :
+VoxelPointCountToVoxelCount::VoxelPointCountToVoxelCount(const float&  frequency,
+                                                         const double& resolution,
+                                                         const string& outputDir) :
     VoxelPointCountToVoxelCount(frequency, resolution, outputDir, "VoxelPointCountToVoxelCount") {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -27,8 +27,8 @@ void VoxelPointCountToVoxelCount::compute(FrameConstPtr background, FrameConstPt
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void VoxelPointCountToVoxelCount::finalCompute() {
-  octree::OctreeCounter<3>::CountMap countMap = octreeCounter_.getOccupancyCountToVoxelCount();
-  std::ofstream                      ofs(filepath_);
+  OctreeT::CountMap countMap = octreeCounter_.getOccupancyCountToVoxelCount();
+  ofstream          ofs(filepath_);
   ofs << "Voxel Point Count"
       << ","
       << "Voxel Count (Background)"

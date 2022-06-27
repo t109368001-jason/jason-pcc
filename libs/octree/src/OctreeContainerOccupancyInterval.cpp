@@ -21,7 +21,7 @@ void OctreeContainerOccupancyInterval::appendCount() {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-const std::vector<int>& OctreeContainerOccupancyInterval::getOccupancyIntervals() const { return occupancyIntervals_; }
+const vector<int>& OctreeContainerOccupancyInterval::getOccupancyIntervals() const { return occupancyIntervals_; }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 OctreeContainerOccupancyInterval& OctreeContainerOccupancyInterval::operator++() {

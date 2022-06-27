@@ -1,4 +1,4 @@
-#include <jpcc/octree/OctreeContainerintensities.h>
+#include <jpcc/octree/OctreeContainerIntensities.h>
 
 using namespace std;
 

@@ -14,9 +14,9 @@ using namespace jpcc::octree;
 namespace jpcc {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-VoxelPointNormalAngleSTDToVoxelCount::VoxelPointNormalAngleSTDToVoxelCount(const float&       frequency,
-                                                                           const double&      resolution,
-                                                                           const std::string& outputDir) :
+VoxelPointNormalAngleSTDToVoxelCount::VoxelPointNormalAngleSTDToVoxelCount(const float&  frequency,
+                                                                           const double& resolution,
+                                                                           const string& outputDir) :
     Analyzer(frequency, resolution, outputDir, "VoxelPointNormalAngleSTDToVoxelCount"), octree_(resolution) {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -30,12 +30,12 @@ void VoxelPointNormalAngleSTDToVoxelCount::compute(FrameConstPtr background,
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void VoxelPointNormalAngleSTDToVoxelCount::finalCompute() {
-  std::map<int, std::array<size_t, BUFFER_SIZE * 2>> countMap;
+  map<int, array<size_t, BUFFER_SIZE * 2>> countMap;
   for (BufferIndex bufferIndex = 0; bufferIndex < BUFFER_SIZE; bufferIndex++) {
     octree_.switchBuffers(bufferIndex);
     for (auto it = octree_.leaf_depth_begin(), end = octree_.leaf_depth_end(); it != end; ++it) {
-      const std::vector<double>& azimuths_ = it.getLeafContainer().getAzimuths();
-      const std::vector<double>& zeniths_  = it.getLeafContainer().getZeniths();
+      const vector<double>& azimuths_ = it.getLeafContainer().getAzimuths();
+      const vector<double>& zeniths_  = it.getLeafContainer().getZeniths();
       if (azimuths_.empty() && zeniths_.empty()) { continue; }
 
       double azimuthSTD = standard_deviation(azimuths_);
@@ -47,18 +47,18 @@ void VoxelPointNormalAngleSTDToVoxelCount::finalCompute() {
       assert(!isnan(azimuthSTD));
       assert(!isnan(zenithSTD));
 
-      int quantizedAzimuthSTD = (int)std::round(azimuthSTD);
-      int quantizedZenithSTD  = (int)std::round(zenithSTD);
+      int quantizedAzimuthSTD = (int)round(azimuthSTD);
+      int quantizedZenithSTD  = (int)round(zenithSTD);
 
-      countMap.try_emplace(quantizedAzimuthSTD, std::array<size_t, BUFFER_SIZE * 2>{0, 0, 0, 0, 0, 0});
-      countMap.try_emplace(quantizedZenithSTD, std::array<size_t, BUFFER_SIZE * 2>{0, 0, 0, 0, 0, 0});
+      countMap.try_emplace(quantizedAzimuthSTD, array<size_t, BUFFER_SIZE * 2>{0, 0, 0, 0, 0, 0});
+      countMap.try_emplace(quantizedZenithSTD, array<size_t, BUFFER_SIZE * 2>{0, 0, 0, 0, 0, 0});
       countMap.at(quantizedAzimuthSTD).at(bufferIndex) = countMap.at(quantizedAzimuthSTD).at(bufferIndex) + 1;
       countMap.at(quantizedZenithSTD).at(bufferIndex + BUFFER_SIZE) =
           countMap.at(quantizedZenithSTD).at(bufferIndex + BUFFER_SIZE) + 1;
     }
   }
 
-  std::ofstream ofs(filepath_);
+  ofstream ofs(filepath_);
   ofs << ""
       << ","
       << "azimuth"

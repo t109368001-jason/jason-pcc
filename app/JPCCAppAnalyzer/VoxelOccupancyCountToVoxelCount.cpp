@@ -35,7 +35,7 @@ void VoxelOccupancyCountToVoxelCount::compute(FrameConstPtr background, FrameCon
 //////////////////////////////////////////////////////////////////////////////////////////////
 void VoxelOccupancyCountToVoxelCount::finalCompute() {
   octree::OctreeCounter<3>::CountMap countMap = octreeCounter_.getOccupancyCountToVoxelCount();
-  std::ofstream                      ofs(filepath_);
+  ofstream                           ofs(filepath_);
   ofs << "Voxel Occupancy Count"
       << ","
       << "Voxel Count (Background)"

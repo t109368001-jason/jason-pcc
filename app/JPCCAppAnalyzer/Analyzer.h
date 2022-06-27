@@ -32,7 +32,7 @@ class Analyzer {
 
   [[nodiscard]] bool exists();
 
-  bool tryLockFile();
+  [[nodiscard]] bool tryLockFile();
 
   void releaseLockFile();
 

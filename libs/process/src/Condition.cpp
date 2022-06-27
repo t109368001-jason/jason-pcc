@@ -92,11 +92,11 @@ bool Condition::predict(const PointXYZINormal& point) const {
     case PROD: return predictVector3fMap(point.getVector3fMap());
     case REFLECTIVITY: return predictVector4fMap(point.getVector4fMap());
     case AND:
-      return std::all_of(conditions.begin(), conditions.end(),
-                         [&point](const auto& condition) { return condition.predict(point); });
+      return all_of(conditions.begin(), conditions.end(),
+                    [&point](const auto& condition) { return condition.predict(point); });
     case OR:
-      return std::any_of(conditions.begin(), conditions.end(),
-                         [&point](const auto& condition) { return condition.predict(point); });
+      return any_of(conditions.begin(), conditions.end(),
+                    [&point](const auto& condition) { return condition.predict(point); });
     default: return false;
   }
 }

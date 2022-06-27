@@ -28,7 +28,7 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
   OctreePointCloudOperation<>::Ptr octreePointCloudOperation;
 
   FramePtr background;
-  if (!parameter.backgroundPath.empty() && std::filesystem::exists(parameter.backgroundPath)) {
+  if (!parameter.backgroundPath.empty() && filesystem::exists(parameter.backgroundPath)) {
     background = jpcc::make_shared<Frame>();
     pcl::io::loadPLYFile(parameter.backgroundPath, *background);
     octreePointCloudOperation = jpcc::make_shared<OctreePointCloudOperation<>>(0.1);

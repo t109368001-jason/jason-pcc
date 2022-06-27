@@ -42,9 +42,9 @@ void OctreeContainerPointNormals::addPoint(const PointXYZINormal& point) {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-const std::vector<double>& OctreeContainerPointNormals::getAzimuths() const { return azimuths_; }
+const vector<double>& OctreeContainerPointNormals::getAzimuths() const { return azimuths_; }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-const std::vector<double>& OctreeContainerPointNormals::getZeniths() const { return zeniths_; }
+const vector<double>& OctreeContainerPointNormals::getZeniths() const { return zeniths_; }
 
 }  // namespace jpcc::octree

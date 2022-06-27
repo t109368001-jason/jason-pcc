@@ -40,7 +40,7 @@ class JPCCVisualizer : public JPCCVisualizerBase {
 
   [[nodiscard]] PointCloudColorPtr getCloudColor(const std::string& id, const FramePtr& cloud);
 
-  bool isFull();
+  [[nodiscard]] bool isFull();
 };
 
 }  // namespace jpcc::visualization

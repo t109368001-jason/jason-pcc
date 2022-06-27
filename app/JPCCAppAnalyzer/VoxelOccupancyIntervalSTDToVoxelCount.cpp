@@ -14,9 +14,9 @@ using namespace jpcc::octree;
 namespace jpcc {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-VoxelOccupancyIntervalSTDToVoxelCount::VoxelOccupancyIntervalSTDToVoxelCount(const float&       frequency,
-                                                                             const double&      resolution,
-                                                                             const std::string& outputDir) :
+VoxelOccupancyIntervalSTDToVoxelCount::VoxelOccupancyIntervalSTDToVoxelCount(const float&  frequency,
+                                                                             const double& resolution,
+                                                                             const string& outputDir) :
     Analyzer(frequency, resolution, outputDir, "VoxelOccupancyIntervalSTDToVoxelCount"), octree_(resolution) {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -37,26 +37,26 @@ void VoxelOccupancyIntervalSTDToVoxelCount::compute(FrameConstPtr background,
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void VoxelOccupancyIntervalSTDToVoxelCount::finalCompute() {
-  std::map<int, std::array<size_t, BUFFER_SIZE>> countMap;
+  map<int, array<size_t, BUFFER_SIZE>> countMap;
   for (BufferIndex bufferIndex = 0; bufferIndex < BUFFER_SIZE; bufferIndex++) {
     octree_.switchBuffers(bufferIndex);
     for (auto it = octree_.leaf_depth_begin(), end = octree_.leaf_depth_end(); it != end; ++it) {
-      const std::vector<int>& occupancyIntervals = it.getLeafContainer().getOccupancyIntervals();
+      const vector<int>& occupancyIntervals = it.getLeafContainer().getOccupancyIntervals();
       if (occupancyIntervals.empty()) { continue; }
 
       double occupancyIntervalSTD = standard_deviation(occupancyIntervals);
 
       assert(!isnan(occupancyIntervalSTD));
 
-      int quantizedOccupancyIntervalSTD = (int)std::round(occupancyIntervalSTD);
+      int quantizedOccupancyIntervalSTD = (int)round(occupancyIntervalSTD);
 
-      countMap.try_emplace(quantizedOccupancyIntervalSTD, std::array<size_t, BUFFER_SIZE>{0, 0, 0});
+      countMap.try_emplace(quantizedOccupancyIntervalSTD, array<size_t, BUFFER_SIZE>{0, 0, 0});
       countMap.at(quantizedOccupancyIntervalSTD).at(bufferIndex) =
           countMap.at(quantizedOccupancyIntervalSTD).at(bufferIndex) + 1;
     }
   }
 
-  std::ofstream ofs(filepath_);
+  ofstream ofs(filepath_);
   ofs << "Voxel Occupancy Interval STD"
       << ","
       << "Voxel Count (Background)"

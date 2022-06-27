@@ -29,13 +29,13 @@ class OctreeContainerOccludedCount : public pcl::octree::OctreeContainerBase {
 
   void compute(const Eigen::Vector3f& min_pt, const Eigen::Vector3f& max_pt, size_t quantCount);
 
-  float getMinimumOccludedPercentage(size_t quantCount);
+  [[nodiscard]] float getMinimumOccludedPercentage(size_t quantCount);
 
-  float getXYOccludedPercentage(size_t quantCount);
+  [[nodiscard]] float getXYOccludedPercentage(size_t quantCount);
 
-  float getXZOccludedPercentage(size_t quantCount);
+  [[nodiscard]] float getXZOccludedPercentage(size_t quantCount);
 
-  float getYZOccludedPercentage(size_t quantCount);
+  [[nodiscard]] float getYZOccludedPercentage(size_t quantCount);
 };
 
 }  // namespace jpcc::octree

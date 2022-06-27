@@ -67,7 +67,7 @@ AppParameter::AppParameter() :
   opts_.add(visualizerParameter.getOpts());
 }
 
-void AppParameter::getShowTexts(vector<std::string>& showTexts) const {
+void AppParameter::getShowTexts(vector<string>& showTexts) const {
   dataset.getShowTexts(showTexts);
   reader.getShowTexts(showTexts);
   background.getShowTexts(showTexts);

@@ -6,6 +6,8 @@
 
 namespace jpcc::io {
 
+using namespace std;
+
 TEST(PlyIOTest, save_load) {
   //  given
   size_t       frameCount       = 3;
@@ -23,7 +25,7 @@ TEST(PlyIOTest, save_load) {
   savePly(frames, filePath);
   GroupOfFrame results;
   loadPly(results, filePath, startFrameNumber, startFrameNumber + frameCount);
-  std::filesystem::remove(filePath);
+  filesystem::remove(filePath);
 
   EXPECT_EQ(results.size(), frameCount);
   EXPECT_EQ(results.size(), frames.size());

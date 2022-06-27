@@ -40,7 +40,7 @@ class OctreeCounter
 
   OctreeCounter(double resolution);
 
-  CountMap getOccupancyCountToVoxelCount();
+  [[nodiscard]] CountMap getOccupancyCountToVoxelCount();
 };
 
 }  // namespace jpcc::octree

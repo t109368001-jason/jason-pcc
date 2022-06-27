@@ -7,6 +7,7 @@
 
 namespace jpcc::octree {
 
+using namespace std;
 using namespace pcl::octree;
 
 TEST(OctreeNBufTest, getChildPattern) {
@@ -58,7 +59,7 @@ TEST(OctreeNBufTest, getIndicesByFilter) {
     octreePointCloud.switchBuffers(bufferIndex);
     octreePointCloud.getIndicesByFilter(
         [filter, bufferIndex](auto&& bufferPattern) {
-          return filter(bufferIndex, std::forward<decltype(bufferPattern)>(bufferPattern));
+          return filter(bufferIndex, forward<decltype(bufferPattern)>(bufferPattern));
         },
         indices);
     EXPECT_EQ(indices.size(), getTestChildPattern(bufferIndex).count());
@@ -93,7 +94,7 @@ TEST(OctreeNBufTest, reuseBuffer) {
       Indices indices;
       octreePointCloud.getIndicesByFilter(
           [filter, bufferIndex](auto&& bufferPattern) {
-            return filter(bufferIndex, std::forward<decltype(bufferPattern)>(bufferPattern));
+            return filter(bufferIndex, forward<decltype(bufferPattern)>(bufferPattern));
           },
           indices);
       EXPECT_EQ(indices.size(), getTestChildPattern(bufferIndex).count());
@@ -103,7 +104,7 @@ TEST(OctreeNBufTest, reuseBuffer) {
       octreePointCloud.setFrame(bufferIndex, getTestCloud(0));
       octreePointCloud.getIndicesByFilter(
           [filter, bufferIndex](auto&& bufferPattern) {
-            return filter(bufferIndex, std::forward<decltype(bufferPattern)>(bufferPattern));
+            return filter(bufferIndex, forward<decltype(bufferPattern)>(bufferPattern));
           },
           indices);
       EXPECT_EQ(indices.size(), getTestChildPattern(0).count());

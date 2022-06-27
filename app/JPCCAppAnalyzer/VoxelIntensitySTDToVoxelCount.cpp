@@ -28,25 +28,25 @@ void VoxelIntensitySTDToVoxelCount::compute(FrameConstPtr background, FrameConst
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void VoxelIntensitySTDToVoxelCount::finalCompute() {
-  std::map<int, std::array<size_t, BUFFER_SIZE>> countMap;
+  map<int, array<size_t, BUFFER_SIZE>> countMap;
   for (BufferIndex bufferIndex = 0; bufferIndex < BUFFER_SIZE; bufferIndex++) {
     octree_.switchBuffers(bufferIndex);
     for (auto it = octree_.leaf_depth_begin(), end = octree_.leaf_depth_end(); it != end; ++it) {
-      const std::vector<float>& intensities = it.getLeafContainer().getIntensities();
+      const vector<float>& intensities = it.getLeafContainer().getIntensities();
       if (intensities.empty()) { continue; }
 
       double intensitySTD = standard_deviation(intensities);
 
       assert(!isnan(intensitySTD));
 
-      auto quantizedIntensitySTD = (int)std::round(intensitySTD);
+      auto quantizedIntensitySTD = (int)round(intensitySTD);
 
-      countMap.try_emplace(quantizedIntensitySTD, std::array<size_t, BUFFER_SIZE>{0, 0, 0});
+      countMap.try_emplace(quantizedIntensitySTD, array<size_t, BUFFER_SIZE>{0, 0, 0});
       countMap.at(quantizedIntensitySTD).at(bufferIndex) = countMap.at(quantizedIntensitySTD).at(bufferIndex) + 1;
     }
   }
 
-  std::ofstream ofs(filepath_);
+  ofstream ofs(filepath_);
   ofs << "Voxel Intensity STD"
       << ","
       << "Voxel Count (Background)"

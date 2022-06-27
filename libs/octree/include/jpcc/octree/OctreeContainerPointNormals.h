@@ -18,9 +18,9 @@ class OctreeContainerPointNormals : public pcl::octree::OctreeContainerBase {
 
   void addPoint(const PointXYZINormal& point);
 
-  const std::vector<double>& getAzimuths() const;
+  [[nodiscard]] const std::vector<double>& getAzimuths() const;
 
-  const std::vector<double>& getZeniths() const;
+  [[nodiscard]] const std::vector<double>& getZeniths() const;
 };
 
 }  // namespace jpcc::octree

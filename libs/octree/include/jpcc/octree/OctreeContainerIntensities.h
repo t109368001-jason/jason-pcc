@@ -17,7 +17,7 @@ class OctreeContainerIntensities : public pcl::octree::OctreeContainerBase {
 
   void addPoint(const PointXYZINormal& point);
 
-  const std::vector<float>& getIntensities() const;
+  [[nodiscard]] const std::vector<float>& getIntensities() const;
 };
 
 }  // namespace jpcc::octree

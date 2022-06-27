@@ -5,7 +5,7 @@
 
 #include <jpcc/common/Common.h>
 #include <jpcc/octree/JPCCOctreePointCloud.h>
-#include <jpcc/octree/OctreeContainerintensities.h>
+#include <jpcc/octree/OctreeContainerIntensities.h>
 
 #include "Analyzer.h"
 

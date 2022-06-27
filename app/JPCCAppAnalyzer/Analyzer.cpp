@@ -9,11 +9,11 @@ using namespace std::filesystem;
 namespace jpcc {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-Analyzer::Analyzer(const float&       frequency,
-                   const double&      resolution,
-                   const string&      outputDir,
-                   const std::string& title,
-                   const std::string& otherParameters) :
+Analyzer::Analyzer(const float&  frequency,
+                   const double& resolution,
+                   const string& outputDir,
+                   const string& title,
+                   const string& otherParameters) :
     frequency_(frequency), resolution_(resolution), filepath_(), hasLock(false) {
   path outputPath = outputDir;
 
@@ -34,14 +34,14 @@ Analyzer::Analyzer(const float&       frequency,
 Analyzer::~Analyzer() { releaseLockFile(); }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-const std::filesystem::path& Analyzer::getFilepath() const { return filepath_; }
+const filesystem::path& Analyzer::getFilepath() const { return filepath_; }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 bool Analyzer::exists() { return filesystem::exists(filepath_); }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 bool Analyzer::tryLockFile() {
-  bool result = !std::ifstream(filepath_.string() + ".lock");
+  bool result = !ifstream(filepath_.string() + ".lock");
   if (result) {
     ofstream(filepath_.string() + ".lock").put(' ');
     hasLock = true;
