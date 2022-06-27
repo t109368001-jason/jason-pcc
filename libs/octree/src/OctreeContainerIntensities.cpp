@@ -11,9 +11,7 @@ OctreeContainerIntensities::OctreeContainerIntensities() : intensities_() {}
 void OctreeContainerIntensities::reset() { intensities_.clear(); }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void OctreeContainerIntensities::addPoint(const PointXYZINormal& point) {
-  intensities_.push_back(point.intensity);
-}
+void OctreeContainerIntensities::addPoint(const PointXYZINormal& point) { intensities_.push_back(point.intensity); }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 const std::vector<float>& OctreeContainerIntensities::getIntensities() const { return intensities_; }

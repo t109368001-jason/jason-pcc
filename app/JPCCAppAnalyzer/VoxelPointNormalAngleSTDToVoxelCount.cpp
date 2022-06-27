@@ -5,6 +5,8 @@
 
 #include <Eigen/Dense>
 
+#include <jpcc/common/Math.h>
+
 using namespace std;
 using namespace std::filesystem;
 using namespace jpcc::octree;
@@ -34,14 +36,10 @@ void VoxelPointNormalAngleSTDToVoxelCount::finalCompute() {
     for (auto it = octree_.leaf_depth_begin(), end = octree_.leaf_depth_end(); it != end; ++it) {
       const std::vector<double>& azimuths_ = it.getLeafContainer().getAzimuths();
       const std::vector<double>& zeniths_  = it.getLeafContainer().getZeniths();
+      if (azimuths_.empty() && zeniths_.empty()) { continue; }
 
-      const Eigen::VectorXd azimuths =
-          Eigen::Map<const Eigen::VectorXd, Eigen::Unaligned>(azimuths_.data(), azimuths_.size());
-      const Eigen::VectorXd zeniths =
-          Eigen::Map<const Eigen::VectorXd, Eigen::Unaligned>(zeniths_.data(), zeniths_.size());
-
-      double azimuthSTD = std::sqrt((azimuths.array() - azimuths.mean()).square().sum() / (double)azimuths.size());
-      double zenithSTD  = std::sqrt((zeniths.array() - zeniths.mean()).square().sum() / (double)zeniths.size());
+      double azimuthSTD = standard_deviation(azimuths_);
+      double zenithSTD  = standard_deviation(zeniths_);
 
       azimuthSTD *= TO_DEGREE_MULTIPLIER;
       zenithSTD *= TO_DEGREE_MULTIPLIER;

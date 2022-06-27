@@ -5,6 +5,8 @@
 
 #include <Eigen/Dense>
 
+#include <jpcc/common/Math.h>
+
 using namespace std;
 using namespace std::filesystem;
 using namespace jpcc::octree;
@@ -39,14 +41,10 @@ void VoxelOccupancyIntervalSTDToVoxelCount::finalCompute() {
   for (BufferIndex bufferIndex = 0; bufferIndex < BUFFER_SIZE; bufferIndex++) {
     octree_.switchBuffers(bufferIndex);
     for (auto it = octree_.leaf_depth_begin(), end = octree_.leaf_depth_end(); it != end; ++it) {
-      const std::vector<int>& occupancyIntervals_ = it.getLeafContainer().getOccupancyIntervals();
-      if (occupancyIntervals_.empty()) { continue; }
+      const std::vector<int>& occupancyIntervals = it.getLeafContainer().getOccupancyIntervals();
+      if (occupancyIntervals.empty()) { continue; }
 
-      const Eigen::VectorXi occupancyIntervals =
-          Eigen::Map<const Eigen::VectorXi, Eigen::Unaligned>(occupancyIntervals_.data(), occupancyIntervals_.size());
-
-      double occupancyIntervalSTD = std::sqrt((occupancyIntervals.array() - occupancyIntervals.mean()).square().sum() /
-                                              (double)occupancyIntervals.size());
+      double occupancyIntervalSTD = standard_deviation(occupancyIntervals);
 
       assert(!isnan(occupancyIntervalSTD));
 

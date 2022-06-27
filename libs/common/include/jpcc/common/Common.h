@@ -1,6 +1,5 @@
 #pragma once
 
-#undef NDEBUG
 #include <cassert>
 #include <memory>
 
@@ -37,9 +36,5 @@ struct dependent_false : std::false_type {};
 
 template <class T>
 inline constexpr bool dependent_false_v = dependent_false<T>::value;
-
-constexpr double TO_DEGREE_MULTIPLIER = 180.0 / M_PI;
-
-constexpr double TO_RADIAN_MULTIPLIER = M_PI / 180.0;
 
 }  // namespace jpcc
