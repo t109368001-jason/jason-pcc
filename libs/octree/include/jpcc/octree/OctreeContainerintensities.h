@@ -6,18 +6,18 @@
 
 namespace jpcc::octree {
 
-class OctreeContainerReflectivitys : public pcl::octree::OctreeContainerBase {
+class OctreeContainerIntensities : public pcl::octree::OctreeContainerBase {
  protected:
-  std::vector<Reflectivity> reflectivitys_;
+  std::vector<float> intensities_;
 
  public:
-  OctreeContainerReflectivitys();
+  OctreeContainerIntensities();
 
   void reset() override;
 
   void addPoint(const PointXYZINormal& point);
 
-  const std::vector<Reflectivity>& getReflectivitys() const;
+  const std::vector<float>& getIntensities() const;
 };
 
 }  // namespace jpcc::octree

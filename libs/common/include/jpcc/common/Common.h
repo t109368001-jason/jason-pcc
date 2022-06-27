@@ -26,8 +26,6 @@ using IndicesPtr = shared_ptr<Indices>;
 
 using PointXYZINormal = pcl::PointXYZINormal;
 
-using Reflectivity = uint8_t;
-
 using Frame         = pcl::PointCloud<PointXYZINormal>;
 using FramePtr      = Frame::Ptr;
 using FrameConstPtr = Frame::ConstPtr;

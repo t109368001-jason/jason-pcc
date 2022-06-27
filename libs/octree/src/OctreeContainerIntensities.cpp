@@ -1,21 +1,21 @@
-#include <jpcc/octree/OctreeContainerReflectivitys.h>
+#include <jpcc/octree/OctreeContainerintensities.h>
 
 using namespace std;
 
 namespace jpcc::octree {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-OctreeContainerReflectivitys::OctreeContainerReflectivitys() : reflectivitys_() {}
+OctreeContainerIntensities::OctreeContainerIntensities() : intensities_() {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void OctreeContainerReflectivitys::reset() { reflectivitys_.clear(); }
+void OctreeContainerIntensities::reset() { intensities_.clear(); }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void OctreeContainerReflectivitys::addPoint(const PointXYZINormal& point) {
-  reflectivitys_.push_back((Reflectivity)point.data[3]);
+void OctreeContainerIntensities::addPoint(const PointXYZINormal& point) {
+  intensities_.push_back(point.intensity);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-const std::vector<Reflectivity>& OctreeContainerReflectivitys::getReflectivitys() const { return reflectivitys_; }
+const std::vector<float>& OctreeContainerIntensities::getIntensities() const { return intensities_; }
 
 }  // namespace jpcc::octree
