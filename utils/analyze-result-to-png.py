@@ -186,6 +186,26 @@ def plot_voxel_occupancy_change_count_to_voxel_count(file_info):
     fig.savefig(png_path, **savefig_kwargs)
 
 
+def plot_voxel_intensity_std_to_voxel_count(file_info):
+    png_path = pathlib.Path(file_info["filepath"]).with_suffix(".png")
+    if png_path.exists() and skip_exists:
+        return
+
+    csv = pd.read_csv(file_info["filepath"])
+
+    fig, axes = build_figure(file_info)
+    axes.set_xscale('linear')
+    axes.set_xlim(0, 255)
+
+    plot_lines(axes=axes,
+               x=csv["Voxel Intensity STD"],
+               background=csv["Voxel Count (Background)"],
+               dynamic=csv["Voxel Count (Dynamic)"],
+               other=csv["Voxel Count (Other)"])
+
+    fig.savefig(png_path, **savefig_kwargs)
+
+
 def files_to_file_infos(files):
     file_infos = [file_info_pattern.match(str(file)) for file in files]
     file_infos = [file_info for file_info in file_infos if file_info is not None]
@@ -218,6 +238,8 @@ def main():
             plot_voxel_occluded_percentage_to_voxel_count(file_info)
         elif "VoxelOccupancyChangeCountToVoxelCount" == file_info["title"]:
             plot_voxel_occupancy_change_count_to_voxel_count(file_info)
+        elif "VoxelIntensitySTDToVoxelCount" == file_info["title"]:
+            plot_voxel_intensity_std_to_voxel_count(file_info)
 
 
 if __name__ == '__main__':
