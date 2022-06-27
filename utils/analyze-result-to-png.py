@@ -12,6 +12,8 @@ legend_fontsize = 16
 
 skip_exists = True
 
+savefig_kwargs = dict(bbox_inches='tight')
+
 folder = pathlib.Path("../../result/jason-pcc/")
 
 file_info_pattern = re.compile(
@@ -73,7 +75,7 @@ def plot_voxel_point_count_to_voxel_count(file_info):
                dynamic=csv["Voxel Count (Dynamic)"],
                other=csv["Voxel Count (Other)"])
 
-    fig.savefig(png_path)
+    fig.savefig(png_path, **savefig_kwargs)
 
 
 def plot_voxel_occupancy_count_to_voxel_count(file_info):
@@ -91,7 +93,7 @@ def plot_voxel_occupancy_count_to_voxel_count(file_info):
                dynamic=csv["Voxel Count (Dynamic)"],
                other=csv["Voxel Count (Other)"])
 
-    fig.savefig(png_path)
+    fig.savefig(png_path, **savefig_kwargs)
 
 
 def plot_voxel_point_normal_angle_std_to_voxel_count(file_info):
@@ -125,7 +127,7 @@ def plot_voxel_point_normal_angle_std_to_voxel_count(file_info):
                dynamic=csv.iloc[:, 5],
                other=csv.iloc[:, 6])
 
-    fig.savefig(png_path)
+    fig.savefig(png_path, **savefig_kwargs)
 
 
 def plot_voxel_occupancy_interval_std_to_voxel_count(file_info):
@@ -143,7 +145,7 @@ def plot_voxel_occupancy_interval_std_to_voxel_count(file_info):
                dynamic=csv["Voxel Count (Dynamic)"],
                other=csv["Voxel Count (Other)"])
 
-    fig.savefig(png_path)
+    fig.savefig(png_path, **savefig_kwargs)
 
 
 def plot_voxel_occluded_percentage_to_voxel_count(file_info):
@@ -163,7 +165,7 @@ def plot_voxel_occluded_percentage_to_voxel_count(file_info):
                dynamic=csv["Voxel Count (Dynamic)"],
                other=csv["Voxel Count (Other)"])
 
-    fig.savefig(png_path)
+    fig.savefig(png_path, **savefig_kwargs)
 
 
 def plot_voxel_occupancy_change_count_to_voxel_count(file_info):
@@ -181,7 +183,7 @@ def plot_voxel_occupancy_change_count_to_voxel_count(file_info):
                dynamic=csv["Voxel Count (Dynamic)"],
                other=csv["Voxel Count (Other)"])
 
-    fig.savefig(png_path)
+    fig.savefig(png_path, **savefig_kwargs)
 
 
 def files_to_file_infos(files):
