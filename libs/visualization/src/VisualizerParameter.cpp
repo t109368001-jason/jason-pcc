@@ -65,26 +65,26 @@ void VisualizerParameter::notify() {
   {
     vector<string> ss;
     boost::algorithm::split(ss, cameraPosition_, boost::is_any_of(","));
-    ASSERT_THROW(ss.size() == cameraPosition.size());
+    THROW_IF_NOT(ss.size() == cameraPosition.size());
     transform(ss.begin(), ss.end(), cameraPosition.begin(), [](auto&& s) { return stod(s); });
   }
-  ASSERT_THROW(bufferSize > 0);
-  ASSERT_THROW(pointSize > 0);
+  THROW_IF_NOT(bufferSize > 0);
+  THROW_IF_NOT(pointSize > 0);
   for (const string& idColor : idColors_) {
     vector<string> ss;
     boost::algorithm::split(ss, idColor, boost::is_any_of(","));
     if (ss.size() == 2) {  // field color
       string field = ss.at(1);
       boost::trim(field);
-      ASSERT_THROW(field == "x" || field == "y" || field == "z");
+      THROW_IF_NOT(field == "x" || field == "y" || field == "z");
       fieldColorMap.insert_or_assign(ss.at(0), field);
     } else if (ss.size() == 4) {  // rgb color
       double r = stod(ss.at(1));
-      ASSERT_THROW(r >= 0.0);
+      THROW_IF_NOT(r >= 0.0);
       double g = stod(ss.at(2));
-      ASSERT_THROW(g >= 0.0);
+      THROW_IF_NOT(g >= 0.0);
       double b = stod(ss.at(3));
-      ASSERT_THROW(b >= 0.0);
+      THROW_IF_NOT(b >= 0.0);
       if (r > 1.0 || g > 1.0 || b > 1.0) {
         r /= 255.0;
         g /= 255.0;

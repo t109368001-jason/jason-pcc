@@ -13,7 +13,7 @@
 
 #define JPCC_NOT_USED(x)
 
-#define ASSERT_THROW(expression) \
+#define THROW_IF_NOT(expression) \
   if (!(expression)) { BOOST_THROW_EXCEPTION(std::logic_error(#expression)); }
 
 namespace jpcc {
