@@ -36,8 +36,8 @@ void RadiusOutlierRemovalParameter::getShowTexts(vector<string>& showTexts) cons
 
 void RadiusOutlierRemovalParameter::notify() {
   if (enable) {
-    assert(radius > 0.0);
-    assert(minNeighborsInRadius > 0);
+    ASSERT_THROW(radius > 0.0);
+    ASSERT_THROW(minNeighborsInRadius > 0);
   }
 }
 

@@ -42,19 +42,19 @@ void PreProcessParameter::notify() {
   jpccConditionalRemovalParameter.notify();
   size_t algorithmCount = 0;
   if (radiusOutlierRemoval.enable) {
-    assert(boost::icontains(order_, RADIUS_OUTLIER_REMOVAL_OPT_PREFIX));
+    ASSERT_THROW(boost::icontains(order_, RADIUS_OUTLIER_REMOVAL_OPT_PREFIX));
     algorithmCount++;
   }
   if (statisticalOutlierRemoval.enable) {
-    assert(boost::icontains(order_, STATISTICAL_OUTLIER_REMOVAL_OPT_PREFIX));
+    ASSERT_THROW(boost::icontains(order_, STATISTICAL_OUTLIER_REMOVAL_OPT_PREFIX));
     algorithmCount++;
   }
   if (jpccConditionalRemovalParameter.enable) {
-    assert(boost::icontains(order_, JPCC_CONDITIONAL_REMOVAL_OPT_PREFIX));
+    ASSERT_THROW(boost::icontains(order_, JPCC_CONDITIONAL_REMOVAL_OPT_PREFIX));
     algorithmCount++;
   }
   if (!order_.empty()) { boost::algorithm::split(order, order_, boost::is_any_of(",")); }
-  assert(order.size() == algorithmCount);
+  ASSERT_THROW(order.size() == algorithmCount);
 }
 
 ostream& operator<<(ostream& out, const PreProcessParameter& obj) {

@@ -11,7 +11,7 @@ namespace jpcc::io {
 //////////////////////////////////////////////////////////////////////////////////////////////
 LvxReader::LvxReader(DatasetReaderParameter param, DatasetParameter datasetParam) :
     DatasetStreamReader(std::move(param), std::move(datasetParam)) {
-  assert(this->datasetParam_.type == "lvx");
+  ASSERT_THROW(this->datasetParam_.type == "lvx");
   if (this->datasetParam_.sensor == "mid-100") {
     capacity_ = (size_t)((double)(100000 * 3) / this->param_.frequency * 1.05);
   } else if (this->datasetParam_.sensor == "mid-70") {
@@ -36,10 +36,10 @@ void LvxReader::open_(const size_t datasetIndex, const size_t startFrameNumber) 
   const std::string lvxPath = this->datasetParam_.getFilePath(datasetIndex);
   auto*             lvx     = new LvxHandler();
 
-  assert(lvx->Open(lvxPath.c_str(), std::ios::in) == 0);
-  assert(lvx->GetFileVersion() == livox_ros::kLvxFileV1);
-  assert(lvx->GetDeviceCount() != 0);
-  assert(lvx->GetDeviceCount() < livox_ros::kMaxSourceLidar);
+  ASSERT_THROW(lvx->Open(lvxPath.c_str(), std::ios::in) == 0);
+  ASSERT_THROW(lvx->GetFileVersion() == livox_ros::kLvxFileV1);
+  ASSERT_THROW(lvx->GetDeviceCount() != 0);
+  ASSERT_THROW(lvx->GetDeviceCount() < livox_ros::kMaxSourceLidar);
 
   lvxs_.at(datasetIndex).reset(lvx);
   this->currentFrameNumbers_.at(datasetIndex) = this->datasetParam_.getStartFrameNumbers(datasetIndex);

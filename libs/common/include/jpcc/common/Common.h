@@ -13,6 +13,9 @@
 
 #define JPCC_NOT_USED(x)
 
+#define ASSERT_THROW(expression) \
+  if (!(expression)) { BOOST_THROW_EXCEPTION(std::logic_error(#expression)); }
+
 namespace jpcc {
 
 using pcl::make_shared;

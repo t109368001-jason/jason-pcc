@@ -70,13 +70,13 @@ void DatasetParameter::getShowTexts(vector<string>& showTexts) const {
 void DatasetParameter::notify() { notify(true); }
 
 void DatasetParameter::notify(bool isInput) {
-  assert(!name.empty());
-  assert(!type.empty());
-  if (preProcessed) { assert(type == "ply"); }
-  assert(!folderPrefix.empty());
-  assert(!folder.empty());
-  assert(frameCounts.size() == files.size());
-  assert((startFrameNumbers.empty()) || (startFrameNumbers.size() == files.size()));
+  ASSERT_THROW(!name.empty());
+  ASSERT_THROW(!type.empty());
+  if (preProcessed) { ASSERT_THROW(type == "ply"); }
+  ASSERT_THROW(!folderPrefix.empty());
+  ASSERT_THROW(!folder.empty());
+  ASSERT_THROW(frameCounts.size() == files.size());
+  ASSERT_THROW((startFrameNumbers.empty()) || (startFrameNumbers.size() == files.size()));
   endFrameNumbers.resize(startFrameNumbers.size());
   for (size_t i = 0; i < startFrameNumbers.size(); i++) {
     endFrameNumbers.at(i) = startFrameNumbers.at(i) + frameCounts.at(i);
@@ -89,21 +89,21 @@ void DatasetParameter::notify(bool isInput) {
       if (type == "ply") {
         char fileName[4096];
         sprintf(fileName, filePaths.at(i).string().c_str(), startFrameNumbers.at(i));
-        assert(exists(path(fileName)));
+        ASSERT_THROW(exists(path(fileName)));
       } else {
-        assert(exists(filePaths.at(i)));
+        ASSERT_THROW(exists(filePaths.at(i)));
       }
     }
   }
   if (!transforms_.empty()) {
-    assert(type != "ply");
-    assert(transforms_.size() == files.size());
+    ASSERT_THROW(type != "ply");
+    ASSERT_THROW(transforms_.size() == files.size());
     transforms.resize(transforms_.size());
     for (size_t i = 0; i < transforms_.size(); i++) {
       transforms.at(i) = jpcc::make_shared<Matrix4f>();
       vector<string> ss;
       boost::algorithm::split(ss, transforms_.at(i), boost::is_any_of(","));
-      assert(ss.size() == (*transforms.at(i)).size());
+      ASSERT_THROW(ss.size() == (*transforms.at(i)).size());
       auto it = ss.begin();
       for (int ii = 0; ii < 4; ii++) {
         for (int jj = 0; jj < 4; jj++) { (*transforms.at(i))(ii, jj) = stof(*it++); }

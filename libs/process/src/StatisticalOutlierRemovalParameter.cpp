@@ -36,8 +36,8 @@ void StatisticalOutlierRemovalParameter::getShowTexts(vector<string>& showTexts)
 
 void StatisticalOutlierRemovalParameter::notify() {
   if (enable) {
-    assert(meanK > 0);
-    assert(stddevMulThresh > 0.0);
+    ASSERT_THROW(meanK > 0);
+    ASSERT_THROW(stddevMulThresh > 0.0);
   }
 }
 

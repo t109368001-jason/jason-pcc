@@ -94,7 +94,7 @@ struct DataPacket {
 //////////////////////////////////////////////////////////////////////////////////////////////
 PcapReader::PcapReader(DatasetReaderParameter param, DatasetParameter datasetParam) :
     DatasetStreamReader(std::move(param), std::move(datasetParam)) {
-  assert(this->datasetParam_.type == "pcap");
+  ASSERT_THROW(this->datasetParam_.type == "pcap");
   if (this->datasetParam_.sensor == "vlp16") {
     maxNumLasers_ = VLP16_MAX_NUM_LASERS;
     verticals_.resize(maxNumLasers_);
