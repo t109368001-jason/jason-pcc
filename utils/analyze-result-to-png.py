@@ -35,7 +35,7 @@ plot_config_dict = {
     "VoxelOccupancyChangeCountToVoxelCount": {},
     "VoxelIntensitySTDToVoxelCount": {
         "xscale": 'linear',
-        "xlim": (0, 255),
+        "xlim": (0, 127),
     },
 }
 
