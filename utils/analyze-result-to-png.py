@@ -136,6 +136,7 @@ def plot_voxel_point_normal_angle_std_to_voxel_count(file_info):
                dynamic=csv.iloc[:, 5],
                other=csv.iloc[:, 6])
 
+    print(f"write {png_path}")
     fig.savefig(png_path, **savefig_kwargs)
 
 
