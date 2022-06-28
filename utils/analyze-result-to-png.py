@@ -17,7 +17,7 @@ savefig_kwargs = dict(bbox_inches='tight')
 folder = pathlib.Path("../../result/jason-pcc/")
 
 file_info_pattern = re.compile(
-    r'(?P<filepath>.*analyzer([^/^\\].*)[/\\]*\[(?P<frequency>[\d.]*)]\[(?P<resolution>[\d.]*)][/\\]*'
+    r'(?P<filepath>.*analyzer([^/^\\]*)[/\\]*\[(?P<frequency>[\d.]*)]\[(?P<resolution>[\d.]*)][/\\]*'
     r'(?P<title>(?P<x_label>[a-zA-Z]*)To(?P<y_label>[a-zA-Z]*))(?:\[(?P<other_parameters>[\d.[\]]*)])*\.csv)')
 
 plot_config_dict = {
@@ -101,6 +101,7 @@ def plot(file_info, plot_config):
                dynamic=csv.iloc[:, 2],
                other=csv.iloc[:, 3])
 
+    print(f"write {png_path}")
     fig.savefig(png_path, **savefig_kwargs)
 
 
