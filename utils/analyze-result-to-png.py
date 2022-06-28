@@ -117,7 +117,7 @@ def plot_voxel_point_normal_angle_std_to_voxel_count(file_info):
     axes_azimuth.set_title(format_title(file_info["title"]).replace("Angle", "Azimuth"), fontsize=title_fontsize)
     axes_azimuth.set_xlabel(format_label(file_info["x_label"]).replace("Angle", "Azimuth"), fontsize=axis_fontsize)
     axes_azimuth.set_xscale('linear')
-    axes_azimuth.set_xlim(0, 360)
+    axes_azimuth.set_xlim(0, 180)
 
     axes_zenith.set_title(format_title(file_info["title"]).replace("Angle", "Zenith"), fontsize=title_fontsize)
     axes_zenith.set_xlabel(format_label(file_info["x_label"]).replace("Angle", "Zenith"), fontsize=axis_fontsize)
