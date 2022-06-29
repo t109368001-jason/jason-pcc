@@ -2,7 +2,7 @@
 
 #include <jpcc/common/Common.h>
 
-namespace jpcc {
+namespace jpcc::math {
 
 constexpr double TO_DEGREE_MULTIPLIER = 180.0 / M_PI;
 
@@ -14,6 +14,6 @@ double standard_deviation(const std::vector<T>& values);
 template <class T>
 double entropy(const std::vector<T>& values, T min, T max, T qp);
 
-}  // namespace jpcc
+}  // namespace jpcc::math
 
 #include <jpcc/math/impl/Math.hpp>

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace jpcc {
+namespace jpcc::math {
 
 template <class T>
 double standard_deviation(const std::vector<T>& values) {
@@ -40,4 +40,4 @@ double entropy(const std::vector<T>& values, T min, T max, T qp) {
   return entropy;
 }
 
-}  // namespace jpcc
+}  // namespace jpcc::math

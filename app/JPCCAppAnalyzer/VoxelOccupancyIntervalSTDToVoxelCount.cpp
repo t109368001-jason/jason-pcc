@@ -9,6 +9,7 @@
 
 using namespace std;
 using namespace std::filesystem;
+using namespace jpcc::math;
 using namespace jpcc::octree;
 
 namespace jpcc {
