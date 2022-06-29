@@ -37,6 +37,15 @@ plot_config_dict = {
         "xscale": 'linear',
         "xlim": (0, 127),
     },
+    "VoxelPointNormalAngleEntropyToVoxelCount": {
+        "override": lambda file_info: plot_voxel_point_normal_angle_entropy_to_voxel_count(file_info),
+    },
+    "VoxelOccupancyIntervalEntropyToVoxelCount": {
+        "xscale": 'linear'
+    },
+    "VoxelIntensityEntropyToVoxelCount": {
+        "xscale": 'linear'
+    }
 }
 
 
@@ -123,6 +132,39 @@ def plot_voxel_point_normal_angle_std_to_voxel_count(file_info):
     axes_zenith.set_xlabel(format_label(file_info["x_label"]).replace("Angle", "Zenith"), fontsize=axis_fontsize)
     axes_zenith.set_xscale('linear')
     axes_zenith.set_xlim(0, 90)
+
+    plot_lines(axes=axes_azimuth,
+               x=csv.iloc[:, 0],
+               background=csv.iloc[:, 1],
+               dynamic=csv.iloc[:, 2],
+               other=csv.iloc[:, 3])
+
+    plot_lines(axes=axes_zenith,
+               x=csv.iloc[:, 0],
+               background=csv.iloc[:, 4],
+               dynamic=csv.iloc[:, 5],
+               other=csv.iloc[:, 6])
+
+    print(f"write {png_path}")
+    fig.savefig(png_path, **savefig_kwargs)
+
+
+def plot_voxel_point_normal_angle_entropy_to_voxel_count(file_info):
+    png_path = pathlib.Path(file_info["filepath"]).with_suffix(".png")
+    if png_path.exists() and skip_exists:
+        return
+
+    csv = pd.read_csv(file_info["filepath"], skiprows=2, header=None)
+
+    fig, (axes_azimuth, axes_zenith) = build_figure(file_info, 2, 1)
+
+    axes_azimuth.set_title(format_title(file_info["title"]).replace("Angle", "Azimuth"), fontsize=title_fontsize)
+    axes_azimuth.set_xlabel(format_label(file_info["x_label"]).replace("Angle", "Azimuth"), fontsize=axis_fontsize)
+    axes_azimuth.set_xscale('linear')
+
+    axes_zenith.set_title(format_title(file_info["title"]).replace("Angle", "Zenith"), fontsize=title_fontsize)
+    axes_zenith.set_xlabel(format_label(file_info["x_label"]).replace("Angle", "Zenith"), fontsize=axis_fontsize)
+    axes_zenith.set_xscale('linear')
 
     plot_lines(axes=axes_azimuth,
                x=csv.iloc[:, 0],
