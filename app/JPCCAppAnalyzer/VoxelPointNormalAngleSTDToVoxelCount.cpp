@@ -5,7 +5,7 @@
 
 #include <Eigen/Dense>
 
-#include <jpcc/common/Math.h>
+#include <jpcc/math/Math.h>
 
 using namespace std;
 using namespace std::filesystem;

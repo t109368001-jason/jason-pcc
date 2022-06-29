@@ -39,6 +39,8 @@ endif (NOT WIN32)
 
 find_package(Boost 1.74 REQUIRED COMPONENTS program_options)
 
+find_package(Eigen3 3.4.0 REQUIRED NO_MODULE)
+
 find_package(PCAP REQUIRED)
 
 find_package(PCL 1.12.0 REQUIRED COMPONENTS common features filters io octree sample_consensus visualization)
@@ -51,6 +53,7 @@ add_subdirectory(libs/pcc_common)
 add_subdirectory(libs/common)
 add_subdirectory(libs/io)
 add_subdirectory(libs/lvx_common)
+add_subdirectory(libs/math)
 add_subdirectory(libs/octree)
 add_subdirectory(libs/process)
 add_subdirectory(libs/visualization)

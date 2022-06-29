@@ -16,4 +16,4 @@ double entropy(const std::vector<T>& values, T min, T max, T qp);
 
 }  // namespace jpcc
 
-#include <jpcc/common/impl/Math.hpp>
+#include <jpcc/math/impl/Math.hpp>
