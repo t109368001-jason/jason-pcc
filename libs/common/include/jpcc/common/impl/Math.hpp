@@ -19,4 +19,25 @@ double standard_deviation(const std::vector<T>& values) {
   }
 }
 
+template <class T>
+double entropy(const std::vector<T>& values, T min, T max, T qp) {
+  double             entropy = 0.0;
+  std::map<int, int> counter;
+  for (const T& value : values) {
+    if (value < min) {
+      continue;
+    } else if (value > max) {
+      continue;
+    }
+    int qValue = value / qp;
+    counter[qValue]++;
+  }
+  double total = values.size();
+  for (const auto& [value, count] : counter) {
+    double probability = (double)count / total;
+    entropy -= probability * log2(probability);
+  }
+  return entropy;
+}
+
 }  // namespace jpcc
