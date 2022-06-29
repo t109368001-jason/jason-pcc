@@ -21,6 +21,9 @@
 #include "VoxelOccludedPercentageToVoxelCount.h"
 #include "VoxelOccupancyChangeCountToVoxelCount.h"
 #include "VoxelIntensitySTDToVoxelCount.h"
+#include "VoxelPointNormalAngleEntropyToVoxelCount.h"
+#include "VoxelOccupancyIntervalEntropyToVoxelCount.h"
+#include "VoxelIntensityEntropyToVoxelCount.h"
 
 using namespace std;
 using namespace std::chrono;
@@ -152,6 +155,9 @@ void main_(AppParameter& parameter) {
           jpcc::make_shared<VoxelOccupancyIntervalSTDToVoxelCount>(frequency, resolution, parameter.outputDir),
           jpcc::make_shared<VoxelOccupancyChangeCountToVoxelCount>(frequency, resolution, parameter.outputDir),
           jpcc::make_shared<VoxelIntensitySTDToVoxelCount>(frequency, resolution, parameter.outputDir),
+          jpcc::make_shared<VoxelPointNormalAngleEntropyToVoxelCount>(frequency, resolution, parameter.outputDir),
+          jpcc::make_shared<VoxelOccupancyIntervalEntropyToVoxelCount>(frequency, resolution, parameter.outputDir),
+          jpcc::make_shared<VoxelIntensityEntropyToVoxelCount>(frequency, resolution, parameter.outputDir),
       };
       if (frequency == 10.0) {
         for (const auto& quantResolution : parameter.quantResolutions) {
