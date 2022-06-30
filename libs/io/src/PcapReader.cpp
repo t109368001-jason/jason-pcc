@@ -198,8 +198,8 @@ int PcapReader::parseDataPacket(const size_t  startFrameNumber,
       // const auto  z         = static_cast<float>(distance * cosVerticals_.at(id));
       // TODO FIXME
       const float rCosV = distance * cosVerticals_.at(id);
-      const auto  x     = static_cast<float>(rCosV * sin(azimuth));
-      const auto  y     = static_cast<float>(rCosV * cos(azimuth));
+      const auto  x     = static_cast<float>(rCosV * cos(azimuth));
+      const auto  y     = static_cast<float>(rCosV * sin(azimuth));
       const auto  z     = static_cast<float>(distance * sinVerticals_.at(id));
       {
         if (frameBuffer.empty()) {
