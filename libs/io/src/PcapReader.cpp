@@ -9,8 +9,6 @@ constexpr auto LASER_PER_FIRING = 32;
 constexpr auto FIRING_PER_PKT   = 12;
 
 constexpr float PI_DIV18000 = M_PI / 18000.0;
-constexpr float TOTAL_POINTS_MULTIPLE_MAX_AZIMUTH_DIFF_OF_PACKET =
-    36000.0 * (LASER_PER_FIRING + 1) * (FIRING_PER_PKT - 1);
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 constexpr int   VLP16_MAX_NUM_LASERS    = 16;
@@ -105,6 +103,7 @@ PcapReader::PcapReader(DatasetReaderParameter param, DatasetParameter datasetPar
       sinVerticals_.at(i) = VLP16_VERTICAL_SIN[i];
       cosVerticals_.at(i) = VLP16_VERTICAL_COS[i];
     }
+    capacity_ = (size_t)((double)(300000) / this->param_.frequency * 1.05);
   } else if (this->datasetParam_.sensor == "hdl32") {
     maxNumLasers_ = HDL32_MAX_NUM_LASERS;
     verticals_.resize(maxNumLasers_);
@@ -115,6 +114,7 @@ PcapReader::PcapReader(DatasetReaderParameter param, DatasetParameter datasetPar
       sinVerticals_.at(i) = HDL32_VERTICAL_SIN[i];
       cosVerticals_.at(i) = HDL32_VERTICAL_COS[i];
     }
+    capacity_ = (size_t)((double)(695000) / this->param_.frequency * 1.05);
   } else {
     throw std::logic_error("Not support dataset.sensor " + this->datasetParam_.sensor);
   }
@@ -135,11 +135,6 @@ void PcapReader::open_(const size_t datasetIndex, const size_t startFrameNumber)
   pcaps_.at(datasetIndex).reset(pcapOpen(pcapPath));
   this->currentFrameNumbers_.at(datasetIndex) = this->datasetParam_.getStartFrameNumbers(datasetIndex);
   lastAzimuth100s_.at(datasetIndex)           = 0;
-
-  // Push One Rotation Data to Queue
-  const auto frame = jpcc::make_shared<Frame>();
-  frame->reserve(29200);  // VLP 16 10 Hz (600 rpm)
-  this->frameBuffers_.at(datasetIndex).push_back(frame);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -168,7 +163,9 @@ int PcapReader::parseDataPacket(const size_t  startFrameNumber,
                                 GroupOfFrame& frameBuffer) {
   // Retrieve Header and Data from PCAP
   const unsigned char* data;
-  const int            ret = pcapNextEx(pcap, &data);
+  int64_t              timestampUS;
+  const int            ret       = pcapNextEx(pcap, &data, &timestampUS);
+  const int64_t        timestamp = timestampUS / 1000;
   if (ret != 1) { return ret; }
 
   // Convert to DataPacket Structure ( Cut Header 42 bytes )
@@ -187,24 +184,7 @@ int PcapReader::parseDataPacket(const size_t  startFrameNumber,
     // Retrieve Firing Data
     // Retrieve Rotation Azimuth
     const uint16_t azimuth100 = firing_data.rotationalPosition;
-    // Complete Retrieve Capture One Rotation Data
-    if (lastAzimuth100 > azimuth100) {
-      frameBuffer.back()->width  = static_cast<uint32_t>(frameBuffer.back()->size());
-      frameBuffer.back()->height = 1;
-      // Push One Rotation Data to Queue
-      const auto frame = jpcc::make_shared<Frame>();
-      float      size  = static_cast<float>(packet->firingData[11].rotationalPosition) -
-                   static_cast<float>(packet->firingData[0].rotationalPosition);
-      if (size < 0) { size += 36000.0; }
-      size = TOTAL_POINTS_MULTIPLE_MAX_AZIMUTH_DIFF_OF_PACKET / size;
-      frame->reserve((size_t)size);
-      frameBuffer.push_back(frame);
-    }
-    // if (currentFrameNumber + frameBuffer.size() < startFrameNumber) {
-    //   // Update Last Rotation Azimuth
-    //   lastAzimuth100 = azimuth100;
-    //   continue;
-    // }
+
     for (int laser_index = 0; laser_index < LASER_PER_FIRING; laser_index++) {
       const float distance = static_cast<float>(firing_data.laserReturns[laser_index].distance) * 2.0f;
       if (distance < 1) { continue; }
@@ -216,14 +196,48 @@ int PcapReader::parseDataPacket(const size_t  startFrameNumber,
       const auto  x         = static_cast<float>(rSinV * cos(azimuth));
       const auto  y         = static_cast<float>(rSinV * sin(azimuth));
       const auto  z         = static_cast<float>(distance * cosVerticals_.at(id));
-      // emplace_back points only, improve performance
-      // frameBuffer.back()->emplace_back(x, y, z);
-      PointXYZINormal point(x, y, z);
-      point.intensity = intensity;
-      frameBuffer.back()->points.push_back(point);
+      {
+        if (frameBuffer.empty()) {
+          // new frame
+          const auto frame    = jpcc::make_shared<Frame>();
+          frame->header.stamp = timestamp;
+          frame->reserve(capacity_);
+          frameBuffer.push_back(frame);
+        }
+        int64_t index = (timestamp - (int64_t)frameBuffer.front()->header.stamp) / (int64_t)this->param_.interval;
+        if (index < 0) {
+          for (int i = -1; i >= index; i--) {
+            // new frame
+            const auto frame    = jpcc::make_shared<Frame>();
+            frame->header.stamp = frameBuffer.front()->header.stamp + (int64_t)(this->param_.interval * (float)i);
+            frame->reserve(capacity_);
+            frameBuffer.insert(frameBuffer.begin(), frame);
+          }
+          index = 0;
+        } else if (index >= frameBuffer.size()) {
+          for (size_t i = frameBuffer.size(); i <= index; i++) {
+            // new frame
+            const auto frame    = jpcc::make_shared<Frame>();
+            frame->header.stamp = frameBuffer.front()->header.stamp + (int64_t)(this->param_.interval * (float)i);
+            frame->reserve(capacity_);
+            frameBuffer.push_back(frame);
+          }
+        }
+        // emplace_back points only, improve performance
+        // frameBuffer.at(index)->emplace_back(x, y, z);
+        PointXYZINormal point(x, y, z);
+        point.intensity = intensity;
+        frameBuffer.at(index)->points.push_back(point);
+      }
     }
     // Update Last Rotation Azimuth
     lastAzimuth100 = azimuth100;
+  }
+
+  for (const FramePtr& frame : frameBuffer) {
+    if ((frame->header.stamp + (int64_t)this->param_.interval) > timestamp) { break; }
+    frame->width  = static_cast<uint32_t>(frame->size());
+    frame->height = 1;
   }
   return ret;
 }

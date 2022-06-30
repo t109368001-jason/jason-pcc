@@ -14,6 +14,7 @@ class DatasetStreamReader : public DatasetReader {
   using Ptr = shared_ptr<DatasetStreamReader>;
 
  protected:
+  size_t                    capacity_;
   std::vector<GroupOfFrame> frameBuffers_;
 
  public:

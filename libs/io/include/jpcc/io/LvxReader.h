@@ -18,7 +18,6 @@ class LvxReader : public DatasetStreamReader {
   using LvxHandlerPtr = std::unique_ptr<LvxHandler, void (*)(LvxHandler*)>;
 
  protected:
-  size_t                     capacity_;
   std::vector<LvxHandlerPtr> lvxs_;
 
  public:

@@ -1,6 +1,7 @@
 #include <jpcc/io/Pcap.h>
 
 #include <exception>
+#include <iomanip>
 #include <sstream>
 #include <stdexcept>
 
@@ -27,7 +28,7 @@ void* pcapOpen(const string& pcapPath) {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-int pcapNextEx(void* pcap, const unsigned char** data) {
+int pcapNextEx(void* pcap, const unsigned char** data, int64_t* const timestampUS) {
   struct pcap_pkthdr* header;
 
   const int ret = pcap_next_ex(static_cast<pcap_t*>(pcap), &header, data);
@@ -36,6 +37,10 @@ int pcapNextEx(void* pcap, const unsigned char** data) {
   // Check Packet Data Size
   // Data Blocks ( 100 bytes * 12 blocks ) + Time Stamp ( 4 bytes ) + Factory ( 2 bytes )
   if ((header->len - 42) != 1206) { return 2; }
+
+  std::stringstream ss;
+  ss << header->ts.tv_sec << std::setw(6) << std::right << std::setfill('0') << header->ts.tv_usec;
+  *timestampUS = std::stoll(ss.str());
   return ret;
 }
 
