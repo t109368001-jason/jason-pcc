@@ -1,9 +1,12 @@
 #include <jpcc/io/Pcap.h>
 
+#include <exception>
 #include <sstream>
 #include <stdexcept>
 
 #include <pcap/pcap.h>
+
+#include <jpcc/common/Common.h>
 
 using namespace std;
 
@@ -32,7 +35,7 @@ int pcapNextEx(void* pcap, const unsigned char** data) {
 
   // Check Packet Data Size
   // Data Blocks ( 100 bytes * 12 blocks ) + Time Stamp ( 4 bytes ) + Factory ( 2 bytes )
-  if ((header->len - 42) != 1206) { return -1; }
+  if ((header->len - 42) != 1206) { return 2; }
   return ret;
 }
 
