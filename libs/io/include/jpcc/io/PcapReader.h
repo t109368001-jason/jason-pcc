@@ -32,11 +32,11 @@ class PcapReader : public DatasetStreamReader {
 
   void load_(size_t datasetIndex, size_t startFrameNumber, size_t groupOfFramesSize) override;
 
-  [[nodiscard]] int parseDataPacket(size_t        startFrameNumber,
-                                    size_t&       currentFrameNumber,
-                                    void*         pcap,
-                                    uint16_t&     lastAzimuth100,
-                                    GroupOfFrame& frameBuffer);
+  void parseDataPacket(size_t        startFrameNumber,
+                       size_t&       currentFrameNumber,
+                       void*         pcap,
+                       uint16_t&     lastAzimuth100,
+                       GroupOfFrame& frameBuffer);
 };
 
 }  // namespace jpcc::io

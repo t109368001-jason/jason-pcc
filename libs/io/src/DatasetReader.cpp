@@ -29,12 +29,12 @@ void DatasetReader::loadAll(const size_t  startFrameNumber,
       load(datasetIndex, startFrameNumber, groupOfFramesSize, sources.at(datasetIndex));
     });
   }
-  const size_t maxSize =
-      std::max_element(sources.begin(), sources.end(), [](const GroupOfFrame& a, const GroupOfFrame& b) {
+  const size_t minSize =
+      std::min_element(sources.begin(), sources.end(), [](const GroupOfFrame& a, const GroupOfFrame& b) {
         return a.size() < b.size();
       })->size();
-  frames.resize(maxSize);
-  for (size_t i = 0; i < maxSize; i++) {
+  frames.resize(minSize);
+  for (size_t i = 0; i < minSize; i++) {
     FramePtr& frame   = frames.at(i);
     frame             = jpcc::make_shared<Frame>();
     frame->header.seq = startFrameNumber + i;

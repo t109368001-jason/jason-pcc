@@ -84,7 +84,7 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
         viewer->enqueue(*framesMap);
 
         if (frames.size() < groupOfFramesSize) {
-          startFrameNumber = 0;
+          startFrameNumber = parameter.dataset.getStartFrameNumber();
           continue;
         }
         startFrameNumber += groupOfFramesSize;

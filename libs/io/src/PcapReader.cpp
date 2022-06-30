@@ -151,22 +151,29 @@ void PcapReader::load_(const size_t datasetIndex, const size_t startFrameNumber,
   uint16_t&     lastAzimuth        = lastAzimuth100s_.at(datasetIndex);
   GroupOfFrame& frameBuffer        = this->frameBuffers_.at(datasetIndex);
 
-  const int ret = parseDataPacket(startFrameNumber, currentFrameNumber, pcap, lastAzimuth, frameBuffer);
-  assert(ret > 0);
+  parseDataPacket(startFrameNumber, currentFrameNumber, pcap, lastAzimuth, frameBuffer);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-int PcapReader::parseDataPacket(const size_t  startFrameNumber,
-                                size_t&       currentFrameNumber,
-                                void* const   pcap,
-                                uint16_t&     lastAzimuth100,
-                                GroupOfFrame& frameBuffer) {
+void PcapReader::parseDataPacket(const size_t  startFrameNumber,
+                                 size_t&       currentFrameNumber,
+                                 void* const   pcap,
+                                 uint16_t&     lastAzimuth100,
+                                 GroupOfFrame& frameBuffer) {
   // Retrieve Header and Data from PCAP
   const unsigned char* data;
   int64_t              timestampUS;
   const int            ret       = pcapNextEx(pcap, &data, &timestampUS);
   const int64_t        timestamp = timestampUS / 1000;
-  if (ret != 1) { return ret; }
+  if (ret != 1) {
+    if (ret <= 0) {
+      for (const FramePtr& frame : frameBuffer) {
+        frame->width  = static_cast<uint32_t>(frame->size());
+        frame->height = 1;
+      }
+    }
+    return;
+  }
 
   // Convert to DataPacket Structure ( Cut Header 42 bytes )
   // Sensor Type 0x21 is HDL-32E, 0x22 is VLP-16
@@ -239,7 +246,6 @@ int PcapReader::parseDataPacket(const size_t  startFrameNumber,
     frame->width  = static_cast<uint32_t>(frame->size());
     frame->height = 1;
   }
-  return ret;
 }
 
 }  // namespace jpcc::io
