@@ -190,17 +190,12 @@ int PcapReader::parseDataPacket(const size_t  startFrameNumber,
       if (distance < 1) { continue; }
       const float azimuth = static_cast<float>(azimuth100) * PI_DIV18000;
       //      float   vertical  = verticals_.at(laser_index % maxNumLasers_);
-      uint8_t    intensity = firing_data.laserReturns[laser_index].intensity;
-      const auto id        = static_cast<uint8_t>(laser_index % maxNumLasers_);
-      // const float rSinV     = distance * sinVerticals_.at(id);
-      // const auto  x         = static_cast<float>(rSinV * cos(azimuth));
-      // const auto  y         = static_cast<float>(rSinV * sin(azimuth));
-      // const auto  z         = static_cast<float>(distance * cosVerticals_.at(id));
-      // TODO FIXME
-      const float rCosV = distance * cosVerticals_.at(id);
-      const auto  x     = static_cast<float>(rCosV * cos(azimuth));
-      const auto  y     = static_cast<float>(rCosV * sin(azimuth));
-      const auto  z     = static_cast<float>(distance * sinVerticals_.at(id));
+      uint8_t     intensity = firing_data.laserReturns[laser_index].intensity;
+      const auto  id        = static_cast<uint8_t>(laser_index % maxNumLasers_);
+      const float rCosV     = distance * cosVerticals_.at(id);
+      const auto  x         = static_cast<float>(rCosV * sin(azimuth));
+      const auto  y         = static_cast<float>(rCosV * cos(azimuth));
+      const auto  z         = static_cast<float>(distance * sinVerticals_.at(id));
       {
         if (frameBuffer.empty()) {
           // new frame
