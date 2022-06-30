@@ -20,11 +20,11 @@ constexpr float VLP16_VERTICAL_RADIAN[] = {
     -0.1221730476,  0.1570796327,  -0.0872664626,  0.1919862177,   //
     -0.05235987756, 0.2268928028,  -0.01745329252, 0.2617993878,   //
 };
-constexpr float VLP16_VERTICAL_SIN[] = {
+constexpr float VLP16_VERTICAL_COS[] = {
     0.9659258263, 0.9998476952, 0.9743700648, 0.9986295348, 0.9816271834, 0.9961946981, 0.9876883406, 0.9925461516,
     0.9925461516, 0.9876883406, 0.9961946981, 0.9816271834, 0.9986295348, 0.9743700648, 0.9998476952, 0.9659258263,
 };
-constexpr float VLP16_VERTICAL_COS[] = {
+constexpr float VLP16_VERTICAL_SIN[] = {
     -0.2588190451,  0.01745240644, -0.2249510543,  0.05233595624, -0.1908089954,  0.08715574275,
     -0.156434465,   0.1218693434,  -0.1218693434,  0.156434465,   -0.08715574275, 0.1908089954,
     -0.05233595624, 0.2249510543,  -0.01745240644, 0.2588190451,
@@ -190,12 +190,17 @@ int PcapReader::parseDataPacket(const size_t  startFrameNumber,
       if (distance < 1) { continue; }
       const float azimuth = static_cast<float>(azimuth100) * PI_DIV18000;
       //      float   vertical  = verticals_.at(laser_index % maxNumLasers_);
-      uint8_t     intensity = firing_data.laserReturns[laser_index].intensity;
-      const auto  id        = static_cast<uint8_t>(laser_index % maxNumLasers_);
-      const float rSinV     = distance * sinVerticals_.at(id);
-      const auto  x         = static_cast<float>(rSinV * cos(azimuth));
-      const auto  y         = static_cast<float>(rSinV * sin(azimuth));
-      const auto  z         = static_cast<float>(distance * cosVerticals_.at(id));
+      uint8_t    intensity = firing_data.laserReturns[laser_index].intensity;
+      const auto id        = static_cast<uint8_t>(laser_index % maxNumLasers_);
+      // const float rSinV     = distance * sinVerticals_.at(id);
+      // const auto  x         = static_cast<float>(rSinV * cos(azimuth));
+      // const auto  y         = static_cast<float>(rSinV * sin(azimuth));
+      // const auto  z         = static_cast<float>(distance * cosVerticals_.at(id));
+      // TODO FIXME
+      const float rCosV = distance * cosVerticals_.at(id);
+      const auto  x     = static_cast<float>(rCosV * sin(azimuth));
+      const auto  y     = static_cast<float>(rCosV * cos(azimuth));
+      const auto  z     = static_cast<float>(distance * sinVerticals_.at(id));
       {
         if (frameBuffer.empty()) {
           // new frame
