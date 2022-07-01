@@ -20,7 +20,7 @@ void DatasetStreamReader::load(const size_t  datasetIndex,
   frames.resize(groupOfFramesSize);
 
   while (!isEof_(datasetIndex) && currentFrameNumber < endFrameNumber) {
-    if (!frameBuffer.empty() && frameBuffer.front()->width != 0) {
+    if (!frameBuffer.empty() && frameBuffer.front()->height != 0) {
       if (currentFrameNumber < startFrameNumber) {
         frameBuffer.erase(frameBuffer.begin());
         currentFrameNumber++;
