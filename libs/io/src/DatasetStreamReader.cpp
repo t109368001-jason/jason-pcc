@@ -1,17 +1,28 @@
 #include <jpcc/io/DatasetStreamReader.h>
 
+using namespace std;
+
 namespace jpcc::io {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 DatasetStreamReader::DatasetStreamReader(DatasetReaderParameter param, DatasetParameter datasetParam) :
-    DatasetReader::DatasetReader(param, datasetParam), frameBuffers_(this->datasetParam_.count()) {}
+    DatasetReader::DatasetReader(param, datasetParam),
+    capacity_(0),
+    eof_(this->datasetParam_.count()),
+    frameBuffers_(this->datasetParam_.count()) {
+  fill(eof_.begin(), eof_.end(), true);
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void DatasetStreamReader::load(const size_t  datasetIndex,
                                const size_t  startFrameNumber,
                                const size_t  groupOfFramesSize,
                                GroupOfFrame& frames) {
-  const size_t                endFrameNumber     = startFrameNumber + groupOfFramesSize;
+  frames.clear();
+  const size_t endFrameNumber = min(startFrameNumber + groupOfFramesSize,  //
+                                    this->datasetParam_.getEndFrameNumbers(datasetIndex));
+  if (startFrameNumber >= endFrameNumber) { return; }
+
   size_t&                     currentFrameNumber = this->currentFrameNumbers_.at(datasetIndex);
   GroupOfFrame&               frameBuffer        = frameBuffers_.at(datasetIndex);
   shared_ptr<Eigen::Matrix4f> transform          = this->datasetParam_.getTransforms(datasetIndex);
@@ -54,9 +65,6 @@ void DatasetStreamReader::load(const size_t  datasetIndex,
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
+bool DatasetStreamReader::isEof_(const size_t datasetIndex) const { return !this->isOpen() || eof_.at(datasetIndex); }
 
-bool DatasetStreamReader::isEof_(const size_t datasetIndex) const {
-  return !this->isOpen() ||
-         (this->currentFrameNumbers_.at(datasetIndex) >= this->datasetParam_.getEndFrameNumbers(datasetIndex));
-}
 }  // namespace jpcc::io

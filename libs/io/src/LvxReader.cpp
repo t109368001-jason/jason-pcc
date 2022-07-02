@@ -43,6 +43,7 @@ void LvxReader::open_(const size_t datasetIndex, const size_t startFrameNumber) 
 
   lvxs_.at(datasetIndex).reset(lvx);
   this->currentFrameNumbers_.at(datasetIndex) = this->datasetParam_.getStartFrameNumbers(datasetIndex);
+  eof_.at(datasetIndex)                       = false;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -60,9 +61,8 @@ bool LvxReader::isEof_(const size_t datasetIndex) const {
 
 void LvxReader::load_(const size_t datasetIndex, const size_t startFrameNumber, const size_t groupOfFramesSize) {
   assert(groupOfFramesSize > 0);
-  size_t&                currentFrameNumber = this->currentFrameNumbers_.at(datasetIndex);
-  LvxHandler*            lvx                = lvxs_.at(datasetIndex).get();
-  std::vector<FramePtr>& frameBuffer        = this->frameBuffers_.at(datasetIndex);
+  LvxHandler*            lvx         = lvxs_.at(datasetIndex).get();
+  std::vector<FramePtr>& frameBuffer = this->frameBuffers_.at(datasetIndex);
 
   std::vector<int64_t> lastTimestamps(lvx->GetDeviceCount());
 
@@ -104,6 +104,7 @@ void LvxReader::load_(const size_t datasetIndex, const size_t startFrameNumber, 
     lastTimestamps.at(deviceIndex) = timestamp;
   });
   assert(ret == 0 || ret == livox_ros::kLvxFileAtEnd);
+  if (ret == livox_ros::kLvxFileAtEnd) { eof_.at(datasetIndex) = true; }
 
   if (ret == livox_ros::kLvxFileAtEnd) {
     for (const FramePtr& frame : frameBuffer) {

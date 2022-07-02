@@ -15,6 +15,7 @@ class DatasetStreamReader : public DatasetReader {
 
  protected:
   size_t                    capacity_;
+  std::vector<bool>         eof_;
   std::vector<GroupOfFrame> frameBuffers_;
 
  public:

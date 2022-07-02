@@ -11,9 +11,11 @@ constexpr auto FIRING_PER_PKT   = 12;
 constexpr float PI_DIV18000 = M_PI / 18000.0;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-constexpr int   VLP16_MAX_NUM_LASERS    = 16;
-constexpr float VLP16_VERTICAL_DEGREE[] = {-15.0, 1.0, -13.0, 3.0,  -11.0, 5.0,  -9.0, 7.0,
-                                           -7.0,  9.0, -5.0,  11.0, -3.0,  13.0, -1.0, 15.0};
+constexpr int VLP16_MAX_NUM_LASERS = 16;
+
+[[maybe_unused]] constexpr float VLP16_VERTICAL_DEGREE[] = {-15.0, 1.0, -13.0, 3.0,  -11.0, 5.0,  -9.0, 7.0,
+                                                            -7.0,  9.0, -5.0,  11.0, -3.0,  13.0, -1.0, 15.0};
+
 constexpr float VLP16_VERTICAL_RADIAN[] = {
     -0.2617993878,  0.01745329252, -0.2268928028,  0.05235987756,  //
     -0.1919862177,  0.0872664626,  -0.1570796327,  0.1221730476,   //
@@ -31,12 +33,14 @@ constexpr float VLP16_VERTICAL_SIN[] = {
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-constexpr int   HDL32_MAX_NUM_LASERS    = 32;
-constexpr float HDL32_VERTICAL_DEGREE[] = {
+constexpr int HDL32_MAX_NUM_LASERS = 32;
+
+[[maybe_unused]] constexpr float HDL32_VERTICAL_DEGREE[] = {
     -30.67,     -9.3299999, -29.33, -8.0,      -28,    -6.6700001, -26.67, -5.3299999, -25.33,    -4.0,   -24.0,
     -2.6700001, -22.67,     -1.33,  -21.33,    0.0,    -20.0,      1.33,   -18.67,     2.6700001, -17.33, 4.0,
     -16,        5.3299999,  -14.67, 6.6700001, -13.33, 8.0,        -12.0,  9.3299999,  -10.67,    10.67,
 };
+
 constexpr float HDL32_VERTICAL_RADIAN[] = {
     -0.5352924816, -0.1628392175,  -0.5119050696, -0.1396263402,
     -0.4886921906, -0.1164134629,  -0.4654793115, -0.09302604739,
@@ -74,18 +78,18 @@ typedef struct LaserReturn {
 
 #pragma pack(push, 1)
 struct FiringData {
-  uint16_t    blockIdentifier;
-  uint16_t    rotationalPosition;
-  LaserReturn laserReturns[LASER_PER_FIRING];
+  [[maybe_unused]] uint16_t blockIdentifier;
+  uint16_t                  rotationalPosition;
+  LaserReturn               laserReturns[LASER_PER_FIRING];
 };
 #pragma pack(pop)
 
 #pragma pack(push, 1)
 struct DataPacket {
-  FiringData firingData[FIRING_PER_PKT];
-  uint32_t   gpsTimestamp;
-  uint8_t    mode;
-  uint8_t    sensorType;
+  FiringData                firingData[FIRING_PER_PKT];
+  [[maybe_unused]] uint32_t gpsTimestamp;
+  uint8_t                   mode;
+  uint8_t                   sensorType;
 };
 #pragma pack(pop)
 
@@ -120,7 +124,6 @@ PcapReader::PcapReader(DatasetReaderParameter param, DatasetParameter datasetPar
   }
   this->currentFrameNumbers_.resize(this->datasetParam_.count());
   for (size_t i = 0; i < this->datasetParam_.count(); i++) { pcaps_.emplace_back(nullptr, &pcapClose); }
-  lastAzimuth100s_.resize(this->datasetParam_.count());
   this->frameBuffers_.resize(this->datasetParam_.count());
 
   std::for_each(this->datasetIndices_.begin(), this->datasetIndices_.end(),
@@ -132,9 +135,9 @@ void PcapReader::open_(const size_t datasetIndex, const size_t startFrameNumber)
   if (pcaps_.at(datasetIndex) && this->currentFrameNumbers_.at(datasetIndex) <= startFrameNumber) { return; }
   const std::string pcapPath = this->datasetParam_.getFilePath(datasetIndex);
 
+  eof_.at(datasetIndex) = false;
   pcaps_.at(datasetIndex).reset(pcapOpen(pcapPath));
   this->currentFrameNumbers_.at(datasetIndex) = this->datasetParam_.getStartFrameNumbers(datasetIndex);
-  lastAzimuth100s_.at(datasetIndex)           = 0;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -146,20 +149,15 @@ bool PcapReader::isEof_(const size_t datasetIndex) const { return DatasetStreamR
 //////////////////////////////////////////////////////////////////////////////////////////////
 void PcapReader::load_(const size_t datasetIndex, const size_t startFrameNumber, const size_t groupOfFramesSize) {
   assert(groupOfFramesSize > 0);
-  size_t&       currentFrameNumber = this->currentFrameNumbers_.at(datasetIndex);
-  void* const   pcap               = pcaps_.at(datasetIndex).get();
-  uint16_t&     lastAzimuth        = lastAzimuth100s_.at(datasetIndex);
-  GroupOfFrame& frameBuffer        = this->frameBuffers_.at(datasetIndex);
+  void* const   pcap        = pcaps_.at(datasetIndex).get();
+  GroupOfFrame& frameBuffer = this->frameBuffers_.at(datasetIndex);
 
-  parseDataPacket(startFrameNumber, currentFrameNumber, pcap, lastAzimuth, frameBuffer);
+  int ret = parseDataPacket(pcap, frameBuffer);
+  if (ret <= 0) { eof_.at(datasetIndex) = true; }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void PcapReader::parseDataPacket(const size_t  startFrameNumber,
-                                 size_t&       currentFrameNumber,
-                                 void* const   pcap,
-                                 uint16_t&     lastAzimuth100,
-                                 GroupOfFrame& frameBuffer) {
+int PcapReader::parseDataPacket(void* const pcap, GroupOfFrame& frameBuffer) {
   // Retrieve Header and Data from PCAP
   const unsigned char* data;
   int64_t              timestampUS;
@@ -172,7 +170,7 @@ void PcapReader::parseDataPacket(const size_t  startFrameNumber,
         frame->height = 1;
       }
     }
-    return;
+    return ret;
   }
 
   // Convert to DataPacket Structure ( Cut Header 42 bytes )
@@ -237,8 +235,6 @@ void PcapReader::parseDataPacket(const size_t  startFrameNumber,
         frameBuffer.at(index)->points.push_back(point);
       }
     }
-    // Update Last Rotation Azimuth
-    lastAzimuth100 = azimuth100;
   }
 
   for (const FramePtr& frame : frameBuffer) {
@@ -246,6 +242,7 @@ void PcapReader::parseDataPacket(const size_t  startFrameNumber,
     frame->width  = static_cast<uint32_t>(frame->size());
     frame->height = 1;
   }
+  return ret;
 }
 
 }  // namespace jpcc::io

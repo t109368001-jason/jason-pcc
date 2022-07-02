@@ -18,7 +18,6 @@ class PcapReader : public DatasetStreamReader {
   std::vector<float>                                       sinVerticals_;
   std::vector<float>                                       cosVerticals_;
   std::vector<std::unique_ptr<void, decltype(&pcapClose)>> pcaps_;
-  std::vector<uint16_t>                                    lastAzimuth100s_;
 
  public:
   PcapReader(DatasetReaderParameter param, DatasetParameter datasetParam);
@@ -32,11 +31,7 @@ class PcapReader : public DatasetStreamReader {
 
   void load_(size_t datasetIndex, size_t startFrameNumber, size_t groupOfFramesSize) override;
 
-  void parseDataPacket(size_t        startFrameNumber,
-                       size_t&       currentFrameNumber,
-                       void*         pcap,
-                       uint16_t&     lastAzimuth100,
-                       GroupOfFrame& frameBuffer);
+  int parseDataPacket(void* const pcap, GroupOfFrame& frameBuffer);
 };
 
 }  // namespace jpcc::io
