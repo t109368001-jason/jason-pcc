@@ -36,9 +36,15 @@ class Analyzer {
 
   void releaseLockFile();
 
+  void saveCloud();
+
   virtual void compute(FrameConstPtr background, FrameConstPtr dynamic, FrameConstPtr other) = 0;
 
   virtual void finalCompute() = 0;
+
+  virtual void getCloud(FramePtr cloud) = 0;
+
+  virtual void reset();
 };
 
 }  // namespace jpcc

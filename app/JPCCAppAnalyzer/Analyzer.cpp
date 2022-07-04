@@ -3,6 +3,8 @@
 #include <filesystem>
 #include <fstream>
 
+#include <pcl/io/auto_io.h>
+
 using namespace std;
 using namespace std::filesystem;
 
@@ -51,7 +53,25 @@ bool Analyzer::tryLockFile() {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void Analyzer::releaseLockFile() {
-  if (hasLock) { remove(filepath_.string() + ".lock"); }
+  if (hasLock) {
+    remove(filepath_.string() + ".lock");
+    hasLock = false;
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void Analyzer::reset() { releaseLockFile(); }
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void Analyzer::saveCloud() {
+  FramePtr cloud;
+  getCloud(cloud);
+  if (cloud) {
+    path cloudPath = filepath_;
+    cloudPath.replace_extension(".ply");
+
+    pcl::io::savePLYFileASCII(cloudPath.string(), *cloud);
+  }
 }
 
 }  // namespace jpcc

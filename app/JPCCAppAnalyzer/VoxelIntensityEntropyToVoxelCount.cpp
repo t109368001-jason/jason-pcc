@@ -58,6 +58,40 @@ void VoxelIntensityEntropyToVoxelCount::finalCompute() {
     ofs << to_string(quantizedIntensityEntropy) << "," << countArray.at(0) << "," << countArray.at(1) << ","
         << countArray.at(2) << endl;
   }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void VoxelIntensityEntropyToVoxelCount::getCloud(FramePtr cloud) {
+  double min_x_, min_y_, min_z_, max_x_, max_y_, max_z_;
+  octree_.getBoundingBox(min_x_, min_y_, min_z_, max_x_, max_y_, max_z_);
+
+  cloud = jpcc::make_shared<Frame>();
+  for (BufferIndex bufferIndex = 0; bufferIndex < BUFFER_SIZE; bufferIndex++) {
+    octree_.switchBuffers(bufferIndex);
+    for (auto it = octree_.leaf_depth_begin(), end = octree_.leaf_depth_end(); it != end; ++it) {
+      auto x =
+          static_cast<float>((static_cast<double>(it.getCurrentOctreeKey().x) + 0.5f) * this->resolution_ + min_x_);
+      auto y =
+          static_cast<float>((static_cast<double>(it.getCurrentOctreeKey().y) + 0.5f) * this->resolution_ + min_y_);
+      auto z =
+          static_cast<float>((static_cast<double>(it.getCurrentOctreeKey().z) + 0.5f) * this->resolution_ + min_z_);
+
+      const vector<float>& intensities = it.getLeafContainer().getIntensities();
+      if (intensities.empty()) { continue; }
+
+      double intensityEntropy = entropy(intensities, 0.0f, 255.0f, 10.0f);
+
+      auto quantizedIntensityEntropy = (int)round(intensityEntropy * 10.0);
+
+      auto i = static_cast<float>(quantizedIntensityEntropy);
+      cloud->points.emplace_back(x, y, z, i);
+    }
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void VoxelIntensityEntropyToVoxelCount::reset() {
+  Analyzer::reset();
   octree_.deleteTree();
 }
 

@@ -133,7 +133,10 @@ void analyze(const AppParameter& parameter, StopwatchUserTime& clock, const Anal
 
   clock.start();
   analyzer->finalCompute();
+  analyzer->saveCloud();
+  analyzer->reset();
   clock.stop();
+
   cout << analyzer->getFilepath() << " end" << endl;
 }
 

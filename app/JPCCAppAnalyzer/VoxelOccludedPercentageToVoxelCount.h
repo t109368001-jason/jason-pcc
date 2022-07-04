@@ -36,6 +36,10 @@ class VoxelOccludedPercentageToVoxelCount : public Analyzer {
   void compute(FrameConstPtr background, FrameConstPtr dynamic, FrameConstPtr other) override;
 
   void finalCompute() override;
+
+  void getCloud(FramePtr cloud) override;
+
+  void reset() override;
 };
 
 }  // namespace jpcc

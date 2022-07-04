@@ -11,10 +11,12 @@ namespace jpcc {
 
 class VoxelPointCountToVoxelCount : public Analyzer {
  public:
-  using OctreeT = octree::OctreeCounter<3>;
+  static constexpr octree::BufferIndex BUFFER_SIZE = 3;
+
+  using OctreeT = octree::OctreeCounter<BUFFER_SIZE>;
 
  protected:
-  OctreeT octreeCounter_;
+  OctreeT octree_;
 
  protected:
   VoxelPointCountToVoxelCount(const float&       frequency,
@@ -28,6 +30,10 @@ class VoxelPointCountToVoxelCount : public Analyzer {
   void compute(FrameConstPtr background, FrameConstPtr dynamic, FrameConstPtr other) override;
 
   void finalCompute() override;
+
+  void getCloud(FramePtr cloud) override;
+
+  void reset() override;
 };
 
 }  // namespace jpcc
