@@ -11,6 +11,7 @@ axis_fontsize = 20
 legend_fontsize = 16
 
 x_index_beg = 1
+entropy_x_multiplier = 0.1
 
 skip_other = False
 skip_exists = True
@@ -50,8 +51,10 @@ plot_config_dict = {
         "override": lambda file_info: plot_voxel_point_normal_angle_entropy_to_voxel_count(file_info),
     },
     "VoxelOccupancyIntervalEntropyToVoxelCount": {
+        "x_multiplier": entropy_x_multiplier
     },
     "VoxelIntensityEntropyToVoxelCount": {
+        "x_multiplier": entropy_x_multiplier
     }
 }
 
@@ -106,6 +109,9 @@ def plot(file_info, plot_config):
     csv.replace(0, np.nan, inplace=True)
 
     fig, axes = build_figure(file_info)
+
+    if "x_multiplier" in plot_config:
+        csv.iloc[:, 0] = csv.iloc[:, 0] * plot_config["x_multiplier"]
 
     plot_lines(axes=axes,
                x=csv.iloc[x_index_beg:, 0],
@@ -172,6 +178,8 @@ def plot_voxel_point_normal_angle_entropy_to_voxel_count(file_info):
 
     axes_zenith.set_title(format_title(file_info["title"]).replace("Angle", "Zenith"), fontsize=title_fontsize)
     axes_zenith.set_xlabel(format_label(file_info["x_label"]).replace("Angle", "Zenith"), fontsize=axis_fontsize)
+
+    csv.iloc[:, 0] = csv.iloc[:, 0] * entropy_x_multiplier
 
     plot_lines(axes=axes_azimuth,
                x=csv.iloc[x_index_beg:, 0],
