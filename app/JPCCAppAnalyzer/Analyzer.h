@@ -42,7 +42,7 @@ class Analyzer {
 
   virtual void finalCompute() = 0;
 
-  virtual void getCloud(FramePtr cloud) = 0;
+  virtual void getCloud(FramePtr& cloud) = 0;
 
   virtual void reset();
 };

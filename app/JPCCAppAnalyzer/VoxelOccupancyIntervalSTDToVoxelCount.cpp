@@ -72,7 +72,7 @@ void VoxelOccupancyIntervalSTDToVoxelCount::finalCompute() {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void VoxelOccupancyIntervalSTDToVoxelCount::getCloud(FramePtr cloud) {
+void VoxelOccupancyIntervalSTDToVoxelCount::getCloud(FramePtr& cloud) {
   double min_x_, min_y_, min_z_, max_x_, max_y_, max_z_;
   octree_.getBoundingBox(min_x_, min_y_, min_z_, max_x_, max_y_, max_z_);
 

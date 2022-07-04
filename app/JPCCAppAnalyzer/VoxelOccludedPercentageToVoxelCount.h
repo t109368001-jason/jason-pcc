@@ -37,7 +37,7 @@ class VoxelOccludedPercentageToVoxelCount : public Analyzer {
 
   void finalCompute() override;
 
-  void getCloud(FramePtr cloud) override;
+  void getCloud(FramePtr& cloud) override;
 
   void reset() override;
 };
