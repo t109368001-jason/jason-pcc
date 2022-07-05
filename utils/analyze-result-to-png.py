@@ -27,6 +27,7 @@ file_info_pattern = re.compile(
 plot_config_dict = {
     "VoxelPointCountToVoxelCount": {
         "yscale": 'log',
+        "xscale": 'log',
     },
     "VoxelOccupancyCountToVoxelCount": {
         "yscale": 'log',
@@ -90,10 +91,10 @@ def build_figure(file_info, rows=1, cols=1):
 
 
 def plot_lines(axes, x, background, dynamic, other):
-    axes.plot(x, background, label="Background")
-    axes.plot(x, dynamic, label="Dynamic")
     if not skip_other:
-        axes.plot(x, other, label="Other")
+        axes.plot(x, other, 'g', label="Other", alpha=0.8)
+    axes.plot(x, background, 'b', label="Background", alpha=0.8)
+    axes.plot(x, dynamic, 'r', label="Dynamic", alpha=0.8)
     axes.legend(loc="upper right", fontsize=legend_fontsize)
 
 
