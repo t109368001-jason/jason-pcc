@@ -11,9 +11,9 @@ using namespace jpcc::math;
 
 TEST(GMMTest, new_by_3_samples) {
   // given
-  constexpr int  K = 3;
-  vector<double> samples;
-  for (size_t k = 0; k < K; k++) { samples.push_back((double)k); }
+  constexpr int        K = 3;
+  vector<GMM::SampleT> samples;
+  for (size_t k = 0; k < K; k++) { samples.push_back((GMM::SampleT)k); }
 
   // when
   const GMM gmm(samples, K);
@@ -30,11 +30,11 @@ TEST(GMMTest, new_by_3_samples) {
 
 TEST(GMMTest, new_by_3_unique_samples) {
   // given
-  constexpr int  K = 3;
-  vector<double> samples;
+  constexpr int        K = 3;
+  vector<GMM::SampleT> samples;
   for (size_t k = 0; k < K; k++) {
     int count = (rand() % 10) + 1;
-    for (size_t j = 0; j < count; j++) { samples.push_back((double)k); }
+    for (size_t j = 0; j < count; j++) { samples.push_back((GMM::SampleT)k); }
   }
 
   // when
@@ -55,7 +55,7 @@ TEST(GMMTest, new_3_cluster_3_variance) {
   constexpr int        K         = 3;
   const vector<double> means     = {1, 50, 500};
   const vector<double> variances = {1, 10, 100};
-  vector<double>       samples;
+  vector<GMM::SampleT> samples;
   for (size_t k = 0; k < K; k++) {
     for (size_t i = 0; i < 100; i++) {
       samples.push_back(means.at(k) - variances.at(k));
@@ -81,7 +81,7 @@ TEST(GMMTest, getOptimalModelIndex) {
   constexpr int        K         = 3;
   const vector<double> means     = {1, 50, 500};
   const vector<double> variances = {1, 10, 100};
-  vector<double>       samples;
+  vector<GMM::SampleT> samples;
   for (size_t k = 0; k < K; k++) {
     for (size_t i = 0; i < 100; i++) {
       samples.push_back(means.at(k) - variances.at(k));
@@ -104,7 +104,7 @@ TEST(GMMTest, updateModel) {
   const vector<double> means        = {1, 50, 500};
   const vector<double> variances    = {1, 10, 100};
   constexpr double     newVariance0 = 5;
-  vector<double>       samples;
+  vector<GMM::SampleT> samples;
   for (size_t k = 0; k < K; k++) {
     for (size_t i = 0; i < 100; i++) {
       samples.push_back(means.at(k) - variances.at(k));
@@ -114,8 +114,8 @@ TEST(GMMTest, updateModel) {
   GMM gmm(samples, K);
 
   // when
-  double         d = sqrt((newVariance0 * 2) - variances.at(0));
-  vector<double> newSamples;
+  double               d = sqrt((newVariance0 * 2) - variances.at(0));
+  vector<GMM::SampleT> newSamples;
   for (size_t i = 0; i < 10; i++) {
     newSamples.push_back(means.at(0) - d);
     newSamples.push_back(means.at(0) + d);
