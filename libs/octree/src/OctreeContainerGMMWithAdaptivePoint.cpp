@@ -3,6 +3,10 @@
 namespace jpcc::octree {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
+OctreeContainerGMMWithAdaptivePoint::OctreeContainerGMMWithAdaptivePoint() :
+    OctreeContainerGMM(), OctreeContainerAdaptivePoint() {}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
 void OctreeContainerGMMWithAdaptivePoint::reset() {
   OctreeContainerGMM::reset();
   OctreeContainerAdaptivePoint::reset();
