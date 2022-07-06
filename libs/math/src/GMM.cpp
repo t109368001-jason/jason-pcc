@@ -5,7 +5,7 @@ using namespace std;
 namespace jpcc::math {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-Cluster::Cluster(const std::vector<double>& samples, const double weight, const double alpha) :
+Cluster::Cluster(const std::vector<SampleT>& samples, const double weight, const double alpha) :
     weight_(weight), alpha_(alpha) {
   mean_ = 0;
   for (auto& sample : samples) { mean_ += sample; }
@@ -16,13 +16,13 @@ Cluster::Cluster(const std::vector<double>& samples, const double weight, const 
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-double Cluster::getProbability(const double sample) const {
+double Cluster::getProbability(const SampleT sample) const {
   double tmp = exp((-0.5) * pow(sample - mean_, 2) / pow(variance_, 2));
   return tmp / sqrt(2 * M_PI * pow(variance_, 2));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void Cluster::addSample(const double sample, const bool matched) {
+void Cluster::addSample(const SampleT sample, const bool matched) {
   weight_    = (1 - alpha_) * weight_ + (matched ? alpha_ : 0);
   double rho = alpha_ * getProbability(sample);
   mean_      = (1 - rho) * mean_ + rho * sample;
@@ -45,41 +45,62 @@ double Cluster::getMean() const { return mean_; }
 double Cluster::getVariance() const { return variance_; }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-GMM::GMM(const std::vector<double>& samples, const int K, const double alpha) : K_(K) {
+GMM::GMM(const std::vector<SampleT>& samples, const int K, const double alpha) : K_(K) {
   clusters_.resize(K_);
   size_t k;
 
-  vector<double>         centroids(K_);
-  vector<vector<double>> clusters(K_);
+  vector<SampleT>         centroids(K_);
+  vector<vector<SampleT>> clusters(K_);
   // K-Means
   // get centroids
-  for (k = 0; k < K_; k++) {
-    double sample = samples.at(rand() % samples.size());
-    bool   same   = false;
-    for (size_t i = 0; i < k; i++) {
-      if (sample == centroids.at(i)) {
-        same = true;
+  std::vector<SampleT> uniqueSamples;
+  for (const auto& sample : samples) {
+    bool anyEqual = false;
+    for (const auto& uniqueSample : uniqueSamples) {
+      if (sample == uniqueSample) {
+        anyEqual = true;
         break;
       }
     }
-    if (same) {
-      k--;
-    } else {
-      centroids.at(k) = sample;
+    if (!anyEqual) {
+      uniqueSamples.push_back(sample);
+      if (uniqueSamples.size() >= K_) { break; }
     }
+  }
+  if (uniqueSamples.size() == K_) {
+    for (k = 0; k < K_; k++) {
+      SampleT sample = samples.at(rand() % samples.size());
+      bool    same   = false;
+      for (size_t i = 0; i < k; i++) {
+        if (sample == centroids.at(i)) {
+          same = true;
+          break;
+        }
+      }
+      if (same) {
+        k--;
+      } else {
+        centroids.at(k) = sample;
+      }
+    }
+  } else {
+    for (k = 0; k < K_ - 1; k++) {  // 0, 1, (K_-2)
+      centroids.at(k) = (float)k / (float)(K_ - 2) * MAX_INTENSITY;
+    }
+    centroids.at(K_ - 1) = NULL_INTENSITY;
   }
 
   bool isConverged = false;
   while (!isConverged) {
     for (k = 0; k < K_; k++) { clusters.at(k).clear(); }
-    std::vector<double> previousCentroids(K_);
+    std::vector<SampleT> previousCentroids(K_);
     copy(centroids.begin(), centroids.end(), previousCentroids.begin());
 
     for (const auto& sample : samples) {
-      size_t minIndex    = 0;
-      double minDistance = abs(sample - centroids.at(0));
+      size_t  minIndex    = 0;
+      SampleT minDistance = abs(sample - centroids.at(0));
       for (k = 1; k < K_; k++) {
-        double distance = abs(sample - centroids.at(k));
+        SampleT distance = abs(sample - centroids.at(k));
         if (distance < minDistance) {
           minIndex    = k;
           minDistance = distance;
@@ -90,7 +111,7 @@ GMM::GMM(const std::vector<double>& samples, const int K, const double alpha) : 
     for (k = 0; k < K_; k++) {
       double sum = 0.0;
       for (const auto& sample : clusters.at(k)) { sum += sample; }
-      centroids.at(k) = sum / clusters.at(k).size();
+      centroids.at(k) = static_cast<SampleT>(sum / clusters.at(k).size());
     }
 
     isConverged = true;
@@ -107,7 +128,25 @@ GMM::GMM(const std::vector<double>& samples, const int K, const double alpha) : 
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pair<size_t, double> GMM::getOptimalModelIndex(const double sample) const {
+[[nodiscard]] double GMM::getProbability(SampleT sample) {
+  double probability = 0.0;
+
+  for (const auto& cluster : clusters_) { probability += cluster->getWeight() * cluster->getProbability(sample); }
+  return probability;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+[[nodiscard]] double GMM::getStaticProbability() {
+  double probability = 0.0;
+
+  for (const auto& cluster : clusters_) {
+    probability += cluster->getWeight() * cluster->getProbability(cluster->getMean());
+  }
+  return probability;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+pair<size_t, double> GMM::getOptimalModelIndex(const SampleT sample) const {
   std::pair<size_t, double> optimalIndexProbability;
   optimalIndexProbability.first  = 0;
   optimalIndexProbability.second = clusters_.at(0)->getProbability(sample);
@@ -122,7 +161,7 @@ pair<size_t, double> GMM::getOptimalModelIndex(const double sample) const {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pair<size_t, double> GMM::getOptimalModelIndex(const vector<double>& samples) const {
+pair<size_t, double> GMM::getOptimalModelIndex(const vector<SampleT>& samples) const {
   std::pair<size_t, double> optimalIndexProbability = getOptimalModelIndex(samples.at(0));
   for (size_t i = 1; i < samples.size(); i++) {
     std::pair<size_t, double> _optimalIndexProbability = getOptimalModelIndex(samples.at(i));
@@ -134,14 +173,14 @@ pair<size_t, double> GMM::getOptimalModelIndex(const vector<double>& samples) co
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void GMM::updateModel(double sample, bool normalizeWeights) {
+void GMM::updateModel(SampleT sample, bool normalizeWeights) {
   size_t optimalIndex = getOptimalModelIndex(sample).first;
   for (size_t k = 0; k < K_; k++) { clusters_.at(k)->addSample(sample, k == optimalIndex); }
   if (normalizeWeights) { this->normalizeWeights(); }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void GMM::updateModel(const vector<double>& samples, bool normalizeWeights) {
+void GMM::updateModel(const vector<SampleT>& samples, bool normalizeWeights) {
   for (const auto& sample : samples) { updateModel(sample, false); }
   if (normalizeWeights) { this->normalizeWeights(); }
 }

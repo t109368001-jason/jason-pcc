@@ -8,6 +8,8 @@ class Cluster {
  public:
   using Ptr = shared_ptr<Cluster>;
 
+  using SampleT = float;
+
  protected:
   double weight_;
   double mean_;
@@ -15,41 +17,47 @@ class Cluster {
   double alpha_;  // weight learning rate
 
  public:
-  Cluster(const std::vector<double>& samples, double weight, double alpha);
+  Cluster(const std::vector<SampleT>& samples, double weight, double alpha);
 
-  [[nodiscard]] double getProbability(double sample) const;
+  [[nodiscard]] double getProbability(SampleT sample) const;
 
-  void addSample(double sample, bool matched);
+  void addSample(SampleT sample, bool matched);
 
-  double getWeight() const;
+  [[nodiscard]] double getWeight() const;
 
-  double& getWeight();
+  [[nodiscard]] double& getWeight();
 
   void setWeight(double weight);
 
-  double getMean() const;
+  [[nodiscard]] double getMean() const;
 
-  double getVariance() const;
+  [[nodiscard]] double getVariance() const;
 };
 
 class GMM {
  public:
   using Ptr = shared_ptr<GMM>;
 
+  using SampleT = Cluster::SampleT;
+
  protected:
   const int                 K_;
   std::vector<Cluster::Ptr> clusters_;
 
  public:
-  GMM(const std::vector<double>& samples, int K, double alpha = 0.05);
+  GMM(const std::vector<SampleT>& samples, int K, double alpha = 0.05);
 
-  [[nodiscard]] std::pair<size_t, double> getOptimalModelIndex(double sample) const;
+  [[nodiscard]] double getProbability(SampleT sample);
 
-  [[nodiscard]] std::pair<size_t, double> getOptimalModelIndex(const std::vector<double>& samples) const;
+  [[nodiscard]] double getStaticProbability();
 
-  void updateModel(double sample, bool normalizeWeights = true);
+  [[nodiscard]] std::pair<size_t, double> getOptimalModelIndex(SampleT sample) const;
 
-  void updateModel(const std::vector<double>& samples, bool normalizeWeights = true);
+  [[nodiscard]] std::pair<size_t, double> getOptimalModelIndex(const std::vector<SampleT>& samples) const;
+
+  void updateModel(SampleT sample, bool normalizeWeights = true);
+
+  void updateModel(const std::vector<SampleT>& samples, bool normalizeWeights = true);
 
   void normalizeWeights();
 
