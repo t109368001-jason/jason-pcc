@@ -45,7 +45,7 @@ class GMM {
   std::vector<Cluster::Ptr> clusters_;
 
  public:
-  GMM(const std::vector<SampleT>& samples, int K, double alpha = 0.05);
+  GMM(std::vector<SampleT>& samples, int K, double alpha, std::vector<SampleT>& alternateCentroids);
 
   [[nodiscard]] double getProbability(SampleT sample);
 

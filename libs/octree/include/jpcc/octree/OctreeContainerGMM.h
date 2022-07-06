@@ -22,7 +22,7 @@ class OctreeContainerGMM : virtual public pcl::octree::OctreeContainerBase {
 
   virtual void addPoint(const PointXYZINormal& point);
 
-  void initGMM(int K, double alpha = 0.05);
+  void initGMM(int K, double alpha, std::vector<float>& alternateCentroids);
 
   [[nodiscard]] float getIntensity() const;
 

@@ -21,8 +21,8 @@ void OctreeContainerGMM::addPoint(const PointXYZINormal& point) {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void OctreeContainerGMM::initGMM(const int K, const double alpha) {
-  gmm_          = jpcc::make_shared<GMM>(*trainSamples_, K, alpha);
+void OctreeContainerGMM::initGMM(const int K, const double alpha, std::vector<float>& alternateCentroids) {
+  gmm_          = jpcc::make_shared<GMM>(*trainSamples_, K, alpha, alternateCentroids);
   trainSamples_ = nullptr;
 }
 

@@ -45,11 +45,11 @@ double Cluster::getMean() const { return mean_; }
 double Cluster::getVariance() const { return variance_; }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-GMM::GMM(const std::vector<SampleT>& samples, const int K, const double alpha) : K_(K) {
+GMM::GMM(vector<SampleT>& samples, const int K, const double alpha, std::vector<SampleT>& alternate) : K_(K) {
   clusters_.resize(K_);
   size_t k;
 
-  vector<SampleT>         centroids(K_);
+  vector<SampleT>         centroids;
   vector<vector<SampleT>> clusters(K_);
   // K-Means
   // get centroids
@@ -68,26 +68,20 @@ GMM::GMM(const std::vector<SampleT>& samples, const int K, const double alpha) :
     }
   }
   if (uniqueSamples.size() == K_) {
-    for (k = 0; k < K_; k++) {
+    while (centroids.size() < K_) {
       SampleT sample = samples.at(rand() % samples.size());
-      bool    same   = false;
-      for (size_t i = 0; i < k; i++) {
-        if (sample == centroids.at(i)) {
-          same = true;
+      bool    exists = false;
+      for (float centroid : centroids) {
+        if (sample == centroid) {
+          exists = true;
           break;
         }
       }
-      if (same) {
-        k--;
-      } else {
-        centroids.at(k) = sample;
-      }
+      if (exists) { centroids.push_back(sample); }
     }
   } else {
-    for (k = 0; k < K_ - 1; k++) {  // 0, 1, (K_-2)
-      centroids.at(k) = (float)k / (float)(K_ - 2) * MAX_INTENSITY;
-    }
-    centroids.at(K_ - 1) = NULL_INTENSITY;
+    k = 0;
+    while (centroids.size() < K_) { centroids.push_back(alternate.at(k++)); }
   }
 
   bool isConverged = false;

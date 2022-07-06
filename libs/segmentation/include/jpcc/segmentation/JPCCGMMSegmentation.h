@@ -16,6 +16,7 @@ class JPCCGMMSegmentation : public JPCCSegmentation {
  protected:
   const JPCCGMMSegmentationParameter parameter_;
   OctreeT                            octree_;
+  std::vector<float>&                alternateCentroids_;
 
  public:
   JPCCGMMSegmentation(JPCCGMMSegmentationParameter parameter);

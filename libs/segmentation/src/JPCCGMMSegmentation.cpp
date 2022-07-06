@@ -9,7 +9,9 @@ using namespace jpcc::octree;
 namespace jpcc::segmentation {
 
 JPCCGMMSegmentation::JPCCGMMSegmentation(JPCCGMMSegmentationParameter parameter) :
-    parameter_(std::move(parameter)), octree_(parameter_.resolution) {}
+    parameter_(std::move(parameter)), octree_(parameter_.resolution) {
+  for (int i = -1; i >= -parameter_.k; i--) { alternateCentroids_.push_back(i); }
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 size_t JPCCGMMSegmentation::getNTrain() const { return parameter_.nTrain; }
@@ -24,7 +26,7 @@ void JPCCGMMSegmentation::build() {
   for (auto it = octree_.leaf_depth_begin(), end = octree_.leaf_depth_end(); it != end; ++it) {
     LeafContainerT& leafContainer = it.getLeafContainer();
     leafContainer.getTrainSamples()->resize(parameter_.nTrain, NULL_INTENSITY);
-    leafContainer.initGMM(parameter_.k, parameter_.alpha);
+    leafContainer.initGMM(parameter_.k, parameter_.alpha, alternateCentroids_);
   }
 }
 
