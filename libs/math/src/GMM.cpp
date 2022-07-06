@@ -45,7 +45,7 @@ double Cluster::getMean() const { return mean_; }
 double Cluster::getVariance() const { return variance_; }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-GMM::GMM(vector<SampleT>& samples, const int K, const double alpha, std::vector<SampleT>& alternate) : K_(K) {
+GMM::GMM(vector<SampleT>& samples, const int K, const double alpha, std::vector<SampleT>& alternateCentroids) : K_(K) {
   clusters_.resize(K_);
   size_t k;
 
@@ -81,7 +81,7 @@ GMM::GMM(vector<SampleT>& samples, const int K, const double alpha, std::vector<
     }
   } else {
     k = 0;
-    while (centroids.size() < K_) { centroids.push_back(alternate.at(k++)); }
+    while (centroids.size() < K_) { centroids.push_back(alternateCentroids.at(k++)); }
   }
 
   bool isConverged = false;
