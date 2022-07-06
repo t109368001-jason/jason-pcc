@@ -80,6 +80,7 @@ GMM::GMM(vector<SampleT>& samples, const int K, const double alpha, std::vector<
       if (exists) { centroids.push_back(sample); }
     }
   } else {
+    for (const auto& uniqueSample : uniqueSamples) { centroids.push_back(uniqueSample); }
     k = 0;
     while (centroids.size() < K_) { centroids.push_back(alternateCentroids.at(k++)); }
   }
