@@ -32,12 +32,16 @@ using Frame         = pcl::PointCloud<PointXYZINormal>;
 using FramePtr      = Frame::Ptr;
 using FrameConstPtr = Frame::ConstPtr;
 
-using GroupOfFrame = std::vector<FramePtr>;
+using GroupOfFrame      = std::vector<FramePtr>;
+using GroupOfFrameConst = std::vector<FrameConstPtr>;
 
 template <class T>
 struct dependent_false : std::false_type {};
 
 template <class T>
 inline constexpr bool dependent_false_v = dependent_false<T>::value;
+
+constexpr float MAX_INTENSITY  = 255.0;
+constexpr float NULL_INTENSITY = -128.0;
 
 }  // namespace jpcc
