@@ -41,7 +41,7 @@ void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
       normalEstimation->computeInPlaceAll(frames, parameter.parallel);
       clock.stop();
 
-      gmmSegmentation->appendTrainSamples(frames, parameter.parallel);
+      gmmSegmentation->appendTrainSamples(frames);
 
       frameNumber += groupOfFramesSize;
     }

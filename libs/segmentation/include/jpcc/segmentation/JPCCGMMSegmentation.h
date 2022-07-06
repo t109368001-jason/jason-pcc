@@ -22,7 +22,7 @@ class JPCCGMMSegmentation : public JPCCSegmentation {
 
   [[nodiscard]] size_t getNTrain() const override;
 
-  void appendTrainSamples(const GroupOfFrame& groupOfFrame, bool parallel) override;
+  void appendTrainSamples(const GroupOfFrame& groupOfFrame) override;
 
   void build() override;
 

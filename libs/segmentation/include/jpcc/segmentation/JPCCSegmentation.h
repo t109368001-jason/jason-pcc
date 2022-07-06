@@ -10,7 +10,7 @@ class JPCCSegmentation {
 
   virtual size_t getNTrain() const = 0;
 
-  virtual void appendTrainSamples(const GroupOfFrame& groupOfFrame, bool parallel) = 0;
+  virtual void appendTrainSamples(const GroupOfFrame& groupOfFrame) = 0;
 
   virtual void build() = 0;
 

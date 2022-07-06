@@ -15,13 +15,8 @@ JPCCGMMSegmentation::JPCCGMMSegmentation(JPCCGMMSegmentationParameter parameter)
 size_t JPCCGMMSegmentation::getNTrain() const { return parameter_.nTrain; }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void JPCCGMMSegmentation::appendTrainSamples(const GroupOfFrame& groupOfFrame, const bool parallel) {
-  if (parallel) {
-    for_each(execution::par_unseq, groupOfFrame.begin(), groupOfFrame.end(),
-             [this](const auto& frame) { octree_.addFrame(frame); });
-  } else {
-    for_each(groupOfFrame.begin(), groupOfFrame.end(), [this](const auto& frame) { octree_.addFrame(frame); });
-  }
+void JPCCGMMSegmentation::appendTrainSamples(const GroupOfFrame& groupOfFrame) {
+  for_each(groupOfFrame.begin(), groupOfFrame.end(), [this](const auto& frame) { octree_.addFrame(frame); });
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
