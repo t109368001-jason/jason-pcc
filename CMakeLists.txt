@@ -56,6 +56,7 @@ add_subdirectory(libs/lvx_common)
 add_subdirectory(libs/math)
 add_subdirectory(libs/octree)
 add_subdirectory(libs/process)
+add_subdirectory(libs/segmentation)
 add_subdirectory(libs/visualization)
 
 add_subdirectory(app)
