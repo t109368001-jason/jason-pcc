@@ -14,16 +14,16 @@
 #include <jpcc/visualization/JPCCVisualizer.h>
 
 #include "AppParameter.h"
-#include "VoxelOccupancyCountToVoxelCount.h"
-#include "VoxelPointCountToVoxelCount.h"
-#include "VoxelPointNormalAngleSTDToVoxelCount.h"
-#include "VoxelOccupancyIntervalSTDToVoxelCount.h"
-#include "VoxelOccludedPercentageToVoxelCount.h"
-#include "VoxelOccupancyChangeCountToVoxelCount.h"
-#include "VoxelIntensitySTDToVoxelCount.h"
-#include "VoxelPointNormalAngleEntropyToVoxelCount.h"
-#include "VoxelOccupancyIntervalEntropyToVoxelCount.h"
-#include "VoxelIntensityEntropyToVoxelCount.h"
+#include "analyzer/VoxelOccupancyCountToVoxelCount.h"
+#include "analyzer/VoxelPointCountToVoxelCount.h"
+#include "analyzer/VoxelPointNormalAngleSTDToVoxelCount.h"
+#include "analyzer/VoxelOccupancyIntervalSTDToVoxelCount.h"
+#include "analyzer/VoxelOccludedPercentageToVoxelCount.h"
+#include "analyzer/VoxelOccupancyChangeCountToVoxelCount.h"
+#include "analyzer/VoxelIntensitySTDToVoxelCount.h"
+#include "analyzer/VoxelPointNormalAngleEntropyToVoxelCount.h"
+#include "analyzer/VoxelOccupancyIntervalEntropyToVoxelCount.h"
+#include "analyzer/VoxelIntensityEntropyToVoxelCount.h"
 
 using namespace std;
 using namespace std::chrono;
