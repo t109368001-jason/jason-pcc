@@ -13,7 +13,7 @@ constexpr float PI_DIV18000 = M_PI / 18000.0;
 //////////////////////////////////////////////////////////////////////////////////////////////
 constexpr int VLP16_MAX_NUM_LASERS = 16;
 
-[[maybe_unused]] constexpr float VLP16_VERTICAL_DEGREE[] = {-15.0, 1.0, -13.0, 3.0,  -11.0, 5.0,  -9.0, 7.0,
+[[maybe_unused]] constexpr float VLP16_VERTICAL_DEGREE[] = {-15.0, 1.0, -13.0, 3.0,  -11.0, 5.0,  -9.0, 7.0,  //
                                                             -7.0,  9.0, -5.0,  11.0, -3.0,  13.0, -1.0, 15.0};
 
 constexpr float VLP16_VERTICAL_RADIAN[] = {
@@ -69,6 +69,29 @@ constexpr float HDL32_VERTICAL_COS[] = {
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////
+constexpr int HI_RES_MAX_NUM_LASERS = 16;
+
+[[maybe_unused]] constexpr float HI_RES_VERTICAL_DEGREE[] = {-10.00, 0.67, -8.67, 2.00, -7.33, 3.33, -6,    4.67,  //
+                                                             -4.67,  6.00, -3.33, 7.33, -2.00, 8.67, -0.67, 10.00};
+
+constexpr float HI_RES_VERTICAL_RADIAN[] = {
+    -0.1745329252,  0.01169370599, -0.1513200461,  0.03490658504,  //
+    -0.1279326342,  0.05811946409, -0.1047197551,  0.08150687607,  //
+    -0.08150687607, 0.1047197551,  -0.05811946409, 0.1279326342,   //
+    -0.03490658504, 0.1513200461,  -0.01169370599, 0.1745329252    //
+};
+constexpr float HI_RES_VERTICAL_COS[] = {
+    0.984807753,  0.9999316294, 0.9885729513, 0.999390827,  0.9918277758, 0.9983115393, 0.9945218954, 0.9966801531,
+    0.9966801531, 0.9945218954, 0.9983115393, 0.9918277758, 0.999390827,  0.9885729513, 0.9999316294, 0.984807753,
+};
+constexpr float HI_RES_VERTICAL_SIN[] = {
+    -0.1736481777,  0.01169343949, -0.1507432253,  0.0348994967,   //
+    -0.1275839459,  0.0580867496,  -0.1045284633,  0.08141665931,  //
+    -0.08141665931, 0.1045284633,  -0.0580867496,  0.1275839459,   //
+    -0.0348994967,  0.1507432253,  -0.01169343949, 0.1736481777,   //
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////////
 #pragma pack(push, 1)
 typedef struct LaserReturn {
   uint16_t distance;
@@ -106,6 +129,17 @@ PcapReader::PcapReader(DatasetReaderParameter param, DatasetParameter datasetPar
       verticals_.at(i)    = VLP16_VERTICAL_RADIAN[i];
       sinVerticals_.at(i) = VLP16_VERTICAL_SIN[i];
       cosVerticals_.at(i) = VLP16_VERTICAL_COS[i];
+    }
+    capacity_ = (size_t)((double)(300000) / this->param_.frequency * 1.05);
+  } else if (this->datasetParam_.sensor == "hi-res") {
+    maxNumLasers_ = HI_RES_MAX_NUM_LASERS;
+    verticals_.resize(maxNumLasers_);
+    sinVerticals_.resize(maxNumLasers_);
+    cosVerticals_.resize(maxNumLasers_);
+    for (size_t i = 0; i < maxNumLasers_; i++) {
+      verticals_.at(i)    = HI_RES_VERTICAL_RADIAN[i];
+      sinVerticals_.at(i) = HI_RES_VERTICAL_SIN[i];
+      cosVerticals_.at(i) = HI_RES_VERTICAL_COS[i];
     }
     capacity_ = (size_t)((double)(300000) / this->param_.frequency * 1.05);
   } else if (this->datasetParam_.sensor == "hdl32") {
@@ -174,10 +208,10 @@ int PcapReader::parseDataPacket(void* const pcap, GroupOfFrame& frameBuffer) {
   }
 
   // Convert to DataPacket Structure ( Cut Header 42 bytes )
-  // Sensor Type 0x21 is HDL-32E, 0x22 is VLP-16
+  // Sensor Type 0x21 is HDL-32E, 0x22 is VLP-16, 0x24 is Hi-Res
   const auto* const packet = reinterpret_cast<const DataPacket*>(data + 42);
 
-  if (packet->sensorType != 0x21 && packet->sensorType != 0x22) {
+  if (packet->sensorType != 0x21 && packet->sensorType != 0x22 && packet->sensorType != 0x24) {
     throw(std::runtime_error("This sensor is not supported"));
   }
   if (packet->mode != 0x37 && packet->mode != 0x38) {
