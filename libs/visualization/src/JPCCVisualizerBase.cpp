@@ -22,7 +22,7 @@ JPCCVisualizerBase::JPCCVisualizerBase(const VisualizerParameter& param) :
                     param_.cameraPosition.at(3), param_.cameraPosition.at(4), param_.cameraPosition.at(5),
                     param_.cameraPosition.at(6), param_.cameraPosition.at(7), param_.cameraPosition.at(8));
   setBackgroundColor(0, 0, 0);
-  addCoordinateSystem(3.0, "coordinate");
+  addCoordinateSystem(1000.0, "coordinate");
 
   vtkNew<vtkCallbackCommand> modifiedCallback;
   modifiedCallback->SetCallback(
