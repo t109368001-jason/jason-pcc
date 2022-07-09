@@ -49,9 +49,8 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
       PreProcessor             preProcessor(parameter.preProcess);
 
       GroupOfFrame frames;
-      const auto   framesMap         = jpcc::make_shared<PreProcessor::GroupOfFrameMap>();
-      const size_t groupOfFramesSize = 32;
-      size_t       startFrameNumber  = parameter.dataset.getStartFrameNumber();
+      const auto   framesMap        = jpcc::make_shared<PreProcessor::GroupOfFrameMap>();
+      size_t       startFrameNumber = parameter.dataset.getStartFrameNumber();
       reader->loadAll(startFrameNumber, 1, frames, parameter.parallel);
       startFrameNumber++;
       preProcessor.process(frames, framesMap, parameter.parallel);
@@ -65,7 +64,7 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
       viewer->nextFrame();
       while (run) {
         clock.start();
-        reader->loadAll(startFrameNumber, groupOfFramesSize, frames, parameter.parallel);
+        reader->loadAll(startFrameNumber, parameter.groupOfFramesSize, frames, parameter.parallel);
         preProcessor.process(frames, framesMap, parameter.parallel);
         clock.stop();
 
@@ -83,11 +82,11 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
         framesMap->insert_or_assign(primaryId, frames);
         viewer->enqueue(*framesMap);
 
-        if (frames.size() < groupOfFramesSize) {
+        if (frames.size() < parameter.groupOfFramesSize) {
           startFrameNumber = parameter.dataset.getStartFrameNumber();
           continue;
         }
-        startFrameNumber += groupOfFramesSize;
+        startFrameNumber += parameter.groupOfFramesSize;
       }
     } catch (exception& e) { cerr << e.what() << endl; }
     run = false;

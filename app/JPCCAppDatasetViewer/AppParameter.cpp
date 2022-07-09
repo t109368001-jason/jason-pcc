@@ -14,16 +14,16 @@ using namespace po;
 
 AppParameter::AppParameter() :
     Parameter(APP_OPT_PREFIX, __FUNCTION__), parallel(false), groupOfFramesSize(32), dataset(), reader(), preProcess() {
-  opts_.add_options()                                                      //
-      (string(prefix_ + PARALLEL_OPT).c_str(),                             //
-       value<bool>(&parallel)->default_value(parallel),                    //
-       "parallel")                                                         //
-      (string(prefix_ + GROUP_OF_FRAMES_SIZE_OPT).c_str(),                 //
-       value<bool>(&groupOfFramesSize)->default_value(groupOfFramesSize),  //
-       "groupOfFramesSize")                                                //
-      (string(prefix_ + BACKGROUND_PATH_OPT).c_str(),                      //
-       value<string>(&backgroundPath)->default_value(backgroundPath),      //
-       "backgroundPath")                                                   //
+  opts_.add_options()                                                        //
+      (string(prefix_ + PARALLEL_OPT).c_str(),                               //
+       value<bool>(&parallel)->default_value(parallel),                      //
+       "parallel")                                                           //
+      (string(prefix_ + GROUP_OF_FRAMES_SIZE_OPT).c_str(),                   //
+       value<size_t>(&groupOfFramesSize)->default_value(groupOfFramesSize),  //
+       "groupOfFramesSize")                                                  //
+      (string(prefix_ + BACKGROUND_PATH_OPT).c_str(),                        //
+       value<string>(&backgroundPath)->default_value(backgroundPath),        //
+       "backgroundPath")                                                     //
       ;
   opts_.add(dataset.getOpts());
   opts_.add(reader.getOpts());
