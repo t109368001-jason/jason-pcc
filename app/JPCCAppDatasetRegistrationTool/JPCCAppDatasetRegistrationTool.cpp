@@ -4,6 +4,9 @@
 #include <thread>
 #include <vector>
 
+#include <pcl/registration/icp.h>
+#include <pcl/registration/ndt.h>
+
 #include <jpcc/common/ParameterParser.h>
 #include <jpcc/io/Reader.h>
 #include <jpcc/process/PreProcessor.h>
@@ -35,6 +38,18 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
   const DatasetReader::Ptr reader = newReader(parameter.reader, parameter.dataset);
   PreProcessor             preProcessor(parameter.preProcess);
 
+  pcl::Registration<PointXYZINormal, PointXYZINormal>::Ptr registration;
+
+  if (parameter.registration == "icp") {
+    auto icp     = pcl::make_shared<pcl::IterativeClosestPoint<PointXYZINormal, PointXYZINormal>>();
+    registration = icp;
+  }
+  if (parameter.registration == "ndt") {
+    auto ndt = pcl::make_shared<pcl::NormalDistributionsTransform<PointXYZINormal, PointXYZINormal>>();
+    ndt->setResolution(100.0);
+    registration = ndt;
+  }
+
   GroupOfFrame frames0;
   GroupOfFrame frames1;
   GroupOfFrame frames2;
@@ -57,6 +72,7 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
           preProcessor.process(frames0, nullptr, parameter.parallel);
           clock.stop();
           framesMap->insert_or_assign("0", frames0);
+          if (registration) { registration->setInputTarget(frames0.at(0)); }
         }
         if (event.getKeyCode() == '1' || event.getKeyCode() == ' ') {
           cout << "1" << endl;
@@ -64,6 +80,14 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
           reader->load(1, startFrameNumber1++, 1, frames1);
           preProcessor.process(frames1, nullptr, parameter.parallel);
           clock.stop();
+          if (registration && framesMap->find("0") != framesMap->end()) {
+            auto frame = jpcc::make_shared<Frame>();
+
+            registration->setInputSource(frames1.at(0));
+            registration->align(*frame);
+            cout << registration->getFinalTransformation() << endl;
+            frames1.at(0) = frame;
+          }
           framesMap->insert_or_assign("1", frames1);
         }
         if (event.getKeyCode() == '2' || event.getKeyCode() == ' ') {
@@ -72,6 +96,14 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
           reader->load(2, startFrameNumber2++, 1, frames2);
           preProcessor.process(frames2, nullptr, parameter.parallel);
           clock.stop();
+          if (registration && framesMap->find("0") != framesMap->end()) {
+            auto frame = jpcc::make_shared<Frame>();
+
+            registration->setInputSource(frames2.at(0));
+            registration->align(*frame);
+            cout << registration->getFinalTransformation() << endl;
+            frames2.at(0) = frame;
+          }
           framesMap->insert_or_assign("2", frames2);
         }
         if (event.getKeyCode() == '3' || event.getKeyCode() == ' ') {
@@ -80,6 +112,14 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
           reader->load(3, startFrameNumber3++, 1, frames3);
           preProcessor.process(frames3, nullptr, parameter.parallel);
           clock.stop();
+          if (registration && framesMap->find("0") != framesMap->end()) {
+            auto frame = jpcc::make_shared<Frame>();
+
+            registration->setInputSource(frames3.at(0));
+            registration->align(*frame);
+            cout << registration->getFinalTransformation() << endl;
+            frames3.at(0) = frame;
+          }
           framesMap->insert_or_assign("3", frames3);
         }
         viewer->enqueue(*framesMap);

@@ -15,6 +15,7 @@ namespace jpcc {
 class AppParameter : public Parameter {
  public:
   bool                               parallel;
+  std::string                        registration;
   io::DatasetParameter               dataset;
   io::DatasetReaderParameter         reader;
   process::PreProcessParameter       preProcess;

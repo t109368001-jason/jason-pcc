@@ -9,13 +9,17 @@ using namespace po;
 
 #define APP_OPT_PREFIX "app"
 #define PARALLEL_OPT ".parallel"
+#define REGISTRATION_OPT ".registration"
 
 AppParameter::AppParameter() :
-    Parameter(APP_OPT_PREFIX, __FUNCTION__), parallel(false), dataset(), reader(), preProcess() {
-  opts_.add_options()                                    //
-      (string(prefix_ + PARALLEL_OPT).c_str(),           //
-       value<bool>(&parallel)->default_value(parallel),  //
-       "parallel")                                       //
+    Parameter(APP_OPT_PREFIX, __FUNCTION__), parallel(false), registration("none"), dataset(), reader(), preProcess() {
+  opts_.add_options()                                              //
+      (string(prefix_ + PARALLEL_OPT).c_str(),                     //
+       value<bool>(&parallel)->default_value(parallel),            //
+       "parallel")                                                 //
+      (string(prefix_ + REGISTRATION_OPT).c_str(),                 //
+       value<string>(&registration)->default_value(registration),  //
+       "registration")                                             //
       ;
   opts_.add(dataset.getOpts());
   opts_.add(reader.getOpts());
@@ -24,6 +28,7 @@ AppParameter::AppParameter() :
 }
 
 void AppParameter::getShowTexts(vector<std::string>& showTexts) const {
+  showTexts.push_back(prefix_ + REGISTRATION_OPT ": " + registration);
   dataset.getShowTexts(showTexts);
   reader.getShowTexts(showTexts);
   preProcess.getShowTexts(showTexts);
@@ -38,8 +43,9 @@ void AppParameter::notify() {
 }
 
 ostream& operator<<(ostream& out, const AppParameter& obj) {
-  obj.coutParameters(out)           //
-      (PARALLEL_OPT, obj.parallel)  //
+  obj.coutParameters(out)                   //
+      (PARALLEL_OPT, obj.parallel)          //
+      (REGISTRATION_OPT, obj.registration)  //
       ;
   out << obj.dataset;
   out << obj.reader;
