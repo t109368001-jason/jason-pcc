@@ -130,7 +130,7 @@ PcapReader::PcapReader(DatasetReaderParameter param, DatasetParameter datasetPar
       sinVerticals_.at(i) = VLP16_VERTICAL_SIN[i];
       cosVerticals_.at(i) = VLP16_VERTICAL_COS[i];
     }
-    capacity_ = (size_t)((double)(300000) / this->param_.frequency * 1.05);
+    capacity_ = (size_t)((double)(300000) / this->param_.frequency);
   } else if (this->datasetParam_.sensor == "hi-res") {
     maxNumLasers_ = HI_RES_MAX_NUM_LASERS;
     verticals_.resize(maxNumLasers_);
@@ -141,7 +141,7 @@ PcapReader::PcapReader(DatasetReaderParameter param, DatasetParameter datasetPar
       sinVerticals_.at(i) = HI_RES_VERTICAL_SIN[i];
       cosVerticals_.at(i) = HI_RES_VERTICAL_COS[i];
     }
-    capacity_ = (size_t)((double)(300000) / this->param_.frequency * 1.05);
+    capacity_ = (size_t)((double)(300000) / this->param_.frequency);
   } else if (this->datasetParam_.sensor == "hdl32") {
     maxNumLasers_ = HDL32_MAX_NUM_LASERS;
     verticals_.resize(maxNumLasers_);
@@ -152,7 +152,7 @@ PcapReader::PcapReader(DatasetReaderParameter param, DatasetParameter datasetPar
       sinVerticals_.at(i) = HDL32_VERTICAL_SIN[i];
       cosVerticals_.at(i) = HDL32_VERTICAL_COS[i];
     }
-    capacity_ = (size_t)((double)(695000) / this->param_.frequency * 1.05);
+    capacity_ = (size_t)((double)(695000) / this->param_.frequency);
   } else {
     throw std::logic_error("Not support dataset.sensor " + this->datasetParam_.sensor);
   }
