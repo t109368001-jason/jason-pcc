@@ -38,14 +38,17 @@ void DatasetReader::loadAll(const size_t  startFrameNumber,
     FramePtr& frame   = frames.at(i);
     frame             = jpcc::make_shared<Frame>();
     frame->header.seq = startFrameNumber + i;
+    size_t size       = 0;
+    for (size_t datasetIndex = 0; datasetIndex < datasetParam_.count(); datasetIndex++) {
+      if (i < sources.at(datasetIndex).size()) { size += sources.at(datasetIndex).at(i)->size(); }
+    }
+    frame->reserve(size);
     for (size_t datasetIndex = 0; datasetIndex < datasetParam_.count(); datasetIndex++) {
       if (i < sources.at(datasetIndex).size()) {
         frame->insert(frame->end(), make_move_iterator(sources.at(datasetIndex).at(i)->begin()),
                       make_move_iterator(sources.at(datasetIndex).at(i)->end()));
       }
     }
-    frame->width  = static_cast<uint32_t>(frame->size());
-    frame->height = 1;
     std::cout << "reader read "
               << "frameNumber=" << frame->header.seq << ", "
               << "points=" << frame->size() << std::endl;
