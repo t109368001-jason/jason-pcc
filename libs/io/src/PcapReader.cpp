@@ -172,6 +172,7 @@ void PcapReader::open_(const size_t datasetIndex, const size_t startFrameNumber)
   eof_.at(datasetIndex) = false;
   pcaps_.at(datasetIndex).reset(pcapOpen(pcapPath));
   this->currentFrameNumbers_.at(datasetIndex) = this->datasetParam_.getStartFrameNumbers(datasetIndex);
+  this->frameBuffers_.at(datasetIndex).clear();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
