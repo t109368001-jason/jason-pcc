@@ -98,8 +98,8 @@ void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
 
       if (viewer) { viewer->enqueue(GroupOfFrameMap{{dynamicId, dynamicFrames}, {staticId, staticFrames}}); }
 
-      savePly(dynamicFrames, parameter.outputDataset.getFilePath(), parameter.parallel);
-      savePly(staticFrames, parameter.outputDataset.getFilePath(), parameter.parallel);
+      savePly(dynamicFrames, parameter.outputDataset.getFilePath(0), parameter.parallel);
+      savePly(staticFrames, parameter.outputDataset.getFilePath(1), parameter.parallel);
 
       frameNumber += groupOfFramesSize;
     }
