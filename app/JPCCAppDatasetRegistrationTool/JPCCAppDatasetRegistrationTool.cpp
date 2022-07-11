@@ -54,7 +54,7 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
   GroupOfFrame frames1;
   GroupOfFrame frames2;
   GroupOfFrame frames3;
-  const auto   framesMap = jpcc::make_shared<PreProcessor::GroupOfFrameMap>();
+  const auto   framesMap = jpcc::make_shared<GroupOfFrameMap>();
 
   size_t startFrameNumber0 = parameter.dataset.getStartFrameNumber();
   size_t startFrameNumber1 = parameter.dataset.getStartFrameNumber();

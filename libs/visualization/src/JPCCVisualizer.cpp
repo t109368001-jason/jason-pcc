@@ -95,7 +95,7 @@ void JPCCVisualizer::nextFrame() {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void JPCCVisualizer::enqueue(const JPCCVisualizer::GroupOfFrameMap& framesMap) {
+void JPCCVisualizer::enqueue(const GroupOfFrameMap& framesMap) {
   std::lock_guard<std::recursive_mutex> lock(mutex_);
   for (const auto& [id, frames] : framesMap) {
     if (queueMap_.find(id) == queueMap_.end()) { queueMap_[id] = FrameQueue(); }

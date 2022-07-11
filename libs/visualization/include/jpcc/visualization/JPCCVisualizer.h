@@ -12,7 +12,6 @@ namespace jpcc::visualization {
 class JPCCVisualizer : public JPCCVisualizerBase {
  public:
   using Ptr                = shared_ptr<JPCCVisualizer>;
-  using GroupOfFrameMap    = std::map<std::string, GroupOfFrame>;
   using FrameQueue         = std::queue<FramePtr>;
   using PointCloudColor    = pcl::visualization::PointCloudColorHandler<PointXYZINormal>;
   using PointCloudColorPtr = typename PointCloudColor::Ptr;

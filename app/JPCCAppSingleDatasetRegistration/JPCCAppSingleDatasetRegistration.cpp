@@ -47,7 +47,7 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
   }
 
   FramePtr                              cumulativeFrame;
-  PreProcessor::GroupOfFrameMap         framesMap;
+  GroupOfFrameMap                       framesMap;
   JPCCOctreePointCloud<PointXYZINormal> octree(20.0);
 
   size_t startFrameNumber = parameter.dataset.getStartFrameNumber();

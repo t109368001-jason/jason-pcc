@@ -38,7 +38,7 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
     viewer->setColor(cloudPlaneId, 1.0, 0.0, 1.0);
   }
 
-  const auto framesMap = jpcc::make_shared<PreProcessor::GroupOfFrameMap>();
+  const auto framesMap = jpcc::make_shared<GroupOfFrameMap>();
 
   {
     const DatasetReader::Ptr reader = newReader(parameter.reader, parameter.dataset);

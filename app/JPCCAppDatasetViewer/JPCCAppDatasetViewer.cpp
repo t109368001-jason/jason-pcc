@@ -49,7 +49,7 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
       PreProcessor             preProcessor(parameter.preProcess);
 
       GroupOfFrame frames;
-      const auto   framesMap        = jpcc::make_shared<PreProcessor::GroupOfFrameMap>();
+      const auto   framesMap        = jpcc::make_shared<GroupOfFrameMap>();
       size_t       startFrameNumber = parameter.dataset.getStartFrameNumber();
       reader->loadAll(startFrameNumber, 1, frames, parameter.parallel);
       startFrameNumber++;

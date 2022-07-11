@@ -69,7 +69,7 @@ void test(const AppParameter& parameter, StopwatchUserTime& clock) {
         PreProcessor             preProcessor(parameter.preProcess);
 
         GroupOfFrame frames;
-        const auto   framesMap = jpcc::make_shared<JPCCVisualizer::GroupOfFrameMap>();
+        const auto   framesMap = jpcc::make_shared<GroupOfFrameMap>();
 
         size_t       startFrameNumber = parameter.dataset.getStartFrameNumber();
         const size_t endFrameNumber   = startFrameNumber + parameter.dataset.getFrameCounts();

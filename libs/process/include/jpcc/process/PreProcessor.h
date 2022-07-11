@@ -13,7 +13,6 @@ namespace jpcc::process {
 class PreProcessor {
  public:
   using Ptr                = shared_ptr<PreProcessor>;
-  using GroupOfFrameMap    = std::map<std::string, GroupOfFrame>;
   using GroupOfFrameMapPtr = shared_ptr<GroupOfFrameMap>;
   using Filter             = pcl::FilterIndices<PointXYZINormal>;
   using FilterPtr          = typename Filter::Ptr;

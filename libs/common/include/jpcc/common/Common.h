@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cassert>
+#include <map>
 #include <memory>
 
 #include <boost/throw_exception.hpp>
@@ -34,6 +35,7 @@ using FrameConstPtr = Frame::ConstPtr;
 
 using GroupOfFrame      = std::vector<FramePtr>;
 using GroupOfFrameConst = std::vector<FrameConstPtr>;
+using GroupOfFrameMap   = std::map<std::string, GroupOfFrame>;
 
 template <class T>
 struct dependent_false : std::false_type {};
