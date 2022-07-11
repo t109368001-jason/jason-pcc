@@ -11,7 +11,6 @@
 #include <jpcc/io/Reader.h>
 #include <jpcc/octree/JPCCOctreePointCloud.h>
 #include <jpcc/process/PreProcessor.h>
-#include <jpcc/process/OctreePointCloudOperation.h>
 #include <jpcc/visualization/JPCCVisualizer.h>
 
 #include "AppParameter.h"
@@ -27,9 +26,11 @@ using namespace jpcc::process;
 using namespace jpcc::visualization;
 
 void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
-  const auto viewer = jpcc::make_shared<JPCCVisualizer>(parameter.visualizerParameter);
-
-  viewer->addParameter(parameter);
+  JPCCVisualizer::Ptr viewer;
+  if (!parameter.headless) {
+    viewer = jpcc::make_shared<JPCCVisualizer>(parameter.visualizerParameter);
+    viewer->addParameter(parameter);
+  }
 
   const DatasetReader::Ptr reader = newReader(parameter.reader, parameter.dataset);
   PreProcessor             preProcessor(parameter.preProcess);
@@ -39,67 +40,75 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
   if (parameter.registration == "icp") {
     auto icp     = pcl::make_shared<pcl::IterativeClosestPoint<PointXYZINormal, PointXYZINormal>>();
     registration = icp;
-  }
-  if (parameter.registration == "ndt") {
+  } else if (parameter.registration == "ndt") {
     auto ndt = pcl::make_shared<pcl::NormalDistributionsTransform<PointXYZINormal, PointXYZINormal>>();
     ndt->setResolution(100.0);
     registration = ndt;
   }
 
-  FramePtr                              cumulativeFrame;
-  GroupOfFrameMap                       framesMap;
-  JPCCOctreePointCloud<PointXYZINormal> octree(20.0);
+  atomic_bool run(true);
+  auto        datasetLoading = [&] {
+    for (size_t datasetIndex = 0; datasetIndex < parameter.dataset.files.size(); datasetIndex++) {
+      size_t                                groupOfFrames    = 32;
+      size_t                                startFrameNumber = parameter.dataset.getStartFrameNumbers(datasetIndex);
+      size_t                                endFrameNumber  = parameter.dataset.getEndFrameNumbers(datasetIndex);
+      auto                                  cumulativeFrame = jpcc::make_shared<Frame>();
+      GroupOfFrame                          frames;
+      GroupOfFrameMap                       framesMap;
+      JPCCOctreePointCloud<PointXYZINormal> octree(parameter.resolution);
 
-  size_t startFrameNumber = parameter.dataset.getStartFrameNumber();
-  {
-    GroupOfFrame frames;
-    clock.start();
-    reader->load(0, startFrameNumber++, 1, frames);
-    preProcessor.process(frames, nullptr, parameter.parallel);
-    clock.stop();
+      framesMap.insert_or_assign("cloud", GroupOfFrame{cumulativeFrame});
+      octree.setInputCloud(cumulativeFrame);
+      octree.addPointsFromInputCloud();
 
-    cumulativeFrame = frames.at(0);
-    framesMap.insert_or_assign("cloud", frames);
-  }
-  octree.setInputCloud(cumulativeFrame);
-  octree.addPointsFromInputCloud();
-
-  viewer->registerKeyboardEvent(
-      [&](const pcl::visualization::KeyboardEvent& event) {
-        if (!event.keyUp()) { return false; }
-        if (event.getKeyCode() == ' ') {
-          cout << "processing..." << endl;
-
-          GroupOfFrame frames;
-          clock.start();
-          reader->load(0, startFrameNumber++, 1, frames);
-          if (frames.size() == 0) { cout << "empty" << endl; }
+      while (startFrameNumber < endFrameNumber) {
+        reader->load(datasetIndex, startFrameNumber, groupOfFrames, frames);
+        for (auto& frame : frames) {
           std::cout << "reader read "
-                    << "frameNumber=" << frames.at(0)->header.seq << ", "
-                    << "points=" << frames.at(0)->size() << std::endl;
-          preProcessor.process(frames, nullptr, parameter.parallel);
-          clock.stop();
-          if (registration) {
-            auto frame = jpcc::make_shared<Frame>();
+                    << "frameNumber=" << frame->header.seq << ", "
+                    << "points=" << frame->size() << std::endl;
+        }
+        preProcessor.process(frames, nullptr, parameter.parallel);
+
+        for (auto& frame : frames) {
+          std::cout << "processing "
+                    << "frameNumber=" << frame->header.seq << std::endl;
+          clock.start();
+          if (cumulativeFrame->size() > 0 && registration) {
+            auto registeredFrame = jpcc::make_shared<Frame>();
             registration->setInputSource(cumulativeFrame);
-            registration->setInputTarget(frames.at(0));
-            registration->align(*frame);
-            frames.at(0) = frame;
+            registration->setInputTarget(frame);
+            registration->align(*registeredFrame);
+            frame = registeredFrame;
           }
 
-          for (const auto& point : frames.at(0)->points) {
+          for (const auto& point : frame->points) {
             if (!octree.isVoxelOccupiedAtPoint(point)) { octree.addPointToCloud(point, cumulativeFrame); }
           }
+          clock.stop();
 
-          viewer->enqueue(framesMap);
-          viewer->nextFrame();
-          cout << "finished" << endl;
+          if (viewer) {
+            viewer->enqueue(framesMap);
+            viewer->nextFrame();
+          }
         }
-        return true;
-      },
-      "");
+        startFrameNumber += groupOfFrames;
+      }
+      cout << "Press any key to continue . . .";
+      cin.get();
+      cout << endl;
+    }
+    run = false;
+  };
 
-  while (!viewer->wasStopped()) { viewer->spinOnce(100); }
+  thread datasetLoadingThread(datasetLoading);
+  if (viewer) {
+    while (!viewer->wasStopped()) { viewer->spinOnce(1000); }
+  } else {
+    while (run) { this_thread::sleep_for(milliseconds(100)); }
+  }
+  run = false;
+  if (datasetLoadingThread.joinable()) { datasetLoadingThread.join(); }
 }
 
 int main(int argc, char* argv[]) {
