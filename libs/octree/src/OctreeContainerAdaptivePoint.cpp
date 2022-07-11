@@ -23,27 +23,29 @@ void OctreeContainerAdaptivePoint::reset() {
 void OctreeContainerAdaptivePoint::addPoint(const PointXYZINormal& point) { points_.push_back(point); }
 
 void OctreeContainerAdaptivePoint::updatePoint(double alpha) {
-  if (isnan(point_.x)) {
-    point_.x         = points_.back().x;
-    point_.y         = points_.back().y;
-    point_.z         = points_.back().z;
-    point_.intensity = points_.back().intensity;
-    point_.normal_x  = points_.back().normal_x;
-    point_.normal_y  = points_.back().normal_y;
-    point_.normal_z  = points_.back().normal_z;
-    point_.curvature = points_.back().curvature;
-    points_.pop_back();
+  if (points_.size() > 0) {
+    if (isnan(point_.x)) {
+      point_.x         = points_.back().x;
+      point_.y         = points_.back().y;
+      point_.z         = points_.back().z;
+      point_.intensity = points_.back().intensity;
+      point_.normal_x  = points_.back().normal_x;
+      point_.normal_y  = points_.back().normal_y;
+      point_.normal_z  = points_.back().normal_z;
+      point_.curvature = points_.back().curvature;
+      points_.pop_back();
+    }
+    for (const auto& point : points_) {
+      point_.x         = (1.0 - alpha) * point_.x + alpha * point.x;
+      point_.y         = (1.0 - alpha) * point_.y + alpha * point.y;
+      point_.z         = (1.0 - alpha) * point_.z + alpha * point.z;
+      point_.intensity = (1.0 - alpha) * point_.intensity + alpha * point.intensity;
+      point_.normal_x  = (1.0 - alpha) * point_.normal_x + alpha * point.normal_x;
+      point_.normal_y  = (1.0 - alpha) * point_.normal_y + alpha * point.normal_y;
+      point_.normal_z  = (1.0 - alpha) * point_.normal_z + alpha * point.normal_z;
+    }
+    points_.clear();
   }
-  for (const auto& point : points_) {
-    point_.x         = (1.0 - alpha) * point_.x + alpha * point.x;
-    point_.y         = (1.0 - alpha) * point_.y + alpha * point.y;
-    point_.z         = (1.0 - alpha) * point_.z + alpha * point.z;
-    point_.intensity = (1.0 - alpha) * point_.intensity + alpha * point.intensity;
-    point_.normal_x  = (1.0 - alpha) * point_.normal_x + alpha * point.normal_x;
-    point_.normal_y  = (1.0 - alpha) * point_.normal_y + alpha * point.normal_y;
-    point_.normal_z  = (1.0 - alpha) * point_.normal_z + alpha * point.normal_z;
-  }
-  points_.clear();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
