@@ -59,7 +59,7 @@ void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
       clock.start();
       reader->loadAll(frameNumber, groupOfFramesSize, frames, parameter.parallel);
       preProcessor.process(frames, nullptr, parameter.parallel);
-      normalEstimation->computeInPlaceAll(frames, parameter.parallel);
+      // normalEstimation->computeInPlaceAll(frames, parameter.parallel);
       clock.stop();
 
       gmmSegmentation->appendTrainSamples(frames);
@@ -83,7 +83,7 @@ void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
       clock.start();
       reader->loadAll(frameNumber, groupOfFramesSize, frames, parameter.parallel);
       preProcessor.process(frames, nullptr, parameter.parallel);
-      normalEstimation->computeInPlaceAll(frames, parameter.parallel);
+      // normalEstimation->computeInPlaceAll(frames, parameter.parallel);
       clock.stop();
 
       dynamicFrames.clear();
