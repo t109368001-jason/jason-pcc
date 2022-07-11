@@ -54,9 +54,6 @@ void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
     size_t       frameNumber       = parameter.inputDataset.getStartFrameNumber();
     const size_t endFrameNumber    = frameNumber + gmmSegmentation->getNTrain();
     while (frameNumber < endFrameNumber) {
-      size_t groupOfFramesSize_ = endFrameNumber - frameNumber;
-      if (groupOfFramesSize_ < groupOfFramesSize) { groupOfFramesSize = groupOfFramesSize_; }
-
       clock.start();
       reader->loadAll(frameNumber, groupOfFramesSize, frames, parameter.parallel);
       preProcessor.process(frames, nullptr, parameter.parallel);
@@ -76,11 +73,8 @@ void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
     GroupOfFrame staticFrames;
     size_t       groupOfFramesSize = parameter.groupOfFramesSize;
     size_t       frameNumber       = parameter.inputDataset.getStartFrameNumber();
-    const size_t endFrameNumber    = frameNumber + gmmSegmentation->getNTrain();
+    const size_t endFrameNumber    = parameter.inputDataset.getEndFrameNumber();
     while (frameNumber < endFrameNumber) {
-      size_t groupOfFramesSize_ = endFrameNumber - frameNumber;
-      if (groupOfFramesSize_ < groupOfFramesSize) { groupOfFramesSize = groupOfFramesSize_; }
-
       clock.start();
       reader->loadAll(frameNumber, groupOfFramesSize, frames, parameter.parallel);
       preProcessor.process(frames, nullptr, parameter.parallel);
