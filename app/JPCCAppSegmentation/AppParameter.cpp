@@ -10,6 +10,7 @@ using namespace po;
 #define APP_OPT_PREFIX "app"
 #define PARALLEL_OPT ".parallel"
 #define HEADLESS_OPT ".headless"
+#define GROUP_OF_FRAMES_SIZE_OPT ".groupOfFramesSize"
 
 AppParameter::AppParameter() :
     Parameter(APP_OPT_PREFIX, __FUNCTION__),
@@ -20,13 +21,16 @@ AppParameter::AppParameter() :
     outputDataset("outputDataset", "OutputDatasetParameter"),
     jpccGmmSegmentation(),
     visualizerParameter() {
-  opts_.add_options()                                    //
-      (string(prefix_ + PARALLEL_OPT).c_str(),           //
-       value<bool>(&parallel)->default_value(parallel),  //
-       "parallel")                                       //
-      (string(prefix_ + HEADLESS_OPT).c_str(),           //
-       value<bool>(&headless)->default_value(headless),  //
-       "headless")                                       //
+  opts_.add_options()                                                        //
+      (string(prefix_ + PARALLEL_OPT).c_str(),                               //
+       value<bool>(&parallel)->default_value(parallel),                      //
+       "parallel")                                                           //
+      (string(prefix_ + HEADLESS_OPT).c_str(),                               //
+       value<bool>(&headless)->default_value(headless),                      //
+       "headless")                                                           //
+      (string(prefix_ + GROUP_OF_FRAMES_SIZE_OPT).c_str(),                   //
+       value<size_t>(&groupOfFramesSize)->default_value(groupOfFramesSize),  //
+       "groupOfFramesSize")                                                  //
       ;
   opts_.add(inputDataset.getOpts());
   opts_.add(inputReader.getOpts());
@@ -50,9 +54,10 @@ void AppParameter::notify() {
 }
 
 ostream& operator<<(ostream& out, const AppParameter& obj) {
-  obj.coutParameters(out)           //
-      (PARALLEL_OPT, obj.parallel)  //
-      (HEADLESS_OPT, obj.headless)  //
+  obj.coutParameters(out)                                //
+      (PARALLEL_OPT, obj.parallel)                       //
+      (HEADLESS_OPT, obj.headless)                       //
+      (GROUP_OF_FRAMES_SIZE_OPT, obj.groupOfFramesSize)  //
       ;
   out << obj.inputDataset;
   out << obj.inputReader;

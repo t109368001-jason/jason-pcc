@@ -49,7 +49,7 @@ void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
 
   {
     GroupOfFrame frames;
-    size_t       groupOfFramesSize = 32;
+    size_t       groupOfFramesSize = parameter.groupOfFramesSize;
     size_t       frameNumber       = parameter.inputDataset.getStartFrameNumber();
     const size_t endFrameNumber    = frameNumber + gmmSegmentation->getNTrain();
     while (frameNumber < endFrameNumber) {
@@ -73,7 +73,7 @@ void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
     GroupOfFrame frames;
     GroupOfFrame dynamicFrames;
     GroupOfFrame staticFrames;
-    size_t       groupOfFramesSize = 32;
+    size_t       groupOfFramesSize = parameter.groupOfFramesSize;
     size_t       frameNumber       = parameter.inputDataset.getStartFrameNumber();
     const size_t endFrameNumber    = frameNumber + gmmSegmentation->getNTrain();
     while (frameNumber < endFrameNumber) {
