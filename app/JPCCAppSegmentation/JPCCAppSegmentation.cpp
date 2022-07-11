@@ -8,6 +8,7 @@
 #include <jpcc/process/PreProcessor.h>
 #include <jpcc/process/JPCCNormalEstimation.h>
 #include <jpcc/segmentation/JPCCGMMSegmentation.h>
+#include <jpcc/visualization/JPCCVisualizer.h>
 
 #include "AppParameter.h"
 
@@ -19,12 +20,32 @@ using namespace jpcc;
 using namespace jpcc::io;
 using namespace jpcc::process;
 using namespace jpcc::segmentation;
+using namespace jpcc::visualization;
 
 void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
   const typename DatasetReader::Ptr reader = newReader(parameter.inputReader, parameter.inputDataset);
   PreProcessor                      preProcessor(parameter.preProcess);
-  auto normalEstimation = jpcc::make_shared<JPCCNormalEstimation>(parameter.jpccNormalEstimation);
-  auto gmmSegmentation  = jpcc::make_shared<JPCCGMMSegmentation>(parameter.jpccGmmSegmentation);
+  auto                normalEstimation = jpcc::make_shared<JPCCNormalEstimation>(parameter.jpccNormalEstimation);
+  auto                gmmSegmentation  = jpcc::make_shared<JPCCGMMSegmentation>(parameter.jpccGmmSegmentation);
+  JPCCVisualizer::Ptr viewer;
+
+  const string dynamicId = "dynamic";
+  const string staticId  = "static";
+
+  if (!parameter.headless) {
+    viewer = jpcc::make_shared<JPCCVisualizer>(parameter.visualizerParameter);
+    viewer->addParameter(parameter);
+    viewer->setColor(dynamicId, 1.0, 1.0, 1.0);
+    viewer->setColor(staticId, "z");
+  }
+
+  atomic_bool              run(true);
+  jpcc::shared_ptr<thread> viewerThread;
+  if (viewer) {
+    viewerThread = jpcc::make_shared<thread>([&]() {
+      while (!viewer->wasStopped() && run) { viewer->spinOnce(1000); }
+    });
+  }
 
   {
     GroupOfFrame frames;
@@ -75,12 +96,16 @@ void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
         staticFrames.push_back(staticFrame);
       }
 
+      if (viewer) { viewer->enqueue(GroupOfFrameMap{{dynamicId, dynamicFrames}, {staticId, staticFrames}}); }
+
       savePly(dynamicFrames, parameter.outputDataset.getFilePath(), parameter.parallel);
       savePly(staticFrames, parameter.outputDataset.getFilePath(), parameter.parallel);
 
       frameNumber += groupOfFramesSize;
     }
   }
+  run = false;
+  if (viewerThread && viewerThread->joinable()) { viewerThread->join(); }
 }
 
 int main(int argc, char* argv[]) {

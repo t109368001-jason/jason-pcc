@@ -6,18 +6,21 @@
 #include <jpcc/process/PreProcessParameter.h>
 #include <jpcc/process/JPCCNormalEstimationParameter.h>
 #include <jpcc/segmentation/JPCCGMMSegmentationParameter.h>
+#include <jpcc/visualization/VisualizerParameter.h>
 
 namespace jpcc {
 
 class AppParameter : public Parameter {
  public:
   bool                                       parallel;
+  bool                                       headless;
   io::DatasetParameter                       inputDataset;
   io::DatasetReaderParameter                 inputReader;
   io::DatasetParameter                       outputDataset;
   process::PreProcessParameter               preProcess;
   process::JPCCNormalEstimationParameter     jpccNormalEstimation;
   segmentation::JPCCGMMSegmentationParameter jpccGmmSegmentation;
+  visualization::VisualizerParameter         visualizerParameter;
 
   AppParameter();
 
