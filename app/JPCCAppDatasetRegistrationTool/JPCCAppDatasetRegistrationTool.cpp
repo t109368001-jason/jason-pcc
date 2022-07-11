@@ -122,6 +122,10 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
           }
           framesMap->insert_or_assign("3", frames3);
         }
+        cout << startFrameNumber0 << ", "  //
+             << startFrameNumber1 << ", "  //
+             << startFrameNumber2 << ", "  //
+             << startFrameNumber3 << endl;
         viewer->enqueue(*framesMap);
         viewer->nextFrame();
         return true;
