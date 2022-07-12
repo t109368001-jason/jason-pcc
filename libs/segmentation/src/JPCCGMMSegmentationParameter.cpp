@@ -11,6 +11,7 @@ using namespace po;
 #define N_TRAIN_OPT ".nTrain"
 #define DYNAMIC_THRESHOLD_OPT ".dynamicThresholdLE"
 #define STATIC_THRESHOLD_OPT ".staticThresholdGT"
+#define MINIMUM_VARIANCE_OPT ".minimumVariance"
 
 JPCCGMMSegmentationParameter::JPCCGMMSegmentationParameter() :
     JPCCGMMSegmentationParameter(JPCC_GMM_SEGMENTATION_OPT_PREFIX, __FUNCTION__) {}
@@ -36,6 +37,9 @@ JPCCGMMSegmentationParameter::JPCCGMMSegmentationParameter(const string& prefix,
       (string(prefix_ + STATIC_THRESHOLD_OPT).c_str(),          //
        value<double>(&staticThresholdGT)->required(),           //
        JPCC_GMM_SEGMENTATION_OPT_PREFIX " staticThresholdGT")   //
+      (string(prefix_ + MINIMUM_VARIANCE_OPT).c_str(),          //
+       value<double>(&minimumVariance)->required(),             //
+       JPCC_GMM_SEGMENTATION_OPT_PREFIX " minimumVariance_")    //
       ;
 }
 
@@ -45,6 +49,7 @@ void JPCCGMMSegmentationParameter::getShowTexts(vector<string>& showTexts) const
   showTexts.push_back(prefix_ + ALPHA_OPT ": " + to_string(alpha));
   showTexts.push_back(prefix_ + N_TRAIN_OPT ": " + to_string(nTrain));
   showTexts.push_back(prefix_ + DYNAMIC_THRESHOLD_OPT ": " + to_string(dynamicThresholdLE));
+  showTexts.push_back(prefix_ + STATIC_THRESHOLD_OPT ": " + to_string(staticThresholdGT));
   showTexts.push_back(prefix_ + STATIC_THRESHOLD_OPT ": " + to_string(staticThresholdGT));
 }
 
@@ -63,6 +68,7 @@ ostream& operator<<(ostream& out, const JPCCGMMSegmentationParameter& obj) {
       (N_TRAIN_OPT, obj.nTrain)                        //
       (DYNAMIC_THRESHOLD_OPT, obj.dynamicThresholdLE)  //
       (STATIC_THRESHOLD_OPT, obj.staticThresholdGT)    //
+      (MINIMUM_VARIANCE_OPT, obj.minimumVariance)      //
       ;
   return out;
 }

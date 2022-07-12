@@ -17,6 +17,7 @@ class JPCCGMMSegmentationParameter : public virtual Parameter {
   int    nTrain;
   double dynamicThresholdLE;
   double staticThresholdGT;
+  double minimumVariance;
 
   JPCCGMMSegmentationParameter();
 
