@@ -29,7 +29,7 @@ double Cluster::getProbability(const SampleT sample) const {
   double tmp         = exp((-0.5) * pow(sample - mean_, 2) / variance_);
   double probability = tmp / sqrt(2 * M_PI * variance_);
   assert(!isnan(probability));
-  return mean_ >= 0 ? probability : -probability;
+  return probability;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -160,20 +160,32 @@ GMM::GMM(vector<SampleT>&      samples,
 //////////////////////////////////////////////////////////////////////////////////////////////
 [[nodiscard]] double GMM::getProbability(SampleT sample) {
   assert(!isnan(sample));
-  double probability = 0.0;
+  double totalProbability = 0.0;
 
-  for (const auto& cluster : clusters_) { probability += cluster->getWeight() * cluster->getProbability(sample); }
-  return probability;
+  for (const auto& cluster : clusters_) {
+    double probability = cluster->getWeight() * cluster->getProbability(sample);
+    if (cluster->getMean() < 0) {
+      totalProbability -= probability;
+    } else {
+      totalProbability += probability;
+    }
+  }
+  return totalProbability;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 [[nodiscard]] double GMM::getStaticProbability() {
-  double probability = 0.0;
+  double totalProbability = 0.0;
 
   for (const auto& cluster : clusters_) {
-    probability += cluster->getWeight() * cluster->getProbability(static_cast<SampleT>(cluster->getMean()));
+    double probability = cluster->getWeight() * cluster->getProbability(static_cast<SampleT>(cluster->getMean()));
+    if (cluster->getMean() < 0) {
+      totalProbability -= probability;
+    } else {
+      totalProbability += probability;
+    }
   }
-  return probability;
+  return totalProbability;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
