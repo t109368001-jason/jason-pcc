@@ -11,17 +11,20 @@ class Cluster {
   using SampleT = float;
 
  protected:
-  double weight_;
-  double mean_;
-  double variance_;
-  double alpha_;  // weight learning rate
+  double       weight_;
+  double       mean_;
+  double       variance_;
+  double       alpha_;  // weight learning rate
+  const double minimumVariance_;
 
  public:
-  Cluster(const std::vector<SampleT>& samples, double weight, double alpha);
+  Cluster(const std::vector<SampleT>& samples, double weight, double alpha, double minimumVariance);
 
   [[nodiscard]] double getProbability(SampleT sample) const;
 
   void addSample(SampleT sample, bool matched);
+
+  void checkVariance();
 
   [[nodiscard]] double getWeight() const;
 
@@ -45,7 +48,11 @@ class GMM {
   std::vector<Cluster::Ptr> clusters_;
 
  public:
-  GMM(std::vector<SampleT>& samples, int K, double alpha, std::vector<SampleT>& alternateCentroids);
+  GMM(std::vector<SampleT>& samples,
+      int                   K,
+      double                alpha,
+      double                minimumVariance,
+      std::vector<SampleT>& alternateCentroids);
 
   [[nodiscard]] double getProbability(SampleT sample);
 

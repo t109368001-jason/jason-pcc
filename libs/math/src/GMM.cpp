@@ -5,28 +5,49 @@ using namespace std;
 namespace jpcc::math {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-Cluster::Cluster(const std::vector<SampleT>& samples, const double weight, const double alpha) :
-    weight_(weight), alpha_(alpha) {
+Cluster::Cluster(const std::vector<SampleT>& samples,
+                 const double                weight,
+                 const double                alpha,
+                 const double                minimumVariance) :
+    weight_(weight), alpha_(alpha), minimumVariance_(minimumVariance) {
+  assert(!isnan(weight_));
+  assert(!isnan(alpha_));
+  assert(!isnan(minimumVariance));
   mean_ = 0;
   for (auto& sample : samples) { mean_ += sample; }
-  mean_ /= samples.size();
+  mean_ /= static_cast<double>(samples.size());
   variance_ = 0;
   for (auto& sample : samples) { variance_ += pow(sample - mean_, 2); }
-  variance_ = sqrt(variance_ / samples.size());
+  variance_ = sqrt(variance_ / static_cast<double>(samples.size()));
+  checkVariance();
+  assert(!isnan(mean_));
+  assert(!isnan(variance_));
 }
-
 //////////////////////////////////////////////////////////////////////////////////////////////
 double Cluster::getProbability(const SampleT sample) const {
-  double tmp = exp((-0.5) * pow(sample - mean_, 2) / pow(variance_, 2));
-  return tmp / sqrt(2 * M_PI * pow(variance_, 2));
+  assert(!isnan(sample));
+  double tmp         = exp((-0.5) * pow(sample - mean_, 2) / variance_);
+  double probability = tmp / sqrt(2 * M_PI * variance_);
+  assert(!isnan(probability));
+  return mean_ >= 0 ? probability : -probability;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void Cluster::addSample(const SampleT sample, const bool matched) {
+  assert(!isnan(sample));
   weight_    = (1 - alpha_) * weight_ + (matched ? alpha_ : 0);
   double rho = alpha_ * getProbability(sample);
   mean_      = (1 - rho) * mean_ + rho * sample;
-  variance_  = sqrt((1 - rho) * pow(variance_, 2) + rho * pow(sample - mean_, 2));
+  variance_  = (1 - rho) * variance_ + rho * pow(sample - mean_, 2);
+  checkVariance();
+  assert(!isnan(weight_));
+  assert(!isnan(mean_));
+  assert(!isnan(variance_));
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void Cluster::checkVariance() {
+  if (variance_ < minimumVariance_) { variance_ = minimumVariance_; }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -36,7 +57,10 @@ double Cluster::getWeight() const { return weight_; }
 double& Cluster::getWeight() { return weight_; }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void Cluster::setWeight(const double weight) { weight_ = weight; }
+void Cluster::setWeight(const double weight) {
+  assert(!isnan(weight));
+  weight_ = weight;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 double Cluster::getMean() const { return mean_; }
@@ -45,7 +69,12 @@ double Cluster::getMean() const { return mean_; }
 double Cluster::getVariance() const { return variance_; }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-GMM::GMM(vector<SampleT>& samples, const int K, const double alpha, std::vector<SampleT>& alternateCentroids) : K_(K) {
+GMM::GMM(vector<SampleT>&      samples,
+         const int             K,
+         const double          alpha,
+         const double          minimumVariance,
+         std::vector<SampleT>& alternateCentroids) :
+    K_(K) {
   clusters_.resize(K_);
   size_t k;
 
@@ -109,7 +138,7 @@ GMM::GMM(vector<SampleT>& samples, const int K, const double alpha, std::vector<
     for (k = 0; k < K_; k++) {
       double sum = 0.0;
       for (const auto& sample : clusters.at(k)) { sum += sample; }
-      centroids.at(k) = static_cast<SampleT>(sum / clusters.at(k).size());
+      centroids.at(k) = static_cast<SampleT>(sum / static_cast<double>(clusters.at(k).size()));
     }
 
     isConverged = true;
@@ -119,7 +148,10 @@ GMM::GMM(vector<SampleT>& samples, const int K, const double alpha, std::vector<
     }
   }
 
-  for (k = 0; k < K_; k++) { clusters_.at(k) = jpcc::make_shared<Cluster>(clusters.at(k), 1.0 / K_, alpha); }
+  for (k = 0; k < K_; k++) {
+    double weight   = static_cast<double>(clusters.at(k).size()) / static_cast<double>(samples.size());
+    clusters_.at(k) = jpcc::make_shared<Cluster>(clusters.at(k), weight, alpha, minimumVariance);
+  }
   sort(clusters_.begin(), clusters_.end(), [](const Cluster::Ptr& cluster1, const Cluster::Ptr& cluster2) {
     return cluster1->getMean() < cluster2->getMean();
   });
@@ -127,6 +159,7 @@ GMM::GMM(vector<SampleT>& samples, const int K, const double alpha, std::vector<
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 [[nodiscard]] double GMM::getProbability(SampleT sample) {
+  assert(!isnan(sample));
   double probability = 0.0;
 
   for (const auto& cluster : clusters_) { probability += cluster->getWeight() * cluster->getProbability(sample); }
@@ -138,13 +171,14 @@ GMM::GMM(vector<SampleT>& samples, const int K, const double alpha, std::vector<
   double probability = 0.0;
 
   for (const auto& cluster : clusters_) {
-    probability += cluster->getWeight() * cluster->getProbability(cluster->getMean());
+    probability += cluster->getWeight() * cluster->getProbability(static_cast<SampleT>(cluster->getMean()));
   }
   return probability;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pair<size_t, double> GMM::getOptimalModelIndex(const SampleT sample) const {
+  assert(!isnan(sample));
   std::pair<size_t, double> optimalIndexProbability;
   optimalIndexProbability.first  = 0;
   optimalIndexProbability.second = clusters_.at(0)->getProbability(sample);
@@ -172,6 +206,7 @@ pair<size_t, double> GMM::getOptimalModelIndex(const vector<SampleT>& samples) c
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void GMM::updateModel(SampleT sample, bool normalizeWeights) {
+  assert(!isnan(sample));
   size_t optimalIndex = getOptimalModelIndex(sample).first;
   for (size_t k = 0; k < K_; k++) { clusters_.at(k)->addSample(sample, k == optimalIndex); }
   if (normalizeWeights) { this->normalizeWeights(); }
