@@ -15,7 +15,7 @@ void OctreeContainerGMMWithAdaptivePoint::reset() {
 //////////////////////////////////////////////////////////////////////////////////////////////
 void OctreeContainerGMMWithAdaptivePoint::addPoint(const PointXYZINormal& point) {
   OctreeContainerGMM::addPoint(point);
-  if (OctreeContainerGMM::getGMM()) { OctreeContainerAdaptivePoint::addPoint(point); }
+  OctreeContainerAdaptivePoint::addPoint(point);
 }
 
 }  // namespace jpcc::octree

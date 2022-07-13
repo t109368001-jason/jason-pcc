@@ -24,6 +24,9 @@ void JPCCGMMSegmentation::appendTrainSamples(const GroupOfFrame& groupOfFrame) {
       it.getLeafContainer().setIntensity(numeric_limits<float>::quiet_NaN());
     }
   }
+  for (auto it = octree_.leaf_depth_begin(), end = octree_.leaf_depth_end(); it != end; ++it) {
+    it.getLeafContainer().updatePoint(parameter_.alpha);
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -77,7 +80,11 @@ void JPCCGMMSegmentation::segmentation(const FrameConstPtr& frame, FramePtr dyna
         bool isDynamic = probability < parameter_.dynamicThresholdLE;
         bool isStatic  = staticProbability > parameter_.staticThresholdGT;
 
-        if (!isStatic && isDynamic) { dynamicFrame->points.push_back(leafContainer.getPoint()); }
+        if (!isStatic && isDynamic) {
+          PointXYZINormal& point = leafContainer.getPoint();
+          assert(!isnan(point.x));
+          dynamicFrame->points.push_back(point);
+        }
       }
 
       // update model
@@ -89,7 +96,11 @@ void JPCCGMMSegmentation::segmentation(const FrameConstPtr& frame, FramePtr dyna
 
     if (staticFrame) {
       bool updatedIsStatic = leafContainer.getGMM()->getStaticProbability() > parameter_.staticThresholdGT;
-      if (updatedIsStatic) { staticFrame->points.push_back(leafContainer.getPoint()); }
+      if (updatedIsStatic) {
+        PointXYZINormal& point = leafContainer.getPoint();
+        assert(!isnan(point.x));
+        staticFrame->points.push_back(point);
+      }
     }
 
     // reset

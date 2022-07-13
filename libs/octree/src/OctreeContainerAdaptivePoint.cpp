@@ -20,10 +20,13 @@ void OctreeContainerAdaptivePoint::reset() {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void OctreeContainerAdaptivePoint::addPoint(const PointXYZINormal& point) { points_.push_back(point); }
+void OctreeContainerAdaptivePoint::addPoint(const PointXYZINormal& point) {
+  assert(!isnan(point.x));
+  points_.push_back(point);
+}
 
 void OctreeContainerAdaptivePoint::updatePoint(double alpha) {
-  if (points_.size() > 0) {
+  if (!points_.empty()) {
     if (isnan(point_.x)) {
       point_.x         = points_.back().x;
       point_.y         = points_.back().y;
