@@ -106,14 +106,15 @@ GMM::GMM(vector<SampleT>&      samples,
           break;
         }
       }
-      if (exists) { centroids.push_back(sample); }
+      if (!exists) { centroids.push_back(sample); }
     }
   } else {
     for (const auto& uniqueSample : uniqueSamples) { centroids.push_back(uniqueSample); }
     k = 0;
     while (centroids.size() < K_) {
-      centroids.push_back(alternateCentroids.at(k++));
-      samples.push_back(alternateCentroids.at(k++));
+      centroids.push_back(alternateCentroids.at(k));
+      samples.push_back(alternateCentroids.at(k));
+      k++;
     }
   }
 
