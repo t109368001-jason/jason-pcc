@@ -46,4 +46,7 @@ inline constexpr bool dependent_false_v = dependent_false<T>::value;
 constexpr float MAX_INTENSITY  = 255.0;
 constexpr float NULL_INTENSITY = -128.0;
 
+constexpr float GMM_MAX_INTENSITY  = 1.0;
+constexpr float GMM_NULL_INTENSITY = -0.5;
+
 }  // namespace jpcc
