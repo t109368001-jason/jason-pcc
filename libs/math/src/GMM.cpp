@@ -18,7 +18,7 @@ Cluster::Cluster(const std::vector<SampleT>& samples,
   mean_ /= static_cast<double>(samples.size());
   variance_ = 0;
   for (auto& sample : samples) { variance_ += pow(sample - mean_, 2); }
-  variance_ = sqrt(variance_ / static_cast<double>(samples.size()));
+  variance_ = variance_ / static_cast<double>(samples.size());
   checkVariance();
   assert(!isnan(mean_));
   assert(!isnan(variance_));
