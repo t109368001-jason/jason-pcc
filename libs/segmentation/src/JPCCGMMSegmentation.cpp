@@ -41,12 +41,19 @@ void JPCCGMMSegmentation::build() {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void JPCCGMMSegmentation::segmentation(const FrameConstPtr& frame, FramePtr dynamicFrame, FramePtr staticFrame) {
-  if (dynamicFrame) { dynamicFrame->clear(); }
-  if (staticFrame) { staticFrame->clear(); }
+  if (dynamicFrame) {
+    dynamicFrame->clear();
+    dynamicFrame->header.seq   = frame->header.seq;
+    dynamicFrame->header.stamp = frame->header.stamp;
+  }
+  if (staticFrame) {
+    staticFrame->clear();
+    staticFrame->header.seq   = frame->header.seq;
+    staticFrame->header.stamp = frame->header.stamp;
+  }
 
   for (auto it = octree_.leaf_depth_begin(), end = octree_.leaf_depth_end(); it != end; ++it) {
-    LeafContainerT& leafContainer = it.getLeafContainer();
-    leafContainer.setIntensity(std::numeric_limits<float>::quiet_NaN());
+    it.getLeafContainer().setIntensity(std::numeric_limits<float>::quiet_NaN());
   }
   octree_.addFrame(frame);
   for (auto it = octree_.leaf_depth_begin(), end = octree_.leaf_depth_end(); it != end; ++it) {
@@ -54,18 +61,21 @@ void JPCCGMMSegmentation::segmentation(const FrameConstPtr& frame, FramePtr dyna
 
     leafContainer.updatePoint(parameter_.alpha);
 
-    double staticProbability = leafContainer.getGMM()->getStaticProbability();
-
-    bool isStatic = staticProbability > parameter_.staticThresholdGT;
-
     //    if (isStatic && staticFrame) { staticFrame->push_back(leafContainer.getPoint()); }
     if (!isnan(leafContainer.getIntensity())) {
       const float intensity = leafContainer.getIntensity() / MAX_INTENSITY;
       assert(intensity <= GMM_MAX_INTENSITY);
 
-      double probability = leafContainer.getGMM()->getProbability(intensity);
-      bool   isDynamic   = probability < parameter_.dynamicThresholdLE;
-      if (!isStatic && isDynamic && dynamicFrame) { dynamicFrame->push_back(leafContainer.getPoint()); }
+      if (dynamicFrame) {
+        double probability       = leafContainer.getGMM()->getProbability(intensity);
+        double staticProbability = leafContainer.getGMM()->getStaticProbability();
+
+        bool isDynamic = probability < parameter_.dynamicThresholdLE;
+        bool isStatic  = staticProbability > parameter_.staticThresholdGT;
+
+        if (!isStatic && isDynamic) { dynamicFrame->points.push_back(leafContainer.getPoint()); }
+      }
+
       // update model
       leafContainer.getGMM()->updateModel(intensity);
     } else {
@@ -73,11 +83,22 @@ void JPCCGMMSegmentation::segmentation(const FrameConstPtr& frame, FramePtr dyna
       leafContainer.getGMM()->updateModel(NULL_INTENSITY);
     }
 
-    bool updatedIsStatic = leafContainer.getGMM()->getStaticProbability() > parameter_.staticThresholdGT;
-    if (updatedIsStatic && staticFrame) { staticFrame->push_back(leafContainer.getPoint()); }
+    if (staticFrame) {
+      bool updatedIsStatic = leafContainer.getGMM()->getStaticProbability() > parameter_.staticThresholdGT;
+      if (updatedIsStatic) { staticFrame->points.push_back(leafContainer.getPoint()); }
+    }
 
     // reset
     leafContainer.setIntensity(numeric_limits<float>::quiet_NaN());
+  }
+
+  if (dynamicFrame) {
+    dynamicFrame->width  = dynamicFrame->size();
+    dynamicFrame->height = 1;
+  }
+  if (staticFrame) {
+    staticFrame->width  = staticFrame->size();
+    staticFrame->height = 1;
   }
 }
 
