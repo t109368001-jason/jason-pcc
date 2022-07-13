@@ -18,7 +18,12 @@ size_t JPCCGMMSegmentation::getNTrain() const { return parameter_.nTrain; }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void JPCCGMMSegmentation::appendTrainSamples(const GroupOfFrame& groupOfFrame) {
-  for_each(groupOfFrame.begin(), groupOfFrame.end(), [this](const auto& frame) { octree_.addFrame(frame); });
+  for (const auto& frame : groupOfFrame) {
+    octree_.addFrame(frame);
+    for (auto it = octree_.leaf_depth_begin(), end = octree_.leaf_depth_end(); it != end; ++it) {
+      it.getLeafContainer().setIntensity(numeric_limits<float>::quiet_NaN());
+    }
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
