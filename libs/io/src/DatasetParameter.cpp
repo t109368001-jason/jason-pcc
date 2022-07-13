@@ -28,6 +28,7 @@ DatasetParameter::DatasetParameter() : DatasetParameter(DATASET_OPT_PREFIX, __FU
 DatasetParameter::DatasetParameter(const string& prefix, const string& caption) :
     Parameter(prefix, caption),
     preProcessed(false),
+    encoded(false),
     folderPrefix("../../dataset/"),
     files(),
     frameCounts(),
