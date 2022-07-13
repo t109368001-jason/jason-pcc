@@ -58,6 +58,10 @@ void JPCCGMMSegmentation::segmentation(const FrameConstPtr& frame, FramePtr dyna
   octree_.addFrame(frame);
   for (auto it = octree_.leaf_depth_begin(), end = octree_.leaf_depth_end(); it != end; ++it) {
     LeafContainerT& leafContainer = it.getLeafContainer();
+    if (!leafContainer.getGMM()) {
+      leafContainer.getTrainSamples()->resize(parameter_.nTrain, GMM_NULL_INTENSITY);
+      leafContainer.initGMM(parameter_.k, parameter_.alpha, parameter_.minimumVariance, alternateCentroids_);
+    }
 
     leafContainer.updatePoint(parameter_.alpha);
 
