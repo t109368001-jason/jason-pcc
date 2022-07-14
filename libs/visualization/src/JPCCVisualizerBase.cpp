@@ -152,10 +152,16 @@ RGBColor JPCCVisualizerBase::getTextColor(const std::string& id) {
 void JPCCVisualizerBase::setPrimaryId(const std::string& primaryId) { primaryId_ = primaryId; }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void JPCCVisualizerBase::setColor(const std::string& id, const std::string& field) { fieldColorMap_[id] = field; }
+void JPCCVisualizerBase::setColor(const std::string& id, const std::string& field) {
+  const auto& it = rgbColorMap_.find(id);
+  if (it != rgbColorMap_.end()) { rgbColorMap_.erase(it); }
+  fieldColorMap_[id] = field;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void JPCCVisualizerBase::setColor(const std::string& id, const double r, const double g, const double b) {
+  const auto& it = fieldColorMap_.find(id);
+  if (it != fieldColorMap_.end()) { fieldColorMap_.erase(it); }
   rgbColorMap_[id] = {r, g, b};
 }
 
