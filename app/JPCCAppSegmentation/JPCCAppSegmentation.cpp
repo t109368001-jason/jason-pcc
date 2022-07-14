@@ -87,6 +87,14 @@ void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
         auto dynamicFrame = jpcc::make_shared<Frame>();
         auto staticFrame  = jpcc::make_shared<Frame>();
         gmmSegmentation->segmentation(frame, dynamicFrame, staticFrame);
+
+        std::cout << "segmentation dynamic "
+                  << "frameNumber=" << dynamicFrame->header.seq << ", "
+                  << "points=" << dynamicFrame->size() << std::endl;
+        std::cout << "segmentation static "
+                  << "frameNumber=" << staticFrame->header.seq << ", "
+                  << "points=" << staticFrame->size() << std::endl;
+
         dynamicFrames.push_back(dynamicFrame);
         staticFrames.push_back(staticFrame);
       }
