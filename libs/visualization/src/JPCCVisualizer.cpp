@@ -92,6 +92,18 @@ void JPCCVisualizer::nextFrame() {
     queue.pop();
   }
   updateAll();
+
+  if (!param_.outputScreenshot) { return; }
+
+  const auto& it = frameMap_.find(primaryId_);
+  if (it != frameMap_.end()) {
+    spinOnce(1, true);
+    const FramePtr& cloud = it->second;
+
+    char fileName[4096] = {0};
+    sprintf(fileName, "%s%u.png", param_.outputScreenshotDir.c_str(), cloud->header.seq);
+    saveScreenshot(fileName);
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

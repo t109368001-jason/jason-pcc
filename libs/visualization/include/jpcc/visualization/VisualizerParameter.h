@@ -29,10 +29,14 @@ class VisualizerParameter : public virtual Parameter {
   int                                windowHeight;
   std::map<std::string, std::string> fieldColorMap;
   std::map<std::string, RGBColor>    rgbColorMap;
+  bool                               outputScreenshot;
+  std::string                        outputScreenshotDir;
 
   VisualizerParameter();
 
   VisualizerParameter(const std::string& prefix, const std::string& caption);
+
+  void getShowTexts(std::vector<std::string>& showTexts) const override;
 
   void notify() override;
 

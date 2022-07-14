@@ -1,10 +1,13 @@
 #include <jpcc/visualization/VisualizerParameter.h>
 
+#include <filesystem>
+
 #include <boost/algorithm/string.hpp>
 
 namespace jpcc::visualization {
 
 using namespace std;
+using namespace std::filesystem;
 using namespace po;
 
 #define NAME_OPT ".name"
@@ -16,6 +19,8 @@ using namespace po;
 #define WINDOW_WIDTH_OPT ".windowWidth"
 #define WINDOW_HEIGHT_OPT ".windowHeight"
 #define ID_COLORS_OPT ".idColors"
+#define OUTPUT_SCREENSHOT_OPT ".outputScreenshot"
+#define OUTPUT_SCREENSHOT_DIR_OPT ".outputScreenshotDir"
 
 VisualizerParameter::VisualizerParameter() : VisualizerParameter(VISUALIZER_OPT_PREFIX, __FUNCTION__) {}
 
@@ -28,36 +33,44 @@ VisualizerParameter::VisualizerParameter(const string& prefix, const string& cap
     bufferSize(32),
     pointSize(1),
     windowWidth(0),
-    windowHeight(0) {
+    windowHeight(0),
+    outputScreenshot(false),
+    outputScreenshotDir("../../result/JPCCVisualizer/") {
   cameraPosition.fill(0.0);
-  opts_.add_options()                                                    //
-      (string(prefix_ + NAME_OPT).c_str(),                               //
-       value<string>(&name)->default_value(name),                        //
-       "name")                                                           //
-      (string(prefix_ + DESCRIPTION_OPT).c_str(),                        //
-       value<string>(&description)->default_value(description),          //
-       "description")                                                    //
-      (string(prefix_ + SHOW_PARAMETER_OPT).c_str(),                     //
-       value<bool>(&showParameter)->default_value(showParameter),        //
-       "showParameter")                                                  //
-      (string(prefix_ + CAMERA_POSITION_OPT).c_str(),                    //
-       value<string>(&cameraPosition_)->default_value(cameraPosition_),  //
-       "cameraPosition")                                                 //
-      (string(prefix_ + BUFFER_SIZE_OPT).c_str(),                        //
-       value<size_t>(&bufferSize)->default_value(bufferSize),            //
-       "bufferSize")                                                     //
-      (string(prefix_ + POINT_SIZE_OPT).c_str(),                         //
-       value<size_t>(&pointSize)->default_value(pointSize),              //
-       "pointSize")                                                      //
-      (string(prefix_ + WINDOW_WIDTH_OPT).c_str(),                       //
-       value<int>(&windowWidth)->default_value(windowWidth),             //
-       "windowWidth")                                                    //
-      (string(prefix_ + WINDOW_HEIGHT_OPT).c_str(),                      //
-       value<int>(&windowHeight)->default_value(windowHeight),           //
-       "windowHeight")                                                   //
-      (string(prefix_ + ID_COLORS_OPT).c_str(),                          //
-       value<vector<string>>(&idColors_),                                //
-       "idColors")                                                       //
+  opts_.add_options()                                                            //
+      (string(prefix_ + NAME_OPT).c_str(),                                       //
+       value<string>(&name)->default_value(name),                                //
+       "name")                                                                   //
+      (string(prefix_ + DESCRIPTION_OPT).c_str(),                                //
+       value<string>(&description)->default_value(description),                  //
+       "description")                                                            //
+      (string(prefix_ + SHOW_PARAMETER_OPT).c_str(),                             //
+       value<bool>(&showParameter)->default_value(showParameter),                //
+       "showParameter")                                                          //
+      (string(prefix_ + CAMERA_POSITION_OPT).c_str(),                            //
+       value<string>(&cameraPosition_)->default_value(cameraPosition_),          //
+       "cameraPosition")                                                         //
+      (string(prefix_ + BUFFER_SIZE_OPT).c_str(),                                //
+       value<size_t>(&bufferSize)->default_value(bufferSize),                    //
+       "bufferSize")                                                             //
+      (string(prefix_ + POINT_SIZE_OPT).c_str(),                                 //
+       value<size_t>(&pointSize)->default_value(pointSize),                      //
+       "pointSize")                                                              //
+      (string(prefix_ + WINDOW_WIDTH_OPT).c_str(),                               //
+       value<int>(&windowWidth)->default_value(windowWidth),                     //
+       "windowWidth")                                                            //
+      (string(prefix_ + WINDOW_HEIGHT_OPT).c_str(),                              //
+       value<int>(&windowHeight)->default_value(windowHeight),                   //
+       "windowHeight")                                                           //
+      (string(prefix_ + ID_COLORS_OPT).c_str(),                                  //
+       value<vector<string>>(&idColors_),                                        //
+       "idColors")                                                               //
+      (string(prefix_ + OUTPUT_SCREENSHOT_OPT).c_str(),                          //
+       value<bool>(&outputScreenshot)->default_value(outputScreenshot),          //
+       "outputScreenshot")                                                       //
+      (string(prefix_ + OUTPUT_SCREENSHOT_DIR_OPT).c_str(),                      //
+       value<string>(&outputScreenshotDir)->default_value(outputScreenshotDir),  //
+       "outputScreenshotDir")                                                    //
       ;
 }
 
@@ -93,19 +106,29 @@ void VisualizerParameter::notify() {
       rgbColorMap.insert_or_assign(ss.at(0), RGBColor{r, g, b});
     }
   }
+  if (outputScreenshot) {
+    if (!boost::iends_with(outputScreenshotDir, "/")) { outputScreenshotDir += "/"; }
+    if (!exists(outputScreenshotDir)) { create_directories(outputScreenshotDir); }
+  }
+}
+
+void VisualizerParameter::getShowTexts(vector<std::string>& showTexts) const {
+  if (outputScreenshot) { showTexts.push_back(prefix_ + OUTPUT_SCREENSHOT_DIR_OPT ": " + outputScreenshotDir); }
 }
 
 ostream& operator<<(ostream& out, const VisualizerParameter& obj) {
-  obj.coutParameters(out)                         //
-      (NAME_OPT, obj.name)                        //
-      (DESCRIPTION_OPT, obj.description)          //
-      (SHOW_PARAMETER_OPT, obj.showParameter)     //
-      (CAMERA_POSITION_OPT, obj.cameraPosition_)  //
-      (BUFFER_SIZE_OPT, obj.bufferSize)           //
-      (POINT_SIZE_OPT, obj.pointSize)             //
-      (WINDOW_WIDTH_OPT, obj.windowWidth)         //
-      (WINDOW_HEIGHT_OPT, obj.windowHeight)       //
-      (ID_COLORS_OPT, obj.idColors_)              //
+  obj.coutParameters(out)                                   //
+      (NAME_OPT, obj.name)                                  //
+      (DESCRIPTION_OPT, obj.description)                    //
+      (SHOW_PARAMETER_OPT, obj.showParameter)               //
+      (CAMERA_POSITION_OPT, obj.cameraPosition_)            //
+      (BUFFER_SIZE_OPT, obj.bufferSize)                     //
+      (POINT_SIZE_OPT, obj.pointSize)                       //
+      (WINDOW_WIDTH_OPT, obj.windowWidth)                   //
+      (WINDOW_HEIGHT_OPT, obj.windowHeight)                 //
+      (ID_COLORS_OPT, obj.idColors_)                        //
+      (OUTPUT_SCREENSHOT_OPT, obj.outputScreenshot)         //
+      (OUTPUT_SCREENSHOT_DIR_OPT, obj.outputScreenshotDir)  //
       ;
   return out;
 }
