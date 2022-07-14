@@ -62,7 +62,7 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
       octree.addPointsFromInputCloud();
 
       while (startFrameNumber < endFrameNumber) {
-        reader->load(datasetIndex, startFrameNumber, groupOfFrames, frames);
+        reader->load(datasetIndex, startFrameNumber, groupOfFrames, frames, parameter.parallel);
         for (auto& frame : frames) {
           std::cout << "reader read "
                     << "frameNumber=" << frame->header.seq << ", "

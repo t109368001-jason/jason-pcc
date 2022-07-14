@@ -49,8 +49,8 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
       size_t       startFrameNumber = parameter.dataset.getStartFrameNumber();
       size_t       endFrameNumber   = parameter.dataset.getEndFrameNumber();
       if (parameter.dataset.encoded) {
-        reader->load(0, startFrameNumber, 1, frames);
-        reader->load(1, startFrameNumber, 1, staticFrames);
+        reader->load(0, startFrameNumber, 1, frames, parameter.parallel);
+        reader->load(1, startFrameNumber, 1, staticFrames, parameter.parallel);
         framesMap->insert_or_assign(primaryId, frames);
         framesMap->insert_or_assign(staticId, staticFrames);
       } else {
@@ -64,8 +64,8 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
       while (run && startFrameNumber < endFrameNumber) {
         clock.start();
         if (parameter.dataset.encoded) {
-          reader->load(0, startFrameNumber, parameter.groupOfFramesSize, frames);
-          reader->load(1, startFrameNumber, parameter.groupOfFramesSize, staticFrames);
+          reader->load(0, startFrameNumber, parameter.groupOfFramesSize, frames, parameter.parallel);
+          reader->load(1, startFrameNumber, parameter.groupOfFramesSize, staticFrames, parameter.parallel);
           framesMap->insert_or_assign(primaryId, frames);
           framesMap->insert_or_assign(staticId, staticFrames);
         } else {

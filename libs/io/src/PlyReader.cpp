@@ -20,14 +20,6 @@ PlyReader::PlyReader(DatasetReaderParameter param, DatasetParameter datasetParam
 void PlyReader::load(const size_t  datasetIndex,
                      const size_t  startFrameNumber,
                      const size_t  groupOfFramesSize,
-                     GroupOfFrame& frames) {
-  load(datasetIndex, startFrameNumber, groupOfFramesSize, frames, false);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-void PlyReader::load(const size_t  datasetIndex,
-                     const size_t  startFrameNumber,
-                     const size_t  groupOfFramesSize,
                      GroupOfFrame& frames,
                      const bool    parallel) {
   const size_t endFrameNumber =

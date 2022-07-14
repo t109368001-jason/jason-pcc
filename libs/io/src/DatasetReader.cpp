@@ -22,11 +22,11 @@ void DatasetReader::loadAll(const size_t  startFrameNumber,
   sources.resize(datasetIndices_.size());
   if (parallel) {
     std::for_each(std::execution::par, datasetIndices_.begin(), datasetIndices_.end(), [&](const size_t& datasetIndex) {
-      load(datasetIndex, startFrameNumber, groupOfFramesSize, sources.at(datasetIndex));
+      load(datasetIndex, startFrameNumber, groupOfFramesSize, sources.at(datasetIndex), false);
     });
   } else {
     std::for_each(datasetIndices_.begin(), datasetIndices_.end(), [&](const size_t& datasetIndex) {
-      load(datasetIndex, startFrameNumber, groupOfFramesSize, sources.at(datasetIndex));
+      load(datasetIndex, startFrameNumber, groupOfFramesSize, sources.at(datasetIndex), false);
     });
   }
   const size_t minSize =

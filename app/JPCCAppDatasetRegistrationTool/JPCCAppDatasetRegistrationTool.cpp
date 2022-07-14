@@ -68,7 +68,7 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
         if (event.getKeyCode() == '0' || event.getKeyCode() == ' ') {
           cout << "0" << endl;
           clock.start();
-          reader->load(0, startFrameNumber0++, 1, frames0);
+          reader->load(0, startFrameNumber0++, 1, frames0, parameter.parallel);
           preProcessor.process(frames0, nullptr, parameter.parallel);
           clock.stop();
           framesMap->insert_or_assign("0", frames0);
@@ -77,7 +77,7 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
         if (event.getKeyCode() == '1' || event.getKeyCode() == ' ') {
           cout << "1" << endl;
           clock.start();
-          reader->load(1, startFrameNumber1++, 1, frames1);
+          reader->load(1, startFrameNumber1++, 1, frames1, parameter.parallel);
           preProcessor.process(frames1, nullptr, parameter.parallel);
           clock.stop();
           if (registration && framesMap->find("0") != framesMap->end()) {
@@ -93,7 +93,7 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
         if (event.getKeyCode() == '2' || event.getKeyCode() == ' ') {
           cout << "2" << endl;
           clock.start();
-          reader->load(2, startFrameNumber2++, 1, frames2);
+          reader->load(2, startFrameNumber2++, 1, frames2, parameter.parallel);
           preProcessor.process(frames2, nullptr, parameter.parallel);
           clock.stop();
           if (registration && framesMap->find("0") != framesMap->end()) {
@@ -109,7 +109,7 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
         if (event.getKeyCode() == '3' || event.getKeyCode() == ' ') {
           cout << "3" << endl;
           clock.start();
-          reader->load(3, startFrameNumber3++, 1, frames3);
+          reader->load(3, startFrameNumber3++, 1, frames3, parameter.parallel);
           preProcessor.process(frames3, nullptr, parameter.parallel);
           clock.stop();
           if (registration && framesMap->find("0") != framesMap->end()) {

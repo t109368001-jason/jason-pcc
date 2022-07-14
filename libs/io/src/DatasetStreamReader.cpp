@@ -17,7 +17,8 @@ DatasetStreamReader::DatasetStreamReader(DatasetReaderParameter param, DatasetPa
 void DatasetStreamReader::load(const size_t  datasetIndex,
                                const size_t  startFrameNumber,
                                const size_t  groupOfFramesSize,
-                               GroupOfFrame& frames) {
+                               GroupOfFrame& frames,
+                               const bool    parallel) {
   frames.clear();
   const size_t endFrameNumber = min(startFrameNumber + groupOfFramesSize,  //
                                     this->datasetParam_.getEndFrameNumbers(datasetIndex));

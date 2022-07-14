@@ -21,7 +21,11 @@ class DatasetStreamReader : public DatasetReader {
  public:
   DatasetStreamReader(DatasetReaderParameter param, DatasetParameter datasetParam);
 
-  void load(size_t datasetIndex, size_t startFrameNumber, size_t groupOfFramesSize, GroupOfFrame& frames) override;
+  void load(size_t        datasetIndex,
+            size_t        startFrameNumber,
+            size_t        groupOfFramesSize,
+            GroupOfFrame& frames,
+            bool          parallel) override;
 
  protected:
   void open_(size_t datasetIndex, size_t startFrameNumber) override = 0;
