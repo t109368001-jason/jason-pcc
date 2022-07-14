@@ -54,18 +54,20 @@ void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
     size_t       frameNumber       = parameter.inputDataset.getStartFrameNumber();
     const size_t endFrameNumber    = frameNumber + gmmSegmentation->getNTrain();
     while (frameNumber < endFrameNumber) {
-      clock.start();
       reader->loadAll(frameNumber, groupOfFramesSize, frames, parameter.parallel);
       preProcessor.process(frames, nullptr, parameter.parallel);
       // normalEstimation->computeInPlaceAll(frames, parameter.parallel);
-      clock.stop();
 
+      clock.start();
       gmmSegmentation->appendTrainSamples(frames);
+      clock.stop();
 
       frameNumber += groupOfFramesSize;
     }
   }
+  clock.start();
   gmmSegmentation->build();
+  clock.stop();
 
   {
     GroupOfFrame frames;
@@ -75,14 +77,13 @@ void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
     size_t       frameNumber       = parameter.inputDataset.getStartFrameNumber();
     const size_t endFrameNumber    = parameter.inputDataset.getEndFrameNumber();
     while (frameNumber < endFrameNumber) {
-      clock.start();
       reader->loadAll(frameNumber, groupOfFramesSize, frames, parameter.parallel);
       preProcessor.process(frames, nullptr, parameter.parallel);
       // normalEstimation->computeInPlaceAll(frames, parameter.parallel);
-      clock.stop();
 
       dynamicFrames.clear();
       staticFrames.clear();
+      clock.start();
       for (const auto& frame : frames) {
         auto dynamicFrame = jpcc::make_shared<Frame>();
         auto staticFrame  = jpcc::make_shared<Frame>();
@@ -98,6 +99,7 @@ void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
         dynamicFrames.push_back(dynamicFrame);
         staticFrames.push_back(staticFrame);
       }
+      clock.stop();
 
       if (viewer) { viewer->enqueue(GroupOfFrameMap{{dynamicId, dynamicFrames}, {staticId, staticFrames}}); }
 
