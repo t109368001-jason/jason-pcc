@@ -37,6 +37,8 @@ class JPCCVisualizer : public JPCCVisualizerBase {
 
   void enqueue(const GroupOfFrameMap& framesMap);
 
+  void saveScreenshot();
+
   [[nodiscard]] PointCloudColorPtr getCloudColor(const std::string& id, const FramePtr& cloud);
 
   [[nodiscard]] bool isFull();

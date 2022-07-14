@@ -31,6 +31,7 @@ class VisualizerParameter : public virtual Parameter {
   std::map<std::string, RGBColor>    rgbColorMap;
   bool                               outputScreenshot;
   std::string                        outputScreenshotDir;
+  bool                               outputScreenshotBeforeNextFrame;
 
   VisualizerParameter();
 

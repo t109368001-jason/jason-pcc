@@ -21,6 +21,7 @@ using namespace po;
 #define ID_COLORS_OPT ".idColors"
 #define OUTPUT_SCREENSHOT_OPT ".outputScreenshot"
 #define OUTPUT_SCREENSHOT_DIR_OPT ".outputScreenshotDir"
+#define OUTPUT_SCREENSHOT_BEFORE_NEXT_FRAME_OPT ".outputScreenshotBeforeNextFrame"
 
 VisualizerParameter::VisualizerParameter() : VisualizerParameter(VISUALIZER_OPT_PREFIX, __FUNCTION__) {}
 
@@ -35,7 +36,8 @@ VisualizerParameter::VisualizerParameter(const string& prefix, const string& cap
     windowWidth(0),
     windowHeight(0),
     outputScreenshot(false),
-    outputScreenshotDir("../../result/JPCCVisualizer/") {
+    outputScreenshotDir("../../result/JPCCVisualizer/"),
+    outputScreenshotBeforeNextFrame(true) {
   cameraPosition.fill(0.0);
   opts_.add_options()                                                            //
       (string(prefix_ + NAME_OPT).c_str(),                                       //
@@ -71,6 +73,10 @@ VisualizerParameter::VisualizerParameter(const string& prefix, const string& cap
       (string(prefix_ + OUTPUT_SCREENSHOT_DIR_OPT).c_str(),                      //
        value<string>(&outputScreenshotDir)->default_value(outputScreenshotDir),  //
        "outputScreenshotDir")                                                    //
+      (string(prefix_ + OUTPUT_SCREENSHOT_BEFORE_NEXT_FRAME_OPT).c_str(),        //
+       value<bool>(&outputScreenshotBeforeNextFrame)                             //
+           ->default_value(outputScreenshotBeforeNextFrame),                     //
+       "outputScreenshotBeforeNextFrame")                                        //
       ;
 }
 
@@ -129,6 +135,8 @@ ostream& operator<<(ostream& out, const VisualizerParameter& obj) {
       (ID_COLORS_OPT, obj.idColors_)                        //
       (OUTPUT_SCREENSHOT_OPT, obj.outputScreenshot)         //
       (OUTPUT_SCREENSHOT_DIR_OPT, obj.outputScreenshotDir)  //
+      (OUTPUT_SCREENSHOT_BEFORE_NEXT_FRAME_OPT,             //
+       obj.outputScreenshotBeforeNextFrame)                 //
       ;
   return out;
 }

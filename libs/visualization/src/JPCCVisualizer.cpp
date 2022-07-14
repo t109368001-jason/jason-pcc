@@ -85,6 +85,8 @@ void JPCCVisualizer::updateAll() {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void JPCCVisualizer::nextFrame() {
+  if (param_.outputScreenshot && param_.outputScreenshotBeforeNextFrame) { saveScreenshot(); }
+
   std::lock_guard<std::recursive_mutex> lock(mutex_);
   for (auto& [id, queue] : queueMap_) {
     if (queue.empty()) { continue; }
@@ -93,17 +95,7 @@ void JPCCVisualizer::nextFrame() {
   }
   updateAll();
 
-  if (!param_.outputScreenshot) { return; }
-
-  const auto& it = frameMap_.find(primaryId_);
-  if (it != frameMap_.end()) {
-    spinOnce(1, true);
-    const FramePtr& cloud = it->second;
-
-    char fileName[4096] = {0};
-    sprintf(fileName, "%s%u.png", param_.outputScreenshotDir.c_str(), cloud->header.seq);
-    saveScreenshot(fileName);
-  }
+  if (param_.outputScreenshot && !param_.outputScreenshotBeforeNextFrame) { saveScreenshot(); }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -115,6 +107,19 @@ void JPCCVisualizer::enqueue(const GroupOfFrameMap& framesMap) {
     for (const FramePtr& frame : frames) { queue.push(frame); }
   }
   updateQueue();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void JPCCVisualizer::saveScreenshot() {
+  const auto& it = frameMap_.find(primaryId_);
+  if (it != frameMap_.end()) {
+    spinOnce(1, true);
+    const FramePtr& cloud = it->second;
+
+    char fileName[4096] = {0};
+    sprintf(fileName, "%s%u.png", param_.outputScreenshotDir.c_str(), cloud->header.seq);
+    saveScreenshot(fileName);
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
