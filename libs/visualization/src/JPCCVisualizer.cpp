@@ -118,7 +118,7 @@ void JPCCVisualizer::saveScreenshot() {
 
     char fileName[4096] = {0};
     sprintf(fileName, "%s%u.png", param_.outputScreenshotDir.c_str(), cloud->header.seq);
-    saveScreenshot(fileName);
+    JPCCVisualizerBase::saveScreenshot(fileName);
   }
 }
 
