@@ -99,6 +99,24 @@ void JPCCVisualizer::nextFrame() {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
+void JPCCVisualizer::handleKeyboardEvent(const pcl::visualization::KeyboardEvent& event) {
+  JPCCVisualizerBase::handleKeyboardEvent(event);
+  if (event.keyDown()) {
+    switch (event.getKeyCode()) {
+      case 'h':
+      case 'H':
+        std::cout << "\n"
+                     "------- JPCCVisualizer\n"
+                     "    SHIFT + j, J : save screenshot\n"
+                     "\n";
+        break;
+      case 'j':
+      case 'J': saveScreenshot(); break;
+    }
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
 void JPCCVisualizer::enqueue(const GroupOfFrameMap& framesMap) {
   std::lock_guard<std::recursive_mutex> lock(mutex_);
   for (const auto& [id, frames] : framesMap) {

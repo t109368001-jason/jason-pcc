@@ -121,7 +121,7 @@ void JPCCVisualizerBase::handleKeyboardEvent(const pcl::visualization::KeyboardE
       case 'h':
       case 'H':
         std::cout << "\n"
-                     "------- JPCCVisualizer\n"
+                     "------- JPCCVisualizerBase\n"
                      "         space   : next frame\n"
                      "    SHIFT + p, P : toggle display parameters\n"
                      "\n";

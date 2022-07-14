@@ -35,6 +35,8 @@ class JPCCVisualizer : public JPCCVisualizerBase {
 
   void nextFrame() override;
 
+  void handleKeyboardEvent(const pcl::visualization::KeyboardEvent& event) override;
+
   void enqueue(const GroupOfFrameMap& framesMap);
 
   void saveScreenshot();
