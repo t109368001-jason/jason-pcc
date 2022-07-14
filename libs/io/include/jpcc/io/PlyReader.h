@@ -15,6 +15,9 @@ class PlyReader : public DatasetReader {
 
   void load(size_t datasetIndex, size_t startFrameNumber, size_t groupOfFramesSize, GroupOfFrame& frames) override;
 
+  void load(
+      size_t datasetIndex, size_t startFrameNumber, size_t groupOfFramesSize, GroupOfFrame& frames, bool parallel);
+
  protected:
   void open_(size_t datasetIndex, size_t startFrameNumber) override;
 

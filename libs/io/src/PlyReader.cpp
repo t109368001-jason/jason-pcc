@@ -21,16 +21,21 @@ void PlyReader::load(const size_t  datasetIndex,
                      const size_t  startFrameNumber,
                      const size_t  groupOfFramesSize,
                      GroupOfFrame& frames) {
+  load(datasetIndex, startFrameNumber, groupOfFramesSize, frames, false);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void PlyReader::load(const size_t  datasetIndex,
+                     const size_t  startFrameNumber,
+                     const size_t  groupOfFramesSize,
+                     GroupOfFrame& frames,
+                     const bool    parallel) {
   const size_t endFrameNumber =
       std::min(startFrameNumber + groupOfFramesSize, this->datasetParam_.getStartFrameNumbers(datasetIndex) +
                                                          this->datasetParam_.getFrameCounts(datasetIndex));
   if (startFrameNumber >= endFrameNumber) { return; }
 
-  loadPly(frames, this->datasetParam_.getFilePath(datasetIndex), startFrameNumber, endFrameNumber, true);
-  for (size_t i = startFrameNumber; i < endFrameNumber; i++) {
-    std::cout << this->datasetParam_.getFilePath(datasetIndex) << ":" << i << " " << *frames.at(i - startFrameNumber)
-              << std::endl;
-  }
+  loadPly(frames, this->datasetParam_.getFilePath(datasetIndex), startFrameNumber, endFrameNumber, parallel);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
