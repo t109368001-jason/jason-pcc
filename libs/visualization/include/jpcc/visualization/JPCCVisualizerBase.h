@@ -6,6 +6,9 @@
 #include <vector>
 #include <string>
 
+#include <vtkCallbackCommand.h>
+#include <vtkSmartPointer.h>
+
 #include <jpcc/visualization/VisualizerParameter.h>
 
 #define PCL_NO_PRECOMPILE
@@ -18,18 +21,19 @@ class JPCCVisualizerBase : public pcl::visualization::PCLVisualizer {
   using KeyboardEvent = std::function<void(const pcl::visualization::KeyboardEvent& event)>;
 
  protected:
-  VisualizerParameter                  param_;
-  int                                  fontSize_;
-  int                                  lineHeight_;
-  std::string                          primaryId_;
-  std::map<std::string, std::string>   textMap_;
-  std::map<std::string, int>           textHeightMap;
-  std::map<std::string, std::string>   fieldColorMap_;
-  std::map<std::string, RGBColor>      rgbColorMap_;
-  mutable std::recursive_mutex         mutex_;
-  shared_ptr<int>                      lastWindowHeight_;
-  std::map<std::string, KeyboardEvent> keyboardCallbacks_;
-  std::vector<std::string>             parameterTexts_;
+  VisualizerParameter                                        param_;
+  int                                                        fontSize_;
+  int                                                        lineHeight_;
+  std::string                                                primaryId_;
+  std::map<std::string, std::string>                         textMap_;
+  std::map<std::string, int>                                 textHeightMap;
+  std::map<std::string, std::string>                         fieldColorMap_;
+  std::map<std::string, RGBColor>                            rgbColorMap_;
+  mutable std::recursive_mutex                               mutex_;
+  shared_ptr<int>                                            lastWindowHeight_;
+  std::map<std::string, vtkSmartPointer<vtkCallbackCommand>> vtkCallbacks_;
+  std::map<std::string, KeyboardEvent>                       keyboardCallbacks_;
+  std::vector<std::string>                                   parameterTexts_;
 
  public:
   JPCCVisualizerBase(const VisualizerParameter& param);

@@ -1,7 +1,5 @@
 #include <jpcc/visualization/JPCCVisualizerBase.h>
 
-#include <vtkCallbackCommand.h>
-#include <vtkNew.h>
 #include <vtkObject.h>
 
 namespace jpcc::visualization {
@@ -24,7 +22,7 @@ JPCCVisualizerBase::JPCCVisualizerBase(const VisualizerParameter& param) :
   setBackgroundColor(0, 0, 0);
   addCoordinateSystem(1000.0, "coordinate");
 
-  vtkNew<vtkCallbackCommand> modifiedCallback;
+  vtkSmartPointer<vtkCallbackCommand> modifiedCallback = vtkSmartPointer<vtkCallbackCommand>::New();
   modifiedCallback->SetCallback(
       [](vtkObject* caller, long unsigned int vtkNotUsed(eventId), void* clientData, void* vtkNotUsed(callData)) {
         auto* window     = dynamic_cast<vtkRenderWindow*>(caller);
@@ -39,6 +37,7 @@ JPCCVisualizerBase::JPCCVisualizerBase(const VisualizerParameter& param) :
   modifiedCallback->SetClientData(this);
 
   getRenderWindow()->AddObserver(vtkCommand::ModifiedEvent, modifiedCallback);
+  vtkCallbacks_.insert_or_assign("ModifiedEvent_updateText", modifiedCallback);
 
   registerKeyboardCallback([this](const auto& event) { this->handleKeyboardEvent(event); });
 

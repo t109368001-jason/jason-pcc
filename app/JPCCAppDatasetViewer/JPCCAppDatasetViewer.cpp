@@ -47,6 +47,7 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
       GroupOfFrame staticFrames;
       const auto   framesMap        = jpcc::make_shared<GroupOfFrameMap>();
       size_t       startFrameNumber = parameter.dataset.getStartFrameNumber();
+      size_t       endFrameNumber   = parameter.dataset.getEndFrameNumber();
       if (parameter.dataset.encoded) {
         reader->load(0, startFrameNumber, 1, frames);
         reader->load(1, startFrameNumber, 1, staticFrames);
@@ -60,7 +61,7 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
       startFrameNumber++;
       viewer->enqueue(*framesMap);
       viewer->nextFrame();
-      while (run) {
+      while (run && startFrameNumber < endFrameNumber) {
         clock.start();
         if (parameter.dataset.encoded) {
           reader->load(0, startFrameNumber, parameter.groupOfFramesSize, frames);
@@ -78,10 +79,6 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
 
         viewer->enqueue(*framesMap);
 
-        if (frames.size() < parameter.groupOfFramesSize) {
-          startFrameNumber = parameter.dataset.getStartFrameNumber();
-          continue;
-        }
         startFrameNumber += parameter.groupOfFramesSize;
       }
     } catch (exception& e) { cerr << e.what() << endl; }

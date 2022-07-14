@@ -1,6 +1,9 @@
 #include <jpcc/visualization/JPCCVisualizer.h>
 
 #include <algorithm>
+#include <string>
+
+using namespace std;
 
 namespace jpcc::visualization {
 
@@ -85,9 +88,13 @@ void JPCCVisualizer::updateAll() {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void JPCCVisualizer::nextFrame() {
+  std::lock_guard<std::recursive_mutex> lock(mutex_);
+
+  const auto& it = queueMap_.find(primaryId_);
+  if (it == queueMap_.end()) { return; }
+
   if (param_.outputScreenshot && param_.outputScreenshotBeforeNextFrame) { saveScreenshot(); }
 
-  std::lock_guard<std::recursive_mutex> lock(mutex_);
   for (auto& [id, queue] : queueMap_) {
     if (queue.empty()) { continue; }
     frameMap_[id] = queue.front();
@@ -108,10 +115,35 @@ void JPCCVisualizer::handleKeyboardEvent(const pcl::visualization::KeyboardEvent
         std::cout << "\n"
                      "------- JPCCVisualizer\n"
                      "    SHIFT + j, J : save screenshot\n"
+                     "    SHIFT + a, A : toggle auto next frame\n"
                      "\n";
         break;
       case 'j':
-      case 'J': saveScreenshot(); break;
+      case 'J':
+        if (event.isShiftPressed() && !event.isCtrlPressed() && !event.isAltPressed()) { saveScreenshot(); }
+        break;
+      case 'a':
+      case 'A':
+        if (event.isShiftPressed() && !event.isCtrlPressed() && !event.isAltPressed()) {
+          const std::string callbackId = "RenderEvent_autoNextFrame";
+          auto              it         = vtkCallbacks_.find(callbackId);
+          if (it == vtkCallbacks_.end()) {
+            vtkSmartPointer<vtkCallbackCommand> renderCallback = vtkSmartPointer<vtkCallbackCommand>::New();
+
+            renderCallback->SetCallback([](vtkObject* caller, long unsigned int vtkNotUsed(eventId), void* clientData,
+                                           void* vtkNotUsed(callData)) {  //
+              static_cast<JPCCVisualizer*>(clientData)->nextFrame();
+            });
+            renderCallback->SetClientData(this);
+
+            getRenderWindow()->AddObserver(vtkCommand::RenderEvent, renderCallback);
+            vtkCallbacks_.insert_or_assign(callbackId, renderCallback);
+          } else {
+            getRenderWindow()->RemoveObserver(it->second);
+            vtkCallbacks_.erase(it);
+          }
+        }
+        break;
     }
   }
 }
