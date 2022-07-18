@@ -99,7 +99,18 @@ void DatasetParameter::notify(bool isInput) {
   for (size_t i = 0; i < files.size(); i++) {
     filePaths.at(i) = folderPath / files.at(i);
     if (isInput) {
-      if (type == "ply") {
+      if (encodedType == "dynamic-static") {
+        char fileName[4096];
+        sprintf(fileName, filePaths.at(i).string().c_str(), startFrameNumbers.at(i));
+        THROW_IF_NOT(exists(path(fileName)));
+      } else if (encodedType == "dynamic-staticAdded-staticRemoved") {
+        if (i != 0) {  // skip, check dynamic frame only
+          continue;
+        }
+        char fileName[4096];
+        sprintf(fileName, filePaths.at(i).string().c_str(), startFrameNumbers.at(i));
+        THROW_IF_NOT(exists(path(fileName)));
+      } else if (type == "ply") {
         char fileName[4096];
         sprintf(fileName, filePaths.at(i).string().c_str(), startFrameNumbers.at(i));
         THROW_IF_NOT(exists(path(fileName)));
