@@ -1,16 +1,16 @@
 #pragma once
 
 #include <jpcc/octree/JPCCOctreePointCloud.h>
-#include <jpcc/octree/OctreeContainerGMMWithAdaptivePoint.h>
 #include <jpcc/segmentation/JPCCSegmentation.h>
 #include <jpcc/segmentation/JPCCGMMSegmentationParameter.h>
+#include <jpcc/segmentation/OctreeContainerSegmentation.h>
 
 namespace jpcc::segmentation {
 
 class JPCCGMMSegmentation : public JPCCSegmentation {
  public:
   using Base           = JPCCSegmentation;
-  using LeafContainerT = octree::OctreeContainerGMMWithAdaptivePoint;
+  using LeafContainerT = octree::OctreeContainerSegmentation;
   using OctreeT = octree::JPCCOctreePointCloud<PointXYZINormal, LeafContainerT, pcl::octree::OctreeContainerEmpty>;
 
  protected:

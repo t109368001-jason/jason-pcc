@@ -6,9 +6,9 @@
 
 namespace jpcc::octree {
 
-class OctreeContainerGMMWithAdaptivePoint : public OctreeContainerGMM, public OctreeContainerAdaptivePoint {
+class OctreeContainerSegmentation : virtual public OctreeContainerGMM, virtual public OctreeContainerAdaptivePoint {
  public:
-  OctreeContainerGMMWithAdaptivePoint();
+  OctreeContainerSegmentation();
 
   void reset() override;
 

@@ -1,19 +1,19 @@
-#include <jpcc/octree/OctreeContainerGMMWithAdaptivePoint.h>
+#include <jpcc/segmentation/OctreeContainerSegmentation.h>
 
 namespace jpcc::octree {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-OctreeContainerGMMWithAdaptivePoint::OctreeContainerGMMWithAdaptivePoint() :
+OctreeContainerSegmentation::OctreeContainerSegmentation() :
     OctreeContainerGMM(), OctreeContainerAdaptivePoint() {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void OctreeContainerGMMWithAdaptivePoint::reset() {
+void OctreeContainerSegmentation::reset() {
   OctreeContainerGMM::reset();
   OctreeContainerAdaptivePoint::reset();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void OctreeContainerGMMWithAdaptivePoint::addPoint(const PointXYZINormal& point) {
+void OctreeContainerSegmentation::addPoint(const PointXYZINormal& point) {
   OctreeContainerGMM::addPoint(point);
   OctreeContainerAdaptivePoint::addPoint(point);
 }
