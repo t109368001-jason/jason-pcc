@@ -80,6 +80,8 @@ void DatasetParameter::notify(bool isInput) {
   if (!encodedType.empty()) {
     if (encodedType == "dynamic-static") {
       THROW_IF_NOT(files.size() == 2);
+    } else if (encodedType == "dynamic-staticAdded-staticRemoved") {
+      THROW_IF_NOT(files.size() == 3);
     } else {
       BOOST_THROW_EXCEPTION(logic_error("invalid encodedType"));
     }

@@ -21,7 +21,11 @@ class JPCCSegmentationBase {
 
   virtual void build() = 0;
 
-  virtual void segmentation(const FrameConstPtr& frame, FramePtr dynamicFrame, FramePtr staticFrame) = 0;
+  virtual void segmentation(const FrameConstPtr& frame,
+                            FramePtr             dynamicFrame,
+                            FramePtr             staticFrame,
+                            FramePtr             staticFrameAdded,
+                            FramePtr             staticFrameRemoved) = 0;
 };
 
 }  // namespace jpcc::segmentation

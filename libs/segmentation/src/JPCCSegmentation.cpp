@@ -30,8 +30,32 @@ void JPCCSegmentation::appendTrainSamples(FramePtr frame) { octree_->appendTrain
 void JPCCSegmentation::build() { octree_->build(); }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void JPCCSegmentation::segmentation(const FrameConstPtr& frame, FramePtr dynamicFrame, FramePtr staticFrame) {
-  octree_->segmentation(frame, dynamicFrame, staticFrame);
+void JPCCSegmentation::segmentation(const FrameConstPtr& frame,
+                                    FramePtr             dynamicFrame,
+                                    FramePtr             staticFrame,
+                                    FramePtr             staticFrameAdded,
+                                    FramePtr             staticFrameRemoved) {
+  octree_->segmentation(frame, dynamicFrame, staticFrame, staticFrameAdded, staticFrameRemoved);
+  if (dynamicFrame) {
+    std::cout << "segmentation dynamic "
+              << "frameNumber=" << dynamicFrame->header.seq << ", "
+              << "points=" << dynamicFrame->size() << std::endl;
+  }
+  if (staticFrame) {
+    std::cout << "segmentation static "
+              << "frameNumber=" << staticFrame->header.seq << ", "
+              << "points=" << staticFrame->size() << std::endl;
+  }
+  if (staticFrameAdded) {
+    std::cout << "segmentation static added "
+              << "frameNumber=" << staticFrameAdded->header.seq << ", "
+              << "points=" << staticFrameAdded->size() << std::endl;
+  }
+  if (staticFrameRemoved) {
+    std::cout << "segmentation static removed "
+              << "frameNumber=" << staticFrameRemoved->header.seq << ", "
+              << "points=" << staticFrameRemoved->size() << std::endl;
+  }
 }
 
 }  // namespace jpcc::segmentation

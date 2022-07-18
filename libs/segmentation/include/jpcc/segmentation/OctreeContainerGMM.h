@@ -24,11 +24,11 @@ class OctreeContainerGMM : virtual public octree::OctreeContainerLastPoint {
 
   virtual void build(int nTrain, int K, double alpha, double minimumVariance, std::vector<float>& alternateCentroids);
 
+  void updateModel();
+
   virtual bool isBuilt() const;
 
-  [[nodiscard]] float getIntensity() const;
-
-  [[nodiscard]] float& getIntensity();
+  [[nodiscard]] float getIntensityNormalized();
 
   [[nodiscard]] const shared_ptr<std::vector<float>>& getTrainSamples() const;
 

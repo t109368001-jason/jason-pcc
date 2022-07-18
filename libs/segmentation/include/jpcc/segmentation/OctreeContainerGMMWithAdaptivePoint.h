@@ -15,7 +15,9 @@ class OctreeContainerGMMWithAdaptivePoint : virtual public OctreeContainerGMM,
 
   void addPoint(const PointXYZINormal& point) override;
 
-  void update(double alpha);
+  void appendTrainSamples(double alpha);
+
+  void updateModel(double alpha);
 };
 
 }  // namespace jpcc::octree

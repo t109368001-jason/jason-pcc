@@ -19,8 +19,14 @@ void OctreeContainerGMMWithAdaptivePoint::addPoint(const PointXYZINormal& point)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void OctreeContainerGMMWithAdaptivePoint::update(const double alpha) {
+void OctreeContainerGMMWithAdaptivePoint::appendTrainSamples(const double alpha) {
   OctreeContainerGMM::addTrainSample();
+  OctreeContainerAdaptivePoint::updateAdaptivePoint(alpha);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void OctreeContainerGMMWithAdaptivePoint::updateModel(const double alpha) {
+  OctreeContainerGMM::updateModel();
   OctreeContainerAdaptivePoint::updateAdaptivePoint(alpha);
 }
 

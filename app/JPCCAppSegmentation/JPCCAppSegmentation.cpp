@@ -70,12 +70,26 @@ void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
   clock.stop();
 
   {
+    auto         dynamicFrame = jpcc::make_shared<Frame>();
+    FramePtr     staticFrame;
+    FramePtr     staticAddedFrame;
+    FramePtr     staticRemovedFrame;
     GroupOfFrame frames;
     GroupOfFrame dynamicFrames;
     GroupOfFrame staticFrames;
+    GroupOfFrame staticAddedFrames;
+    GroupOfFrame staticRemovedFrames;
     size_t       groupOfFramesSize = parameter.groupOfFramesSize;
     size_t       frameNumber       = parameter.inputDataset.getStartFrameNumber();
     const size_t endFrameNumber    = parameter.inputDataset.getEndFrameNumber();
+
+    if (parameter.outputDataset.encodedType == "dynamic-static") {
+      staticFrame = jpcc::make_shared<Frame>();
+    } else if (parameter.outputDataset.encodedType == "dynamic-staticAdded-staticRemoved") {
+      staticAddedFrame   = jpcc::make_shared<Frame>();
+      staticRemovedFrame = jpcc::make_shared<Frame>();
+    }
+
     while (frameNumber < endFrameNumber) {
       reader->loadAll(frameNumber, groupOfFramesSize, frames, parameter.parallel);
       preProcessor.process(frames, nullptr, parameter.parallel);
@@ -85,26 +99,23 @@ void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
       staticFrames.clear();
       clock.start();
       for (const auto& frame : frames) {
-        auto dynamicFrame = jpcc::make_shared<Frame>();
-        auto staticFrame  = jpcc::make_shared<Frame>();
-        gmmSegmentation->segmentation(frame, dynamicFrame, staticFrame);
-
-        std::cout << "segmentation dynamic "
-                  << "frameNumber=" << dynamicFrame->header.seq << ", "
-                  << "points=" << dynamicFrame->size() << std::endl;
-        std::cout << "segmentation static "
-                  << "frameNumber=" << staticFrame->header.seq << ", "
-                  << "points=" << staticFrame->size() << std::endl;
+        gmmSegmentation->segmentation(frame, dynamicFrame, staticFrame, staticAddedFrame, staticRemovedFrame);
 
         dynamicFrames.push_back(dynamicFrame);
-        staticFrames.push_back(staticFrame);
+        if (staticFrame) { staticFrames.push_back(staticFrame); }
+        if (staticAddedFrame) { staticAddedFrames.push_back(staticAddedFrame); }
+        if (staticRemovedFrame) { staticRemovedFrames.push_back(staticRemovedFrame); }
       }
       clock.stop();
 
       if (viewer) { viewer->enqueue(GroupOfFrameMap{{dynamicId, dynamicFrames}, {staticId, staticFrames}}); }
 
       savePly(dynamicFrames, parameter.outputDataset.getFilePath(0), parameter.parallel);
-      savePly(staticFrames, parameter.outputDataset.getFilePath(1), parameter.parallel);
+      if (staticFrame) { savePly(staticFrames, parameter.outputDataset.getFilePath(1), parameter.parallel); }
+      if (staticAddedFrame) { savePly(staticAddedFrames, parameter.outputDataset.getFilePath(1), parameter.parallel); }
+      if (staticRemovedFrame) {
+        savePly(staticRemovedFrames, parameter.outputDataset.getFilePath(2), parameter.parallel);
+      }
 
       frameNumber += groupOfFramesSize;
     }

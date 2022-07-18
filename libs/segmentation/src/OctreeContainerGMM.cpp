@@ -37,14 +37,15 @@ void OctreeContainerGMM::build(const int           nTrain,
   trainSamples_ = nullptr;
 }
 
+void OctreeContainerGMM::updateModel() {
+  gmm_->updateModel(isnan(getIntensityNormalized()) ? NULL_INTENSITY : getIntensityNormalized());
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 bool OctreeContainerGMM::isBuilt() const { return gmm_.operator bool(); }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-float OctreeContainerGMM::getIntensity() const { return lastPoint_.intensity; }
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-float& OctreeContainerGMM::getIntensity() { return lastPoint_.intensity; }
+float OctreeContainerGMM::getIntensityNormalized() { return lastPoint_.intensity / MAX_INTENSITY; }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 const shared_ptr<std::vector<float>>& OctreeContainerGMM::getTrainSamples() const { return trainSamples_; }

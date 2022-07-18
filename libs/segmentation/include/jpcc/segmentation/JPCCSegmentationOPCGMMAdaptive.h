@@ -21,6 +21,7 @@ class JPCCSegmentationOPCGMMAdaptive
   using LeafContainer = Base::LeafContainer;
 
  protected:
+  bool               isFirstFrame;
   std::vector<float> alternateCentroids_;
 
  public:
@@ -30,7 +31,11 @@ class JPCCSegmentationOPCGMMAdaptive
 
   void build() override;
 
-  void segmentation(const FrameConstPtr& frame, FramePtr dynamicFrame, FramePtr staticFrame) override;
+  void segmentation(const FrameConstPtr& frame,
+                    FramePtr             dynamicFrame,
+                    FramePtr             staticFrame,
+                    FramePtr             staticFrameAdded,
+                    FramePtr             staticFrameRemoved) override;
 };
 
 }  // namespace jpcc::segmentation
