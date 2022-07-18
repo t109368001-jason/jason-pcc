@@ -1,9 +1,9 @@
-#include <jpcc/octree/OctreeContainerGMM.h>
+#include "../include/jpcc/segmentation/OctreeContainerGMM.h"
 
 using namespace std;
 using namespace jpcc::math;
 
-namespace jpcc::octree {
+namespace jpcc::segmentation {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 OctreeContainerGMM::OctreeContainerGMM() :

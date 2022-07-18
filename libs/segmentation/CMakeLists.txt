@@ -4,7 +4,7 @@ target_include_directories(${LIBRARY_NAME} PUBLIC ${PCL_INCLUDE_DIRS})
 
 target_link_libraries(${LIBRARY_NAME} PUBLIC
         ${PCL_LIBRARIES}
-        JPCC::common JPCC::octree)
+        JPCC::common JPCC::octree JPCC::math)
 target_link_libraries(${LIBRARY_NAME} PRIVATE Boost::program_options)
 
 vtk_module_autoinit(

@@ -1,12 +1,12 @@
 #pragma once
 
 #include <jpcc/common/Common.h>
-#include <jpcc/octree/OctreeContainerGMM.h>
 #include <jpcc/octree/OctreeContainerAdaptivePoint.h>
+#include <jpcc/segmentation/OctreeContainerGMM.h>
 
 namespace jpcc::segmentation {
 
-class OctreeContainerGMMWithAdaptivePoint : virtual public octree::OctreeContainerGMM,
+class OctreeContainerGMMWithAdaptivePoint : virtual public OctreeContainerGMM,
                                             virtual public octree::OctreeContainerAdaptivePoint {
  public:
   OctreeContainerGMMWithAdaptivePoint();

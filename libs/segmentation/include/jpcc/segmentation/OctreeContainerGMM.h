@@ -6,9 +6,9 @@
 #include <jpcc/math/GMM.h>
 #include <jpcc/octree/OctreeContainerLastPoint.h>
 
-namespace jpcc::octree {
+namespace jpcc::segmentation {
 
-class OctreeContainerGMM : virtual public OctreeContainerLastPoint {
+class OctreeContainerGMM : virtual public octree::OctreeContainerLastPoint {
  protected:
   shared_ptr<std::vector<float>> trainSamples_;
   math::GMM::Ptr                 gmm_;
