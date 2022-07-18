@@ -42,6 +42,7 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
   }
 
   auto datasetLoading = [&] {
+    try {
       const DatasetReader::Ptr reader = newReader(parameter.reader, parameter.dataset);
       PreProcessor             preProcessor(parameter.preProcess);
 
@@ -99,6 +100,7 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
 
         startFrameNumber += parameter.groupOfFramesSize;
       }
+    } catch (exception& e) { cerr << e.what() << endl; }
     run = false;
   };
 
