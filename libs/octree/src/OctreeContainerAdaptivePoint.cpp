@@ -5,56 +5,49 @@ using namespace std;
 namespace jpcc::octree {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-OctreeContainerAdaptivePoint::OctreeContainerAdaptivePoint() : point_() { reset(); }
+OctreeContainerAdaptivePoint::OctreeContainerAdaptivePoint() : OctreeContainerLastPoint(), adaptivePoint_() { reset(); }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void OctreeContainerAdaptivePoint::reset() {
-  point_.x         = numeric_limits<float>::quiet_NaN();
-  point_.y         = numeric_limits<float>::quiet_NaN();
-  point_.z         = numeric_limits<float>::quiet_NaN();
-  point_.intensity = numeric_limits<float>::quiet_NaN();
-  point_.normal_x  = numeric_limits<float>::quiet_NaN();
-  point_.normal_y  = numeric_limits<float>::quiet_NaN();
-  point_.normal_z  = numeric_limits<float>::quiet_NaN();
-  point_.curvature = numeric_limits<float>::quiet_NaN();
+  adaptivePoint_.x         = numeric_limits<float>::quiet_NaN();
+  adaptivePoint_.y         = numeric_limits<float>::quiet_NaN();
+  adaptivePoint_.z         = numeric_limits<float>::quiet_NaN();
+  adaptivePoint_.intensity = numeric_limits<float>::quiet_NaN();
+  adaptivePoint_.normal_x  = numeric_limits<float>::quiet_NaN();
+  adaptivePoint_.normal_y  = numeric_limits<float>::quiet_NaN();
+  adaptivePoint_.normal_z  = numeric_limits<float>::quiet_NaN();
+  adaptivePoint_.curvature = numeric_limits<float>::quiet_NaN();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void OctreeContainerAdaptivePoint::addPoint(const PointXYZINormal& point) {
-  assert(!isnan(point.x));
-  points_.push_back(point);
-}
+void OctreeContainerAdaptivePoint::addPoint(const PointXYZINormal& point) { OctreeContainerLastPoint::addPoint(point); }
 
-void OctreeContainerAdaptivePoint::updatePoint(double alpha) {
-  if (!points_.empty()) {
-    if (isnan(point_.x)) {
-      point_.x         = points_.back().x;
-      point_.y         = points_.back().y;
-      point_.z         = points_.back().z;
-      point_.intensity = points_.back().intensity;
-      point_.normal_x  = points_.back().normal_x;
-      point_.normal_y  = points_.back().normal_y;
-      point_.normal_z  = points_.back().normal_z;
-      point_.curvature = points_.back().curvature;
-      points_.pop_back();
-    }
-    for (const auto& point : points_) {
-      point_.x         = (1.0 - alpha) * point_.x + alpha * point.x;
-      point_.y         = (1.0 - alpha) * point_.y + alpha * point.y;
-      point_.z         = (1.0 - alpha) * point_.z + alpha * point.z;
-      point_.intensity = (1.0 - alpha) * point_.intensity + alpha * point.intensity;
-      point_.normal_x  = (1.0 - alpha) * point_.normal_x + alpha * point.normal_x;
-      point_.normal_y  = (1.0 - alpha) * point_.normal_y + alpha * point.normal_y;
-      point_.normal_z  = (1.0 - alpha) * point_.normal_z + alpha * point.normal_z;
-    }
-    points_.clear();
+void OctreeContainerAdaptivePoint::updateAdaptivePoint(double alpha) {
+  if (isnan(lastPoint_.x)) { return; }
+  if (isnan(adaptivePoint_.x)) {
+    adaptivePoint_.x         = lastPoint_.x;
+    adaptivePoint_.y         = lastPoint_.y;
+    adaptivePoint_.z         = lastPoint_.z;
+    adaptivePoint_.intensity = lastPoint_.intensity;
+    adaptivePoint_.normal_x  = lastPoint_.normal_x;
+    adaptivePoint_.normal_y  = lastPoint_.normal_y;
+    adaptivePoint_.normal_z  = lastPoint_.normal_z;
+    adaptivePoint_.curvature = lastPoint_.curvature;
+  } else {
+    adaptivePoint_.x         = (1.0 - alpha) * adaptivePoint_.x + alpha * lastPoint_.x;
+    adaptivePoint_.y         = (1.0 - alpha) * adaptivePoint_.y + alpha * lastPoint_.y;
+    adaptivePoint_.z         = (1.0 - alpha) * adaptivePoint_.z + alpha * lastPoint_.z;
+    adaptivePoint_.intensity = (1.0 - alpha) * adaptivePoint_.intensity + alpha * lastPoint_.intensity;
+    adaptivePoint_.normal_x  = (1.0 - alpha) * adaptivePoint_.normal_x + alpha * lastPoint_.normal_x;
+    adaptivePoint_.normal_y  = (1.0 - alpha) * adaptivePoint_.normal_y + alpha * lastPoint_.normal_y;
+    adaptivePoint_.normal_z  = (1.0 - alpha) * adaptivePoint_.normal_z + alpha * lastPoint_.normal_z;
   }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-const PointXYZINormal& OctreeContainerAdaptivePoint::getPoint() const { return point_; }
+const PointXYZINormal& OctreeContainerAdaptivePoint::getAdaptivePoint() const { return adaptivePoint_; }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-PointXYZINormal& OctreeContainerAdaptivePoint::getPoint() { return point_; }
+PointXYZINormal& OctreeContainerAdaptivePoint::getAdaptivePoint() { return adaptivePoint_; }
 
 }  // namespace jpcc::octree

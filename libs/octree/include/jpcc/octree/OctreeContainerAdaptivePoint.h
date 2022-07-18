@@ -1,15 +1,13 @@
 #pragma once
 
-#include <pcl/octree/octree_container.h>
-
 #include <jpcc/common/Common.h>
+#include <jpcc/octree/OctreeContainerLastPoint.h>
 
 namespace jpcc::octree {
 
-class OctreeContainerAdaptivePoint : virtual public pcl::octree::OctreeContainerBase {
+class OctreeContainerAdaptivePoint : virtual public OctreeContainerLastPoint {
  protected:
-  PointXYZINormal              point_;
-  std::vector<PointXYZINormal> points_;
+  PointXYZINormal adaptivePoint_;
 
  public:
   OctreeContainerAdaptivePoint();
@@ -18,11 +16,11 @@ class OctreeContainerAdaptivePoint : virtual public pcl::octree::OctreeContainer
 
   virtual void addPoint(const PointXYZINormal& point);
 
-  void updatePoint(double alpha);
+  void updateAdaptivePoint(double alpha);
 
-  [[nodiscard]] const PointXYZINormal& getPoint() const;
+  [[nodiscard]] const PointXYZINormal& getAdaptivePoint() const;
 
-  [[nodiscard]] PointXYZINormal& getPoint();
+  [[nodiscard]] PointXYZINormal& getAdaptivePoint();
 };
 
 }  // namespace jpcc::octree

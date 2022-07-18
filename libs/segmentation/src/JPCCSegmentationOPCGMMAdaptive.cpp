@@ -15,12 +15,11 @@ JPCCSegmentationOPCGMMAdaptive::JPCCSegmentationOPCGMMAdaptive(const JPCCSegment
 //////////////////////////////////////////////////////////////////////////////////////////////
 void JPCCSegmentationOPCGMMAdaptive::appendTrainSamples(FramePtr frame) {
   for (auto it = leaf_depth_begin(), end = leaf_depth_end(); it != end; ++it) {
-    it.getLeafContainer().updatePoint(parameter_.alpha);
+    it.getLeafContainer().resetLastPoint();
   }
-
   addFrame(frame);
   for (auto it = leaf_depth_begin(), end = leaf_depth_end(); it != end; ++it) {
-    it.getLeafContainer().setIntensity(numeric_limits<float>::quiet_NaN());
+    it.getLeafContainer().update(parameter_.alpha);
   }
 }
 
@@ -28,12 +27,9 @@ void JPCCSegmentationOPCGMMAdaptive::appendTrainSamples(FramePtr frame) {
 void JPCCSegmentationOPCGMMAdaptive::build() {
   for (auto it = leaf_depth_begin(), end = leaf_depth_end(); it != end; ++it) {
     LeafContainer& leafContainer = it.getLeafContainer();
-    for (auto& sample : *leafContainer.getTrainSamples()) {
-      sample /= MAX_INTENSITY;
-      assert(sample <= GMM_MAX_INTENSITY);
-    }
-    leafContainer.getTrainSamples()->resize(parameter_.nTrain, GMM_NULL_INTENSITY);
-    leafContainer.initGMM(parameter_.k, parameter_.alpha, parameter_.minimumVariance, alternateCentroids_);
+    assert(!leafContainer.isBuilt());
+    leafContainer.build(parameter_.nTrain, parameter_.k, parameter_.alpha, parameter_.minimumVariance,
+                        alternateCentroids_);
   }
 }
 
@@ -53,17 +49,17 @@ void JPCCSegmentationOPCGMMAdaptive::segmentation(const FrameConstPtr& frame,
   }
 
   for (auto it = leaf_depth_begin(), end = leaf_depth_end(); it != end; ++it) {
-    it.getLeafContainer().setIntensity(std::numeric_limits<float>::quiet_NaN());
+    it.getLeafContainer().resetLastPoint();
   }
   addFrame(frame);
   for (auto it = leaf_depth_begin(), end = leaf_depth_end(); it != end; ++it) {
     LeafContainer& leafContainer = it.getLeafContainer();
-    if (!leafContainer.getGMM()) {
-      leafContainer.getTrainSamples()->resize(parameter_.nTrain, GMM_NULL_INTENSITY);
-      leafContainer.initGMM(parameter_.k, parameter_.alpha, parameter_.minimumVariance, alternateCentroids_);
+    if (!leafContainer.isBuilt()) {
+      leafContainer.build(parameter_.nTrain, parameter_.k, parameter_.alpha, parameter_.minimumVariance,
+                          alternateCentroids_);
     }
 
-    leafContainer.updatePoint(parameter_.alpha);
+    leafContainer.update(parameter_.alpha);
 
     //    if (isStatic && staticFrame) { staticFrame->push_back(leafContainer.getPoint()); }
     if (!isnan(leafContainer.getIntensity())) {
@@ -78,7 +74,7 @@ void JPCCSegmentationOPCGMMAdaptive::segmentation(const FrameConstPtr& frame,
         bool isStatic  = staticProbability > parameter_.staticThresholdGT;
 
         if (!isStatic && isDynamic) {
-          PointXYZINormal& point = leafContainer.getPoint();
+          PointXYZINormal& point = leafContainer.getLastPoint();
           assert(!isnan(point.x));
           dynamicFrame->points.push_back(point);
         }
@@ -94,14 +90,11 @@ void JPCCSegmentationOPCGMMAdaptive::segmentation(const FrameConstPtr& frame,
     if (staticFrame) {
       bool updatedIsStatic = leafContainer.getGMM()->getStaticProbability() > parameter_.staticThresholdGT;
       if (updatedIsStatic) {
-        PointXYZINormal& point = leafContainer.getPoint();
+        PointXYZINormal& point = leafContainer.getAdaptivePoint();
         assert(!isnan(point.x));
         staticFrame->points.push_back(point);
       }
     }
-
-    // reset
-    leafContainer.setIntensity(numeric_limits<float>::quiet_NaN());
   }
 
   if (dynamicFrame) {

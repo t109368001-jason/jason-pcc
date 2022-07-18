@@ -2,17 +2,15 @@
 
 #include <vector>
 
-#include <pcl/octree/octree_container.h>
-
 #include <jpcc/common/Common.h>
 #include <jpcc/math/GMM.h>
+#include <jpcc/octree/OctreeContainerLastPoint.h>
 
 namespace jpcc::octree {
 
-class OctreeContainerGMM : virtual public pcl::octree::OctreeContainerBase {
+class OctreeContainerGMM : virtual public OctreeContainerLastPoint {
  protected:
   shared_ptr<std::vector<float>> trainSamples_;
-  float                          intensity_;
   math::GMM::Ptr                 gmm_;
 
  public:
@@ -22,13 +20,15 @@ class OctreeContainerGMM : virtual public pcl::octree::OctreeContainerBase {
 
   virtual void addPoint(const PointXYZINormal& point);
 
-  void initGMM(int K, double alpha, double minimumVariance, std::vector<float>& alternateCentroids);
+  void addTrainSample();
+
+  virtual void build(int nTrain, int K, double alpha, double minimumVariance, std::vector<float>& alternateCentroids);
+
+  virtual bool isBuilt() const;
 
   [[nodiscard]] float getIntensity() const;
 
   [[nodiscard]] float& getIntensity();
-
-  void setIntensity(float intensity);
 
   [[nodiscard]] const shared_ptr<std::vector<float>>& getTrainSamples() const;
 

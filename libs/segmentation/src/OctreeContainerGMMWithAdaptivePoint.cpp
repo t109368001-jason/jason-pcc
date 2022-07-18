@@ -18,4 +18,10 @@ void OctreeContainerGMMWithAdaptivePoint::addPoint(const PointXYZINormal& point)
   OctreeContainerAdaptivePoint::addPoint(point);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
+void OctreeContainerGMMWithAdaptivePoint::update(const double alpha) {
+  OctreeContainerGMM::addTrainSample();
+  OctreeContainerAdaptivePoint::updateAdaptivePoint(alpha);
+}
+
 }  // namespace jpcc::octree

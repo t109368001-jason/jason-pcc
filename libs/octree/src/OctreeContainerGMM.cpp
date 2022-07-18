@@ -7,36 +7,44 @@ namespace jpcc::octree {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 OctreeContainerGMM::OctreeContainerGMM() :
-    trainSamples_(make_shared<vector<float>>()), intensity_(numeric_limits<float>::quiet_NaN()), gmm_() {}
+    OctreeContainerLastPoint(), trainSamples_(make_shared<vector<float>>()), gmm_() {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void OctreeContainerGMM::reset() {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void OctreeContainerGMM::addPoint(const PointXYZINormal& point) {
-  if (!isnan(intensity_)) { return; }
+void OctreeContainerGMM::addPoint(const PointXYZINormal& point) { OctreeContainerLastPoint::addPoint(point); }
 
-  if (trainSamples_) { trainSamples_->push_back(point.intensity); }
-  intensity_ = point.intensity;
+//////////////////////////////////////////////////////////////////////////////////////////////
+void OctreeContainerGMM::addTrainSample() {
+  if (isnan(lastPoint_.x)) { return; }
+  if (!trainSamples_) { return; }
+  trainSamples_->push_back(lastPoint_.intensity);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void OctreeContainerGMM::initGMM(const int           K,
-                                 const double        alpha,
-                                 const double        minimumVariance,
-                                 std::vector<float>& alternateCentroids) {
+void OctreeContainerGMM::build(const int           nTrain,
+                               const int           K,
+                               const double        alpha,
+                               const double        minimumVariance,
+                               std::vector<float>& alternateCentroids) {
+  for (auto& sample : *trainSamples_) {
+    sample /= MAX_INTENSITY;
+    assert(sample <= GMM_MAX_INTENSITY);
+  }
+  trainSamples_->resize(nTrain, GMM_NULL_INTENSITY);
   gmm_          = jpcc::make_shared<GMM>(*trainSamples_, K, alpha, minimumVariance, alternateCentroids);
   trainSamples_ = nullptr;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-float OctreeContainerGMM::getIntensity() const { return intensity_; }
+bool OctreeContainerGMM::isBuilt() const { return gmm_.operator bool(); }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-float& OctreeContainerGMM::getIntensity() { return intensity_; }
+float OctreeContainerGMM::getIntensity() const { return lastPoint_.intensity; }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void OctreeContainerGMM::setIntensity(const float intensity) { this->intensity_ = intensity; }
+float& OctreeContainerGMM::getIntensity() { return lastPoint_.intensity; }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 const shared_ptr<std::vector<float>>& OctreeContainerGMM::getTrainSamples() const { return trainSamples_; }
