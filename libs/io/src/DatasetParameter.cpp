@@ -14,7 +14,7 @@ using namespace Eigen;
 #define SENSOR_OPT ".sensor"
 #define TYPE_OPT ".type"
 #define PRE_PROCESSED_OPT ".preProcessed"
-#define ENCODED_OPT ".encoded"
+#define ENCODED_TYPE_OPT ".encodedType"
 #define FOLDER_PREFIX_OPT ".folderPrefix"
 #define FOLDER_OPT ".folder"
 #define FILES_OPT ".files"
@@ -28,7 +28,7 @@ DatasetParameter::DatasetParameter() : DatasetParameter(DATASET_OPT_PREFIX, __FU
 DatasetParameter::DatasetParameter(const string& prefix, const string& caption) :
     Parameter(prefix, caption),
     preProcessed(false),
-    encoded(false),
+    encodedType(),
     folderPrefix("../../dataset/"),
     files(),
     frameCounts(),
@@ -41,8 +41,8 @@ DatasetParameter::DatasetParameter(const string& prefix, const string& caption) 
       (string(prefix_ + PRE_PROCESSED_OPT).c_str(),                                                              //
        value<bool>(&preProcessed)->default_value(preProcessed),                                                  //
        "preProcessed")                                                                                           //
-      (string(prefix_ + ENCODED_OPT).c_str(), value<bool>(&encoded)->default_value(encoded),                     //
-       "encoded")                                                                                                //
+      (string(prefix_ + ENCODED_TYPE_OPT).c_str(), value<string>(&encodedType)->default_value(encodedType),      //
+       "encodedType")                                                                                            //
       (string(prefix_ + TYPE_OPT).c_str(), value<string>(&type), "dataset type")                                 //
       (string(prefix_ + FOLDER_PREFIX_OPT).c_str(),                                                              //
        value<string>(&folderPrefix)->default_value(folderPrefix),                                                //
@@ -77,7 +77,13 @@ void DatasetParameter::notify(bool isInput) {
   THROW_IF_NOT(!name.empty());
   THROW_IF_NOT(!type.empty());
   if (preProcessed) { THROW_IF_NOT(type == "ply"); }
-  if (encoded) { THROW_IF_NOT(files.size() == 2); }
+  if (!encodedType.empty()) {
+    if (encodedType == "dynamic-static") {
+      THROW_IF_NOT(files.size() == 2);
+    } else {
+      BOOST_THROW_EXCEPTION(logic_error("invalid encodedType"));
+    }
+  }
   THROW_IF_NOT(!folderPrefix.empty());
   THROW_IF_NOT(!folder.empty());
   THROW_IF_NOT(frameCounts.size() == files.size());
@@ -146,7 +152,7 @@ ostream& operator<<(ostream& out, const DatasetParameter& obj) {
       (NAME_OPT, obj.name)                              //
       (SENSOR_OPT, obj.sensor)                          //
       (TYPE_OPT, obj.type)                              //
-      (ENCODED_OPT, obj.encoded)                        //
+      (ENCODED_TYPE_OPT, obj.encodedType)               //
       (FOLDER_PREFIX_OPT, obj.folderPrefix)             //
       (FOLDER_OPT, obj.folder)                          //
       (FILES_OPT, obj.files)                            //

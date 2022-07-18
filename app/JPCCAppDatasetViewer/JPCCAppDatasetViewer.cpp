@@ -33,7 +33,7 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
 
   viewer->addParameter(parameter);
   viewer->setPrimaryId(primaryId);
-  if (parameter.dataset.encoded) {
+  if (!parameter.dataset.encodedType.empty()) {
     viewer->setColor(primaryId, 1.0, 0.0, 1.0);
     viewer->setColor(staticId, "z");
   }
@@ -48,7 +48,7 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
       const auto   framesMap        = jpcc::make_shared<GroupOfFrameMap>();
       size_t       startFrameNumber = parameter.dataset.getStartFrameNumber();
       size_t       endFrameNumber   = parameter.dataset.getEndFrameNumber();
-      if (parameter.dataset.encoded) {
+      if (!parameter.dataset.encodedType.empty()) {
         reader->load(0, startFrameNumber, 1, frames, parameter.parallel);
         reader->load(1, startFrameNumber, 1, staticFrames, parameter.parallel);
         framesMap->insert_or_assign(primaryId, frames);
@@ -63,7 +63,7 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
       viewer->nextFrame();
       while (run && startFrameNumber < endFrameNumber) {
         clock.start();
-        if (parameter.dataset.encoded) {
+        if (!parameter.dataset.encodedType.empty()) {
           reader->load(0, startFrameNumber, parameter.groupOfFramesSize, frames, parameter.parallel);
           reader->load(1, startFrameNumber, parameter.groupOfFramesSize, staticFrames, parameter.parallel);
           framesMap->insert_or_assign(primaryId, frames);
