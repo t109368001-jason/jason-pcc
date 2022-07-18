@@ -2,8 +2,11 @@
 
 #include <algorithm>
 #include <execution>
+#include <filesystem>
 
 #include <pcl/io/auto_io.h>
+
+using namespace std::filesystem;
 
 namespace jpcc::io {
 
@@ -21,12 +24,13 @@ void loadPly(GroupOfFrame&      frames,
   auto func = [&](const size_t frameNumber) {
     char fileName[4096];
     sprintf(fileName, filePath.c_str(), frameNumber);
-    auto& frame = frames.at(frameNumber - startFrameNumber);
-    frame       = jpcc::make_shared<Frame>();
-
-    const int result = pcl::io::load(std::string(fileName), *frame);
-    assert(result != -1);
-    if (frame->header.seq == 0) { frame->header.seq = frameNumber; }
+    if (exists(fileName)) {
+      auto& frame      = frames.at(frameNumber - startFrameNumber);
+      frame            = jpcc::make_shared<Frame>();
+      const int result = pcl::io::load(std::string(fileName), *frame);
+      assert(result != -1);
+      if (frame->header.seq == 0) { frame->header.seq = frameNumber; }
+    }
   };
 
   if (parallel) {
@@ -39,6 +43,7 @@ void loadPly(GroupOfFrame&      frames,
 //////////////////////////////////////////////////////////////////////////////////////////////
 void savePly(const GroupOfFrame& frames, const std::string& filePath, const bool parallel) {
   auto func = [&](const FramePtr& frame) {
+    if (!frame || frame->empty()) { return; }
     char fileName[4096];
     sprintf(fileName, filePath.c_str(), frame->header.seq);
 
