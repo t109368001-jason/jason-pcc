@@ -1,38 +1,33 @@
-#include <jpcc/segmentation/JPCCGMMSegmentation.h>
+#include <jpcc/segmentation/JPCCSegmentationOPCGMMAdaptive.h>
 
-#include <execution>
-#include <utility>
+#include <limits>
 
 using namespace std;
-using namespace jpcc::octree;
 
 namespace jpcc::segmentation {
 
-JPCCGMMSegmentation::JPCCGMMSegmentation(JPCCGMMSegmentationParameter parameter) :
-    parameter_(std::move(parameter)), octree_(parameter_.resolution) {
+//////////////////////////////////////////////////////////////////////////////////////////////
+JPCCSegmentationOPCGMMAdaptive::JPCCSegmentationOPCGMMAdaptive(const JPCCSegmentationParameter& parameter) :
+    JPCCSegmentationBase(parameter), Base(parameter.resolution) {
   for (int i = -1; i >= -parameter_.k; i--) { alternateCentroids_.push_back(i / MAX_INTENSITY); }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-size_t JPCCGMMSegmentation::getNTrain() const { return parameter_.nTrain; }
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-void JPCCGMMSegmentation::appendTrainSamples(const GroupOfFrame& groupOfFrame) {
-  for (const auto& frame : groupOfFrame) {
-    octree_.addFrame(frame);
-    for (auto it = octree_.leaf_depth_begin(), end = octree_.leaf_depth_end(); it != end; ++it) {
-      it.getLeafContainer().setIntensity(numeric_limits<float>::quiet_NaN());
-    }
-  }
-  for (auto it = octree_.leaf_depth_begin(), end = octree_.leaf_depth_end(); it != end; ++it) {
+void JPCCSegmentationOPCGMMAdaptive::appendTrainSamples(FramePtr frame) {
+  for (auto it = leaf_depth_begin(), end = leaf_depth_end(); it != end; ++it) {
     it.getLeafContainer().updatePoint(parameter_.alpha);
+  }
+
+  addFrame(frame);
+  for (auto it = leaf_depth_begin(), end = leaf_depth_end(); it != end; ++it) {
+    it.getLeafContainer().setIntensity(numeric_limits<float>::quiet_NaN());
   }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void JPCCGMMSegmentation::build() {
-  for (auto it = octree_.leaf_depth_begin(), end = octree_.leaf_depth_end(); it != end; ++it) {
-    LeafContainerT& leafContainer = it.getLeafContainer();
+void JPCCSegmentationOPCGMMAdaptive::build() {
+  for (auto it = leaf_depth_begin(), end = leaf_depth_end(); it != end; ++it) {
+    LeafContainer& leafContainer = it.getLeafContainer();
     for (auto& sample : *leafContainer.getTrainSamples()) {
       sample /= MAX_INTENSITY;
       assert(sample <= GMM_MAX_INTENSITY);
@@ -43,7 +38,9 @@ void JPCCGMMSegmentation::build() {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void JPCCGMMSegmentation::segmentation(const FrameConstPtr& frame, FramePtr dynamicFrame, FramePtr staticFrame) {
+void JPCCSegmentationOPCGMMAdaptive::segmentation(const FrameConstPtr& frame,
+                                                  FramePtr             dynamicFrame,
+                                                  FramePtr             staticFrame) {
   if (dynamicFrame) {
     dynamicFrame->clear();
     dynamicFrame->header.seq   = frame->header.seq;
@@ -55,12 +52,12 @@ void JPCCGMMSegmentation::segmentation(const FrameConstPtr& frame, FramePtr dyna
     staticFrame->header.stamp = frame->header.stamp;
   }
 
-  for (auto it = octree_.leaf_depth_begin(), end = octree_.leaf_depth_end(); it != end; ++it) {
+  for (auto it = leaf_depth_begin(), end = leaf_depth_end(); it != end; ++it) {
     it.getLeafContainer().setIntensity(std::numeric_limits<float>::quiet_NaN());
   }
-  octree_.addFrame(frame);
-  for (auto it = octree_.leaf_depth_begin(), end = octree_.leaf_depth_end(); it != end; ++it) {
-    LeafContainerT& leafContainer = it.getLeafContainer();
+  addFrame(frame);
+  for (auto it = leaf_depth_begin(), end = leaf_depth_end(); it != end; ++it) {
+    LeafContainer& leafContainer = it.getLeafContainer();
     if (!leafContainer.getGMM()) {
       leafContainer.getTrainSamples()->resize(parameter_.nTrain, GMM_NULL_INTENSITY);
       leafContainer.initGMM(parameter_.k, parameter_.alpha, parameter_.minimumVariance, alternateCentroids_);

@@ -1,20 +1,29 @@
 #pragma once
 
-#include <jpcc/common/Common.h>
+#include <jpcc/octree/JPCCOctreePointCloud.h>
+#include <jpcc/segmentation/JPCCSegmentationBase.h>
+#include <jpcc/segmentation/JPCCSegmentationParameter.h>
+#include <jpcc/segmentation/OctreeContainerGMMWithAdaptivePoint.h>
 
 namespace jpcc::segmentation {
 
-class JPCCSegmentation {
+class JPCCSegmentation : public JPCCSegmentationBase {
  public:
-  using Ptr = shared_ptr<JPCCSegmentation>;
+  using Base = JPCCSegmentation;
 
-  virtual size_t getNTrain() const = 0;
+ protected:
+  JPCCSegmentationBase::Ptr octree_;
 
-  virtual void appendTrainSamples(const GroupOfFrame& groupOfFrame) = 0;
+ public:
+  JPCCSegmentation(const JPCCSegmentationParameter& parameter);
 
-  virtual void build() = 0;
+  void appendTrainSamples(const GroupOfFrame& groupOfFrame);
 
-  virtual void segmentation(const FrameConstPtr& frame, FramePtr dynamic, FramePtr background) = 0;
+  void appendTrainSamples(FramePtr frame) override;
+
+  void build() override;
+
+  void segmentation(const FrameConstPtr& frame, FramePtr dynamicFrame, FramePtr staticFrame) override;
 };
 
 }  // namespace jpcc::segmentation

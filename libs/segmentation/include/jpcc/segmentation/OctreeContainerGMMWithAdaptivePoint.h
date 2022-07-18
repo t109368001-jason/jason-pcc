@@ -4,11 +4,12 @@
 #include <jpcc/octree/OctreeContainerGMM.h>
 #include <jpcc/octree/OctreeContainerAdaptivePoint.h>
 
-namespace jpcc::octree {
+namespace jpcc::segmentation {
 
-class OctreeContainerSegmentation : virtual public OctreeContainerGMM, virtual public OctreeContainerAdaptivePoint {
+class OctreeContainerGMMWithAdaptivePoint : virtual public octree::OctreeContainerGMM,
+                                            virtual public octree::OctreeContainerAdaptivePoint {
  public:
-  OctreeContainerSegmentation();
+  OctreeContainerGMMWithAdaptivePoint();
 
   void reset() override;
 

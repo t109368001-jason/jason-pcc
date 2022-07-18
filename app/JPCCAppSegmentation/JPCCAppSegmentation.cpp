@@ -8,7 +8,7 @@
 #include <jpcc/io/Reader.h>
 #include <jpcc/process/PreProcessor.h>
 #include <jpcc/process/JPCCNormalEstimation.h>
-#include <jpcc/segmentation/JPCCGMMSegmentation.h>
+#include <jpcc/segmentation/JPCCSegmentation.h>
 #include <jpcc/visualization/JPCCVisualizer.h>
 
 #include "AppParameter.h"
@@ -27,7 +27,7 @@ void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
   const typename DatasetReader::Ptr reader = newReader(parameter.inputReader, parameter.inputDataset);
   PreProcessor                      preProcessor(parameter.preProcess);
   auto                normalEstimation = jpcc::make_shared<JPCCNormalEstimation>(parameter.jpccNormalEstimation);
-  auto                gmmSegmentation  = jpcc::make_shared<JPCCGMMSegmentation>(parameter.jpccGmmSegmentation);
+  auto                gmmSegmentation  = jpcc::make_shared<JPCCSegmentation>(parameter.jpccGmmSegmentation);
   JPCCVisualizer::Ptr viewer;
 
   const string dynamicId = "dynamic";

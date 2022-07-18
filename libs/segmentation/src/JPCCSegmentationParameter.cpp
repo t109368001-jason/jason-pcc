@@ -1,10 +1,12 @@
-#include <jpcc/segmentation/JPCCGMMSegmentationParameter.h>
+#include <jpcc/segmentation/JPCCSegmentationParameter.h>
 
 namespace jpcc::segmentation {
 
 using namespace std;
 using namespace po;
 
+#define TYPE_OPT ".type"
+#define STATIC_POINT_TYPE_OPT ".staticPointType"
 #define RESOLUTION_OPT ".resolution"
 #define K_OPT ".k"
 #define ALPHA_OPT ".alpha"
@@ -13,12 +15,18 @@ using namespace po;
 #define STATIC_THRESHOLD_OPT ".staticThresholdGT"
 #define MINIMUM_VARIANCE_OPT ".minimumVariance"
 
-JPCCGMMSegmentationParameter::JPCCGMMSegmentationParameter() :
-    JPCCGMMSegmentationParameter(JPCC_GMM_SEGMENTATION_OPT_PREFIX, __FUNCTION__) {}
+JPCCSegmentationParameter::JPCCSegmentationParameter() :
+    JPCCSegmentationParameter(JPCC_GMM_SEGMENTATION_OPT_PREFIX, __FUNCTION__) {}
 
-JPCCGMMSegmentationParameter::JPCCGMMSegmentationParameter(const string& prefix, const string& caption) :
+JPCCSegmentationParameter::JPCCSegmentationParameter(const string& prefix, const string& caption) :
     Parameter(prefix, caption), resolution(0.0), k(3), alpha(0.05) {
   opts_.add_options()                                           //
+      (string(prefix_ + TYPE_OPT).c_str(),                      //
+       value<string>(&type)->required(),                        //
+       "type")                                                  //
+      (string(prefix_ + STATIC_POINT_TYPE_OPT).c_str(),         //
+       value<string>(&staticPointType)->required(),             //
+       "staticPointType, [adaptive]")                           //
       (string(prefix_ + RESOLUTION_OPT).c_str(),                //
        value<double>(&resolution)->required(),                  //
        JPCC_GMM_SEGMENTATION_OPT_PREFIX " resolution")          //
@@ -39,11 +47,11 @@ JPCCGMMSegmentationParameter::JPCCGMMSegmentationParameter(const string& prefix,
        JPCC_GMM_SEGMENTATION_OPT_PREFIX " staticThresholdGT")   //
       (string(prefix_ + MINIMUM_VARIANCE_OPT).c_str(),          //
        value<double>(&minimumVariance)->required(),             //
-       JPCC_GMM_SEGMENTATION_OPT_PREFIX " minimumVariance_")    //
+       JPCC_GMM_SEGMENTATION_OPT_PREFIX " minimumVariance")     //
       ;
 }
 
-void JPCCGMMSegmentationParameter::getShowTexts(vector<string>& showTexts) const {
+void JPCCSegmentationParameter::getShowTexts(vector<string>& showTexts) const {
   showTexts.push_back(prefix_ + RESOLUTION_OPT ": " + to_string(resolution));
   showTexts.push_back(prefix_ + K_OPT ": " + to_string(k));
   showTexts.push_back(prefix_ + ALPHA_OPT ": " + to_string(alpha));
@@ -53,15 +61,17 @@ void JPCCGMMSegmentationParameter::getShowTexts(vector<string>& showTexts) const
   showTexts.push_back(prefix_ + STATIC_THRESHOLD_OPT ": " + to_string(staticThresholdGT));
 }
 
-void JPCCGMMSegmentationParameter::notify() {
+void JPCCSegmentationParameter::notify() {
   assert(resolution > 0.0);
   assert(k > 0);
   assert(alpha > 0.0);
   assert(nTrain > 0.0);
 }
 
-ostream& operator<<(ostream& out, const JPCCGMMSegmentationParameter& obj) {
+ostream& operator<<(ostream& out, const JPCCSegmentationParameter& obj) {
   obj.coutParameters(out)                              //
+      (TYPE_OPT, obj.type)                             //
+      (STATIC_POINT_TYPE_OPT, obj.staticPointType)     //
       (RESOLUTION_OPT, obj.resolution)                 //
       (K_OPT, obj.k)                                   //
       (ALPHA_OPT, obj.alpha)                           //

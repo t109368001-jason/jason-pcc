@@ -5,7 +5,7 @@
 #include <jpcc/io/DatasetReaderParameter.h>
 #include <jpcc/process/PreProcessParameter.h>
 #include <jpcc/process/JPCCNormalEstimationParameter.h>
-#include <jpcc/segmentation/JPCCGMMSegmentationParameter.h>
+#include <jpcc/segmentation/JPCCSegmentationParameter.h>
 #include <jpcc/visualization/VisualizerParameter.h>
 
 namespace jpcc {
@@ -20,7 +20,7 @@ class AppParameter : public Parameter {
   io::DatasetParameter                       outputDataset;
   process::PreProcessParameter               preProcess;
   process::JPCCNormalEstimationParameter     jpccNormalEstimation;
-  segmentation::JPCCGMMSegmentationParameter jpccGmmSegmentation;
+  segmentation::JPCCSegmentationParameter    jpccGmmSegmentation;
   visualization::VisualizerParameter         visualizerParameter;
 
   AppParameter();
