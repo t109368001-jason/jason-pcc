@@ -70,10 +70,6 @@ void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
   clock.stop();
 
   {
-    auto         dynamicFrame = jpcc::make_shared<Frame>();
-    FramePtr     staticFrame;
-    FramePtr     staticAddedFrame;
-    FramePtr     staticRemovedFrame;
     GroupOfFrame frames;
     GroupOfFrame dynamicFrames;
     GroupOfFrame staticFrames;
@@ -82,13 +78,6 @@ void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
     size_t       groupOfFramesSize = parameter.groupOfFramesSize;
     size_t       frameNumber       = parameter.inputDataset.getStartFrameNumber();
     const size_t endFrameNumber    = parameter.inputDataset.getEndFrameNumber();
-
-    if (parameter.outputDataset.encodedType == "dynamic-static") {
-      staticFrame = jpcc::make_shared<Frame>();
-    } else if (parameter.outputDataset.encodedType == "dynamic-staticAdded-staticRemoved") {
-      staticAddedFrame   = jpcc::make_shared<Frame>();
-      staticRemovedFrame = jpcc::make_shared<Frame>();
-    }
 
     while (frameNumber < endFrameNumber) {
       reader->loadAll(frameNumber, groupOfFramesSize, frames, parameter.parallel);
@@ -99,6 +88,17 @@ void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
       staticFrames.clear();
       clock.start();
       for (const auto& frame : frames) {
+        auto     dynamicFrame = jpcc::make_shared<Frame>();
+        FramePtr staticFrame;
+        FramePtr staticAddedFrame;
+        FramePtr staticRemovedFrame;
+        if (parameter.outputDataset.encodedType == "dynamic-static") {
+          staticFrame = jpcc::make_shared<Frame>();
+        } else if (parameter.outputDataset.encodedType == "dynamic-staticAdded-staticRemoved") {
+          staticAddedFrame   = jpcc::make_shared<Frame>();
+          staticRemovedFrame = jpcc::make_shared<Frame>();
+        }
+
         gmmSegmentation->segmentation(frame, dynamicFrame, staticFrame, staticAddedFrame, staticRemovedFrame);
 
         dynamicFrames.push_back(dynamicFrame);
@@ -111,9 +111,11 @@ void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
       if (viewer) { viewer->enqueue(GroupOfFrameMap{{dynamicId, dynamicFrames}, {staticId, staticFrames}}); }
 
       savePly(dynamicFrames, parameter.outputDataset.getFilePath(0), parameter.parallel);
-      if (staticFrame) { savePly(staticFrames, parameter.outputDataset.getFilePath(1), parameter.parallel); }
-      if (staticAddedFrame) { savePly(staticAddedFrames, parameter.outputDataset.getFilePath(1), parameter.parallel); }
-      if (staticRemovedFrame) {
+      if (!staticFrames.empty()) { savePly(staticFrames, parameter.outputDataset.getFilePath(1), parameter.parallel); }
+      if (!staticAddedFrames.empty()) {
+        savePly(staticAddedFrames, parameter.outputDataset.getFilePath(1), parameter.parallel);
+      }
+      if (!staticRemovedFrames.empty()) {
         savePly(staticRemovedFrames, parameter.outputDataset.getFilePath(2), parameter.parallel);
       }
 
