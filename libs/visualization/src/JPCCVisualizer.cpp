@@ -190,7 +190,10 @@ typename JPCCVisualizer::PointCloudColorPtr JPCCVisualizer::getCloudColor(const 
 //////////////////////////////////////////////////////////////////////////////////////////////
 bool JPCCVisualizer::isFull() {
   std::lock_guard<std::recursive_mutex> lock(mutex_);
-  return queueMap_.at(primaryId_).size() >= param_.bufferSize;
+
+  const auto it = queueMap_.find(primaryId_);
+  if (it == queueMap_.end()) { return false; }
+  return it->second.size() >= param_.bufferSize;
 }
 
 }  // namespace jpcc::visualization
