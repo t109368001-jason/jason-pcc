@@ -20,4 +20,4 @@ class OctreeContainerGMMWithAdaptivePoint : virtual public OctreeContainerGMM,
   void updateModel(double alpha);
 };
 
-}  // namespace jpcc::octree
+}  // namespace jpcc::segmentation

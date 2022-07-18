@@ -12,16 +12,16 @@ namespace jpcc {
 
 class AppParameter : public Parameter {
  public:
-  bool                                       parallel;
-  bool                                       headless;
-  size_t                                     groupOfFramesSize;
-  io::DatasetParameter                       inputDataset;
-  io::DatasetReaderParameter                 inputReader;
-  io::DatasetParameter                       outputDataset;
-  process::PreProcessParameter               preProcess;
-  process::JPCCNormalEstimationParameter     jpccNormalEstimation;
-  segmentation::JPCCSegmentationParameter    jpccGmmSegmentation;
-  visualization::VisualizerParameter         visualizerParameter;
+  bool                                    parallel;
+  bool                                    headless;
+  size_t                                  groupOfFramesSize;
+  io::DatasetParameter                    inputDataset;
+  io::DatasetReaderParameter              inputReader;
+  io::DatasetParameter                    outputDataset;
+  process::PreProcessParameter            preProcess;
+  process::JPCCNormalEstimationParameter  jpccNormalEstimation;
+  segmentation::JPCCSegmentationParameter jpccGmmSegmentation;
+  visualization::VisualizerParameter      visualizerParameter;
 
   AppParameter();
 

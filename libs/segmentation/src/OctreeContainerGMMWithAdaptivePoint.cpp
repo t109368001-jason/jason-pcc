@@ -30,4 +30,4 @@ void OctreeContainerGMMWithAdaptivePoint::updateModel(const double alpha) {
   OctreeContainerAdaptivePoint::updateAdaptivePoint(alpha);
 }
 
-}  // namespace jpcc::octree
+}  // namespace jpcc::segmentation

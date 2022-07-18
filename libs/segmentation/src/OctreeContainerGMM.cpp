@@ -59,4 +59,4 @@ const math::GMM::Ptr& OctreeContainerGMM::getGMM() const { return gmm_; }
 //////////////////////////////////////////////////////////////////////////////////////////////
 math::GMM::Ptr& OctreeContainerGMM::getGMM() { return gmm_; }
 
-}  // namespace jpcc::octree
+}  // namespace jpcc::segmentation

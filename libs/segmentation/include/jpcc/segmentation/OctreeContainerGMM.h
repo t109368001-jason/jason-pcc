@@ -39,4 +39,4 @@ class OctreeContainerGMM : virtual public octree::OctreeContainerLastPoint {
   [[nodiscard]] math::GMM::Ptr& getGMM();
 };
 
-}  // namespace jpcc::octree
+}  // namespace jpcc::segmentation
