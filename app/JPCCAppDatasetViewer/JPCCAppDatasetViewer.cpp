@@ -25,7 +25,7 @@ using namespace jpcc::visualization;
 void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
   const auto viewer = jpcc::make_shared<JPCCVisualizer>(parameter.visualizerParameter);
 
-  FramePtr background;
+  FramePtr staticFrame;
 
   atomic_bool  run(true);
   const string primaryId = "cloud";
@@ -36,10 +36,12 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
   if (!parameter.dataset.encodedType.empty()) {
     viewer->setColor(primaryId, 1.0, 0.0, 1.0);
     viewer->setColor(staticId, "z");
+    if (parameter.dataset.encodedType == "dynamic-staticAdded-staticRemoved") {
+      staticFrame = jpcc::make_shared<Frame>();
+    }
   }
 
   auto datasetLoading = [&] {
-    try {
       const DatasetReader::Ptr reader = newReader(parameter.reader, parameter.dataset);
       PreProcessor             preProcessor(parameter.preProcess);
 
@@ -48,24 +50,40 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
       const auto   framesMap        = jpcc::make_shared<GroupOfFrameMap>();
       size_t       startFrameNumber = parameter.dataset.getStartFrameNumber();
       size_t       endFrameNumber   = parameter.dataset.getEndFrameNumber();
-      if (!parameter.dataset.encodedType.empty()) {
-        reader->load(0, startFrameNumber, 1, frames, parameter.parallel);
-        reader->load(1, startFrameNumber, 1, staticFrames, parameter.parallel);
-        framesMap->insert_or_assign(primaryId, frames);
-        framesMap->insert_or_assign(staticId, staticFrames);
-      } else {
-        reader->loadAll(startFrameNumber, 1, frames, parameter.parallel);
-        preProcessor.process(frames, framesMap, parameter.parallel);
-        framesMap->insert_or_assign(primaryId, frames);
-      }
-      startFrameNumber++;
-      viewer->enqueue(*framesMap);
-      viewer->nextFrame();
+
       while (run && startFrameNumber < endFrameNumber) {
         clock.start();
         if (!parameter.dataset.encodedType.empty()) {
-          reader->load(0, startFrameNumber, parameter.groupOfFramesSize, frames, parameter.parallel);
-          reader->load(1, startFrameNumber, parameter.groupOfFramesSize, staticFrames, parameter.parallel);
+          if (parameter.dataset.encodedType == "dynamic-static") {
+            reader->load(0, startFrameNumber, parameter.groupOfFramesSize, frames, parameter.parallel);
+            reader->load(1, startFrameNumber, parameter.groupOfFramesSize, staticFrames, parameter.parallel);
+          } else if (parameter.dataset.encodedType == "dynamic-staticAdded-staticRemoved") {
+            GroupOfFrame staticAddedFrames;
+            GroupOfFrame staticRemovedFrames;
+            reader->load(0, startFrameNumber, parameter.groupOfFramesSize, frames, parameter.parallel);
+            reader->load(1, startFrameNumber, parameter.groupOfFramesSize, staticAddedFrames, parameter.parallel);
+            reader->load(2, startFrameNumber, parameter.groupOfFramesSize, staticRemovedFrames, parameter.parallel);
+            staticFrames.clear();
+            for (size_t i = 0; i < staticAddedFrames.size(); i++) {
+              if (staticRemovedFrames.at(i)) {
+                for (const auto& pointToRemove : staticRemovedFrames.at(i)->points) {
+                  staticFrame->erase(remove_if(staticFrame->begin(), staticFrame->end(),
+                                               [&pointToRemove](const auto& point) {
+                                                 return point.x == pointToRemove.x && point.y == pointToRemove.y &&
+                                                        point.z == pointToRemove.z;
+                                               }),
+                                     staticFrame->end());
+                }
+              }
+              if (staticAddedFrames.at(i)) {
+                staticFrame->insert(staticFrame->end(), staticAddedFrames.at(i)->points.begin(),
+                                    staticAddedFrames.at(i)->points.end());
+              }
+              auto tmpFrame = jpcc::make_shared<Frame>();
+              pcl::copyPointCloud(*staticFrame, *tmpFrame);
+              staticFrames.push_back(tmpFrame);
+            }
+          }
           framesMap->insert_or_assign(primaryId, frames);
           framesMap->insert_or_assign(staticId, staticFrames);
         } else {
@@ -81,7 +99,6 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
 
         startFrameNumber += parameter.groupOfFramesSize;
       }
-    } catch (exception& e) { cerr << e.what() << endl; }
     run = false;
   };
 
