@@ -9,7 +9,6 @@
 #include <jpcc/process/PreProcessor.h>
 #include <jpcc/process/JPCCNormalEstimation.h>
 #include <jpcc/segmentation/JPCCSegmentation.h>
-#include <jpcc/visualization/JPCCVisualizer.h>
 
 #include "AppParameter.h"
 
@@ -21,52 +20,30 @@ using namespace jpcc;
 using namespace jpcc::io;
 using namespace jpcc::process;
 using namespace jpcc::segmentation;
-using namespace jpcc::visualization;
 
 void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
-  const typename DatasetReader::Ptr reader = newReader(parameter.inputReader, parameter.inputDataset);
-  PreProcessor                      preProcessor(parameter.preProcess);
-  auto                normalEstimation = jpcc::make_shared<JPCCNormalEstimation>(parameter.jpccNormalEstimation);
-  auto                gmmSegmentation  = jpcc::make_shared<JPCCSegmentation>(parameter.jpccGmmSegmentation);
-  JPCCVisualizer::Ptr viewer;
-
-  const string dynamicId = "dynamic";
-  const string staticId  = "static";
-
-  if (!parameter.headless) {
-    viewer = jpcc::make_shared<JPCCVisualizer>(parameter.visualizerParameter);
-    viewer->addParameter(parameter);
-    viewer->setColor(dynamicId, 1.0, 1.0, 1.0);
-    viewer->setColor(staticId, "z");
-  }
-
-  atomic_bool              run(true);
-  jpcc::shared_ptr<thread> viewerThread;
-  if (viewer) {
-    viewerThread = jpcc::make_shared<thread>([&]() {
-      while (!viewer->wasStopped() && run) { viewer->spinOnce(1000); }
-    });
-  }
+  DatasetReader::Ptr reader = newReader(parameter.inputReader, parameter.inputDataset);
+  PreProcessor       preProcessor(parameter.preProcess);
+  JPCCSegmentation   gmmSegmentation(parameter.jpccGmmSegmentation);
 
   {
     GroupOfFrame frames;
     size_t       groupOfFramesSize = parameter.groupOfFramesSize;
     size_t       frameNumber       = parameter.inputDataset.getStartFrameNumber();
-    const size_t endFrameNumber    = frameNumber + gmmSegmentation->getNTrain();
+    const size_t endFrameNumber    = frameNumber + gmmSegmentation.getNTrain();
     while (frameNumber < endFrameNumber) {
       reader->loadAll(frameNumber, groupOfFramesSize, frames, parameter.parallel);
       preProcessor.process(frames, nullptr, parameter.parallel);
-      // normalEstimation->computeInPlaceAll(frames, parameter.parallel);
 
       clock.start();
-      gmmSegmentation->appendTrainSamples(frames);
+      gmmSegmentation.appendTrainSamples(frames);
       clock.stop();
 
       frameNumber += groupOfFramesSize;
     }
   }
   clock.start();
-  gmmSegmentation->build();
+  gmmSegmentation.build();
   clock.stop();
 
   {
@@ -82,10 +59,11 @@ void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
     while (frameNumber < endFrameNumber) {
       reader->loadAll(frameNumber, groupOfFramesSize, frames, parameter.parallel);
       preProcessor.process(frames, nullptr, parameter.parallel);
-      // normalEstimation->computeInPlaceAll(frames, parameter.parallel);
 
       dynamicFrames.clear();
       staticFrames.clear();
+      staticAddedFrames.clear();
+      staticRemovedFrames.clear();
       clock.start();
       for (const auto& frame : frames) {
         auto     dynamicFrame = jpcc::make_shared<Frame>();
@@ -99,7 +77,7 @@ void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
           staticRemovedFrame = jpcc::make_shared<Frame>();
         }
 
-        gmmSegmentation->segmentation(frame, dynamicFrame, staticFrame, staticAddedFrame, staticRemovedFrame);
+        gmmSegmentation.segmentation(frame, dynamicFrame, staticFrame, staticAddedFrame, staticRemovedFrame);
 
         dynamicFrames.push_back(dynamicFrame);
         if (staticFrame) { staticFrames.push_back(staticFrame); }
@@ -107,8 +85,6 @@ void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
         if (staticRemovedFrame) { staticRemovedFrames.push_back(staticRemovedFrame); }
       }
       clock.stop();
-
-      if (viewer) { viewer->enqueue(GroupOfFrameMap{{dynamicId, dynamicFrames}, {staticId, staticFrames}}); }
 
       savePly(dynamicFrames, parameter.outputDataset.getFilePath(0), parameter.parallel);
       if (!staticFrames.empty()) { savePly(staticFrames, parameter.outputDataset.getFilePath(1), parameter.parallel); }
@@ -122,8 +98,6 @@ void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
       frameNumber += groupOfFramesSize;
     }
   }
-  run = false;
-  if (viewerThread && viewerThread->joinable()) { viewerThread->join(); }
 }
 
 int main(int argc, char* argv[]) {
