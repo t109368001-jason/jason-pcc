@@ -42,6 +42,7 @@ void OctreeContainerAdaptivePoint::updateAdaptivePoint(double alpha) {
     adaptivePoint_.normal_y  = (1.0 - alpha) * adaptivePoint_.normal_y + alpha * lastPoint_.normal_y;
     adaptivePoint_.normal_z  = (1.0 - alpha) * adaptivePoint_.normal_z + alpha * lastPoint_.normal_z;
   }
+  resetLastPoint();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

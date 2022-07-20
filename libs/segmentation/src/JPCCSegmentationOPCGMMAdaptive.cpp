@@ -9,7 +9,7 @@ namespace jpcc::segmentation {
 //////////////////////////////////////////////////////////////////////////////////////////////
 JPCCSegmentationOPCGMMAdaptive::JPCCSegmentationOPCGMMAdaptive(const JPCCSegmentationParameter& parameter) :
     JPCCSegmentationBase(parameter), Base(parameter.resolution), isFirstFrame(true) {
-  for (int i = -1; i >= -parameter_.k; i--) { alternateCentroids_.push_back(i / MAX_INTENSITY); }
+  for (int i = -1; i >= -parameter_.k; i--) { alternateCentroids_.push_back(static_cast<float>(i) / MAX_INTENSITY); }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -90,7 +90,7 @@ void JPCCSegmentationOPCGMMAdaptive::segmentation(const FrameConstPtr& frame,
         }
       }
     }
-    leafContainer.updateModel(parameter_.alpha);
+    leafContainer.updateModel(parameter_.alpha, parameter_.minimumVariance);
 
     bool             updatedIsStatic    = leafContainer.getGMM()->getStaticProbability() > parameter_.staticThresholdGT;
     PointXYZINormal& updatedStaticPoint = leafContainer.getAdaptivePoint();

@@ -18,23 +18,18 @@ class OctreeContainerGMM : virtual public octree::OctreeContainerLastPoint {
 
   void reset() override;
 
-  virtual void addPoint(const PointXYZINormal& point);
+  void addPoint(const PointXYZINormal& point) override;
 
   void addTrainSample();
 
-  virtual void build(int nTrain, int K, double alpha, double minimumVariance, std::vector<float>& alternateCentroids);
+  virtual void build(
+      int nTrain, int K, double alpha, double minimumVariance, const std::vector<float>& alternateCentroids);
 
-  void updateModel();
+  virtual void updateModel(double alpha, double minimumVariance);
 
-  virtual bool isBuilt() const;
+  [[nodiscard]] virtual bool isBuilt() const;
 
   [[nodiscard]] float getIntensityNormalized();
-
-  [[nodiscard]] const shared_ptr<std::vector<float>>& getTrainSamples() const;
-
-  [[nodiscard]] shared_ptr<std::vector<float>>& getTrainSamples();
-
-  [[nodiscard]] const math::GMM::Ptr& getGMM() const;
 
   [[nodiscard]] math::GMM::Ptr& getGMM();
 };

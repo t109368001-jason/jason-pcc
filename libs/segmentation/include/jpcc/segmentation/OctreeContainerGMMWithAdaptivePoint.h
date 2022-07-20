@@ -17,7 +17,7 @@ class OctreeContainerGMMWithAdaptivePoint : virtual public OctreeContainerGMM,
 
   void appendTrainSamples(double alpha);
 
-  void updateModel(double alpha);
+  void updateModel(double alpha, double minimumVariance) override;
 };
 
 }  // namespace jpcc::segmentation

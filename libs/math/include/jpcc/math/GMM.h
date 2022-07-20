@@ -6,31 +6,25 @@ namespace jpcc::math {
 
 class Cluster {
  public:
-  using Ptr = shared_ptr<Cluster>;
-
   using SampleT = float;
 
  protected:
-  double       weight_;
-  double       mean_;
-  double       variance_;
-  double       alpha_;  // weight learning rate
-  const double minimumVariance_;
+  double weight_;
+  double mean_;
+  double variance_;
 
  public:
-  Cluster(const std::vector<SampleT>& samples, double weight, double alpha, double minimumVariance);
+  Cluster(const std::vector<SampleT>& samples, double weight, double minimumVariance);
 
   [[nodiscard]] double getProbability(SampleT sample) const;
 
-  void addSample(SampleT sample, bool matched);
+  void addSample(SampleT sample, bool matched, double alpha, double minimumVariance);
 
-  void checkVariance();
+  void checkVariance(double minimumVariance);
 
   [[nodiscard]] double getWeight() const;
 
   [[nodiscard]] double& getWeight();
-
-  void setWeight(double weight);
 
   [[nodiscard]] double getMean() const;
 
@@ -44,15 +38,10 @@ class GMM {
   using SampleT = Cluster::SampleT;
 
  protected:
-  const int                 K_;
-  std::vector<Cluster::Ptr> clusters_;
+  std::vector<Cluster> clusters_;
 
  public:
-  GMM(std::vector<SampleT>& samples,
-      int                   K,
-      double                alpha,
-      double                minimumVariance,
-      std::vector<SampleT>& alternateCentroids);
+  GMM(std::vector<SampleT>& samples, int K, double minimumVariance, const std::vector<SampleT>& alternateCentroids);
 
   [[nodiscard]] double getProbability(SampleT sample);
 
@@ -60,15 +49,11 @@ class GMM {
 
   [[nodiscard]] std::pair<size_t, double> getOptimalModelIndex(SampleT sample) const;
 
-  [[nodiscard]] std::pair<size_t, double> getOptimalModelIndex(const std::vector<SampleT>& samples) const;
-
-  void updateModel(SampleT sample, bool normalizeWeights = true);
-
-  void updateModel(const std::vector<SampleT>& samples, bool normalizeWeights = true);
+  void updateModel(SampleT sample, double alpha, double minimumVariance);
 
   void normalizeWeights();
 
-  [[nodiscard]] const std::vector<Cluster::Ptr>& getClusters() const;
+  [[nodiscard]] const std::vector<Cluster>& getClusters() const;
 };
 
 }  // namespace jpcc::math

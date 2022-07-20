@@ -25,8 +25,8 @@ void OctreeContainerGMMWithAdaptivePoint::appendTrainSamples(const double alpha)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void OctreeContainerGMMWithAdaptivePoint::updateModel(const double alpha) {
-  OctreeContainerGMM::updateModel();
+void OctreeContainerGMMWithAdaptivePoint::updateModel(const double alpha, const double minimumVariance) {
+  OctreeContainerGMM::updateModel(alpha, minimumVariance);
   OctreeContainerAdaptivePoint::updateAdaptivePoint(alpha);
 }
 
