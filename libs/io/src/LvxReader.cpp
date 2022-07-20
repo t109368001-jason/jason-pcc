@@ -11,13 +11,13 @@ namespace jpcc::io {
 //////////////////////////////////////////////////////////////////////////////////////////////
 LvxReader::LvxReader(DatasetReaderParameter param, DatasetParameter datasetParam) :
     DatasetStreamReader(std::move(param), std::move(datasetParam)) {
-  THROW_IF_NOT(this->datasetParam_.type == "lvx");
-  if (this->datasetParam_.sensor == "mid-100") {
+  THROW_IF_NOT(this->datasetParam_.type == Type::LVX);
+  if (this->datasetParam_.sensor == Sensor::MID_100) {
     capacity_ = (size_t)((double)(100000 * 3) / this->param_.frequency * 1.05);
-  } else if (this->datasetParam_.sensor == "mid-70") {
+  } else if (this->datasetParam_.sensor == Sensor::MID_70) {
     capacity_ = (size_t)((double)(100000) / this->param_.frequency * 1.05);
   } else {
-    throw std::logic_error("Not support dataset.sensor " + this->datasetParam_.sensor);
+    throw std::logic_error("sensor not support");
   }
   for (size_t i = 0; i < this->datasetParam_.count(); i++) {
     lvxs_.emplace_back(nullptr, [](LvxHandler* ptr) {

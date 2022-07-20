@@ -25,40 +25,49 @@ using namespace jpcc::visualization;
 void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
   const auto viewer = jpcc::make_shared<JPCCVisualizer>(parameter.visualizerParameter);
 
-  FramePtr staticFrame;
-
-  atomic_bool  run(true);
-  const string primaryId = "cloud";
-  const string staticId  = "static";
+  atomic_bool run(true);
+  string      primaryId = "cloud";
+  string      staticId  = "static";
 
   viewer->addParameter(parameter);
-  viewer->setPrimaryId(primaryId);
-  if (!parameter.dataset.encodedType.empty()) {
+  if (parameter.dataset.encodedType != EncodeType::NONE) {
+    primaryId = "dynamic";
     viewer->setColor(primaryId, 1.0, 0.0, 1.0);
-    viewer->setColor(staticId, "z");
-    if (parameter.dataset.encodedType == "dynamic-staticAdded-staticRemoved") {
-      staticFrame = jpcc::make_shared<Frame>();
-    }
+    viewer->setColor(staticId, 1.0, 1.0, 1.0);
   }
+  viewer->setPrimaryId(primaryId);
 
   auto datasetLoading = [&] {
     try {
       const DatasetReader::Ptr reader = newReader(parameter.reader, parameter.dataset);
       PreProcessor             preProcessor(parameter.preProcess);
 
+      FramePtr     staticFrame;
       GroupOfFrame frames;
       GroupOfFrame staticFrames;
       const auto   framesMap        = jpcc::make_shared<GroupOfFrameMap>();
       size_t       startFrameNumber = parameter.dataset.getStartFrameNumber();
       size_t       endFrameNumber   = parameter.dataset.getEndFrameNumber();
 
+      if (parameter.dataset.encodedType == EncodeType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED) {
+        staticFrame = jpcc::make_shared<Frame>();
+      }
+
       while (run && startFrameNumber < endFrameNumber) {
         clock.start();
-        if (!parameter.dataset.encodedType.empty()) {
-          if (parameter.dataset.encodedType == "dynamic-static") {
+        switch (parameter.dataset.encodedType) {
+          case EncodeType::NONE:
+            reader->loadAll(startFrameNumber, parameter.groupOfFramesSize, frames, parameter.parallel);
+            preProcessor.process(frames, framesMap, parameter.parallel);
+            framesMap->insert_or_assign(primaryId, frames);
+            break;
+          case EncodeType::DYNAMIC_STATIC:
             reader->load(0, startFrameNumber, parameter.groupOfFramesSize, frames, parameter.parallel);
             reader->load(1, startFrameNumber, parameter.groupOfFramesSize, staticFrames, parameter.parallel);
-          } else if (parameter.dataset.encodedType == "dynamic-staticAdded-staticRemoved") {
+            framesMap->insert_or_assign(primaryId, frames);
+            framesMap->insert_or_assign(staticId, staticFrames);
+            break;
+          case EncodeType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED:
             GroupOfFrame staticAddedFrames;
             GroupOfFrame staticRemovedFrames;
             reader->load(0, startFrameNumber, parameter.groupOfFramesSize, frames, parameter.parallel);
@@ -84,13 +93,9 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
               pcl::copyPointCloud(*staticFrame, *tmpFrame);
               staticFrames.push_back(tmpFrame);
             }
-          }
-          framesMap->insert_or_assign(primaryId, frames);
-          framesMap->insert_or_assign(staticId, staticFrames);
-        } else {
-          reader->loadAll(startFrameNumber, parameter.groupOfFramesSize, frames, parameter.parallel);
-          preProcessor.process(frames, framesMap, parameter.parallel);
-          framesMap->insert_or_assign(primaryId, frames);
+            framesMap->insert_or_assign(primaryId, frames);
+            framesMap->insert_or_assign(staticId, staticFrames);
+            break;
         }
         clock.stop();
 

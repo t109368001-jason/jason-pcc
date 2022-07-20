@@ -7,7 +7,6 @@
 #include <jpcc/io/PlyIO.h>
 #include <jpcc/io/Reader.h>
 #include <jpcc/process/PreProcessor.h>
-#include <jpcc/process/JPCCNormalEstimation.h>
 #include <jpcc/segmentation/JPCCSegmentation.h>
 
 #include "AppParameter.h"
@@ -70,11 +69,13 @@ void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
         FramePtr staticFrame;
         FramePtr staticAddedFrame;
         FramePtr staticRemovedFrame;
-        if (parameter.outputDataset.encodedType == "dynamic-static") {
-          staticFrame = jpcc::make_shared<Frame>();
-        } else if (parameter.outputDataset.encodedType == "dynamic-staticAdded-staticRemoved") {
-          staticAddedFrame   = jpcc::make_shared<Frame>();
-          staticRemovedFrame = jpcc::make_shared<Frame>();
+        switch (parameter.outputDataset.encodedType) {
+          case EncodeType::DYNAMIC_STATIC: staticFrame = jpcc::make_shared<Frame>(); break;
+          case EncodeType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED:
+            staticAddedFrame   = jpcc::make_shared<Frame>();
+            staticRemovedFrame = jpcc::make_shared<Frame>();
+            break;
+          default: break;
         }
 
         gmmSegmentation.segmentation(frame, dynamicFrame, staticFrame, staticAddedFrame, staticRemovedFrame);

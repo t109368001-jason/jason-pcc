@@ -119,8 +119,8 @@ struct DataPacket {
 //////////////////////////////////////////////////////////////////////////////////////////////
 PcapReader::PcapReader(DatasetReaderParameter param, DatasetParameter datasetParam) :
     DatasetStreamReader(std::move(param), std::move(datasetParam)) {
-  THROW_IF_NOT(this->datasetParam_.type == "pcap");
-  if (this->datasetParam_.sensor == "vlp16") {
+  THROW_IF_NOT(this->datasetParam_.type == Type::PCAP);
+  if (this->datasetParam_.sensor == Sensor::VLP_16) {
     maxNumLasers_ = VLP16_MAX_NUM_LASERS;
     verticals_.resize(maxNumLasers_);
     sinVerticals_.resize(maxNumLasers_);
@@ -131,7 +131,7 @@ PcapReader::PcapReader(DatasetReaderParameter param, DatasetParameter datasetPar
       cosVerticals_.at(i) = VLP16_VERTICAL_COS[i];
     }
     capacity_ = (size_t)((double)(300000) / this->param_.frequency);
-  } else if (this->datasetParam_.sensor == "hi-res") {
+  } else if (this->datasetParam_.sensor == Sensor::HI_RES) {
     maxNumLasers_ = HI_RES_MAX_NUM_LASERS;
     verticals_.resize(maxNumLasers_);
     sinVerticals_.resize(maxNumLasers_);
@@ -142,7 +142,7 @@ PcapReader::PcapReader(DatasetReaderParameter param, DatasetParameter datasetPar
       cosVerticals_.at(i) = HI_RES_VERTICAL_COS[i];
     }
     capacity_ = (size_t)((double)(300000) / this->param_.frequency);
-  } else if (this->datasetParam_.sensor == "hdl32") {
+  } else if (this->datasetParam_.sensor == Sensor::HDL_32) {
     maxNumLasers_ = HDL32_MAX_NUM_LASERS;
     verticals_.resize(maxNumLasers_);
     sinVerticals_.resize(maxNumLasers_);
@@ -154,7 +154,7 @@ PcapReader::PcapReader(DatasetReaderParameter param, DatasetParameter datasetPar
     }
     capacity_ = (size_t)((double)(695000) / this->param_.frequency);
   } else {
-    throw std::logic_error("Not support dataset.sensor " + this->datasetParam_.sensor);
+    throw std::logic_error("sensor not support");
   }
   this->currentFrameNumbers_.resize(this->datasetParam_.count());
   for (size_t i = 0; i < this->datasetParam_.count(); i++) { pcaps_.emplace_back(nullptr, &pcapClose); }

@@ -27,8 +27,11 @@ DatasetParameter::DatasetParameter() : DatasetParameter(DATASET_OPT_PREFIX, __FU
 
 DatasetParameter::DatasetParameter(const string& prefix, const string& caption) :
     Parameter(prefix, caption),
+    name(),
+    sensor(Sensor::NONE),
+    type(Type::NONE),
     preProcessed(false),
-    encodedType(),
+    encodedType(EncodeType::NONE),
     folderPrefix("../../dataset/"),
     files(),
     frameCounts(),
@@ -37,13 +40,13 @@ DatasetParameter::DatasetParameter(const string& prefix, const string& caption) 
     haveGpsTime(false) {
   opts_.add_options()                                                                                            //
       (string(prefix_ + NAME_OPT).c_str(), value<string>(&name), "name")                                         //
-      (string(prefix_ + SENSOR_OPT).c_str(), value<string>(&sensor), "sensor")                                   //
+      (string(prefix_ + SENSOR_OPT).c_str(), value<string>(&sensor_), "sensor")                                  //
+      (string(prefix_ + TYPE_OPT).c_str(), value<string>(&type_), "dataset type")                                //
       (string(prefix_ + PRE_PROCESSED_OPT).c_str(),                                                              //
        value<bool>(&preProcessed)->default_value(preProcessed),                                                  //
        "preProcessed")                                                                                           //
-      (string(prefix_ + ENCODED_TYPE_OPT).c_str(), value<string>(&encodedType)->default_value(encodedType),      //
+      (string(prefix_ + ENCODED_TYPE_OPT).c_str(), value<string>(&encodedType_)->default_value(encodedType_),    //
        "encodedType")                                                                                            //
-      (string(prefix_ + TYPE_OPT).c_str(), value<string>(&type), "dataset type")                                 //
       (string(prefix_ + FOLDER_PREFIX_OPT).c_str(),                                                              //
        value<string>(&folderPrefix)->default_value(folderPrefix),                                                //
        "dataset folder prefix")                                                                                  //
@@ -75,16 +78,15 @@ void DatasetParameter::notify() { notify(true); }
 
 void DatasetParameter::notify(bool isInput) {
   THROW_IF_NOT(!name.empty());
-  THROW_IF_NOT(!type.empty());
-  if (preProcessed) { THROW_IF_NOT(type == "ply"); }
-  if (!encodedType.empty()) {
-    if (encodedType == "dynamic-static") {
-      THROW_IF_NOT(files.size() == 2);
-    } else if (encodedType == "dynamic-staticAdded-staticRemoved") {
-      THROW_IF_NOT(files.size() == 3);
-    } else {
-      BOOST_THROW_EXCEPTION(logic_error("invalid encodedType"));
-    }
+  sensor = getSensor(sensor_);
+  THROW_IF_NOT(!type_.empty());
+  type = getType(type_);
+  if (preProcessed) { THROW_IF_NOT(type == Type::PLY); }
+  encodedType = getEncodeType(encodedType_);
+  if (encodedType == EncodeType::DYNAMIC_STATIC) {
+    THROW_IF_NOT(files.size() == 2);
+  } else if (encodedType == EncodeType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED) {
+    THROW_IF_NOT(files.size() == 3);
   }
   THROW_IF_NOT(!folderPrefix.empty());
   THROW_IF_NOT(!folder.empty());
@@ -99,18 +101,18 @@ void DatasetParameter::notify(bool isInput) {
   for (size_t i = 0; i < files.size(); i++) {
     filePaths.at(i) = folderPath / files.at(i);
     if (isInput) {
-      if (encodedType == "dynamic-static") {
+      if (encodedType == EncodeType::DYNAMIC_STATIC) {
         char fileName[4096];
         sprintf(fileName, filePaths.at(i).string().c_str(), startFrameNumbers.at(i));
         THROW_IF_NOT(exists(path(fileName)));
-      } else if (encodedType == "dynamic-staticAdded-staticRemoved") {
+      } else if (encodedType == EncodeType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED) {
         if (i != 0) {  // skip, check dynamic frame only
           continue;
         }
         char fileName[4096];
         sprintf(fileName, filePaths.at(i).string().c_str(), startFrameNumbers.at(i));
         THROW_IF_NOT(exists(path(fileName)));
-      } else if (type == "ply") {
+      } else if (type == Type::PLY) {
         char fileName[4096];
         sprintf(fileName, filePaths.at(i).string().c_str(), startFrameNumbers.at(i));
         THROW_IF_NOT(exists(path(fileName)));
@@ -120,7 +122,7 @@ void DatasetParameter::notify(bool isInput) {
     }
   }
   if (!transforms_.empty()) {
-    THROW_IF_NOT(type != "ply");
+    THROW_IF_NOT(type != Type::PLY);
     THROW_IF_NOT(transforms_.size() == files.size());
     transforms.resize(transforms_.size());
     for (size_t i = 0; i < transforms_.size(); i++) {
@@ -163,9 +165,9 @@ shared_ptr<Matrix4f> DatasetParameter::getTransforms(const size_t index) const {
 ostream& operator<<(ostream& out, const DatasetParameter& obj) {
   obj.coutParameters(out)                               //
       (NAME_OPT, obj.name)                              //
-      (SENSOR_OPT, obj.sensor)                          //
-      (TYPE_OPT, obj.type)                              //
-      (ENCODED_TYPE_OPT, obj.encodedType)               //
+      (SENSOR_OPT, obj.sensor_)                         //
+      (TYPE_OPT, obj.type_)                             //
+      (ENCODED_TYPE_OPT, obj.encodedType_)              //
       (FOLDER_PREFIX_OPT, obj.folderPrefix)             //
       (FOLDER_OPT, obj.folder)                          //
       (FILES_OPT, obj.files)                            //
@@ -175,6 +177,50 @@ ostream& operator<<(ostream& out, const DatasetParameter& obj) {
       (HAVE_GPS_TIME_OPT, obj.haveGpsTime)              //
       ;
   return out;
+}
+
+Sensor getSensor(const std::string& sensor) {
+  if (sensor.empty()) {
+    return Sensor::NONE;
+  } else if (sensor == "mid-100") {
+    return Sensor::MID_100;
+  } else if (sensor == "mid-70") {
+    return Sensor::MID_70;
+  } else if (sensor == "vlp-16") {
+    return Sensor::VLP_16;
+  } else if (sensor == "hi-res") {
+    return Sensor::HI_RES;
+  } else if (sensor == "hdl-32") {
+    return Sensor::HDL_32;
+  } else {
+    throw std::logic_error("invalid sensor");
+  }
+}
+
+Type getType(const std::string& type) {
+  if (type.empty()) {
+    return Type::NONE;
+  } else if (type == "ply") {
+    return Type::PLY;
+  } else if (type == "pcap") {
+    return Type::PCAP;
+  } else if (type == "lvx") {
+    return Type::LVX;
+  } else {
+    throw std::logic_error("invalid type");
+  }
+}
+
+EncodeType getEncodeType(const std::string& encodeType) {
+  if (encodeType.empty()) {
+    return EncodeType::NONE;
+  } else if (encodeType == "dynamic-static") {
+    return EncodeType::DYNAMIC_STATIC;
+  } else if (encodeType == "dynamic-staticAdded-staticRemoved") {
+    return EncodeType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED;
+  } else {
+    throw std::logic_error("invalid encodeType");
+  }
 }
 
 }  // namespace jpcc::io
