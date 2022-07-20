@@ -8,10 +8,9 @@
 
 namespace jpcc::segmentation {
 
-class OctreeContainerGMM : virtual public octree::OctreeContainerLastPoint {
+class OctreeContainerGMM : virtual public octree::OctreeContainerLastPoint, virtual public math::GMM {
  protected:
   shared_ptr<std::vector<float>> trainSamples_;
-  math::GMM::Ptr                 gmm_;
 
  public:
   OctreeContainerGMM();
@@ -27,11 +26,7 @@ class OctreeContainerGMM : virtual public octree::OctreeContainerLastPoint {
 
   virtual void updateModel(double alpha, double minimumVariance);
 
-  [[nodiscard]] virtual bool isBuilt() const;
-
   [[nodiscard]] float getIntensityNormalized();
-
-  [[nodiscard]] math::GMM::Ptr& getGMM();
 };
 
 }  // namespace jpcc::segmentation

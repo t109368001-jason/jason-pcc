@@ -41,7 +41,16 @@ class GMM {
   std::vector<Cluster> clusters_;
 
  public:
+  GMM() = default;
+
   GMM(std::vector<SampleT>& samples, int K, double minimumVariance, const std::vector<SampleT>& alternateCentroids);
+
+  void build(std::vector<SampleT>&       samples,
+             int                         K,
+             double                      minimumVariance,
+             const std::vector<SampleT>& alternateCentroids);
+
+  [[nodiscard]] bool isBuilt();
 
   [[nodiscard]] double getProbability(SampleT sample);
 

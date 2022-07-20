@@ -70,7 +70,7 @@ void JPCCSegmentationOPCGMMAdaptive::segmentation(const FrameConstPtr& frame,
       leafContainer.build(parameter_.nTrain, parameter_.k, parameter_.alpha, parameter_.minimumVariance,
                           alternateCentroids_);
     }
-    double          staticProbability = leafContainer.getGMM()->getStaticProbability();
+    double          staticProbability = leafContainer.getStaticProbability();
     bool            isStatic          = staticProbability > parameter_.staticThresholdGT;
     PointXYZINormal staticPoint       = leafContainer.getAdaptivePoint();
 
@@ -79,7 +79,7 @@ void JPCCSegmentationOPCGMMAdaptive::segmentation(const FrameConstPtr& frame,
       const float intensity = leafContainer.getIntensityNormalized();
 
       if (dynamicFrame) {
-        double probability = leafContainer.getGMM()->getProbability(intensity);
+        double probability = leafContainer.getProbability(intensity);
 
         bool isDynamic = probability < parameter_.dynamicThresholdLE;
 
@@ -92,7 +92,7 @@ void JPCCSegmentationOPCGMMAdaptive::segmentation(const FrameConstPtr& frame,
     }
     leafContainer.updateModel(parameter_.alpha, parameter_.minimumVariance);
 
-    bool             updatedIsStatic    = leafContainer.getGMM()->getStaticProbability() > parameter_.staticThresholdGT;
+    bool             updatedIsStatic    = leafContainer.getStaticProbability() > parameter_.staticThresholdGT;
     PointXYZINormal& updatedStaticPoint = leafContainer.getAdaptivePoint();
     assert(!isnan(updatedStaticPoint.x));
     if (staticFrame && updatedIsStatic) { staticFrame->points.push_back(updatedStaticPoint); }

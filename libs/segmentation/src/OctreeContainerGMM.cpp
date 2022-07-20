@@ -7,7 +7,7 @@ namespace jpcc::segmentation {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 OctreeContainerGMM::OctreeContainerGMM() :
-    OctreeContainerLastPoint(), trainSamples_(make_shared<vector<float>>()), gmm_() {}
+    OctreeContainerLastPoint(), GMM(), trainSamples_(make_shared<vector<float>>()) {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void OctreeContainerGMM::reset() {}
@@ -33,22 +33,15 @@ void OctreeContainerGMM::build(const int                 nTrain,
     assert(sample <= GMM_MAX_INTENSITY);
   }
   trainSamples_->resize(nTrain, GMM_NULL_INTENSITY);
-  gmm_          = jpcc::make_shared<GMM>(*trainSamples_, K, minimumVariance, alternateCentroids);
+  GMM::build(*trainSamples_, K, minimumVariance, alternateCentroids);
   trainSamples_ = nullptr;
 }
 
 void OctreeContainerGMM::updateModel(const double alpha, const double minimumVariance) {
-  gmm_->updateModel(isnan(getIntensityNormalized()) ? NULL_INTENSITY : getIntensityNormalized(), alpha,
-                    minimumVariance);
+  GMM::updateModel(isnan(getIntensityNormalized()) ? NULL_INTENSITY : getIntensityNormalized(), alpha, minimumVariance);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-bool OctreeContainerGMM::isBuilt() const { return gmm_.operator bool(); }
-
-//////////////////////////////////////////////////////////////////////////////////////////////
 float OctreeContainerGMM::getIntensityNormalized() { return lastPoint_.intensity / MAX_INTENSITY; }
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-math::GMM::Ptr& OctreeContainerGMM::getGMM() { return gmm_; }
 
 }  // namespace jpcc::segmentation

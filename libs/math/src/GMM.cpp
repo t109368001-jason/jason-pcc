@@ -62,6 +62,14 @@ GMM::GMM(vector<SampleT>&            samples,
          const int                   K,
          const double                minimumVariance,
          const std::vector<SampleT>& alternateCentroids) {
+  build(samples, K, minimumVariance, alternateCentroids);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void GMM::build(vector<SampleT>&            samples,
+                const int                   K,
+                const double                minimumVariance,
+                const std::vector<SampleT>& alternateCentroids) {
   size_t k;
 
   vector<SampleT>         centroids;
@@ -142,6 +150,9 @@ GMM::GMM(vector<SampleT>&            samples,
   sort(clusters_.begin(), clusters_.end(),
        [](const Cluster& cluster1, const Cluster& cluster2) { return cluster1.getMean() < cluster2.getMean(); });
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+bool GMM::isBuilt() { return !clusters_.empty(); }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 [[nodiscard]] double GMM::getProbability(SampleT sample) {
