@@ -104,11 +104,6 @@ void encode(const AppParameter& parameter, StopwatchUserTime& clock) {
         }
       }
       clock.stop();
-
-      {  // compute metrics
-         // TODO impl JPCCMetrics
-      }
-
       frameNumber += groupOfFramesSize;
     }
   }
