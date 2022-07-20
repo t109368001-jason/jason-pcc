@@ -12,7 +12,7 @@ class JPCCSegmentation : public JPCCSegmentationBase {
   using Base = JPCCSegmentation;
 
  protected:
-  JPCCSegmentationBase::Ptr octree_;
+  JPCCSegmentationBase::Ptr backend_;
 
  public:
   JPCCSegmentation(const JPCCSegmentationParameter& parameter);
