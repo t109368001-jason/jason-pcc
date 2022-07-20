@@ -157,6 +157,7 @@ void JPCCVisualizer::enqueue(const GroupOfFrameMap& framesMap) {
     for (const FramePtr& frame : frames) { queue.push(frame); }
   }
   updateQueue();
+  if (frameMap_.empty()) { nextFrame(); }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
