@@ -7,19 +7,26 @@
 
 namespace jpcc::segmentation {
 
+enum class SegmentationType { GMM };
+enum class StaticPointType { ADAPTIVE };
+
 #define JPCC_GMM_SEGMENTATION_OPT_PREFIX "jpccGMMSegmentationParameter"
 
 class JPCCSegmentationParameter : public virtual Parameter {
+ protected:
+  std::string type_;
+  std::string staticPointType_;
+
  public:
-  std::string type;
-  std::string staticPointType;
-  double      resolution;
-  int         k;
-  double      alpha;
-  int         nTrain;
-  double      dynamicThresholdLE;
-  double      staticThresholdGT;
-  double      minimumVariance;
+  SegmentationType type;
+  StaticPointType  staticPointType;
+  double           resolution;
+  int              k;
+  double           alpha;
+  int              nTrain;
+  double           dynamicThresholdLE;
+  double           staticThresholdGT;
+  double           minimumVariance;
 
   JPCCSegmentationParameter();
 
@@ -31,5 +38,9 @@ class JPCCSegmentationParameter : public virtual Parameter {
 
   friend std::ostream& operator<<(std::ostream& out, const JPCCSegmentationParameter& obj);
 };
+
+SegmentationType getSegmentationType(const std::string& type);
+
+StaticPointType getStaticPointType(const std::string& type);
 
 }  // namespace jpcc::segmentation

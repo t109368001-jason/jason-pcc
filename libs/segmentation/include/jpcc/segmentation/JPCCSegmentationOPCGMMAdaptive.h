@@ -12,8 +12,8 @@ class JPCCSegmentationOPCGMMAdaptive
     : virtual public JPCCSegmentationBase,
       virtual public octree::JPCCOctreePointCloud<PointXYZINormal, OctreeContainerGMMWithAdaptivePoint> {
  public:
-  static constexpr char TYPE[]              = "gmm";
-  static constexpr char STATIC_POINT_TYPE[] = "adaptive";
+  static constexpr SegmentationType TYPE              = SegmentationType::GMM;
+  static constexpr StaticPointType  STATIC_POINT_TYPE = StaticPointType::ADAPTIVE;
 
   using Ptr  = shared_ptr<JPCCSegmentationOPCGMMAdaptive>;
   using Base = octree::JPCCOctreePointCloud<PointXYZINormal, OctreeContainerGMMWithAdaptivePoint>;

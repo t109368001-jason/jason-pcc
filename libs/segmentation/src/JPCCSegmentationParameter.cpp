@@ -19,13 +19,13 @@ JPCCSegmentationParameter::JPCCSegmentationParameter() :
     JPCCSegmentationParameter(JPCC_GMM_SEGMENTATION_OPT_PREFIX, __FUNCTION__) {}
 
 JPCCSegmentationParameter::JPCCSegmentationParameter(const string& prefix, const string& caption) :
-    Parameter(prefix, caption), resolution(0.0), k(3), alpha(0.05) {
+    Parameter(prefix, caption), type_(), staticPointType_(), resolution(0.0), k(3), alpha(0.05) {
   opts_.add_options()                                           //
       (string(prefix_ + TYPE_OPT).c_str(),                      //
-       value<string>(&type)->required(),                        //
+       value<string>(&type_)->required(),                       //
        "type")                                                  //
       (string(prefix_ + STATIC_POINT_TYPE_OPT).c_str(),         //
-       value<string>(&staticPointType)->required(),             //
+       value<string>(&staticPointType_)->required(),            //
        "staticPointType, [adaptive]")                           //
       (string(prefix_ + RESOLUTION_OPT).c_str(),                //
        value<double>(&resolution)->required(),                  //
@@ -62,6 +62,8 @@ void JPCCSegmentationParameter::getShowTexts(vector<string>& showTexts) const {
 }
 
 void JPCCSegmentationParameter::notify() {
+  type            = getSegmentationType(type_);
+  staticPointType = getStaticPointType(staticPointType_);
   assert(resolution > 0.0);
   assert(k > 0);
   assert(alpha > 0.0);
@@ -70,8 +72,8 @@ void JPCCSegmentationParameter::notify() {
 
 ostream& operator<<(ostream& out, const JPCCSegmentationParameter& obj) {
   obj.coutParameters(out)                              //
-      (TYPE_OPT, obj.type)                             //
-      (STATIC_POINT_TYPE_OPT, obj.staticPointType)     //
+      (TYPE_OPT, obj.type_)                            //
+      (STATIC_POINT_TYPE_OPT, obj.staticPointType_)    //
       (RESOLUTION_OPT, obj.resolution)                 //
       (K_OPT, obj.k)                                   //
       (ALPHA_OPT, obj.alpha)                           //
@@ -81,6 +83,22 @@ ostream& operator<<(ostream& out, const JPCCSegmentationParameter& obj) {
       (MINIMUM_VARIANCE_OPT, obj.minimumVariance)      //
       ;
   return out;
+}
+
+SegmentationType getSegmentationType(const std::string& segmentationType) {
+  if (segmentationType == "gmm") {
+    return SegmentationType::GMM;
+  } else {
+    throw std::logic_error("invalid segmentationType");
+  }
+}
+
+StaticPointType getStaticPointType(const std::string& staticPointType) {
+  if (staticPointType == "adaptive") {
+    return StaticPointType::ADAPTIVE;
+  } else {
+    throw std::logic_error("invalid staticPointType");
+  }
 }
 
 }  // namespace jpcc::segmentation
