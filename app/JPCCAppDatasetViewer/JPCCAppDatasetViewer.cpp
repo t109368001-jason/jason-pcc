@@ -77,13 +77,13 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
             staticFrames.clear();
             for (size_t i = 0; i < staticAddedFrames.size(); i++) {
               if (staticRemovedFrames.at(i)) {
-                for (const auto& pointToRemove : staticRemovedFrames.at(i)->points) {
-                  staticFrame->erase(remove_if(staticFrame->begin(), staticFrame->end(),
-                                               [&pointToRemove](const auto& point) {
-                                                 return point.x == pointToRemove.x && point.y == pointToRemove.y &&
-                                                        point.z == pointToRemove.z;
-                                               }),
-                                     staticFrame->end());
+                for (const PointXYZINormal& pointToRemove : staticRemovedFrames.at(i)->points) {
+                  for (auto it = staticFrame->points.begin(); it < staticFrame->points.end(); it++) {
+                    if (((*it).getVector3fMap() - pointToRemove.getVector3fMap()).norm() < 1) {
+                      staticFrame->erase(it);
+                      break;
+                    }
+                  }
                 }
               }
               if (staticAddedFrames.at(i)) {
