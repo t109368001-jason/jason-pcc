@@ -45,9 +45,10 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
       FramePtr     staticFrame;
       GroupOfFrame frames;
       GroupOfFrame staticFrames;
-      const auto   framesMap        = jpcc::make_shared<GroupOfFrameMap>();
-      size_t       startFrameNumber = parameter.dataset.getStartFrameNumber();
-      size_t       endFrameNumber   = parameter.dataset.getEndFrameNumber();
+      const auto   framesMap         = jpcc::make_shared<GroupOfFrameMap>();
+      const size_t groupOfFramesSize = parameter.groupOfFramesSize;
+      size_t       startFrameNumber  = parameter.dataset.getStartFrameNumber();
+      const size_t endFrameNumber    = parameter.dataset.getEndFrameNumber();
 
       if (parameter.dataset.encodedType == EncodeType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED) {
         staticFrame = jpcc::make_shared<Frame>();
@@ -57,22 +58,22 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
         clock.start();
         switch (parameter.dataset.encodedType) {
           case EncodeType::NONE:
-            reader->loadAll(startFrameNumber, parameter.groupOfFramesSize, frames, parameter.parallel);
+            reader->loadAll(startFrameNumber, groupOfFramesSize, frames, parameter.parallel);
             preProcessor.process(frames, framesMap, parameter.parallel);
             framesMap->insert_or_assign(primaryId, frames);
             break;
           case EncodeType::DYNAMIC_STATIC:
-            reader->load(0, startFrameNumber, parameter.groupOfFramesSize, frames, parameter.parallel);
-            reader->load(1, startFrameNumber, parameter.groupOfFramesSize, staticFrames, parameter.parallel);
+            reader->load(0, startFrameNumber, groupOfFramesSize, frames, parameter.parallel);
+            reader->load(1, startFrameNumber, groupOfFramesSize, staticFrames, parameter.parallel);
             framesMap->insert_or_assign(primaryId, frames);
             framesMap->insert_or_assign(staticId, staticFrames);
             break;
           case EncodeType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED:
             GroupOfFrame staticAddedFrames;
             GroupOfFrame staticRemovedFrames;
-            reader->load(0, startFrameNumber, parameter.groupOfFramesSize, frames, parameter.parallel);
-            reader->load(1, startFrameNumber, parameter.groupOfFramesSize, staticAddedFrames, parameter.parallel);
-            reader->load(2, startFrameNumber, parameter.groupOfFramesSize, staticRemovedFrames, parameter.parallel);
+            reader->load(0, startFrameNumber, groupOfFramesSize, frames, parameter.parallel);
+            reader->load(1, startFrameNumber, groupOfFramesSize, staticAddedFrames, parameter.parallel);
+            reader->load(2, startFrameNumber, groupOfFramesSize, staticRemovedFrames, parameter.parallel);
             staticFrames.clear();
             for (size_t i = 0; i < staticAddedFrames.size(); i++) {
               if (staticRemovedFrames.at(i)) {
@@ -99,12 +100,17 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
         }
         clock.stop();
 
-        while (run && viewer->isFull()) { this_thread::sleep_for(100ms); }
-
         viewer->enqueue(*framesMap);
 
-        startFrameNumber += parameter.groupOfFramesSize;
+        while (run && viewer->isFull()) { this_thread::sleep_for(100ms); }
+
+        if (frames.size() < groupOfFramesSize) { break; }
+
+        startFrameNumber += groupOfFramesSize;
       }
+
+      while (!viewer->isEmpty()) { this_thread::sleep_for(100ms); }
+
     } catch (exception& e) { cerr << e.what() << endl; }
     run = false;
   };

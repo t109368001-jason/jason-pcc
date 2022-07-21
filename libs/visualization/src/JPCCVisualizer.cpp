@@ -197,4 +197,13 @@ bool JPCCVisualizer::isFull() {
   return it->second.size() >= param_.bufferSize;
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
+bool JPCCVisualizer::isEmpty() {
+  std::lock_guard<std::recursive_mutex> lock(mutex_);
+
+  const auto it = queueMap_.find(primaryId_);
+  if (it == queueMap_.end()) { return true; }
+  return it->second.empty();
+}
+
 }  // namespace jpcc::visualization
