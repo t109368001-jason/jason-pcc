@@ -4,10 +4,11 @@ namespace jpcc::segmentation {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 OctreeContainerGMMWithAdaptivePoint::OctreeContainerGMMWithAdaptivePoint() :
-    OctreeContainerGMM(), OctreeContainerAdaptivePoint() {}
+    OctreeContainerStaticFlag(), OctreeContainerGMM(), OctreeContainerAdaptivePoint() {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void OctreeContainerGMMWithAdaptivePoint::reset() {
+  OctreeContainerStaticFlag::reset();
   OctreeContainerGMM::reset();
   OctreeContainerAdaptivePoint::reset();
 }

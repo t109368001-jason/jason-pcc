@@ -46,6 +46,9 @@ void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
   clock.stop();
 
   {
+#if !defined(NODEBUG)
+    size_t staticPointSize = 0;
+#endif
     GroupOfFrame frames;
     GroupOfFrame dynamicFrames;
     GroupOfFrame staticFrames;
@@ -72,6 +75,9 @@ void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
         switch (parameter.outputDataset.encodedType) {
           case EncodeType::DYNAMIC_STATIC: staticFrame = jpcc::make_shared<Frame>(); break;
           case EncodeType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED:
+#if !defined(NODEBUG)
+            staticFrame = jpcc::make_shared<Frame>();
+#endif
             staticAddedFrame   = jpcc::make_shared<Frame>();
             staticRemovedFrame = jpcc::make_shared<Frame>();
             break;
@@ -79,6 +85,14 @@ void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
         }
 
         gmmSegmentation.segmentation(frame, dynamicFrame, staticFrame, staticAddedFrame, staticRemovedFrame);
+
+#if !defined(NODEBUG)
+        if (parameter.outputDataset.encodedType == EncodeType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED) {
+          staticPointSize += staticAddedFrame->size();
+          staticPointSize -= staticRemovedFrame->size();
+          assert(staticPointSize == staticFrame->size());
+        }
+#endif
 
         dynamicFrames.push_back(dynamicFrame);
         if (staticFrame) { staticFrames.push_back(staticFrame); }
