@@ -79,7 +79,8 @@ class OctreeNBufBase {
   using OctreeKey = pcl::octree::OctreeKey;
   using uindex_t  = unsigned int;
 
- protected:
+  // public for research
+  // protected:
   size_t leaf_count_;
 
   size_t branch_count_;

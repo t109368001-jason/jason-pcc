@@ -358,7 +358,8 @@ class OctreePointCloud : public OctreeT {
     this->dynamic_depth_enabled_ = max_objs_per_leaf_ > 0;
   }
 
- protected:
+  // public for research
+  // protected:
   /** \brief Add point at index from input pointcloud dataset to octree
    * \param[in] point_idx_arg the index representing the point in the dataset given by
    * \a setInputCloud to be added
