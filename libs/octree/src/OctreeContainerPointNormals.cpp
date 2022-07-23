@@ -5,7 +5,9 @@ using namespace std;
 namespace jpcc::octree {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-OctreeContainerPointNormals::OctreeContainerPointNormals() : azimuths_(), zeniths_() {}
+OctreeContainerPointNormals::OctreeContainerPointNormals() : OctreeContainerBase() {
+  OctreeContainerPointNormals::reset();
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void OctreeContainerPointNormals::reset() {

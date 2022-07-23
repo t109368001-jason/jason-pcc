@@ -5,7 +5,9 @@ using namespace std;
 namespace jpcc::octree {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-OctreeContainerAdaptivePoint::OctreeContainerAdaptivePoint() : OctreeContainerLastPoint(), adaptivePoint_() { reset(); }
+OctreeContainerAdaptivePoint::OctreeContainerAdaptivePoint() : OctreeContainerLastPoint() {
+  OctreeContainerAdaptivePoint::reset();
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void OctreeContainerAdaptivePoint::reset() {

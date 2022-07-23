@@ -6,7 +6,7 @@
 
 namespace jpcc::octree {
 
-class OctreeContainerOccupancyChangeCount : public pcl::octree::OctreeContainerBase {
+class OctreeContainerOccupancyChangeCount : virtual public pcl::octree::OctreeContainerBase {
  protected:
   bool   previous_;
   bool   current_;

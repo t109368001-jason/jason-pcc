@@ -6,7 +6,7 @@
 
 namespace jpcc::octree {
 
-class OctreeContainerCounter : public pcl::octree::OctreeContainerBase {
+class OctreeContainerCounter : virtual public pcl::octree::OctreeContainerBase {
  protected:
   size_t count_;
 

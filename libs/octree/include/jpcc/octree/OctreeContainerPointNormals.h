@@ -6,7 +6,7 @@
 
 namespace jpcc::octree {
 
-class OctreeContainerPointNormals : public pcl::octree::OctreeContainerBase {
+class OctreeContainerPointNormals : virtual public pcl::octree::OctreeContainerBase {
  protected:
   std::vector<double> azimuths_;
   std::vector<double> zeniths_;

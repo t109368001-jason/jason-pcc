@@ -6,7 +6,9 @@ using namespace Eigen;
 namespace jpcc::octree {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-OctreeContainerOccludedCount::OctreeContainerOccludedCount() : count3D_(), pointBuffer_() {}
+OctreeContainerOccludedCount::OctreeContainerOccludedCount() : OctreeContainerBase() {
+  OctreeContainerOccludedCount::reset();
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void OctreeContainerOccludedCount::reset() { pointBuffer_.clear(); }

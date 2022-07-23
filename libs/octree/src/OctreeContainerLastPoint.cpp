@@ -5,7 +5,7 @@ using namespace std;
 namespace jpcc::octree {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-OctreeContainerLastPoint::OctreeContainerLastPoint() : lastPoint_() { reset(); }
+OctreeContainerLastPoint::OctreeContainerLastPoint() : OctreeContainerBase() { OctreeContainerLastPoint::reset(); }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void OctreeContainerLastPoint::reset() {

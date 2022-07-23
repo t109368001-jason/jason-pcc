@@ -6,11 +6,13 @@ using namespace jpcc::math;
 namespace jpcc::segmentation {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-OctreeContainerGMM::OctreeContainerGMM() :
-    OctreeContainerLastPoint(), GMM(), trainSamples_(make_shared<vector<float>>()) {}
+OctreeContainerGMM::OctreeContainerGMM() : OctreeContainerLastPoint(), GMM() { OctreeContainerGMM::reset(); }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void OctreeContainerGMM::reset() {}
+void OctreeContainerGMM::reset() {
+  GMM::reset();
+  trainSamples_ = make_shared<vector<float>>();
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void OctreeContainerGMM::addPoint(const PointXYZINormal& point) { OctreeContainerLastPoint::addPoint(point); }

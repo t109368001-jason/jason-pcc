@@ -6,7 +6,7 @@
 
 namespace jpcc::octree {
 
-class OctreeContainerIntensities : public pcl::octree::OctreeContainerBase {
+class OctreeContainerIntensities : virtual public pcl::octree::OctreeContainerBase {
  protected:
   std::vector<float> intensities_;
 

@@ -6,7 +6,7 @@
 
 namespace jpcc::octree {
 
-class OctreeContainerOccupancyInterval : public pcl::octree::OctreeContainerBase {
+class OctreeContainerOccupancyInterval : virtual public pcl::octree::OctreeContainerBase {
  protected:
   int              count_;
   std::vector<int> occupancyIntervals_;

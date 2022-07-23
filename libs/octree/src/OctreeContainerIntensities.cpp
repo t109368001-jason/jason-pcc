@@ -5,7 +5,9 @@ using namespace std;
 namespace jpcc::octree {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-OctreeContainerIntensities::OctreeContainerIntensities() : intensities_() {}
+OctreeContainerIntensities::OctreeContainerIntensities() : OctreeContainerBase() {
+  OctreeContainerIntensities::reset();
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void OctreeContainerIntensities::reset() { intensities_.clear(); }

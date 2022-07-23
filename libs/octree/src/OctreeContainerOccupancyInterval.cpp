@@ -5,10 +5,15 @@ using namespace std;
 namespace jpcc::octree {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-OctreeContainerOccupancyInterval::OctreeContainerOccupancyInterval() : count_(0), occupancyIntervals_() {}
+OctreeContainerOccupancyInterval::OctreeContainerOccupancyInterval() : OctreeContainerBase() {
+  OctreeContainerOccupancyInterval::reset();
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void OctreeContainerOccupancyInterval::reset() { occupancyIntervals_.clear(); }
+void OctreeContainerOccupancyInterval::reset() {
+  count_ = 0;
+  occupancyIntervals_.clear();
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void OctreeContainerOccupancyInterval::addPointIndex(const index_t& index) { appendCount(); }

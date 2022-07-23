@@ -12,7 +12,7 @@
 
 namespace jpcc::octree {
 
-class OctreeContainerOccludedCount : public pcl::octree::OctreeContainerBase {
+class OctreeContainerOccludedCount : virtual public pcl::octree::OctreeContainerBase {
  public:
   using Count3D = boost::dynamic_bitset<>;
 
