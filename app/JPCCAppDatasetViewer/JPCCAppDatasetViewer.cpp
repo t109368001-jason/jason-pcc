@@ -30,7 +30,7 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
   string      staticId  = "static";
 
   viewer->addParameter(parameter);
-  if (parameter.dataset.encodedType != EncodeType::NONE) {
+  if (parameter.dataset.type == Type::PLY_SEG) {
     primaryId = "dynamic";
     viewer->setColor(primaryId, 1.0, 0.0, 1.0);
     viewer->setColor(staticId, 1.0, 1.0, 1.0);
@@ -50,53 +50,42 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
       size_t       startFrameNumber  = parameter.dataset.getStartFrameNumber();
       const size_t endFrameNumber    = parameter.dataset.getEndFrameNumber();
 
-      if (parameter.dataset.encodedType == EncodeType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED) {
-        staticFrame = jpcc::make_shared<Frame>();
-      }
+      if (parameter.dataset.type == Type::PLY_SEG) { staticFrame = jpcc::make_shared<Frame>(); }
 
       while (run && startFrameNumber < endFrameNumber) {
         clock.start();
-        switch (parameter.dataset.encodedType) {
-          case EncodeType::NONE:
-            reader->loadAll(startFrameNumber, groupOfFramesSize, frames, parameter.parallel);
-            preProcessor.process(frames, framesMap, parameter.parallel);
-            framesMap->insert_or_assign(primaryId, frames);
-            break;
-          case EncodeType::DYNAMIC_STATIC:
-            reader->load(0, startFrameNumber, groupOfFramesSize, frames, parameter.parallel);
-            reader->load(1, startFrameNumber, groupOfFramesSize, staticFrames, parameter.parallel);
-            framesMap->insert_or_assign(primaryId, frames);
-            framesMap->insert_or_assign(staticId, staticFrames);
-            break;
-          case EncodeType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED:
-            GroupOfFrame staticAddedFrames;
-            GroupOfFrame staticRemovedFrames;
-            reader->load(0, startFrameNumber, groupOfFramesSize, frames, parameter.parallel);
-            reader->load(1, startFrameNumber, groupOfFramesSize, staticAddedFrames, parameter.parallel);
-            reader->load(2, startFrameNumber, groupOfFramesSize, staticRemovedFrames, parameter.parallel);
-            staticFrames.clear();
-            for (size_t i = 0; i < staticAddedFrames.size(); i++) {
-              if (staticRemovedFrames.at(i)) {
-                for (const PointXYZINormal& pointToRemove : staticRemovedFrames.at(i)->points) {
-                  for (auto it = staticFrame->points.begin(); it < staticFrame->points.end(); it++) {
-                    if (((*it).getVector3fMap() - pointToRemove.getVector3fMap()).norm() < 1) {
-                      staticFrame->erase(it);
-                      break;
-                    }
+        if (parameter.dataset.type == Type::PLY_SEG) {
+          GroupOfFrame staticAddedFrames;
+          GroupOfFrame staticRemovedFrames;
+          reader->load(0, startFrameNumber, groupOfFramesSize, frames, parameter.parallel);
+          reader->load(1, startFrameNumber, groupOfFramesSize, staticAddedFrames, parameter.parallel);
+          reader->load(2, startFrameNumber, groupOfFramesSize, staticRemovedFrames, parameter.parallel);
+          staticFrames.clear();
+          for (size_t i = 0; i < staticAddedFrames.size(); i++) {
+            if (staticRemovedFrames.at(i)) {
+              for (const PointXYZINormal& pointToRemove : staticRemovedFrames.at(i)->points) {
+                for (auto it = staticFrame->points.begin(); it < staticFrame->points.end(); it++) {
+                  if (((*it).getVector3fMap() - pointToRemove.getVector3fMap()).norm() < 1) {
+                    staticFrame->erase(it);
+                    break;
                   }
                 }
               }
-              if (staticAddedFrames.at(i)) {
-                staticFrame->insert(staticFrame->end(), staticAddedFrames.at(i)->points.begin(),
-                                    staticAddedFrames.at(i)->points.end());
-              }
-              auto tmpFrame = jpcc::make_shared<Frame>();
-              pcl::copyPointCloud(*staticFrame, *tmpFrame);
-              staticFrames.push_back(tmpFrame);
             }
-            framesMap->insert_or_assign(primaryId, frames);
-            framesMap->insert_or_assign(staticId, staticFrames);
-            break;
+            if (staticAddedFrames.at(i)) {
+              staticFrame->insert(staticFrame->end(), staticAddedFrames.at(i)->points.begin(),
+                                  staticAddedFrames.at(i)->points.end());
+            }
+            auto tmpFrame = jpcc::make_shared<Frame>();
+            pcl::copyPointCloud(*staticFrame, *tmpFrame);
+            staticFrames.push_back(tmpFrame);
+          }
+          framesMap->insert_or_assign(primaryId, frames);
+          framesMap->insert_or_assign(staticId, staticFrames);
+        } else {
+          reader->loadAll(startFrameNumber, groupOfFramesSize, frames, parameter.parallel);
+          preProcessor.process(frames, framesMap, parameter.parallel);
+          framesMap->insert_or_assign(primaryId, frames);
         }
         clock.stop();
 

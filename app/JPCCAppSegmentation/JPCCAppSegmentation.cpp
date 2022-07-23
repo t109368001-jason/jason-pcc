@@ -68,21 +68,10 @@ void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
       staticRemovedFrames.clear();
       clock.start();
       for (const auto& frame : frames) {
-        auto     dynamicFrame = jpcc::make_shared<Frame>();
-        FramePtr staticFrame;
-        FramePtr staticAddedFrame;
-        FramePtr staticRemovedFrame;
-        switch (parameter.outputDataset.encodedType) {
-          case EncodeType::DYNAMIC_STATIC: staticFrame = jpcc::make_shared<Frame>(); break;
-          case EncodeType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED:
-#if !defined(NDEBUG)
-            staticFrame = jpcc::make_shared<Frame>();
-#endif
-            staticAddedFrame   = jpcc::make_shared<Frame>();
-            staticRemovedFrame = jpcc::make_shared<Frame>();
-            break;
-          default: break;
-        }
+        auto dynamicFrame       = jpcc::make_shared<Frame>();
+        auto staticFrame        = jpcc::make_shared<Frame>();
+        auto staticAddedFrame   = jpcc::make_shared<Frame>();
+        auto staticRemovedFrame = jpcc::make_shared<Frame>();
 
         gmmSegmentation.segmentation(frame, dynamicFrame, staticFrame, staticAddedFrame, staticRemovedFrame);
 
@@ -95,20 +84,16 @@ void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
 #endif
 
         dynamicFrames.push_back(dynamicFrame);
-        if (staticFrame) { staticFrames.push_back(staticFrame); }
-        if (staticAddedFrame) { staticAddedFrames.push_back(staticAddedFrame); }
-        if (staticRemovedFrame) { staticRemovedFrames.push_back(staticRemovedFrame); }
+        staticFrames.push_back(staticFrame);
+        staticAddedFrames.push_back(staticAddedFrame);
+        staticRemovedFrames.push_back(staticRemovedFrame);
       }
       clock.stop();
 
       savePly(dynamicFrames, parameter.outputDataset.getFilePath(0), parameter.parallel);
-      if (!staticFrames.empty()) { savePly(staticFrames, parameter.outputDataset.getFilePath(1), parameter.parallel); }
-      if (!staticAddedFrames.empty()) {
-        savePly(staticAddedFrames, parameter.outputDataset.getFilePath(1), parameter.parallel);
-      }
-      if (!staticRemovedFrames.empty()) {
-        savePly(staticRemovedFrames, parameter.outputDataset.getFilePath(2), parameter.parallel);
-      }
+      savePly(staticFrames, parameter.outputDataset.getFilePath(1), parameter.parallel);
+      savePly(staticAddedFrames, parameter.outputDataset.getFilePath(2), parameter.parallel);
+      savePly(staticRemovedFrames, parameter.outputDataset.getFilePath(3), parameter.parallel);
 
       frameNumber += groupOfFramesSize;
     }

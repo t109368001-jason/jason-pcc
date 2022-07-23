@@ -12,8 +12,17 @@
 namespace jpcc::io {
 
 enum class Sensor { NONE, MID_100, MID_70, VLP_16, HI_RES, HDL_32 };
-enum class Type { NONE, PLY, PCAP, LVX };
-enum class EncodeType { NONE, DYNAMIC_STATIC, DYNAMIC_STATIC_ADDED_STATIC_REMOVED };
+enum class Type {
+  NONE,  //
+
+  PLY,      //
+  PLY_SEG,  //
+  PLY_END,  //
+
+  PCAP,  //
+
+  LVX  //
+};
 
 class DatasetParameter : public virtual Parameter {
  protected:
@@ -27,7 +36,6 @@ class DatasetParameter : public virtual Parameter {
   Sensor                                   sensor;
   Type                                     type;
   bool                                     preProcessed;
-  EncodeType                               encodedType;
   std::string                              folderPrefix;
   std::string                              folder;
   std::filesystem::path                    folderPath;
@@ -75,7 +83,5 @@ class DatasetParameter : public virtual Parameter {
 Sensor getSensor(const std::string& sensor);
 
 Type getType(const std::string& type);
-
-EncodeType getEncodeType(const std::string& encodeType);
 
 }  // namespace jpcc::io

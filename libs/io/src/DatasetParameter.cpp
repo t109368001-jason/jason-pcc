@@ -14,7 +14,6 @@ using namespace Eigen;
 #define SENSOR_OPT ".sensor"
 #define TYPE_OPT ".type"
 #define PRE_PROCESSED_OPT ".preProcessed"
-#define ENCODED_TYPE_OPT ".encodedType"
 #define FOLDER_PREFIX_OPT ".folderPrefix"
 #define FOLDER_OPT ".folder"
 #define FILES_OPT ".files"
@@ -31,7 +30,6 @@ DatasetParameter::DatasetParameter(const string& prefix, const string& caption) 
     sensor(Sensor::NONE),
     type(Type::NONE),
     preProcessed(false),
-    encodedType(EncodeType::NONE),
     folderPrefix("../../dataset/"),
     files(),
     frameCounts(),
@@ -45,8 +43,6 @@ DatasetParameter::DatasetParameter(const string& prefix, const string& caption) 
       (string(prefix_ + PRE_PROCESSED_OPT).c_str(),                                                              //
        value<bool>(&preProcessed)->default_value(preProcessed),                                                  //
        "preProcessed")                                                                                           //
-      (string(prefix_ + ENCODED_TYPE_OPT).c_str(), value<string>(&encodedType_)->default_value(encodedType_),    //
-       "encodedType")                                                                                            //
       (string(prefix_ + FOLDER_PREFIX_OPT).c_str(),                                                              //
        value<string>(&folderPrefix)->default_value(folderPrefix),                                                //
        "dataset folder prefix")                                                                                  //
@@ -82,12 +78,6 @@ void DatasetParameter::notify(bool isInput) {
   THROW_IF_NOT(!type_.empty());
   type = getType(type_);
   if (preProcessed) { THROW_IF_NOT(type == Type::PLY); }
-  encodedType = getEncodeType(encodedType_);
-  if (encodedType == EncodeType::DYNAMIC_STATIC) {
-    THROW_IF_NOT(files.size() == 2);
-  } else if (encodedType == EncodeType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED) {
-    THROW_IF_NOT(files.size() == 3);
-  }
   THROW_IF_NOT(!folderPrefix.empty());
   THROW_IF_NOT(!folder.empty());
   THROW_IF_NOT(frameCounts.size() == files.size());
@@ -101,18 +91,8 @@ void DatasetParameter::notify(bool isInput) {
   for (size_t i = 0; i < files.size(); i++) {
     filePaths.at(i) = folderPath / files.at(i);
     if (isInput) {
-      if (encodedType == EncodeType::DYNAMIC_STATIC) {
-        char fileName[4096];
-        sprintf(fileName, filePaths.at(i).string().c_str(), startFrameNumbers.at(i));
-        THROW_IF_NOT(exists(path(fileName)));
-      } else if (encodedType == EncodeType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED) {
-        if (i != 0) {  // skip, check dynamic frame only
-          continue;
-        }
-        char fileName[4096];
-        sprintf(fileName, filePaths.at(i).string().c_str(), startFrameNumbers.at(i));
-        THROW_IF_NOT(exists(path(fileName)));
-      } else if (type == Type::PLY) {
+      if (type == Type::PLY) {
+        if (boost::icontains(filePaths.at(i).string(), "static")) { continue; }
         char fileName[4096];
         sprintf(fileName, filePaths.at(i).string().c_str(), startFrameNumbers.at(i));
         THROW_IF_NOT(exists(path(fileName)));
@@ -167,7 +147,6 @@ ostream& operator<<(ostream& out, const DatasetParameter& obj) {
       (NAME_OPT, obj.name)                              //
       (SENSOR_OPT, obj.sensor_)                         //
       (TYPE_OPT, obj.type_)                             //
-      (ENCODED_TYPE_OPT, obj.encodedType_)              //
       (FOLDER_PREFIX_OPT, obj.folderPrefix)             //
       (FOLDER_OPT, obj.folder)                          //
       (FILES_OPT, obj.files)                            //
@@ -202,24 +181,14 @@ Type getType(const std::string& type) {
     return Type::NONE;
   } else if (type == "ply") {
     return Type::PLY;
+  } else if (type == "ply-seg") {
+    return Type::PLY_SEG;
   } else if (type == "pcap") {
     return Type::PCAP;
   } else if (type == "lvx") {
     return Type::LVX;
   } else {
     throw std::logic_error("invalid type");
-  }
-}
-
-EncodeType getEncodeType(const std::string& encodeType) {
-  if (encodeType.empty()) {
-    return EncodeType::NONE;
-  } else if (encodeType == "dynamic-static") {
-    return EncodeType::DYNAMIC_STATIC;
-  } else if (encodeType == "dynamic-staticAdded-staticRemoved") {
-    return EncodeType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED;
-  } else {
-    throw std::logic_error("invalid encodeType");
   }
 }
 
