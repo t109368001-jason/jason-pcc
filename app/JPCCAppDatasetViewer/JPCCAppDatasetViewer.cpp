@@ -30,11 +30,6 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
   string      staticId  = "static";
 
   viewer->addParameter(parameter);
-  if (parameter.dataset.type == Type::PLY_SEG) {
-    primaryId = "dynamic";
-    viewer->setColor(primaryId, 1.0, 0.0, 1.0);
-    viewer->setColor(staticId, 1.0, 1.0, 1.0);
-  }
   viewer->setPrimaryId(primaryId);
 
   auto datasetLoading = [&] {
@@ -44,7 +39,6 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
 
       FramePtr     staticFrame;
       GroupOfFrame frames;
-      GroupOfFrame staticFrames;
       const auto   framesMap         = jpcc::make_shared<GroupOfFrameMap>();
       const size_t groupOfFramesSize = parameter.groupOfFramesSize;
       size_t       startFrameNumber  = parameter.dataset.getStartFrameNumber();
@@ -55,12 +49,17 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
       while (run && startFrameNumber < endFrameNumber) {
         clock.start();
         if (parameter.dataset.type == Type::PLY_SEG) {
+#if !defined(NDEBUG)
+          GroupOfFrame staticFrames;
+#endif
           GroupOfFrame staticAddedFrames;
           GroupOfFrame staticRemovedFrames;
           reader->load(0, startFrameNumber, groupOfFramesSize, frames, parameter.parallel);
-          reader->load(1, startFrameNumber, groupOfFramesSize, staticAddedFrames, parameter.parallel);
-          reader->load(2, startFrameNumber, groupOfFramesSize, staticRemovedFrames, parameter.parallel);
-          staticFrames.clear();
+#if !defined(NDEBUG)
+          reader->load(1, startFrameNumber, groupOfFramesSize, staticFrames, parameter.parallel);
+#endif
+          reader->load(2, startFrameNumber, groupOfFramesSize, staticAddedFrames, parameter.parallel);
+          reader->load(3, startFrameNumber, groupOfFramesSize, staticRemovedFrames, parameter.parallel);
           for (size_t i = 0; i < staticAddedFrames.size(); i++) {
             if (staticRemovedFrames.at(i)) {
               for (const PointXYZINormal& pointToRemove : staticRemovedFrames.at(i)->points) {
@@ -76,6 +75,11 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
               staticFrame->insert(staticFrame->end(), staticAddedFrames.at(i)->points.begin(),
                                   staticAddedFrames.at(i)->points.end());
             }
+
+#if !defined(NDEBUG)
+            assert(staticFrame->size() == staticFrames.at(i)->size());
+#endif
+
             auto tmpFrame = jpcc::make_shared<Frame>();
             pcl::copyPointCloud(*staticFrame, *tmpFrame);
             staticFrames.push_back(tmpFrame);
