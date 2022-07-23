@@ -1,6 +1,5 @@
 #include <chrono>
 #include <iostream>
-#include <thread>
 #include <vector>
 
 #include <jpcc/common/ParameterParser.h>
@@ -76,11 +75,9 @@ void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
         gmmSegmentation.segmentation(frame, dynamicFrame, staticFrame, staticAddedFrame, staticRemovedFrame);
 
 #if !defined(NDEBUG)
-        if (parameter.outputDataset.encodedType == EncodeType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED) {
-          staticPointSize += staticAddedFrame->size();
-          staticPointSize -= staticRemovedFrame->size();
-          assert(staticPointSize == staticFrame->size());
-        }
+        staticPointSize += staticAddedFrame->size();
+        staticPointSize -= staticRemovedFrame->size();
+        assert(staticPointSize == staticFrame->size());
 #endif
 
         dynamicFrames.push_back(dynamicFrame);
