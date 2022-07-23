@@ -63,6 +63,8 @@ class GMM {
   void normalizeWeights();
 
   [[nodiscard]] const std::vector<Cluster>& getClusters() const;
+
+  void reset();
 };
 
 }  // namespace jpcc::math
