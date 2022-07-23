@@ -2,7 +2,7 @@
 set -ex
 
 OUTPUT_FOLDER_PREFIX=../../dataset/
-OUTPUT_FOLDER=converted/ZX-XS-20220707-gmm-dynamic-staticAdded-staticRemoved[A-0.00225-N-2048]/
+OUTPUT_FOLDER=converted/ZX-XS-20220707-ctc-gmm-dynamic-staticAdded-staticRemoved[A-0.00225-N-2048]/
 
 mkdir -p ${OUTPUT_FOLDER_PREFIX}${OUTPUT_FOLDER}
 
