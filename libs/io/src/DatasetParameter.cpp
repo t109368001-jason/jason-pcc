@@ -92,7 +92,12 @@ void DatasetParameter::notify(bool isInput) {
     filePaths.at(i) = folderPath / files.at(i);
     if (isInput) {
       if (type == Type::PLY) {
-        if (boost::icontains(filePaths.at(i).string(), "static")) { continue; }
+        char fileName[4096];
+        sprintf(fileName, filePaths.at(i).string().c_str(), startFrameNumbers.at(i));
+        THROW_IF_NOT(exists(path(fileName)));
+      }
+      if (type == Type::PLY_SEG) {
+        if (i != 0) { continue; }
         char fileName[4096];
         sprintf(fileName, filePaths.at(i).string().c_str(), startFrameNumbers.at(i));
         THROW_IF_NOT(exists(path(fileName)));
