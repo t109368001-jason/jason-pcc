@@ -61,12 +61,19 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
           for (size_t i = 0; i < staticAddedFrames.size(); i++) {
             if (staticRemovedFrames.at(i)) {
               for (const PointXYZINormal& pointToRemove : staticRemovedFrames.at(i)->points) {
+#if !defined(NDEBUG)
+                bool flag = false;
+#endif
                 for (auto it = staticFrame->points.begin(); it < staticFrame->points.end(); it++) {
                   if (((*it).getVector3fMap() - pointToRemove.getVector3fMap()).norm() < 1) {
                     staticFrame->erase(it);
+#if !defined(NDEBUG)
+                    flag = true;
+#endif
                     break;
                   }
                 }
+                assert(flag);
               }
             }
             if (staticAddedFrames.at(i)) {
@@ -74,9 +81,7 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
                                   staticAddedFrames.at(i)->points.end());
             }
 
-#if !defined(NDEBUG)
             assert(staticFrame->size() == staticFrames.at(i)->size());
-#endif
 
             auto tmpFrame = jpcc::make_shared<Frame>();
             pcl::copyPointCloud(*staticFrame, *tmpFrame);
