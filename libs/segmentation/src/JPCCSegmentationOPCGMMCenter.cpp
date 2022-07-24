@@ -1,4 +1,4 @@
-#include <jpcc/segmentation/JPCCSegmentationOPCGMMAdaptive.h>
+#include <jpcc/segmentation/JPCCSegmentationOPCGMMCemter.h>
 
 #include <limits>
 
@@ -7,24 +7,24 @@ using namespace std;
 namespace jpcc::segmentation {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-JPCCSegmentationOPCGMMAdaptive::JPCCSegmentationOPCGMMAdaptive(const JPCCSegmentationParameter& parameter) :
-    JPCCSegmentationBase(parameter), Base(parameter.resolution), isFirstFrame(true) {
+JPCCSegmentationOPCGMMCemter::JPCCSegmentationOPCGMMCemter(const JPCCSegmentationParameter& parameter) :
+    JPCCSegmentationBase(parameter), Base(parameter.resolution) {
   for (int i = -1; i >= -parameter_.k; i--) { alternateCentroids_.push_back(static_cast<float>(i) / MAX_INTENSITY); }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void JPCCSegmentationOPCGMMAdaptive::appendTrainSamples(FramePtr frame) {
+void JPCCSegmentationOPCGMMCemter::appendTrainSamples(FramePtr frame) {
   for (auto it = leaf_depth_begin(), end = leaf_depth_end(); it != end; ++it) {
     it.getLeafContainer().resetLastPoint();
   }
   addFrame(frame);
   for (auto it = leaf_depth_begin(), end = leaf_depth_end(); it != end; ++it) {
-    it.getLeafContainer().appendTrainSamples(parameter_.alpha);
+    it.getLeafContainer().addTrainSample();
   }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void JPCCSegmentationOPCGMMAdaptive::build() {
+void JPCCSegmentationOPCGMMCemter::build() {
   for (auto it = leaf_depth_begin(), end = leaf_depth_end(); it != end; ++it) {
     LeafContainer& leafContainer = it.getLeafContainer();
     assert(!leafContainer.isBuilt());
@@ -34,11 +34,11 @@ void JPCCSegmentationOPCGMMAdaptive::build() {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void JPCCSegmentationOPCGMMAdaptive::segmentation(const FrameConstPtr& frame,
-                                                  FramePtr             dynamicFrame,
-                                                  FramePtr             staticFrame,
-                                                  FramePtr             staticFrameAdded,
-                                                  FramePtr             staticFrameRemoved) {
+void JPCCSegmentationOPCGMMCemter::segmentation(const FrameConstPtr& frame,
+                                                FramePtr             dynamicFrame,
+                                                FramePtr             staticFrame,
+                                                FramePtr             staticFrameAdded,
+                                                FramePtr             staticFrameRemoved) {
   if (dynamicFrame) {
     dynamicFrame->clear();
     dynamicFrame->header.seq   = frame->header.seq;
@@ -70,8 +70,7 @@ void JPCCSegmentationOPCGMMAdaptive::segmentation(const FrameConstPtr& frame,
       leafContainer.build(parameter_.nTrain, parameter_.k, parameter_.alpha, parameter_.minimumVariance,
                           alternateCentroids_);
     }
-    bool            isStatic    = leafContainer.isStatic();
-    PointXYZINormal staticPoint = leafContainer.getAdaptivePoint();
+    bool isStatic = leafContainer.isStatic();
 
     //    if (isStatic && staticFrame) { staticFrame->push_back(leafContainer.getPoint()); }
     if (!isnan(leafContainer.getIntensityNormalized())) {
@@ -91,17 +90,13 @@ void JPCCSegmentationOPCGMMAdaptive::segmentation(const FrameConstPtr& frame,
     }
     leafContainer.updateModel(parameter_.alpha, parameter_.minimumVariance);
 
-    bool             updatedIsStatic    = leafContainer.getStaticProbability() > parameter_.staticThresholdGT;
-    PointXYZINormal& updatedStaticPoint = leafContainer.getAdaptivePoint();
-    assert(!isnan(updatedStaticPoint.x));
-    if (staticFrame && updatedIsStatic) { staticFrame->points.push_back(updatedStaticPoint); }
-    if (staticFrameAdded && (!isStatic || isFirstFrame) && updatedIsStatic) {
-      staticFrameAdded->points.push_back(updatedStaticPoint);
-    }
-    if (staticFrameRemoved && (isStatic && !isFirstFrame) && !updatedIsStatic) {
-      assert(!isnan(staticPoint.x));
-      staticFrameRemoved->points.push_back(staticPoint);
-    }
+    bool            updatedIsStatic = leafContainer.getStaticProbability() > parameter_.staticThresholdGT;
+    PointXYZINormal center;
+    genLeafNodeCenterFromOctreeKey(it.getCurrentOctreeKey(), center);
+
+    if (staticFrame && updatedIsStatic) { staticFrame->points.push_back(center); }
+    if (staticFrameAdded && !isStatic && updatedIsStatic) { staticFrameAdded->points.push_back(center); }
+    if (staticFrameRemoved && isStatic && !updatedIsStatic) { staticFrameRemoved->points.push_back(center); }
 
     leafContainer.setIsStatic(updatedIsStatic);
   }
@@ -122,7 +117,6 @@ void JPCCSegmentationOPCGMMAdaptive::segmentation(const FrameConstPtr& frame,
     staticFrameRemoved->width  = staticFrameRemoved->size();
     staticFrameRemoved->height = 1;
   }
-  isFirstFrame = false;
 }
 
 }  // namespace jpcc::segmentation

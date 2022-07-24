@@ -4,28 +4,27 @@
 
 #include <jpcc/octree/JPCCOctreePointCloud.h>
 #include <jpcc/segmentation/JPCCSegmentationBase.h>
-#include <jpcc/segmentation/OctreeContainerGMMWithAdaptivePoint.h>
+#include <jpcc/segmentation/OctreeContainerSegmentationGMMCenter.h>
 
 namespace jpcc::segmentation {
 
-class JPCCSegmentationOPCGMMAdaptive
+class JPCCSegmentationOPCGMMCemter
     : virtual public JPCCSegmentationBase,
-      virtual public octree::JPCCOctreePointCloud<PointXYZINormal, OctreeContainerGMMWithAdaptivePoint> {
+      virtual public octree::JPCCOctreePointCloud<PointXYZINormal, OctreeContainerSegmentationGMMCenter> {
  public:
   static constexpr SegmentationType TYPE              = SegmentationType::GMM;
-  static constexpr StaticPointType  STATIC_POINT_TYPE = StaticPointType::ADAPTIVE;
+  static constexpr StaticPointType  STATIC_POINT_TYPE = StaticPointType::CENTER;
 
-  using Ptr  = shared_ptr<JPCCSegmentationOPCGMMAdaptive>;
-  using Base = octree::JPCCOctreePointCloud<PointXYZINormal, OctreeContainerGMMWithAdaptivePoint>;
+  using Ptr  = shared_ptr<JPCCSegmentationOPCGMMCemter>;
+  using Base = octree::JPCCOctreePointCloud<PointXYZINormal, OctreeContainerSegmentationGMMCenter>;
 
   using LeafContainer = Base::LeafContainer;
 
  protected:
-  bool               isFirstFrame;
   std::vector<float> alternateCentroids_;
 
  public:
-  JPCCSegmentationOPCGMMAdaptive(const JPCCSegmentationParameter& parameter);
+  JPCCSegmentationOPCGMMCemter(const JPCCSegmentationParameter& parameter);
 
   void appendTrainSamples(FramePtr frame) override;
 

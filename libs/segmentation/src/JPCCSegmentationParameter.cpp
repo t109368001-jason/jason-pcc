@@ -26,7 +26,7 @@ JPCCSegmentationParameter::JPCCSegmentationParameter(const string& prefix, const
        "type")                                                  //
       (string(prefix_ + STATIC_POINT_TYPE_OPT).c_str(),         //
        value<string>(&staticPointType_)->required(),            //
-       "staticPointType, [adaptive]")                           //
+       "staticPointType, [center]")                             //
       (string(prefix_ + RESOLUTION_OPT).c_str(),                //
        value<double>(&resolution)->required(),                  //
        JPCC_GMM_SEGMENTATION_OPT_PREFIX " resolution")          //
@@ -94,8 +94,8 @@ SegmentationType getSegmentationType(const std::string& segmentationType) {
 }
 
 StaticPointType getStaticPointType(const std::string& staticPointType) {
-  if (staticPointType == "adaptive") {
-    return StaticPointType::ADAPTIVE;
+  if (staticPointType == "center") {
+    return StaticPointType::CENTER;
   } else {
     throw std::logic_error("invalid staticPointType");
   }

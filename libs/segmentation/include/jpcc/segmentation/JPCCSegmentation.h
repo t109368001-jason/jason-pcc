@@ -3,7 +3,7 @@
 #include <jpcc/octree/JPCCOctreePointCloud.h>
 #include <jpcc/segmentation/JPCCSegmentationBase.h>
 #include <jpcc/segmentation/JPCCSegmentationParameter.h>
-#include <jpcc/segmentation/OctreeContainerGMMWithAdaptivePoint.h>
+#include <jpcc/segmentation/OctreeContainerSegmentationGMMCenter.h>
 
 namespace jpcc::segmentation {
 

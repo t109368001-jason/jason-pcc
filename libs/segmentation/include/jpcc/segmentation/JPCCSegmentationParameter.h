@@ -8,7 +8,7 @@
 namespace jpcc::segmentation {
 
 enum class SegmentationType { GMM };
-enum class StaticPointType { ADAPTIVE };
+enum class StaticPointType { CENTER };
 
 #define JPCC_GMM_SEGMENTATION_OPT_PREFIX "jpccGMMSegmentationParameter"
 

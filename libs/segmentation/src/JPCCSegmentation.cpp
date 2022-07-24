@@ -2,7 +2,7 @@
 
 #include <execution>
 
-#include <jpcc/segmentation/JPCCSegmentationOPCGMMAdaptive.h>
+#include <jpcc/segmentation/JPCCSegmentationOPCGMMCemter.h>
 
 using namespace std;
 using namespace jpcc::octree;
@@ -10,9 +10,9 @@ using namespace jpcc::octree;
 namespace jpcc::segmentation {
 
 JPCCSegmentation::JPCCSegmentation(const JPCCSegmentationParameter& parameter) : JPCCSegmentationBase(parameter) {
-  if (parameter.type == JPCCSegmentationOPCGMMAdaptive::TYPE &&
-      parameter.staticPointType == JPCCSegmentationOPCGMMAdaptive::STATIC_POINT_TYPE) {
-    backend_ = jpcc::make_shared<JPCCSegmentationOPCGMMAdaptive>(parameter_);
+  if (parameter.type == JPCCSegmentationOPCGMMCemter::TYPE &&
+      parameter.staticPointType == JPCCSegmentationOPCGMMCemter::STATIC_POINT_TYPE) {
+    backend_ = jpcc::make_shared<JPCCSegmentationOPCGMMCemter>(parameter_);
   } else {
     BOOST_THROW_EXCEPTION(logic_error("unsupported staticPointType"));
   }
