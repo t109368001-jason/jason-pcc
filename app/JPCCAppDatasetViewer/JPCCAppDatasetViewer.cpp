@@ -49,9 +49,7 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
       while (run && startFrameNumber < endFrameNumber) {
         clock.start();
         if (parameter.dataset.type == Type::PLY_SEG) {
-#if !defined(NDEBUG)
           GroupOfFrame staticFrames;
-#endif
           GroupOfFrame staticAddedFrames;
           GroupOfFrame staticRemovedFrames;
           reader->load(0, startFrameNumber, groupOfFramesSize, frames, parameter.parallel);
