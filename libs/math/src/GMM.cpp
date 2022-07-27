@@ -30,14 +30,16 @@ double Cluster::getProbability(const SampleT sample) const {
 //////////////////////////////////////////////////////////////////////////////////////////////
 void Cluster::addSample(const SampleT sample, const bool matched, const double alpha, const double minimumVariance) {
   assert(!isnan(sample));
-  weight_    = (1 - alpha) * weight_ + (matched ? alpha : 0);
-  double rho = alpha * getProbability(sample);
-  mean_      = (1 - rho) * mean_ + rho * sample;
-  variance_  = (1 - rho) * variance_ + rho * pow(sample - mean_, 2);
-  checkVariance(minimumVariance);
+  weight_ = (1 - alpha) * weight_ + (matched ? alpha : 0);
   assert(!isnan(weight_));
-  assert(!isnan(mean_));
-  assert(!isnan(variance_));
+  if (matched) {
+    double rho = alpha * getProbability(sample);
+    mean_      = (1 - rho) * mean_ + rho * sample;
+    variance_  = (1 - rho) * variance_ + rho * pow(sample - mean_, 2);
+    checkVariance(minimumVariance);
+    assert(!isnan(mean_));
+    assert(!isnan(variance_));
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
