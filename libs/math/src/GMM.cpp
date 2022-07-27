@@ -1,5 +1,7 @@
 #include <jpcc/math/GMM.h>
 
+#include <numeric>
+
 using namespace std;
 
 namespace jpcc::math {
@@ -8,8 +10,7 @@ namespace jpcc::math {
 Cluster::Cluster(const std::vector<SampleT>& samples, const double weight, const double minimumVariance) :
     weight_(weight) {
   assert(!isnan(weight_));
-  mean_ = 0;
-  for (auto& sample : samples) { mean_ += sample; }
+  mean_ = std::accumulate(samples.begin(), samples.end(), SampleT{0});
   mean_ /= static_cast<double>(samples.size());
   variance_ = 0;
   for (auto& sample : samples) { variance_ += pow(sample - mean_, 2); }
@@ -77,7 +78,10 @@ void GMM::build(vector<SampleT>&            samples,
   size_t k;
 
   vector<SampleT> centroids;
-  std::copy(seedCentroids.begin(), seedCentroids.end(), std::back_inserter(centroids));
+  for (const auto& seedCentroid : seedCentroids) {
+    centroids.push_back(seedCentroid);
+    samples.push_back(seedCentroid);
+  }
   vector<vector<SampleT>> clusters(K);
   // K-Means
   // get centroids
@@ -108,18 +112,32 @@ void GMM::build(vector<SampleT>&            samples,
       if (!exists) { centroids.push_back(sample); }
     }
   } else {
-    for (k = 0; k < uniqueSamples.size() && centroids.size() < K; k++) { centroids.push_back(uniqueSamples.at(k)); }
-    for (k = 0; k < alternateCentroids.size() && centroids.size() < K; k++) {
-      centroids.push_back(alternateCentroids.at(k));
-      samples.push_back(alternateCentroids.at(k));
+    for (size_t i = 0; i < uniqueSamples.size() && centroids.size() < K; i++) {
+      SampleT sample = samples.at(i);
+      bool    exists = false;
+      for (float centroid : centroids) {
+        if (sample == centroid) {
+          exists = true;
+          break;
+        }
+      }
+      if (!exists) { centroids.push_back(sample); }
     }
+    for (size_t i = 0; i < alternateCentroids.size() && centroids.size() < K; i++) {
+      centroids.push_back(alternateCentroids.at(i));
+      samples.push_back(alternateCentroids.at(i));
+    }
+  }
+
+  std::vector<SampleT> previousCentroids;
+  for (const auto& centroid : centroids) {
+    assert(!isnan(centroid));
+    previousCentroids.push_back(centroid);
   }
 
   bool isConverged = false;
   while (!isConverged) {
     for (k = 0; k < K; k++) { clusters.at(k).clear(); }
-    std::vector<SampleT> previousCentroids(K);
-    copy(centroids.begin(), centroids.end(), previousCentroids.begin());
 
     for (const auto& sample : samples) {
       size_t  minIndex    = 0;
@@ -133,17 +151,18 @@ void GMM::build(vector<SampleT>&            samples,
       }
       clusters.at(minIndex).push_back(sample);
     }
+
     for (k = 0; k < K; k++) {
-      double sum = 0.0;
-      for (const auto& sample : clusters.at(k)) { sum += sample; }
-      centroids.at(k) = static_cast<SampleT>(sum / static_cast<double>(clusters.at(k).size()));
+      assert(!clusters.at(k).empty());
+      const SampleT sum = accumulate(clusters.at(k).begin(), clusters.at(k).end(), SampleT{0});
+      centroids.at(k)   = static_cast<SampleT>(sum / static_cast<double>(clusters.at(k).size()));
     }
 
     isConverged = true;
     for (k = 0; k < K; k++) {
       if (centroids.at(k) != previousCentroids.at(k)) { isConverged = false; }
-      previousCentroids.at(k) = centroids.at(k);
     }
+    copy(centroids.begin(), centroids.end(), previousCentroids.begin());
   }
 
   for (k = 0; k < K; k++) {
