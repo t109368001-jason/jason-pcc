@@ -43,11 +43,16 @@ class GMM {
  public:
   GMM() = default;
 
-  GMM(std::vector<SampleT>& samples, int K, double minimumVariance, const std::vector<SampleT>& alternateCentroids);
+  GMM(std::vector<SampleT>&       samples,
+      int                         K,
+      double                      minimumVariance,
+      const std::vector<SampleT>& seedCentroids,
+      const std::vector<SampleT>& alternateCentroids);
 
   void build(std::vector<SampleT>&       samples,
              int                         K,
              double                      minimumVariance,
+             const std::vector<SampleT>& seedCentroids,
              const std::vector<SampleT>& alternateCentroids);
 
   [[nodiscard]] bool isBuilt();

@@ -14,10 +14,9 @@ TEST(GMMTest, new_by_3_samples) {
   constexpr int        K = 3;
   vector<GMM::SampleT> samples;
   for (size_t k = 0; k < K; k++) { samples.push_back((GMM::SampleT)k); }
-  vector<GMM::SampleT> alternateCentroids;
 
   // when
-  const GMM gmm(samples, K, 0, alternateCentroids);
+  const GMM gmm(samples, K, 0, {}, {});
 
   // then
   const vector<Cluster>& clusters = gmm.getClusters();
@@ -39,12 +38,11 @@ TEST(GMMTest, new_by_3_unique_samples) {
     counts.push_back(count);
     for (size_t j = 0; j < count; j++) { samples.push_back((GMM::SampleT)k); }
   }
-  vector<GMM::SampleT> alternateCentroids;
-  int                  totalCount = 0;
+  int totalCount = 0;
   for (size_t k = 0; k < K; k++) { totalCount += counts.at(k); }
 
   // when
-  const GMM gmm(samples, K, 0, alternateCentroids);
+  const GMM gmm(samples, K, 0, {}, {});
 
   // then
   const vector<Cluster>& clusters = gmm.getClusters();
@@ -68,10 +66,9 @@ TEST(GMMTest, new_3_cluster_3_variance) {
       samples.push_back(means.at(k) + sqrt(variances.at(k)));
     }
   }
-  vector<GMM::SampleT> alternateCentroids;
 
   // when
-  const GMM gmm(samples, K, 0, alternateCentroids);
+  const GMM gmm(samples, K, 0, {}, {});
 
   // then
   const vector<Cluster>& clusters = gmm.getClusters();
@@ -95,8 +92,7 @@ TEST(GMMTest, getOptimalModelIndex) {
       samples.push_back(means.at(k) + variances.at(k));
     }
   }
-  vector<GMM::SampleT> alternateCentroids;
-  const GMM            gmm(samples, K, 0, alternateCentroids);
+  const GMM gmm(samples, K, 0, {}, {});
 
   // then
   for (size_t k = 0; k < K; k++) {
@@ -119,8 +115,7 @@ TEST(GMMTest, updateModel) {
       samples.push_back(means.at(k) + sqrt(variances.at(k)));
     }
   }
-  vector<GMM::SampleT> alternateCentroids;
-  GMM                  gmm(samples, K, 0, alternateCentroids);
+  GMM gmm(samples, K, 0, {}, {});
 
   // when
   vector<GMM::SampleT> newSamples;

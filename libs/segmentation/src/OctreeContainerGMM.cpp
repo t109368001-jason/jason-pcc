@@ -35,7 +35,7 @@ void OctreeContainerGMM::build(const int                 nTrain,
     assert(sample <= GMM_MAX_INTENSITY);
   }
   trainSamples_->resize(nTrain, GMM_NULL_INTENSITY);
-  GMM::build(*trainSamples_, K, minimumVariance, alternateCentroids);
+  GMM::build(*trainSamples_, K, minimumVariance, {GMM_NULL_INTENSITY}, alternateCentroids);
   trainSamples_ = nullptr;
 }
 

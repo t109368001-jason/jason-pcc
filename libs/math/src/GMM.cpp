@@ -61,18 +61,21 @@ double Cluster::getVariance() const { return variance_; }
 GMM::GMM(vector<SampleT>&            samples,
          const int                   K,
          const double                minimumVariance,
+         const std::vector<SampleT>& seedCentroids,
          const std::vector<SampleT>& alternateCentroids) {
-  build(samples, K, minimumVariance, alternateCentroids);
+  build(samples, K, minimumVariance, seedCentroids, alternateCentroids);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void GMM::build(vector<SampleT>&            samples,
                 const int                   K,
                 const double                minimumVariance,
+                const std::vector<SampleT>& seedCentroids,
                 const std::vector<SampleT>& alternateCentroids) {
   size_t k;
 
-  vector<SampleT>         centroids;
+  vector<SampleT> centroids;
+  std::copy(seedCentroids.begin(), seedCentroids.end(), std::back_inserter(centroids));
   vector<vector<SampleT>> clusters(K);
   // K-Means
   // get centroids
@@ -90,7 +93,7 @@ void GMM::build(vector<SampleT>&            samples,
       if (uniqueSamples.size() >= K) { break; }
     }
   }
-  if (uniqueSamples.size() == K) {
+  if (uniqueSamples.size() >= K) {
     while (centroids.size() < K) {
       SampleT sample = samples.at(rand() % samples.size());
       bool    exists = false;
@@ -103,7 +106,8 @@ void GMM::build(vector<SampleT>&            samples,
       if (!exists) { centroids.push_back(sample); }
     }
   } else {
-    for (const auto& uniqueSample : uniqueSamples) { centroids.push_back(uniqueSample); }
+    k = 0;
+    while (centroids.size() < K && k < uniqueSamples.size()) { centroids.push_back(uniqueSamples.at(k)); }
     k = 0;
     while (centroids.size() < K) {
       centroids.push_back(alternateCentroids.at(k));
