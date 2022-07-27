@@ -108,13 +108,10 @@ void GMM::build(vector<SampleT>&            samples,
       if (!exists) { centroids.push_back(sample); }
     }
   } else {
-    k = 0;
-    while (centroids.size() < K && k < uniqueSamples.size()) { centroids.push_back(uniqueSamples.at(k)); }
-    k = 0;
-    while (centroids.size() < K) {
+    for (k = 0; k < uniqueSamples.size() && centroids.size() < K; k++) { centroids.push_back(uniqueSamples.at(k)); }
+    for (k = 0; k < alternateCentroids.size() && centroids.size() < K; k++) {
       centroids.push_back(alternateCentroids.at(k));
       samples.push_back(alternateCentroids.at(k));
-      k++;
     }
   }
 
