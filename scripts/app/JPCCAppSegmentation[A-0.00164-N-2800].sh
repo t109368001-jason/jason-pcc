@@ -2,12 +2,12 @@
 set -ex
 
 OUTPUT_FOLDER_PREFIX=../../dataset/
-OUTPUT_FOLDER=converted/ZX-XS-20220707-ctc-gmm-segmentation[A-0.00225-N-2048]/
+OUTPUT_FOLDER=converted/ZX-XS-20220707-ctc-gmm-segmentation[A-0.00164-N-2800]/
 
 mkdir -p ${OUTPUT_FOLDER_PREFIX}${OUTPUT_FOLDER}
 
 ./bin/JPCCAppSegmentation \
-  --jpccGMMSegmentationParameter.alpha 0.00225 \
-  --jpccGMMSegmentationParameter.nTrain 2048 \
+  --jpccGMMSegmentationParameter.alpha 0.00164 \
+  --jpccGMMSegmentationParameter.nTrain 2800 \
   --outputDataset.folder ${OUTPUT_FOLDER} \
   --configs cfg/app/Segmentation/ctc-raw.cfg |& tee ${OUTPUT_FOLDER_PREFIX}${OUTPUT_FOLDER}JPCCAppSegmentation-$(date +%Y%m%d-%H%M%S).log
