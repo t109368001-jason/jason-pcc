@@ -2,6 +2,8 @@
 
 #include <numeric>
 
+#include <jpcc/math/KMeans.h>
+
 using namespace std;
 
 namespace jpcc::math {
@@ -28,8 +30,6 @@ void GMM::build(vector<float>&            samples,
     centroids.push_back(seedCentroid);
     samples.push_back(seedCentroid);
   }
-  vector<vector<float>> clusters(K);
-  // K-Means
   // get centroids
   std::vector<float> uniqueSamples;
   for (const auto& sample : samples) {
@@ -81,58 +81,8 @@ void GMM::build(vector<float>&            samples,
     previousCentroids.push_back(centroid);
   }
 
-  bool isConverged = false;
-  while (!isConverged) {
-    for (k = 0; k < K; k++) { clusters.at(k).clear(); }
-
-    for (const auto& sample : samples) {
-      size_t minIndex    = 0;
-      float  minDistance = abs(sample - centroids.at(0));
-      for (k = 1; k < K; k++) {
-        float distance = abs(sample - centroids.at(k));
-        if (distance < minDistance) {
-          minIndex    = k;
-          minDistance = distance;
-        }
-      }
-      clusters.at(minIndex).push_back(sample);
-    }
-
-    for (k = 0; k < K; k++) {
-      if (clusters.at(k).empty()) {
-        for (int k2 = 0; k2 < K; k2++) {
-          if (clusters.at(k2).size() < 2) { continue; }
-          std::vector<float> uniques;
-          for (const auto& sample : clusters.at(k2)) {
-            bool exists = false;
-            for (const auto& unique : uniques) {
-              if (sample == unique) {
-                exists = true;
-                break;
-              }
-            }
-            if (!exists) {
-              uniques.push_back(sample);
-              if (uniques.size() > 1) { break; }
-            }
-          }
-          if (uniques.size() > 1) {
-            centroids.at(k) = uniques.at(0);
-            break;
-          }
-        }
-        continue;
-      }
-      const float sum = accumulate(clusters.at(k).begin(), clusters.at(k).end(), float{0});
-      centroids.at(k) = static_cast<float>(sum / static_cast<double>(clusters.at(k).size()));
-    }
-
-    isConverged = true;
-    for (k = 0; k < K; k++) {
-      if (centroids.at(k) != previousCentroids.at(k)) { isConverged = false; }
-    }
-    copy(centroids.begin(), centroids.end(), previousCentroids.begin());
-  }
+  vector<vector<float>> clusters(K);
+  kmeans(samples, K, centroids, clusters);
 
   for (k = 0; k < K; k++) {
     double weight = static_cast<double>(clusters.at(k).size()) / static_cast<double>(samples.size());
