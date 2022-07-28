@@ -19,7 +19,7 @@ StatisticalOutlierRemovalParameter::StatisticalOutlierRemovalParameter(const str
        value<bool>(&enable),                             //
        "statisticalOutlierRemoval enable")               //
       (string(prefix_ + MEAN_K_OPT).c_str(),             //
-       value<size_t>(&meanK),                            //
+       value<int>(&meanK),                               //
        "statisticalOutlierRemoval meanK")                //
       (string(prefix_ + STDDEV_MUL_THRESH_OPT).c_str(),  //
        value<float>(&stddevMulThresh),                   //

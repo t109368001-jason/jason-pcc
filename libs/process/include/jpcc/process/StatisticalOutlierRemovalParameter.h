@@ -12,9 +12,9 @@ namespace jpcc::process {
 
 class StatisticalOutlierRemovalParameter : public virtual Parameter {
  public:
-  bool   enable;
-  size_t meanK;
-  float  stddevMulThresh;
+  bool  enable;
+  int   meanK;
+  float stddevMulThresh;
 
   StatisticalOutlierRemovalParameter();
 

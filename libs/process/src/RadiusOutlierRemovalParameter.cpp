@@ -22,7 +22,7 @@ RadiusOutlierRemovalParameter::RadiusOutlierRemovalParameter(const string& prefi
        value<float>(&radius),                                  //
        "radiusOutlierRemoval radius")                          //
       (string(prefix_ + MIN_NEIGHBORS_IN_RADIUS_OPT).c_str(),  //
-       value<size_t>(&minNeighborsInRadius),                   //
+       value<int>(&minNeighborsInRadius),                      //
        "radiusOutlierRemoval minNeighborsInRadius")            //
       ;
 }

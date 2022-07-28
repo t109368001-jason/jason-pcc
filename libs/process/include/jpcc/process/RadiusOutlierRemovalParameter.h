@@ -12,9 +12,9 @@ namespace jpcc::process {
 
 class RadiusOutlierRemovalParameter : public virtual Parameter {
  public:
-  bool   enable;
-  float  radius;
-  size_t minNeighborsInRadius;
+  bool  enable;
+  float radius;
+  int   minNeighborsInRadius;
 
   RadiusOutlierRemovalParameter();
 

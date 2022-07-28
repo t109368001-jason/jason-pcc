@@ -20,7 +20,9 @@ PreProcessor::PreProcessor(PreProcessParameter param) : param_(std::move(param))
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-void PreProcessor::process(GroupOfFrame& groupOfFrame, const GroupOfFrameMapPtr removedMap, const bool parallel) const {
+void PreProcessor::process(GroupOfFrame&             groupOfFrame,
+                           const GroupOfFrameMapPtr& removedMap,
+                           const bool                parallel) const {
   for (const std::string& algorithm : param_.order) {
     GroupOfFrame removed;
     if (removedMap) {
@@ -73,7 +75,7 @@ void PreProcessor::applyAlgorithm(const std::string& algorithm,
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-void PreProcessor::applyAlgorithm(const std::string& algorithm, const FramePtr frame, const FramePtr removed) const {
+void PreProcessor::applyAlgorithm(const std::string& algorithm, const FramePtr& frame, const FramePtr& removed) const {
   FilterPtr filter = buildFilter(algorithm);
   filter->setInputCloud(frame);
   if (!removed) {

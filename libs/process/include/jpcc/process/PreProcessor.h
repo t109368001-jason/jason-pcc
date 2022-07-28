@@ -23,7 +23,7 @@ class PreProcessor {
  public:
   PreProcessor(PreProcessParameter param);
 
-  void process(GroupOfFrame& groupOfFrame, GroupOfFrameMapPtr removedMap = nullptr, bool parallel = false) const;
+  void process(GroupOfFrame& groupOfFrame, const GroupOfFrameMapPtr& removedMap = nullptr, bool parallel = false) const;
 
   [[nodiscard]] FilterPtr buildFilter(const std::string& algorithm) const;
 
@@ -32,7 +32,7 @@ class PreProcessor {
                       GroupOfFrame&      removed,
                       bool               parallel = false) const;
 
-  void applyAlgorithm(const std::string& algorithm, FramePtr frame, FramePtr removed = nullptr) const;
+  void applyAlgorithm(const std::string& algorithm, const FramePtr& frame, const FramePtr& removed = nullptr) const;
 };
 
 }  // namespace jpcc::process
