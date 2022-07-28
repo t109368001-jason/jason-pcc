@@ -39,27 +39,6 @@ void JPCCSegmentationOPCGMMCemter::segmentation(const FrameConstPtr& frame,
                                                 FramePtr             staticFrame,
                                                 FramePtr             staticFrameAdded,
                                                 FramePtr             staticFrameRemoved) {
-  if (dynamicFrame) {
-    dynamicFrame->clear();
-    dynamicFrame->header.seq   = frame->header.seq;
-    dynamicFrame->header.stamp = frame->header.stamp;
-  }
-  if (staticFrame) {
-    staticFrame->clear();
-    staticFrame->header.seq   = frame->header.seq;
-    staticFrame->header.stamp = frame->header.stamp;
-  }
-  if (staticFrameAdded) {
-    staticFrameAdded->clear();
-    staticFrameAdded->header.seq   = frame->header.seq;
-    staticFrameAdded->header.stamp = frame->header.stamp;
-  }
-  if (staticFrameRemoved) {
-    staticFrameRemoved->clear();
-    staticFrameRemoved->header.seq   = frame->header.seq;
-    staticFrameRemoved->header.stamp = frame->header.stamp;
-  }
-
   for (auto it = leaf_depth_begin(), end = leaf_depth_end(); it != end; ++it) {
     it.getLeafContainer().resetLastPoint();
   }
@@ -100,23 +79,6 @@ void JPCCSegmentationOPCGMMCemter::segmentation(const FrameConstPtr& frame,
     if (staticFrameRemoved && isStatic && !updatedIsStatic) { staticFrameRemoved->points.push_back(center); }
 
     leafContainer.setIsStatic(updatedIsStatic);
-  }
-
-  if (dynamicFrame) {
-    dynamicFrame->width  = dynamicFrame->size();
-    dynamicFrame->height = 1;
-  }
-  if (staticFrame) {
-    staticFrame->width  = staticFrame->size();
-    staticFrame->height = 1;
-  }
-  if (staticFrameAdded) {
-    staticFrameAdded->width  = staticFrameAdded->size();
-    staticFrameAdded->height = 1;
-  }
-  if (staticFrameRemoved) {
-    staticFrameRemoved->width  = staticFrameRemoved->size();
-    staticFrameRemoved->height = 1;
   }
 }
 
