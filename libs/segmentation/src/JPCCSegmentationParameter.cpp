@@ -92,19 +92,19 @@ ostream& operator<<(ostream& out, const JPCCSegmentationParameter& obj) {
   return out;
 }
 
-SegmentationType getSegmentationType(const std::string& segmentationType) {
+SegmentationType getSegmentationType(const string& segmentationType) {
   if (segmentationType == "gmm") {
     return SegmentationType::GMM;
   } else {
-    throw std::logic_error("invalid segmentationType");
+    throw logic_error("invalid segmentationType");
   }
 }
 
-StaticPointType getStaticPointType(const std::string& staticPointType) {
+StaticPointType getStaticPointType(const string& staticPointType) {
   if (staticPointType == "center") {
     return StaticPointType::CENTER;
   } else {
-    throw std::logic_error("invalid staticPointType");
+    throw logic_error("invalid staticPointType");
   }
 }
 

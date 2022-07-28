@@ -17,7 +17,7 @@ typename DatasetReader::Ptr newReader(const DatasetReaderParameter& param, const
   } else if (datasetParam.type >= Type::PLY && datasetParam.type < Type::PLY_END) {
     return jpcc::make_shared<PlyReader>(param, datasetParam);
   } else {
-    BOOST_THROW_EXCEPTION(std::logic_error(std::string("Not Implemented ")));
+    BOOST_THROW_EXCEPTION(logic_error("Not Implemented "));
   }
 }
 

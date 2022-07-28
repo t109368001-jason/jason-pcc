@@ -162,7 +162,7 @@ ostream& operator<<(ostream& out, const DatasetParameter& obj) {
   return out;
 }
 
-Sensor getSensor(const std::string& sensor) {
+Sensor getSensor(const string& sensor) {
   if (sensor.empty()) {
     return Sensor::NONE;
   } else if (sensor == "mid-100") {
@@ -176,11 +176,11 @@ Sensor getSensor(const std::string& sensor) {
   } else if (sensor == "hdl-32") {
     return Sensor::HDL_32;
   } else {
-    throw std::logic_error("invalid sensor");
+    throw logic_error("invalid sensor");
   }
 }
 
-Type getType(const std::string& type) {
+Type getType(const string& type) {
   if (type.empty()) {
     return Type::NONE;
   } else if (type == "ply") {
@@ -192,7 +192,7 @@ Type getType(const std::string& type) {
   } else if (type == "lvx") {
     return Type::LVX;
   } else {
-    throw std::logic_error("invalid type");
+    throw logic_error("invalid type");
   }
 }
 

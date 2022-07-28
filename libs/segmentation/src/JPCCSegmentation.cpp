@@ -37,24 +37,24 @@ void JPCCSegmentation::segmentation(const FrameConstPtr& frame,
                                     FramePtr             staticFrameRemoved) {
   backend_->segmentation(frame, dynamicFrame, staticFrame, staticFrameAdded, staticFrameRemoved);
   if (dynamicFrame) {
-    std::cout << "segmentation dynamic "
-              << "frameNumber=" << dynamicFrame->header.seq << ", "
-              << "points=" << dynamicFrame->size() << std::endl;
+    cout << "segmentation dynamic "
+         << "frameNumber=" << dynamicFrame->header.seq << ", "
+         << "points=" << dynamicFrame->size() << endl;
   }
   if (staticFrame) {
-    std::cout << "segmentation static "
-              << "frameNumber=" << staticFrame->header.seq << ", "
-              << "points=" << staticFrame->size() << std::endl;
+    cout << "segmentation static "
+         << "frameNumber=" << staticFrame->header.seq << ", "
+         << "points=" << staticFrame->size() << endl;
   }
   if (staticFrameAdded) {
-    std::cout << "segmentation static added "
-              << "frameNumber=" << staticFrameAdded->header.seq << ", "
-              << "points=" << staticFrameAdded->size() << std::endl;
+    cout << "segmentation static added "
+         << "frameNumber=" << staticFrameAdded->header.seq << ", "
+         << "points=" << staticFrameAdded->size() << endl;
   }
   if (staticFrameRemoved) {
-    std::cout << "segmentation static removed "
-              << "frameNumber=" << staticFrameRemoved->header.seq << ", "
-              << "points=" << staticFrameRemoved->size() << std::endl;
+    cout << "segmentation static removed "
+         << "frameNumber=" << staticFrameRemoved->header.seq << ", "
+         << "points=" << staticFrameRemoved->size() << endl;
   }
 }
 

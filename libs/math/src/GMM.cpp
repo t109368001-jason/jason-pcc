@@ -9,20 +9,20 @@ using namespace std;
 namespace jpcc::math {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-GMM::GMM(vector<float>&            samples,
-         const int                 K,
-         const double              minimumVariance,
-         const std::vector<float>& seedCentroids,
-         const std::vector<float>& alternateCentroids) {
+GMM::GMM(vector<float>&       samples,
+         const int            K,
+         const double         minimumVariance,
+         const vector<float>& seedCentroids,
+         const vector<float>& alternateCentroids) {
   build(samples, K, minimumVariance, seedCentroids, alternateCentroids);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void GMM::build(vector<float>&            samples,
-                const int                 K,
-                const double              minimumVariance,
-                const std::vector<float>& seedCentroids,
-                const std::vector<float>& alternateCentroids) {
+void GMM::build(vector<float>&       samples,
+                const int            K,
+                const double         minimumVariance,
+                const vector<float>& seedCentroids,
+                const vector<float>& alternateCentroids) {
   size_t k;
 
   vector<float> centroids;
@@ -31,7 +31,7 @@ void GMM::build(vector<float>&            samples,
     samples.push_back(seedCentroid);
   }
   // get centroids
-  std::vector<float> uniqueSamples;
+  vector<float> uniqueSamples;
   for (const auto& sample : samples) {
     bool anyEqual = false;
     for (const auto& uniqueSample : uniqueSamples) {
@@ -75,7 +75,7 @@ void GMM::build(vector<float>&            samples,
     }
   }
 
-  std::vector<float> previousCentroids;
+  vector<float> previousCentroids;
   for (const auto& centroid : centroids) {
     assert(!isnan(centroid));
     previousCentroids.push_back(centroid);
@@ -128,7 +128,7 @@ bool GMM::isBuilt() { return !clusters_.empty(); }
 //////////////////////////////////////////////////////////////////////////////////////////////
 pair<size_t, double> GMM::getOptimalModelIndex(const float sample) const {
   assert(!isnan(sample));
-  std::pair<size_t, double> optimalIndexProbability;
+  pair<size_t, double> optimalIndexProbability;
   optimalIndexProbability.first  = 0;
   optimalIndexProbability.second = clusters_.at(0).getWeight() * clusters_.at(0).getProbability(sample);
   for (size_t k = 1; k < clusters_.size(); k++) {
@@ -161,7 +161,7 @@ void GMM::normalizeWeights() {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-const std::vector<Cluster>& GMM::getClusters() const { return clusters_; }
+const vector<Cluster>& GMM::getClusters() const { return clusters_; }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void GMM::reset() { clusters_.clear(); }
