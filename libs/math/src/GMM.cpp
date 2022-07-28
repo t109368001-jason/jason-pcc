@@ -153,7 +153,30 @@ void GMM::build(vector<SampleT>&            samples,
     }
 
     for (k = 0; k < K; k++) {
-      assert(!clusters.at(k).empty());
+      if (clusters.at(k).empty()) {
+        for (int k2 = 0; k2 < K; k2++) {
+          if (clusters.at(k2).size() < 2) { continue; }
+          std::vector<SampleT> uniques;
+          for (const auto& sample : clusters.at(k2)) {
+            bool exists = false;
+            for (const auto& unique : uniques) {
+              if (sample == unique) {
+                exists = true;
+                break;
+              }
+            }
+            if (!exists) {
+              uniques.push_back(sample);
+              if (uniques.size() > 1) { break; }
+            }
+          }
+          if (uniques.size() > 1) {
+            centroids.at(k) = uniques.at(0);
+            break;
+          }
+        }
+        continue;
+      }
       const SampleT sum = accumulate(clusters.at(k).begin(), clusters.at(k).end(), SampleT{0});
       centroids.at(k)   = static_cast<SampleT>(sum / static_cast<double>(clusters.at(k).size()));
     }
