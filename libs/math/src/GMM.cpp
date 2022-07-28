@@ -113,7 +113,7 @@ void GMM::build(vector<SampleT>&            samples,
     }
   } else {
     for (size_t i = 0; i < uniqueSamples.size() && centroids.size() < K; i++) {
-      SampleT sample = samples.at(i);
+      SampleT sample = uniqueSamples.at(i);
       bool    exists = false;
       for (float centroid : centroids) {
         if (sample == centroid) {
