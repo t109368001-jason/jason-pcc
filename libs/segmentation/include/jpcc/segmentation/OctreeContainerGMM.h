@@ -24,7 +24,7 @@ class OctreeContainerGMM : virtual public octree::OctreeContainerLastPoint, virt
   virtual void build(
       int nTrain, int K, double alpha, double minimumVariance, const std::vector<float>& alternateCentroids);
 
-  virtual void updateModel(double alpha, double minimumVariance);
+  virtual void updateModel(double alpha, double nullAlpha, double minimumVariance);
 
   [[nodiscard]] float getIntensityNormalized();
 };

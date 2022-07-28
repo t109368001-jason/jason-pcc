@@ -88,7 +88,8 @@ void JPCCSegmentationOPCGMMCemter::segmentation(const FrameConstPtr& frame,
         }
       }
     }
-    leafContainer.updateModel(parameter_.alpha, parameter_.minimumVariance);
+    leafContainer.updateModel(parameter_.alpha, parameter_.alpha * parameter_.nullAlphaRatio,
+                              parameter_.minimumVariance);
 
     bool            updatedIsStatic = leafContainer.getStaticProbability() > parameter_.staticThresholdGT;
     PointXYZINormal center;

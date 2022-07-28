@@ -39,8 +39,13 @@ void OctreeContainerGMM::build(const int                 nTrain,
   trainSamples_ = nullptr;
 }
 
-void OctreeContainerGMM::updateModel(const double alpha, const double minimumVariance) {
-  GMM::updateModel(isnan(getIntensityNormalized()) ? NULL_INTENSITY : getIntensityNormalized(), alpha, minimumVariance);
+void OctreeContainerGMM::updateModel(const double alpha, const double nullAlpha, const double minimumVariance) {
+  float intensity = getIntensityNormalized();
+  if (isnan(intensity)) {
+    GMM::updateModel(NULL_INTENSITY, nullAlpha, minimumVariance);
+  } else {
+    GMM::updateModel(intensity, alpha, minimumVariance);
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

@@ -23,6 +23,7 @@ class JPCCSegmentationParameter : public virtual Parameter {
   double           resolution;
   int              k;
   double           alpha;
+  double           nullAlphaRatio;
   int              nTrain;
   double           dynamicThresholdLE;
   double           staticThresholdGT;

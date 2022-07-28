@@ -10,6 +10,7 @@ using namespace po;
 #define RESOLUTION_OPT ".resolution"
 #define K_OPT ".k"
 #define ALPHA_OPT ".alpha"
+#define NULL_ALPHA_RATIO_OPT ".nullAlphaRatio"
 #define N_TRAIN_OPT ".nTrain"
 #define DYNAMIC_THRESHOLD_OPT ".dynamicThresholdLE"
 #define STATIC_THRESHOLD_OPT ".staticThresholdGT"
@@ -36,6 +37,9 @@ JPCCSegmentationParameter::JPCCSegmentationParameter(const string& prefix, const
       (string(prefix_ + ALPHA_OPT).c_str(),                     //
        value<double>(&alpha)->required(),                       //
        JPCC_GMM_SEGMENTATION_OPT_PREFIX " alpha")               //
+      (string(prefix_ + NULL_ALPHA_RATIO_OPT).c_str(),          //
+       value<double>(&nullAlphaRatio)->required(),              //
+       JPCC_GMM_SEGMENTATION_OPT_PREFIX " nullAlphaRatio")      //
       (string(prefix_ + N_TRAIN_OPT).c_str(),                   //
        value<int>(&nTrain)->required(),                         //
        JPCC_GMM_SEGMENTATION_OPT_PREFIX " nTrain")              //
@@ -55,6 +59,7 @@ void JPCCSegmentationParameter::getShowTexts(vector<string>& showTexts) const {
   showTexts.push_back(prefix_ + RESOLUTION_OPT ": " + to_string(resolution));
   showTexts.push_back(prefix_ + K_OPT ": " + to_string(k));
   showTexts.push_back(prefix_ + ALPHA_OPT ": " + to_string(alpha));
+  showTexts.push_back(prefix_ + NULL_ALPHA_RATIO_OPT ": " + to_string(nullAlphaRatio));
   showTexts.push_back(prefix_ + N_TRAIN_OPT ": " + to_string(nTrain));
   showTexts.push_back(prefix_ + DYNAMIC_THRESHOLD_OPT ": " + to_string(dynamicThresholdLE));
   showTexts.push_back(prefix_ + STATIC_THRESHOLD_OPT ": " + to_string(staticThresholdGT));
@@ -67,6 +72,7 @@ void JPCCSegmentationParameter::notify() {
   assert(resolution > 0.0);
   assert(k > 0);
   assert(alpha > 0.0);
+  assert((alpha * nullAlphaRatio) > 0.0);
   assert(nTrain > 0.0);
 }
 
@@ -77,6 +83,7 @@ ostream& operator<<(ostream& out, const JPCCSegmentationParameter& obj) {
       (RESOLUTION_OPT, obj.resolution)                 //
       (K_OPT, obj.k)                                   //
       (ALPHA_OPT, obj.alpha)                           //
+      (NULL_ALPHA_RATIO_OPT, obj.nullAlphaRatio)       //
       (N_TRAIN_OPT, obj.nTrain)                        //
       (DYNAMIC_THRESHOLD_OPT, obj.dynamicThresholdLE)  //
       (STATIC_THRESHOLD_OPT, obj.staticThresholdGT)    //
