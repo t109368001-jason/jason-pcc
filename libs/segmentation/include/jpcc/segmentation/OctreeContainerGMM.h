@@ -25,8 +25,6 @@ class OctreeContainerGMM : virtual public octree::OctreeContainerLastPoint, virt
       int nTrain, int K, double alpha, double minimumVariance, const std::vector<float>& alternateCentroids);
 
   virtual void updateModel(double alpha, double nullAlpha, double minimumVariance);
-
-  [[nodiscard]] float getIntensityNormalized();
 };
 
 }  // namespace jpcc::segmentation

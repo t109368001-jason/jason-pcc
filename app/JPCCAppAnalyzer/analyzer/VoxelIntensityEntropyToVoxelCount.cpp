@@ -36,7 +36,7 @@ void VoxelIntensityEntropyToVoxelCount::finalCompute() {
       const vector<float>& intensities = it.getLeafContainer().getIntensities();
       if (intensities.empty()) { continue; }
 
-      double intensityEntropy = entropy(intensities, 0.0f, 255.0f, 10.0f);
+      double intensityEntropy = entropy(intensities, 0.0f, 1.0f, 0.04f);
 
       auto quantizedIntensityEntropy = (int)round(intensityEntropy * 10.0);
 
@@ -79,7 +79,7 @@ void VoxelIntensityEntropyToVoxelCount::getCloud(FramePtr& cloud) {
       const vector<float>& intensities = it.getLeafContainer().getIntensities();
       if (intensities.empty()) { continue; }
 
-      double intensityEntropy = entropy(intensities, 0.0f, 255.0f, 10.0f);
+      double intensityEntropy = entropy(intensities, 0.0f, 1.0f, 0.04f);
 
       auto quantizedIntensityEntropy = (int)round(intensityEntropy * 10.0);
 

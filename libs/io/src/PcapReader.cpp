@@ -266,7 +266,7 @@ int PcapReader::parseDataPacket(void* const pcap, GroupOfFrame& frameBuffer) {
         // emplace_back points only, improve performance
         // frameBuffer.at(index)->emplace_back(x, y, z);
         PointXYZINormal point(x, y, z);
-        point.intensity = intensity;
+        point.intensity = intensity / 255.0;
         frameBuffer.at(index)->points.push_back(point);
       }
     }

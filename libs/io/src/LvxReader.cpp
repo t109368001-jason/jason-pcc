@@ -99,7 +99,7 @@ void LvxReader::load_(const size_t datasetIndex, const size_t startFrameNumber, 
     // emplace_back points only, improve performance
     // frameBuffer.at(index)->emplace_back(x, y, z);
     PointXYZINormal point(x, y, z);
-    point.intensity = reflectivity;
+    point.intensity = reflectivity / 255.0;
     frameBuffer.at(index)->points.push_back(point);
     lastTimestamps.at(deviceIndex) = timestamp;
   });

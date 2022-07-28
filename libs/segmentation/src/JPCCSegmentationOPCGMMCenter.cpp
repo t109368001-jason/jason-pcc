@@ -73,8 +73,8 @@ void JPCCSegmentationOPCGMMCemter::segmentation(const FrameConstPtr& frame,
     bool isStatic = leafContainer.isStatic();
 
     //    if (isStatic && staticFrame) { staticFrame->push_back(leafContainer.getPoint()); }
-    if (!isnan(leafContainer.getIntensityNormalized())) {
-      const float intensity = leafContainer.getIntensityNormalized();
+    if (!isnan(leafContainer.getLastPoint().intensity)) {
+      const float intensity = leafContainer.getLastPoint().intensity;
 
       if (dynamicFrame) {
         double probability = leafContainer.getProbability(intensity);
