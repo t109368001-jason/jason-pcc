@@ -26,6 +26,8 @@ class Cluster {
   [[nodiscard]] double getMean() const;
 
   [[nodiscard]] double getVariance() const;
+
+  bool operator<(const Cluster& obj) const;
 };
 
 }  // namespace jpcc::math

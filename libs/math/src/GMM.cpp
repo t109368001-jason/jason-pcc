@@ -88,8 +88,7 @@ void GMM::build(vector<float>&            samples,
     double weight = static_cast<double>(clusters.at(k).size()) / static_cast<double>(samples.size());
     clusters_.emplace_back(clusters.at(k), weight, minimumVariance);
   }
-  sort(clusters_.begin(), clusters_.end(),
-       [](const Cluster& cluster1, const Cluster& cluster2) { return cluster1.getMean() < cluster2.getMean(); });
+  sort(clusters_.begin(), clusters_.end());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
