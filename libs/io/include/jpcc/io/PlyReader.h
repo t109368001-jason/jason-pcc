@@ -9,15 +9,16 @@
 
 namespace jpcc::io {
 
-class PlyReader : public DatasetReader {
+template <typename PointT>
+class PlyReader : public DatasetReader<PointT> {
  public:
   PlyReader(DatasetReaderParameter param, DatasetParameter datasetParam);
 
-  void load(size_t        datasetIndex,
-            size_t        startFrameNumber,
-            size_t        groupOfFramesSize,
-            GroupOfFrame& frames,
-            bool          parallel) override;
+  void load(size_t                datasetIndex,
+            size_t                startFrameNumber,
+            size_t                groupOfFramesSize,
+            GroupOfFrame<PointT>& frames,
+            bool                  parallel) override;
 
  protected:
   void open_(size_t datasetIndex, size_t startFrameNumber) override;
@@ -26,3 +27,5 @@ class PlyReader : public DatasetReader {
 };
 
 }  // namespace jpcc::io
+
+#include <jpcc/io/impl/PlyReader.hpp>

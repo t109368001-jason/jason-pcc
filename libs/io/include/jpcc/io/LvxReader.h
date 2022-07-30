@@ -12,7 +12,8 @@
 
 namespace jpcc::io {
 
-class LvxReader : public DatasetStreamReader {
+template <typename PointT>
+class LvxReader : public DatasetStreamReader<PointT> {
  public:
   using LvxHandler    = livox_ros::LvxFileHandle;
   using LvxHandlerPtr = std::unique_ptr<LvxHandler, void (*)(LvxHandler*)>;
@@ -34,3 +35,5 @@ class LvxReader : public DatasetStreamReader {
 };
 
 }  // namespace jpcc::io
+
+#include <jpcc/io/impl/LvxReader.hpp>

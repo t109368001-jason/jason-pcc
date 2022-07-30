@@ -1,5 +1,3 @@
-#include <jpcc/io/PlyReader.h>
-
 #include <algorithm>
 
 #include <pcl/console/print.h>
@@ -11,17 +9,19 @@
 namespace jpcc::io {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-PlyReader::PlyReader(DatasetReaderParameter param, DatasetParameter datasetParam) :
-    DatasetReader(std::move(param), std::move(datasetParam)) {
+template <typename PointT>
+PlyReader<PointT>::PlyReader(DatasetReaderParameter param, DatasetParameter datasetParam) :
+    DatasetReader<PointT>(std::move(param), std::move(datasetParam)) {
   pcl::console::setVerbosityLevel(pcl::console::L_ERROR);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void PlyReader::load(const size_t  datasetIndex,
-                     const size_t  startFrameNumber,
-                     const size_t  groupOfFramesSize,
-                     GroupOfFrame& frames,
-                     const bool    parallel) {
+template <typename PointT>
+void PlyReader<PointT>::load(const size_t          datasetIndex,
+                             const size_t          startFrameNumber,
+                             const size_t          groupOfFramesSize,
+                             GroupOfFrame<PointT>& frames,
+                             const bool            parallel) {
   const size_t endFrameNumber =
       std::min(startFrameNumber + groupOfFramesSize, this->datasetParam_.getStartFrameNumbers(datasetIndex) +
                                                          this->datasetParam_.getFrameCounts(datasetIndex));
@@ -31,9 +31,13 @@ void PlyReader::load(const size_t  datasetIndex,
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void PlyReader::open_(size_t JPCC_NOT_USED(datasetIndex), size_t JPCC_NOT_USED(startFrameNumber)) {}
+template <typename PointT>
+void PlyReader<PointT>::open_(size_t JPCC_NOT_USED(datasetIndex), size_t JPCC_NOT_USED(startFrameNumber)) {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-bool PlyReader::isOpen_(size_t JPCC_NOT_USED(datasetIndex)) const { return true; }
+template <typename PointT>
+bool PlyReader<PointT>::isOpen_(size_t JPCC_NOT_USED(datasetIndex)) const {
+  return true;
+}
 
 }  // namespace jpcc::io

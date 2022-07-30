@@ -11,7 +11,8 @@
 
 namespace jpcc::io {
 
-class PcapReader : public DatasetStreamReader {
+template <typename PointT>
+class PcapReader : public DatasetStreamReader<PointT> {
  protected:
   int                                                      maxNumLasers_;
   std::vector<float>                                       verticals_;
@@ -31,7 +32,9 @@ class PcapReader : public DatasetStreamReader {
 
   void load_(size_t datasetIndex, size_t startFrameNumber, size_t groupOfFramesSize) override;
 
-  int parseDataPacket(void* const pcap, GroupOfFrame& frameBuffer);
+  int parseDataPacket(void* pcap, GroupOfFrame<PointT>& frameBuffer);
 };
 
 }  // namespace jpcc::io
+
+#include <jpcc/io/impl/PcapReader.hpp>

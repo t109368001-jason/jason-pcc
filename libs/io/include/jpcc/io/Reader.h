@@ -6,7 +6,10 @@
 
 namespace jpcc::io {
 
-[[nodiscard]] typename DatasetReader::Ptr newReader(const DatasetReaderParameter& param,
-                                                    const DatasetParameter&       datasetParam);
+template <typename PointT>
+[[nodiscard]] typename DatasetReader<PointT>::Ptr newReader(const DatasetReaderParameter& param,
+                                                            const DatasetParameter&       datasetParam);
 
 }  // namespace jpcc::io
+
+#include <jpcc/io/impl/Reader.hpp>
