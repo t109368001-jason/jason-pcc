@@ -8,7 +8,8 @@
 
 namespace jpcc::segmentation {
 
-class OctreeContainerGMM : virtual public octree::OctreeContainerLastPoint, virtual public math::GMM {
+template <typename PointT>
+class OctreeContainerGMM : virtual public octree::OctreeContainerLastPoint<PointT>, public math::GMM {
  protected:
   shared_ptr<std::vector<float>> trainSamples_;
 
@@ -17,7 +18,7 @@ class OctreeContainerGMM : virtual public octree::OctreeContainerLastPoint, virt
 
   void reset() override;
 
-  void addPoint(const PointXYZINormal& point) override;
+  void addPoint(const PointT& point) override;
 
   void addTrainSample();
 
@@ -28,3 +29,5 @@ class OctreeContainerGMM : virtual public octree::OctreeContainerLastPoint, virt
 };
 
 }  // namespace jpcc::segmentation
+
+#include <jpcc/segmentation/impl/OctreeContainerGMM.hpp>

@@ -8,17 +8,18 @@
 
 namespace jpcc::segmentation {
 
+template <typename PointT>
 class JPCCSegmentationOPCGMMCenter
-    : virtual public JPCCSegmentationBase,
-      virtual public octree::JPCCOctreePointCloud<PointXYZINormal, OctreeContainerSegmentationGMMCenter> {
+    : virtual public JPCCSegmentationBase<PointT>,
+      virtual public octree::JPCCOctreePointCloud<PointT, OctreeContainerSegmentationGMMCenter<PointT>> {
  public:
   static constexpr SegmentationType TYPE              = SegmentationType::GMM;
   static constexpr StaticPointType  STATIC_POINT_TYPE = StaticPointType::CENTER;
 
   using Ptr  = shared_ptr<JPCCSegmentationOPCGMMCenter>;
-  using Base = octree::JPCCOctreePointCloud<PointXYZINormal, OctreeContainerSegmentationGMMCenter>;
+  using Base = octree::JPCCOctreePointCloud<PointT, OctreeContainerSegmentationGMMCenter<PointT>>;
 
-  using LeafContainer = Base::LeafContainer;
+  using LeafContainer = typename Base::LeafContainer;
 
  protected:
   std::vector<float> alternateCentroids_;
@@ -26,15 +27,17 @@ class JPCCSegmentationOPCGMMCenter
  public:
   JPCCSegmentationOPCGMMCenter(const JPCCSegmentationParameter& parameter);
 
-  void appendTrainSamples(FramePtr frame) override;
+  void appendTrainSamples(FramePtr<PointT> frame) override;
 
   void build() override;
 
-  void segmentation(const FrameConstPtr& frame,
-                    FramePtr             dynamicFrame,
-                    FramePtr             staticFrame,
-                    FramePtr             staticFrameAdded,
-                    FramePtr             staticFrameRemoved) override;
+  void segmentation(const FrameConstPtr<PointT>& frame,
+                    FramePtr<PointT>             dynamicFrame,
+                    FramePtr<PointT>             staticFrame,
+                    FramePtr<PointT>             staticFrameAdded,
+                    FramePtr<PointT>             staticFrameRemoved) override;
 };
 
 }  // namespace jpcc::segmentation
+
+#include <jpcc/segmentation/impl/JPCCSegmentationOPCGMMCenter.hpp>

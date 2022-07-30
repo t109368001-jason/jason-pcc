@@ -1,40 +1,49 @@
-#include <jpcc/segmentation/JPCCSegmentation.h>
-
 #include <execution>
 
-#include <jpcc/segmentation/JPCCSegmentationOPCGMMCenter.h>
+#include "jpcc/segmentation/JPCCSegmentationOPCGMMCenter.h"
 
 using namespace std;
 using namespace jpcc::octree;
 
 namespace jpcc::segmentation {
 
-JPCCSegmentation::JPCCSegmentation(const JPCCSegmentationParameter& parameter) : JPCCSegmentationBase(parameter) {
-  if (parameter.type == JPCCSegmentationOPCGMMCenter::TYPE &&
-      parameter.staticPointType == JPCCSegmentationOPCGMMCenter::STATIC_POINT_TYPE) {
-    backend_ = jpcc::make_shared<JPCCSegmentationOPCGMMCenter>(parameter_);
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT>
+JPCCSegmentation<PointT>::JPCCSegmentation(const JPCCSegmentationParameter& parameter) :
+    JPCCSegmentationBase<PointT>(parameter) {
+  if (parameter.type == JPCCSegmentationOPCGMMCenter<PointT>::TYPE &&
+      parameter.staticPointType == JPCCSegmentationOPCGMMCenter<PointT>::STATIC_POINT_TYPE) {
+    backend_ = jpcc::make_shared<JPCCSegmentationOPCGMMCenter<PointT>>(this->parameter_);
   } else {
     BOOST_THROW_EXCEPTION(logic_error("unsupported staticPointType"));
   }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void JPCCSegmentation::appendTrainSamples(const GroupOfFrame& groupOfFrame) {
+template <typename PointT>
+void JPCCSegmentation<PointT>::appendTrainSamples(const GroupOfFrame<PointT>& groupOfFrame) {
   for (const auto& frame : groupOfFrame) { appendTrainSamples(frame); }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void JPCCSegmentation::appendTrainSamples(FramePtr frame) { backend_->appendTrainSamples(frame); }
+template <typename PointT>
+void JPCCSegmentation<PointT>::appendTrainSamples(FramePtr<PointT> frame) {
+  backend_->appendTrainSamples(frame);
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void JPCCSegmentation::build() { backend_->build(); }
+template <typename PointT>
+void JPCCSegmentation<PointT>::build() {
+  backend_->build();
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void JPCCSegmentation::segmentation(const FrameConstPtr& frame,
-                                    FramePtr             dynamicFrame,
-                                    FramePtr             staticFrame,
-                                    FramePtr             staticFrameAdded,
-                                    FramePtr             staticFrameRemoved) {
+template <typename PointT>
+void JPCCSegmentation<PointT>::segmentation(const FrameConstPtr<PointT>& frame,
+                                            FramePtr<PointT>             dynamicFrame,
+                                            FramePtr<PointT>             staticFrame,
+                                            FramePtr<PointT>             staticFrameAdded,
+                                            FramePtr<PointT>             staticFrameRemoved) {
   if (dynamicFrame) {
     dynamicFrame->clear();
     dynamicFrame->header = frame->header;

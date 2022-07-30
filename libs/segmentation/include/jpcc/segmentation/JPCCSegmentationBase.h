@@ -5,6 +5,7 @@
 
 namespace jpcc::segmentation {
 
+template <typename PointT>
 class JPCCSegmentationBase {
  public:
   using Ptr = shared_ptr<JPCCSegmentationBase>;
@@ -17,15 +18,17 @@ class JPCCSegmentationBase {
 
   [[nodiscard]] size_t getNTrain() const;
 
-  virtual void appendTrainSamples(FramePtr frame) = 0;
+  virtual void appendTrainSamples(FramePtr<PointT> frame) = 0;
 
   virtual void build() = 0;
 
-  virtual void segmentation(const FrameConstPtr& frame,
-                            FramePtr             dynamicFrame,
-                            FramePtr             staticFrame,
-                            FramePtr             staticFrameAdded,
-                            FramePtr             staticFrameRemoved) = 0;
+  virtual void segmentation(const FrameConstPtr<PointT>& frame,
+                            FramePtr<PointT>             dynamicFrame,
+                            FramePtr<PointT>             staticFrame,
+                            FramePtr<PointT>             staticFrameAdded,
+                            FramePtr<PointT>             staticFrameRemoved) = 0;
 };
 
 }  // namespace jpcc::segmentation
+
+#include <jpcc/segmentation/impl/JPCCSegmentationBase.hpp>

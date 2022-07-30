@@ -1,13 +1,16 @@
-#include <jpcc/segmentation/JPCCSegmentationBase.h>
-
 using namespace std;
 
 namespace jpcc::segmentation {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-JPCCSegmentationBase::JPCCSegmentationBase(const JPCCSegmentationParameter& parameter) : parameter_(parameter) {}
+template <typename PointT>
+JPCCSegmentationBase<PointT>::JPCCSegmentationBase(const JPCCSegmentationParameter& parameter) :
+    parameter_(parameter) {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-size_t JPCCSegmentationBase::getNTrain() const { return parameter_.nTrain; }
+template <typename PointT>
+size_t JPCCSegmentationBase<PointT>::getNTrain() const {
+  return parameter_.nTrain;
+}
 
 }  // namespace jpcc::segmentation

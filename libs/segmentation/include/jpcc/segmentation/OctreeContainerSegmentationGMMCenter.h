@@ -7,8 +7,9 @@
 
 namespace jpcc::segmentation {
 
+template <typename PointT>
 class OctreeContainerSegmentationGMMCenter : virtual public OctreeContainerStaticFlag,
-                                             virtual public OctreeContainerGMM {
+                                             virtual public OctreeContainerGMM<PointT> {
  public:
   OctreeContainerSegmentationGMMCenter();
 
@@ -16,3 +17,5 @@ class OctreeContainerSegmentationGMMCenter : virtual public OctreeContainerStati
 };
 
 }  // namespace jpcc::segmentation
+
+#include <jpcc/segmentation/impl/OctreeContainerSegmentationGMMCenter.hpp>
