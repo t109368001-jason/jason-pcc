@@ -1,25 +1,33 @@
-#include <jpcc/octree/OctreeContainerOccludedCount.h>
-
 using namespace std;
 using namespace Eigen;
 
 namespace jpcc::octree {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-OctreeContainerOccludedCount::OctreeContainerOccludedCount() : OctreeContainerBase() {
+template <typename PointT>
+OctreeContainerOccludedCount<PointT>::OctreeContainerOccludedCount() : OctreeContainerBase() {
   OctreeContainerOccludedCount::reset();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void OctreeContainerOccludedCount::reset() { pointBuffer_.clear(); }
+template <typename PointT>
+void OctreeContainerOccludedCount<PointT>::reset() {
+  pointBuffer_.clear();
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void OctreeContainerOccludedCount::addPoint(const PointXYZINormal& point) { pointBuffer_.push_back(point); }
+template <typename PointT>
+void OctreeContainerOccludedCount<PointT>::addPoint(const PointT& point) {
+  pointBuffer_.push_back(point);
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void OctreeContainerOccludedCount::compute(const Vector3f& min_pt, const Vector3f& max_pt, const size_t quantCount) {
+template <typename PointT>
+void OctreeContainerOccludedCount<PointT>::compute(const Vector3f& min_pt,
+                                                   const Vector3f& max_pt,
+                                                   const size_t    quantCount) {
   if (count3D_.empty()) { count3D_.resize(quantCount * quantCount * quantCount); }
-  for (const PointXYZINormal& point : pointBuffer_) {
+  for (const PointT& point : pointBuffer_) {
     auto   xIndex = (size_t)((point.x - min_pt.x()) / (max_pt.x() - min_pt.x()) * (float)quantCount);
     auto   yIndex = (size_t)((point.y - min_pt.y()) / (max_pt.y() - min_pt.y()) * (float)quantCount);
     auto   zIndex = (size_t)((point.z - min_pt.z()) / (max_pt.z() - min_pt.z()) * (float)quantCount);
@@ -31,7 +39,8 @@ void OctreeContainerOccludedCount::compute(const Vector3f& min_pt, const Vector3
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-float OctreeContainerOccludedCount::getMinimumOccludedPercentage(const size_t quantCount) {
+template <typename PointT>
+float OctreeContainerOccludedCount<PointT>::getMinimumOccludedPercentage(const size_t quantCount) {
   vector<float> occludedPercentage = {
       getXYOccludedPercentage(quantCount),  //
       getXZOccludedPercentage(quantCount),  //
@@ -40,7 +49,9 @@ float OctreeContainerOccludedCount::getMinimumOccludedPercentage(const size_t qu
   return *max_element(occludedPercentage.begin(), occludedPercentage.end());
 }
 
-float OctreeContainerOccludedCount::getXYOccludedPercentage(const size_t quantCount) {
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT>
+float OctreeContainerOccludedCount<PointT>::getXYOccludedPercentage(const size_t quantCount) {
   size_t total    = 0;
   size_t occluded = 0;
   for (size_t xIndex = 0; xIndex < quantCount; xIndex++) {
@@ -60,7 +71,8 @@ float OctreeContainerOccludedCount::getXYOccludedPercentage(const size_t quantCo
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-float OctreeContainerOccludedCount::getXZOccludedPercentage(const size_t quantCount) {
+template <typename PointT>
+float OctreeContainerOccludedCount<PointT>::getXZOccludedPercentage(const size_t quantCount) {
   size_t total    = 0;
   size_t occluded = 0;
   for (size_t xIndex = 0; xIndex < quantCount; xIndex++) {
@@ -80,7 +92,8 @@ float OctreeContainerOccludedCount::getXZOccludedPercentage(const size_t quantCo
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-float OctreeContainerOccludedCount::getYZOccludedPercentage(const size_t quantCount) {
+template <typename PointT>
+float OctreeContainerOccludedCount<PointT>::getYZOccludedPercentage(const size_t quantCount) {
   size_t total    = 0;
   size_t occluded = 0;
   for (size_t yIndex = 0; yIndex < quantCount; yIndex++) {

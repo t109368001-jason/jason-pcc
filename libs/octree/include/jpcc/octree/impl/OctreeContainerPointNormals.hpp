@@ -1,22 +1,26 @@
-#include <jpcc/octree/OctreeContainerPointNormals.h>
-
 using namespace std;
 
 namespace jpcc::octree {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-OctreeContainerPointNormals::OctreeContainerPointNormals() : OctreeContainerBase() {
+template <typename PointT>
+OctreeContainerPointNormals<PointT>::OctreeContainerPointNormals() : OctreeContainerBase() {
   OctreeContainerPointNormals::reset();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void OctreeContainerPointNormals::reset() {
+template <typename PointT>
+void OctreeContainerPointNormals<PointT>::reset() {
   azimuths_.clear();
   zeniths_.clear();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void OctreeContainerPointNormals::addPoint(const PointXYZINormal& point) {
+template <typename PointT>
+void OctreeContainerPointNormals<PointT>::addPoint(const PointT& point) {
+  if constexpr (!pcl::traits::has_normal_v<PointT>) {
+    static_assert(dependent_false_v<PointT>, "invalid template type");
+  }
   if (isnan(point.normal_x)) { return; }
   double azimuth;
   if (point.normal_x > 0) {
@@ -44,9 +48,15 @@ void OctreeContainerPointNormals::addPoint(const PointXYZINormal& point) {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-const vector<double>& OctreeContainerPointNormals::getAzimuths() const { return azimuths_; }
+template <typename PointT>
+const vector<double>& OctreeContainerPointNormals<PointT>::getAzimuths() const {
+  return azimuths_;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-const vector<double>& OctreeContainerPointNormals::getZeniths() const { return zeniths_; }
+template <typename PointT>
+const vector<double>& OctreeContainerPointNormals<PointT>::getZeniths() const {
+  return zeniths_;
+}
 
 }  // namespace jpcc::octree

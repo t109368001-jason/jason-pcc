@@ -6,22 +6,25 @@
 
 namespace jpcc::octree {
 
+template <typename PointT>
 class OctreeContainerLastPoint : virtual public pcl::octree::OctreeContainerBase {
  protected:
-  PointXYZINormal lastPoint_;
+  PointT lastPoint_;
 
  public:
   OctreeContainerLastPoint();
 
   void reset() override;
 
-  virtual void addPoint(const PointXYZINormal& point);
+  virtual void addPoint(const PointT& point);
 
-  [[nodiscard]] const PointXYZINormal& getLastPoint() const;
+  [[nodiscard]] const PointT& getLastPoint() const;
 
-  [[nodiscard]] PointXYZINormal& getLastPoint();
+  [[nodiscard]] PointT& getLastPoint();
 
   void resetLastPoint();
 };
 
 }  // namespace jpcc::octree
+
+#include <jpcc/octree/impl/OctreeContainerLastPoint.hpp>

@@ -12,20 +12,21 @@
 
 namespace jpcc::octree {
 
+template <typename PointT>
 class OctreeContainerOccludedCount : virtual public pcl::octree::OctreeContainerBase {
  public:
   using Count3D = boost::dynamic_bitset<>;
 
  protected:
-  Count3D                      count3D_;
-  std::vector<PointXYZINormal> pointBuffer_;
+  Count3D             count3D_;
+  std::vector<PointT> pointBuffer_;
 
  public:
   OctreeContainerOccludedCount();
 
   void reset() override;
 
-  void addPoint(const PointXYZINormal& point);
+  void addPoint(const PointT& point);
 
   void compute(const Eigen::Vector3f& min_pt, const Eigen::Vector3f& max_pt, size_t quantCount);
 
@@ -39,3 +40,5 @@ class OctreeContainerOccludedCount : virtual public pcl::octree::OctreeContainer
 };
 
 }  // namespace jpcc::octree
+
+#include <jpcc/octree/impl/OctreeContainerOccludedCount.hpp>

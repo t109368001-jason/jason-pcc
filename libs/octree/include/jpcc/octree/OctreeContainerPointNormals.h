@@ -6,6 +6,7 @@
 
 namespace jpcc::octree {
 
+template <typename PointT>
 class OctreeContainerPointNormals : virtual public pcl::octree::OctreeContainerBase {
  protected:
   std::vector<double> azimuths_;
@@ -16,7 +17,7 @@ class OctreeContainerPointNormals : virtual public pcl::octree::OctreeContainerB
 
   void reset() override;
 
-  void addPoint(const PointXYZINormal& point);
+  void addPoint(const PointT& point);
 
   [[nodiscard]] const std::vector<double>& getAzimuths() const;
 
@@ -24,3 +25,5 @@ class OctreeContainerPointNormals : virtual public pcl::octree::OctreeContainerB
 };
 
 }  // namespace jpcc::octree
+
+#include <jpcc/octree/impl/OctreeContainerPointNormals.hpp>
