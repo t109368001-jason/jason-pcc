@@ -27,15 +27,19 @@ using uindex_t   = pcl::uindex_t;
 using Indices    = pcl::Indices;
 using IndicesPtr = shared_ptr<Indices>;
 
-using PointXYZINormal = pcl::PointXYZINormal;
+template <typename PointT>
+using Frame = pcl::PointCloud<PointT>;
+template <typename PointT>
+using FramePtr = typename Frame<PointT>::Ptr;
+template <typename PointT>
+using FrameConstPtr = typename Frame<PointT>::ConstPtr;
 
-using Frame         = pcl::PointCloud<PointXYZINormal>;
-using FramePtr      = Frame::Ptr;
-using FrameConstPtr = Frame::ConstPtr;
-
-using GroupOfFrame      = std::vector<FramePtr>;
-using GroupOfFrameConst = std::vector<FrameConstPtr>;
-using GroupOfFrameMap   = std::map<std::string, GroupOfFrame>;
+template <typename PointT>
+using GroupOfFrame = std::vector<FramePtr<PointT>>;
+template <typename PointT>
+using GroupOfFrameConst = std::vector<FrameConstPtr<PointT>>;
+template <typename PointT>
+using GroupOfFrameMap = std::map<std::string, GroupOfFrame<PointT>>;
 
 template <class T>
 struct dependent_false : std::false_type {};
