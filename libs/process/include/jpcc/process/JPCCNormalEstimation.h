@@ -8,10 +8,11 @@
 
 namespace jpcc::process {
 
+template <typename PointIn, typename PointOut>
 class JPCCNormalEstimation {
  public:
   using Ptr              = shared_ptr<JPCCNormalEstimation>;
-  using NormalEstimation = pcl::NormalEstimation<PointXYZINormal, PointXYZINormal>;
+  using NormalEstimation = pcl::NormalEstimation<PointIn, PointOut>;
 
  protected:
   JPCCNormalEstimationParameter param_;
@@ -20,13 +21,15 @@ class JPCCNormalEstimation {
  public:
   JPCCNormalEstimation(JPCCNormalEstimationParameter param);
 
-  void computeInPlace(FramePtr& frame) const;
+  void computeInPlace(FramePtr<PointIn>& frame) const;
 
-  [[nodiscard]] jpcc::FramePtr compute(FramePtr& frame) const;
+  [[nodiscard]] FramePtr<PointOut> compute(FramePtr<PointIn>& frame) const;
 
-  void computeInPlaceAll(GroupOfFrame& frames, bool parallel = false) const;
+  void computeInPlaceAll(GroupOfFrame<PointIn>& frames, bool parallel = false) const;
 
-  [[nodiscard]] jpcc::GroupOfFrame computeAll(GroupOfFrame& frames, bool parallel = false) const;
+  [[nodiscard]] GroupOfFrame<PointOut> computeAll(GroupOfFrame<PointIn>& frames, bool parallel = false) const;
 };
 
 }  // namespace jpcc::process
+
+#include <jpcc/process/impl/JPCCNormalEstimation.hpp>

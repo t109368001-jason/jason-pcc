@@ -8,7 +8,8 @@
 
 namespace jpcc::process {
 
-class JPCCConditionalRemoval : public virtual pcl::FilterIndices<PointXYZINormal> {
+template <typename PointT>
+class JPCCConditionalRemoval : public virtual pcl::FilterIndices<PointT> {
  public:
   using Ptr = shared_ptr<JPCCConditionalRemoval>;
 
@@ -23,3 +24,5 @@ class JPCCConditionalRemoval : public virtual pcl::FilterIndices<PointXYZINormal
 };
 
 }  // namespace jpcc::process
+
+#include <jpcc/process/impl/JPCCConditionalRemoval.hpp>

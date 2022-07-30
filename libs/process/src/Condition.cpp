@@ -83,25 +83,6 @@ Condition::Condition(const ConditionType& type, const vector<string>& conditions
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-bool Condition::predict(const PointXYZINormal& point) const {
-  switch (type) {
-    case X:
-    case Y:
-    case Z:
-    case R:
-    case PROD: return predictVector3fMap(point.getVector3fMap());
-    case REFLECTIVITY: return predictVector4fMap(point.getVector4fMap());
-    case AND:
-      return all_of(conditions.begin(), conditions.end(),
-                    [&point](const auto& condition) { return condition.predict(point); });
-    case OR:
-      return any_of(conditions.begin(), conditions.end(),
-                    [&point](const auto& condition) { return condition.predict(point); });
-    default: return false;
-  }
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
 bool Condition::predictVector3fMap(pcl::Vector3fMapConst& vector3fMap) const {
   double val;
   switch (type) {

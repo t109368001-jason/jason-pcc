@@ -1,27 +1,29 @@
-#include <jpcc/process/Process.h>
-
 #include <execution>
 
 #define PCL_NO_PRECOMPILE
 #include <pcl/filters/extract_indices.h>
 
-#include <jpcc/octree/OctreeNBuf.h>
+#include "jpcc/octree/OctreeNBuf.h"
 
-#include <jpcc/octree/JPCCOctreePointCloud.h>
+#include "jpcc/octree/JPCCOctreePointCloud.h"
 
 namespace jpcc::process {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void split(const FramePtr& input, const IndicesPtr& indices, const FramePtr& output, const FramePtr& outputNegative) {
-  pcl::ExtractIndices<PointXYZINormal> extractIndices;
+template <typename PointT>
+void split(const FramePtr<PointT>& input,
+           const IndicesPtr&       indices,
+           const FramePtr<PointT>& output,
+           const FramePtr<PointT>& outputNegative) {
+  pcl::ExtractIndices<PointT> extractIndices;
   extractIndices.setInputCloud(input);
   extractIndices.setIndices(indices);
 
-  FramePtr outputTemp;
+  FramePtr<PointT> outputTemp;
   if (output) {
     extractIndices.setNegative(false);
     if (input.get() == output.get()) {
-      outputTemp = make_shared<Frame>();
+      outputTemp = make_shared<Frame<PointT>>();
       extractIndices.filter(*outputTemp);
       outputTemp->header              = input->header;
       outputTemp->sensor_origin_      = input->sensor_origin_;
@@ -38,9 +40,10 @@ void split(const FramePtr& input, const IndicesPtr& indices, const FramePtr& out
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void quantize(const FramePtr& frame, const double resolution) {
+template <typename PointT>
+void quantize(const FramePtr<PointT>& frame, const double resolution) {
   using OctreeT = pcl::octree::OctreeBase<pcl::octree::OctreeContainerPointIndex, pcl::octree::OctreeContainerEmpty>;
-  using OctreePointCloudT = jpcc::octree::JPCCOctreePointCloud<PointXYZINormal, pcl::octree::OctreeContainerPointIndex,
+  using OctreePointCloudT = jpcc::octree::JPCCOctreePointCloud<PointT, pcl::octree::OctreeContainerPointIndex,
                                                                pcl::octree::OctreeContainerEmpty, OctreeT>;
 
   OctreePointCloudT octreePointCloud(resolution);
@@ -58,7 +61,8 @@ void quantize(const FramePtr& frame, const double resolution) {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void quantize(const GroupOfFrame& frames, const double resolution, const bool parallel) {
+template <typename PointT>
+void quantize(const GroupOfFrame<PointT>& frames, const double resolution, const bool parallel) {
   if (parallel) {
     std::for_each(std::execution::par_unseq, frames.begin(), frames.end(),
                   [&resolution](const auto& frame) { quantize(frame, resolution); });

@@ -27,7 +27,8 @@ class Condition {
 
   Condition(const ConditionType& type, const std::vector<std::string>& conditions);
 
-  [[nodiscard]] bool predict(const PointXYZINormal& point) const;
+  template <typename PointT>
+  [[nodiscard]] bool predict(const PointT& point) const;
 
  protected:
   [[nodiscard]] bool predictVector3fMap(pcl::Vector3fMapConst& vector3fMap) const;
@@ -38,3 +39,5 @@ class Condition {
 };
 
 }  // namespace jpcc::process
+
+#include <jpcc/process/impl/Condition.hpp>
