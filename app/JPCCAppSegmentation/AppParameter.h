@@ -13,6 +13,7 @@ class AppParameter : public Parameter {
   bool                                    parallel;
   bool                                    headless;
   size_t                                  groupOfFramesSize;
+  bool                                    outputStatic;
   io::DatasetParameter                    inputDataset;
   io::DatasetReaderParameter              inputReader;
   io::DatasetParameter                    outputDataset;

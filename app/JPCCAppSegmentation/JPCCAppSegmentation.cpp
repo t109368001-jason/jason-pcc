@@ -67,10 +67,16 @@ void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
       staticRemovedFrames.clear();
       clock.start();
       for (const auto& frame : frames) {
-        auto dynamicFrame       = jpcc::make_shared<Frame>();
-        auto staticFrame        = jpcc::make_shared<Frame>();
-        auto staticAddedFrame   = jpcc::make_shared<Frame>();
-        auto staticRemovedFrame = jpcc::make_shared<Frame>();
+        auto     dynamicFrame       = jpcc::make_shared<Frame>();
+        auto     staticAddedFrame   = jpcc::make_shared<Frame>();
+        auto     staticRemovedFrame = jpcc::make_shared<Frame>();
+        FramePtr staticFrame;
+
+#if defined(NDEBUG)
+        if (parameter.outputStatic) { staticFrame = jpcc::make_shared<Frame>(); }
+#else
+        staticFrame = jpcc::make_shared<Frame>();
+#endif
 
         gmmSegmentation.segmentation(frame, dynamicFrame, staticFrame, staticAddedFrame, staticRemovedFrame);
 
@@ -81,16 +87,16 @@ void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
 #endif
 
         dynamicFrames.push_back(dynamicFrame);
-        staticFrames.push_back(staticFrame);
         staticAddedFrames.push_back(staticAddedFrame);
         staticRemovedFrames.push_back(staticRemovedFrame);
+        if (parameter.outputStatic) { staticFrames.push_back(staticFrame); }
       }
       clock.stop();
 
       savePly(dynamicFrames, parameter.outputDataset.getFilePath(0), parameter.parallel);
-      savePly(staticFrames, parameter.outputDataset.getFilePath(1), parameter.parallel);
-      savePly(staticAddedFrames, parameter.outputDataset.getFilePath(2), parameter.parallel);
-      savePly(staticRemovedFrames, parameter.outputDataset.getFilePath(3), parameter.parallel);
+      savePly(staticAddedFrames, parameter.outputDataset.getFilePath(1), parameter.parallel);
+      savePly(staticRemovedFrames, parameter.outputDataset.getFilePath(2), parameter.parallel);
+      if (parameter.outputStatic) { savePly(staticFrames, parameter.outputDataset.getFilePath(3), parameter.parallel); }
 
       frameNumber += groupOfFramesSize;
     }

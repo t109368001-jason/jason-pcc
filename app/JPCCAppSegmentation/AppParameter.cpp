@@ -10,10 +10,12 @@ using namespace po;
 #define APP_OPT_PREFIX "app"
 #define PARALLEL_OPT ".parallel"
 #define GROUP_OF_FRAMES_SIZE_OPT ".groupOfFramesSize"
+#define OUTPUT_STATIC_OPT ".outputStatic"
 
 AppParameter::AppParameter() :
     Parameter(APP_OPT_PREFIX, __FUNCTION__),
     parallel(false),
+    outputStatic(false),
     inputDataset("dataset", "InputDatasetParameter"),
     inputReader("reader", "InputDatasetReaderParameter"),
     outputDataset("outputDataset", "OutputDatasetParameter"),
@@ -25,6 +27,9 @@ AppParameter::AppParameter() :
       (string(prefix_ + GROUP_OF_FRAMES_SIZE_OPT).c_str(),                   //
        value<size_t>(&groupOfFramesSize)->default_value(groupOfFramesSize),  //
        "groupOfFramesSize")                                                  //
+      (string(prefix_ + OUTPUT_STATIC_OPT).c_str(),                          //
+       value<bool>(&outputStatic)->default_value(outputStatic),              //
+       "outputStatic")                                                       //
       ;
   opts_.add(inputDataset.getOpts());
   opts_.add(inputReader.getOpts());
@@ -47,6 +52,7 @@ ostream& operator<<(ostream& out, const AppParameter& obj) {
   obj.coutParameters(out)                                //
       (PARALLEL_OPT, obj.parallel)                       //
       (GROUP_OF_FRAMES_SIZE_OPT, obj.groupOfFramesSize)  //
+      (OUTPUT_STATIC_OPT, obj.outputStatic)              //
       ;
   out << obj.inputDataset;
   out << obj.inputReader;

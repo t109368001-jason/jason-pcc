@@ -53,11 +53,11 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
           GroupOfFrame staticAddedFrames;
           GroupOfFrame staticRemovedFrames;
           reader->load(0, startFrameNumber, groupOfFramesSize, frames, parameter.parallel);
+          reader->load(1, startFrameNumber, groupOfFramesSize, staticAddedFrames, parameter.parallel);
+          reader->load(2, startFrameNumber, groupOfFramesSize, staticRemovedFrames, parameter.parallel);
 #if !defined(NDEBUG)
-          reader->load(1, startFrameNumber, groupOfFramesSize, staticFrames, parameter.parallel);
+          reader->load(3, startFrameNumber, groupOfFramesSize, staticFrames, parameter.parallel);
 #endif
-          reader->load(2, startFrameNumber, groupOfFramesSize, staticAddedFrames, parameter.parallel);
-          reader->load(3, startFrameNumber, groupOfFramesSize, staticRemovedFrames, parameter.parallel);
           for (size_t i = 0; i < staticAddedFrames.size(); i++) {
             if (staticRemovedFrames.at(i)) {
               for (const PointXYZINormal& pointToRemove : staticRemovedFrames.at(i)->points) {

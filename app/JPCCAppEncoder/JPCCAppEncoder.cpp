@@ -47,7 +47,6 @@ void encode(const AppParameter& parameter, StopwatchUserTime& clock) {
   {  // encode
     GroupOfFrame frames;
     GroupOfFrame dynamicFrames;
-    GroupOfFrame staticFrames;
     GroupOfFrame staticAddedFrames;
     GroupOfFrame staticRemovedFrames;
     size_t       groupOfFramesSize = parameter.groupOfFramesSize;
@@ -64,19 +63,16 @@ void encode(const AppParameter& parameter, StopwatchUserTime& clock) {
       {  // encode
         // TODO extract JPCCEncoder
         dynamicFrames.clear();
-        staticFrames.clear();
         staticAddedFrames.clear();
         staticRemovedFrames.clear();
         for (const auto& frame : frames) {
           auto dynamicFrame       = jpcc::make_shared<Frame>();
-          auto staticFrame        = jpcc::make_shared<Frame>();
           auto staticAddedFrame   = jpcc::make_shared<Frame>();
           auto staticRemovedFrame = jpcc::make_shared<Frame>();
 
-          gmmSegmentation.segmentation(frame, dynamicFrame, staticFrame, staticAddedFrame, staticRemovedFrame);
+          gmmSegmentation.segmentation(frame, dynamicFrame, nullptr, staticAddedFrame, staticRemovedFrame);
 
           dynamicFrames.push_back(dynamicFrame);
-          staticFrames.push_back(staticFrame);
           staticAddedFrames.push_back(staticAddedFrame);
           staticRemovedFrames.push_back(staticRemovedFrame);
         }
@@ -84,9 +80,8 @@ void encode(const AppParameter& parameter, StopwatchUserTime& clock) {
       {  // write
         // TODO extract JPCCWriter
         savePly(dynamicFrames, parameter.outputDataset.getFilePath(0), parameter.parallel);
-        savePly(staticFrames, parameter.outputDataset.getFilePath(1), parameter.parallel);
-        savePly(staticAddedFrames, parameter.outputDataset.getFilePath(2), parameter.parallel);
-        savePly(staticRemovedFrames, parameter.outputDataset.getFilePath(3), parameter.parallel);
+        savePly(staticAddedFrames, parameter.outputDataset.getFilePath(1), parameter.parallel);
+        savePly(staticRemovedFrames, parameter.outputDataset.getFilePath(2), parameter.parallel);
       }
       clock.stop();
       frameNumber += groupOfFramesSize;
