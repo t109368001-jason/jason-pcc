@@ -1,4 +1,4 @@
-#include <jpcc/segmentation/JPCCSegmentationOPCGMMCemter.h>
+#include <jpcc/segmentation/JPCCSegmentationOPCGMMCenter.h>
 
 #include <limits>
 
@@ -7,13 +7,13 @@ using namespace std;
 namespace jpcc::segmentation {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-JPCCSegmentationOPCGMMCemter::JPCCSegmentationOPCGMMCemter(const JPCCSegmentationParameter& parameter) :
+JPCCSegmentationOPCGMMCenter::JPCCSegmentationOPCGMMCenter(const JPCCSegmentationParameter& parameter) :
     JPCCSegmentationBase(parameter), Base(parameter.resolution) {
   for (int i = -1; i >= -parameter_.k; i--) { alternateCentroids_.push_back(static_cast<float>(i) / MAX_INTENSITY); }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void JPCCSegmentationOPCGMMCemter::appendTrainSamples(FramePtr frame) {
+void JPCCSegmentationOPCGMMCenter::appendTrainSamples(FramePtr frame) {
   for (auto it = leaf_depth_begin(), end = leaf_depth_end(); it != end; ++it) {
     it.getLeafContainer().resetLastPoint();
   }
@@ -24,7 +24,7 @@ void JPCCSegmentationOPCGMMCemter::appendTrainSamples(FramePtr frame) {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void JPCCSegmentationOPCGMMCemter::build() {
+void JPCCSegmentationOPCGMMCenter::build() {
   for (auto it = leaf_depth_begin(), end = leaf_depth_end(); it != end; ++it) {
     LeafContainer& leafContainer = it.getLeafContainer();
     assert(!leafContainer.isBuilt());
@@ -34,7 +34,7 @@ void JPCCSegmentationOPCGMMCemter::build() {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void JPCCSegmentationOPCGMMCemter::segmentation(const FrameConstPtr& frame,
+void JPCCSegmentationOPCGMMCenter::segmentation(const FrameConstPtr& frame,
                                                 FramePtr             dynamicFrame,
                                                 FramePtr             staticFrame,
                                                 FramePtr             staticFrameAdded,
