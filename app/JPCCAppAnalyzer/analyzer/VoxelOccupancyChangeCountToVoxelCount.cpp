@@ -18,9 +18,9 @@ VoxelOccupancyChangeCountToVoxelCount::VoxelOccupancyChangeCountToVoxelCount(con
     Analyzer(frequency, resolution, outputDir, "VoxelOccupancyChangeCountToVoxelCount"), octree_(resolution) {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void VoxelOccupancyChangeCountToVoxelCount::compute(FrameConstPtr background,
-                                                    FrameConstPtr dynamic,
-                                                    FrameConstPtr other) {
+void VoxelOccupancyChangeCountToVoxelCount::compute(FrameConstPtr<pcl::PointXYZINormal> background,
+                                                    FrameConstPtr<pcl::PointXYZINormal> dynamic,
+                                                    FrameConstPtr<pcl::PointXYZINormal> other) {
   for (BufferIndex bufferIndex = 0; bufferIndex < BUFFER_SIZE; bufferIndex++) {
     octree_.switchBuffers(bufferIndex);
     for (auto it = octree_.leaf_depth_begin(), end = octree_.leaf_depth_end(); it != end; ++it) {
@@ -68,11 +68,11 @@ void VoxelOccupancyChangeCountToVoxelCount::finalCompute() {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void VoxelOccupancyChangeCountToVoxelCount::getCloud(FramePtr& cloud) {
+void VoxelOccupancyChangeCountToVoxelCount::getCloud(FramePtr<pcl::PointXYZINormal>& cloud) {
   double min_x_, min_y_, min_z_, max_x_, max_y_, max_z_;
   octree_.getBoundingBox(min_x_, min_y_, min_z_, max_x_, max_y_, max_z_);
 
-  cloud = jpcc::make_shared<Frame>();
+  cloud = jpcc::make_shared<Frame<pcl::PointXYZINormal>>();
   for (BufferIndex bufferIndex = 0; bufferIndex < BUFFER_SIZE; bufferIndex++) {
     octree_.switchBuffers(bufferIndex);
     for (auto it = octree_.leaf_depth_begin(), end = octree_.leaf_depth_end(); it != end; ++it) {

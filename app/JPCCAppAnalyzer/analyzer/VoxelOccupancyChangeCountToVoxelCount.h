@@ -16,7 +16,7 @@ class VoxelOccupancyChangeCountToVoxelCount : public Analyzer {
   static constexpr octree::BufferIndex BUFFER_SIZE = 3;
 
   using OctreeT = octree::JPCCOctreePointCloud<
-      PointXYZINormal,
+      pcl::PointXYZINormal,
       octree::OctreeContainerOccupancyChangeCount,
       pcl::octree::OctreeContainerEmpty,
       octree::OctreeNBuf<BUFFER_SIZE, octree::OctreeContainerOccupancyChangeCount, pcl::octree::OctreeContainerEmpty>>;
@@ -27,11 +27,13 @@ class VoxelOccupancyChangeCountToVoxelCount : public Analyzer {
  public:
   VoxelOccupancyChangeCountToVoxelCount(const float& frequency, const double& resolution, const std::string& outputDir);
 
-  void compute(FrameConstPtr background, FrameConstPtr dynamic, FrameConstPtr other) override;
+  void compute(FrameConstPtr<pcl::PointXYZINormal> background,
+               FrameConstPtr<pcl::PointXYZINormal> dynamic,
+               FrameConstPtr<pcl::PointXYZINormal> other) override;
 
   void finalCompute() override;
 
-  void getCloud(FramePtr& cloud) override;
+  void getCloud(FramePtr<pcl::PointXYZINormal>& cloud) override;
 
   void reset() override;
 };

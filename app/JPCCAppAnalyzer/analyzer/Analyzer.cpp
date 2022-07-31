@@ -64,7 +64,7 @@ void Analyzer::reset() { releaseLockFile(); }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void Analyzer::saveCloud() {
-  FramePtr cloud;
+  FramePtr<pcl::PointXYZINormal> cloud;
   getCloud(cloud);
   if (cloud) {
     path cloudPath = filepath_;

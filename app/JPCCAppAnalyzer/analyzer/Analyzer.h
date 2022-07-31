@@ -38,11 +38,13 @@ class Analyzer {
 
   void saveCloud();
 
-  virtual void compute(FrameConstPtr background, FrameConstPtr dynamic, FrameConstPtr other) = 0;
+  virtual void compute(FrameConstPtr<pcl::PointXYZINormal> background,
+                       FrameConstPtr<pcl::PointXYZINormal> dynamic,
+                       FrameConstPtr<pcl::PointXYZINormal> other) = 0;
 
   virtual void finalCompute() = 0;
 
-  virtual void getCloud(FramePtr& cloud) = 0;
+  virtual void getCloud(FramePtr<pcl::PointXYZINormal>& cloud) = 0;
 
   virtual void reset();
 };

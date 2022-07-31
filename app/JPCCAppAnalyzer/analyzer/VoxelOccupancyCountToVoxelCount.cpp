@@ -17,18 +17,20 @@ VoxelOccupancyCountToVoxelCount::VoxelOccupancyCountToVoxelCount(const float&  f
     VoxelPointCountToVoxelCount(frequency, resolution, outputDir, "VoxelOccupancyCountToVoxelCount") {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void VoxelOccupancyCountToVoxelCount::compute(FrameConstPtr background, FrameConstPtr dynamic, FrameConstPtr other) {
-  auto quantizedBackground = jpcc::make_shared<Frame>();
-  auto quantizedDynamic    = jpcc::make_shared<Frame>();
-  auto quantizedOther      = jpcc::make_shared<Frame>();
+void VoxelOccupancyCountToVoxelCount::compute(FrameConstPtr<pcl::PointXYZINormal> background,
+                                              FrameConstPtr<pcl::PointXYZINormal> dynamic,
+                                              FrameConstPtr<pcl::PointXYZINormal> other) {
+  auto quantizedBackground = jpcc::make_shared<Frame<pcl::PointXYZINormal>>();
+  auto quantizedDynamic    = jpcc::make_shared<Frame<pcl::PointXYZINormal>>();
+  auto quantizedOther      = jpcc::make_shared<Frame<pcl::PointXYZINormal>>();
 
   pcl::copyPointCloud(*background, *quantizedBackground);
   pcl::copyPointCloud(*dynamic, *quantizedDynamic);
   pcl::copyPointCloud(*other, *quantizedOther);
 
-  process::quantize(quantizedBackground, resolution_);
-  process::quantize(quantizedDynamic, resolution_);
-  process::quantize(quantizedOther, resolution_);
+  process::quantize<pcl::PointXYZINormal>(quantizedBackground, resolution_);
+  process::quantize<pcl::PointXYZINormal>(quantizedDynamic, resolution_);
+  process::quantize<pcl::PointXYZINormal>(quantizedOther, resolution_);
 
   VoxelPointCountToVoxelCount::compute(quantizedBackground, quantizedDynamic, quantizedOther);
 }
@@ -50,11 +52,11 @@ void VoxelOccupancyCountToVoxelCount::finalCompute() {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void VoxelOccupancyCountToVoxelCount::getCloud(FramePtr& cloud) {
+void VoxelOccupancyCountToVoxelCount::getCloud(FramePtr<pcl::PointXYZINormal>& cloud) {
   double min_x_, min_y_, min_z_, max_x_, max_y_, max_z_;
   octree_.getBoundingBox(min_x_, min_y_, min_z_, max_x_, max_y_, max_z_);
 
-  cloud = jpcc::make_shared<Frame>();
+  cloud = jpcc::make_shared<Frame<pcl::PointXYZINormal>>();
   for (BufferIndex bufferIndex = 0; bufferIndex < BUFFER_SIZE; bufferIndex++) {
     octree_.switchBuffers(bufferIndex);
     for (auto it = octree_.leaf_depth_begin(), end = octree_.leaf_depth_end(); it != end; ++it) {

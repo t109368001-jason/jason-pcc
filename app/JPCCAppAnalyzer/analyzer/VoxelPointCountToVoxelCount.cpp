@@ -20,7 +20,9 @@ VoxelPointCountToVoxelCount::VoxelPointCountToVoxelCount(const float&  frequency
     VoxelPointCountToVoxelCount(frequency, resolution, outputDir, "VoxelPointCountToVoxelCount") {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void VoxelPointCountToVoxelCount::compute(FrameConstPtr background, FrameConstPtr dynamic, FrameConstPtr other) {
+void VoxelPointCountToVoxelCount::compute(FrameConstPtr<pcl::PointXYZINormal> background,
+                                          FrameConstPtr<pcl::PointXYZINormal> dynamic,
+                                          FrameConstPtr<pcl::PointXYZINormal> other) {
   octree_.addFrame(0, background);
   octree_.addFrame(1, dynamic);
   octree_.addFrame(2, other);
@@ -43,11 +45,11 @@ void VoxelPointCountToVoxelCount::finalCompute() {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void VoxelPointCountToVoxelCount::getCloud(FramePtr& cloud) {
+void VoxelPointCountToVoxelCount::getCloud(FramePtr<pcl::PointXYZINormal>& cloud) {
   double min_x_, min_y_, min_z_, max_x_, max_y_, max_z_;
   octree_.getBoundingBox(min_x_, min_y_, min_z_, max_x_, max_y_, max_z_);
 
-  cloud = jpcc::make_shared<Frame>();
+  cloud = jpcc::make_shared<Frame<pcl::PointXYZINormal>>();
   for (BufferIndex bufferIndex = 0; bufferIndex < BUFFER_SIZE; bufferIndex++) {
     octree_.switchBuffers(bufferIndex);
     for (auto it = octree_.leaf_depth_begin(), end = octree_.leaf_depth_end(); it != end; ++it) {

@@ -16,11 +16,13 @@ class VoxelOccludedPercentageToVoxelCount : public Analyzer {
  public:
   static constexpr octree::BufferIndex BUFFER_SIZE = 3;
 
-  using OctreeT = octree::JPCCOctreePointCloud<
-      PointXYZINormal,
-      octree::OctreeContainerOccludedCount,
-      pcl::octree::OctreeContainerEmpty,
-      octree::OctreeNBuf<BUFFER_SIZE, octree::OctreeContainerOccludedCount, pcl::octree::OctreeContainerEmpty>>;
+  using OctreeT =
+      octree::JPCCOctreePointCloud<pcl::PointXYZINormal,
+                                   octree::OctreeContainerOccludedCount<pcl::PointXYZINormal>,
+                                   pcl::octree::OctreeContainerEmpty,
+                                   octree::OctreeNBuf<BUFFER_SIZE,
+                                                      octree::OctreeContainerOccludedCount<pcl::PointXYZINormal>,
+                                                      pcl::octree::OctreeContainerEmpty>>;
 
  protected:
   const size_t quantResolution_;
@@ -33,11 +35,13 @@ class VoxelOccludedPercentageToVoxelCount : public Analyzer {
                                       const std::string& outputDir,
                                       size_t             quantResolution);
 
-  void compute(FrameConstPtr background, FrameConstPtr dynamic, FrameConstPtr other) override;
+  void compute(FrameConstPtr<pcl::PointXYZINormal> background,
+               FrameConstPtr<pcl::PointXYZINormal> dynamic,
+               FrameConstPtr<pcl::PointXYZINormal> other) override;
 
   void finalCompute() override;
 
-  void getCloud(FramePtr& cloud) override;
+  void getCloud(FramePtr<pcl::PointXYZINormal>& cloud) override;
 
   void reset() override;
 };
