@@ -19,16 +19,19 @@ using namespace jpcc::io;
 using namespace jpcc::process;
 using namespace jpcc::segmentation;
 
+using PointEncode = pcl::PointXYZI;
+using PointOutput = pcl::PointXYZ;
+
 void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
-  DatasetReader::Ptr reader = newReader(parameter.inputReader, parameter.inputDataset);
-  PreProcessor       preProcessor(parameter.preProcess);
-  JPCCSegmentation   gmmSegmentation(parameter.jpccGmmSegmentation);
+  DatasetReader<PointEncode>::Ptr reader = newReader<PointEncode>(parameter.inputReader, parameter.inputDataset);
+  PreProcessor<PointEncode>       preProcessor(parameter.preProcess);
+  JPCCSegmentation<PointEncode>   gmmSegmentation(parameter.jpccGmmSegmentation);
 
   {
-    GroupOfFrame frames;
-    size_t       groupOfFramesSize = parameter.groupOfFramesSize;
-    size_t       frameNumber       = parameter.inputDataset.getStartFrameNumber();
-    const size_t endFrameNumber    = frameNumber + gmmSegmentation.getNTrain();
+    GroupOfFrame<PointEncode> frames;
+    size_t                    groupOfFramesSize = parameter.groupOfFramesSize;
+    size_t                    frameNumber       = parameter.inputDataset.getStartFrameNumber();
+    const size_t              endFrameNumber    = frameNumber + gmmSegmentation.getNTrain();
     while (frameNumber < endFrameNumber) {
       reader->loadAll(frameNumber, groupOfFramesSize, frames, parameter.parallel);
       preProcessor.process(frames, nullptr, parameter.parallel);
@@ -48,14 +51,14 @@ void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
 #if !defined(NDEBUG)
     size_t staticPointSize = 0;
 #endif
-    GroupOfFrame frames;
-    GroupOfFrame dynamicFrames;
-    GroupOfFrame staticFrames;
-    GroupOfFrame staticAddedFrames;
-    GroupOfFrame staticRemovedFrames;
-    size_t       groupOfFramesSize = parameter.groupOfFramesSize;
-    size_t       frameNumber       = parameter.inputDataset.getStartFrameNumber();
-    const size_t endFrameNumber    = parameter.inputDataset.getEndFrameNumber();
+    GroupOfFrame<PointEncode> frames;
+    GroupOfFrame<PointEncode> dynamicFrames;
+    GroupOfFrame<PointEncode> staticFrames;
+    GroupOfFrame<PointEncode> staticAddedFrames;
+    GroupOfFrame<PointEncode> staticRemovedFrames;
+    size_t                    groupOfFramesSize = parameter.groupOfFramesSize;
+    size_t                    frameNumber       = parameter.inputDataset.getStartFrameNumber();
+    const size_t              endFrameNumber    = parameter.inputDataset.getEndFrameNumber();
 
     while (frameNumber < endFrameNumber) {
       reader->loadAll(frameNumber, groupOfFramesSize, frames, parameter.parallel);
@@ -67,15 +70,15 @@ void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
       staticRemovedFrames.clear();
       clock.start();
       for (const auto& frame : frames) {
-        auto     dynamicFrame       = jpcc::make_shared<Frame>();
-        auto     staticAddedFrame   = jpcc::make_shared<Frame>();
-        auto     staticRemovedFrame = jpcc::make_shared<Frame>();
-        FramePtr staticFrame;
+        auto                  dynamicFrame       = jpcc::make_shared<Frame<PointEncode>>();
+        auto                  staticAddedFrame   = jpcc::make_shared<Frame<PointEncode>>();
+        auto                  staticRemovedFrame = jpcc::make_shared<Frame<PointEncode>>();
+        FramePtr<PointEncode> staticFrame;
 
 #if defined(NDEBUG)
-        if (parameter.outputStatic) { staticFrame = jpcc::make_shared<Frame>(); }
+        if (parameter.outputStatic) { staticFrame = jpcc::make_shared<Frame<PointEncode>>(); }
 #else
-        staticFrame = jpcc::make_shared<Frame>();
+        staticFrame = jpcc::make_shared<Frame<PointEncode>>();
 #endif
 
         gmmSegmentation.segmentation(frame, dynamicFrame, staticFrame, staticAddedFrame, staticRemovedFrame);
@@ -93,10 +96,38 @@ void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
       }
       clock.stop();
 
-      savePly(dynamicFrames, parameter.outputDataset.getFilePath(0), parameter.parallel);
-      savePly(staticAddedFrames, parameter.outputDataset.getFilePath(1), parameter.parallel);
-      savePly(staticRemovedFrames, parameter.outputDataset.getFilePath(2), parameter.parallel);
-      if (parameter.outputStatic) { savePly(staticFrames, parameter.outputDataset.getFilePath(3), parameter.parallel); }
+      GroupOfFrame<PointOutput> outputDynamicFrames;
+      GroupOfFrame<PointOutput> outputStaticAddedFrames;
+      GroupOfFrame<PointOutput> outputStaticRemovedFrames;
+      GroupOfFrame<PointOutput> outputStaticFrames;
+      for (const auto& frame : dynamicFrames) {
+        auto outputFrame = jpcc::make_shared<Frame<PointOutput>>();
+        pcl::copyPointCloud(*frame, *outputFrame);
+        outputDynamicFrames.push_back(outputFrame);
+      }
+      for (const auto& frame : staticAddedFrames) {
+        auto outputFrame = jpcc::make_shared<Frame<PointOutput>>();
+        pcl::copyPointCloud(*frame, *outputFrame);
+        outputStaticAddedFrames.push_back(outputFrame);
+      }
+      for (const auto& frame : staticRemovedFrames) {
+        auto outputFrame = jpcc::make_shared<Frame<PointOutput>>();
+        pcl::copyPointCloud(*frame, *outputFrame);
+        outputStaticRemovedFrames.push_back(outputFrame);
+      }
+      if (parameter.outputStatic) {
+        for (const auto& frame : staticFrames) {
+          auto outputFrame = jpcc::make_shared<Frame<PointOutput>>();
+          pcl::copyPointCloud(*frame, *outputFrame);
+          outputStaticFrames.push_back(outputFrame);
+        }
+      }
+      savePly<PointOutput>(outputDynamicFrames, parameter.outputDataset.getFilePath(0), parameter.parallel);
+      savePly<PointOutput>(outputStaticAddedFrames, parameter.outputDataset.getFilePath(1), parameter.parallel);
+      savePly<PointOutput>(outputStaticRemovedFrames, parameter.outputDataset.getFilePath(2), parameter.parallel);
+      if (parameter.outputStatic) {
+        savePly<PointOutput>(outputStaticFrames, parameter.outputDataset.getFilePath(3), parameter.parallel);
+      }
 
       frameNumber += groupOfFramesSize;
     }
