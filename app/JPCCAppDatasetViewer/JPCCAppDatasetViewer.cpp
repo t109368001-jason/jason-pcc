@@ -22,8 +22,10 @@ using namespace jpcc::io;
 using namespace jpcc::process;
 using namespace jpcc::visualization;
 
+using PointT = pcl::PointXYZ;
+
 void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
-  const auto viewer = jpcc::make_shared<JPCCVisualizer>(parameter.visualizerParameter);
+  const auto viewer = jpcc::make_shared<JPCCVisualizer<PointT>>(parameter.visualizerParameter);
 
   atomic_bool run(true);
   string      primaryId = "cloud";
@@ -34,24 +36,24 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
 
   auto datasetLoading = [&] {
     try {
-      const DatasetReader::Ptr reader = newReader(parameter.reader, parameter.dataset);
-      PreProcessor             preProcessor(parameter.preProcess);
+      const DatasetReader<PointT>::Ptr reader = newReader<PointT>(parameter.reader, parameter.dataset);
+      PreProcessor<PointT>             preProcessor(parameter.preProcess);
 
-      FramePtr     staticFrame;
-      GroupOfFrame frames;
-      const auto   framesMap         = jpcc::make_shared<GroupOfFrameMap>();
-      const size_t groupOfFramesSize = parameter.groupOfFramesSize;
-      size_t       startFrameNumber  = parameter.dataset.getStartFrameNumber();
-      const size_t endFrameNumber    = parameter.dataset.getEndFrameNumber();
+      FramePtr<PointT>     staticFrame;
+      GroupOfFrame<PointT> frames;
+      const auto           framesMap         = jpcc::make_shared<GroupOfFrameMap<PointT>>();
+      const size_t         groupOfFramesSize = parameter.groupOfFramesSize;
+      size_t               startFrameNumber  = parameter.dataset.getStartFrameNumber();
+      const size_t         endFrameNumber    = parameter.dataset.getEndFrameNumber();
 
-      if (parameter.dataset.type == Type::PLY_SEG) { staticFrame = jpcc::make_shared<Frame>(); }
+      if (parameter.dataset.type == Type::PLY_SEG) { staticFrame = jpcc::make_shared<Frame<PointT>>(); }
 
       while (run && startFrameNumber < endFrameNumber) {
         clock.start();
         if (parameter.dataset.type == Type::PLY_SEG) {
-          GroupOfFrame staticFrames;
-          GroupOfFrame staticAddedFrames;
-          GroupOfFrame staticRemovedFrames;
+          GroupOfFrame<PointT> staticFrames;
+          GroupOfFrame<PointT> staticAddedFrames;
+          GroupOfFrame<PointT> staticRemovedFrames;
           reader->load(0, startFrameNumber, groupOfFramesSize, frames, parameter.parallel);
           reader->load(1, startFrameNumber, groupOfFramesSize, staticAddedFrames, parameter.parallel);
           reader->load(2, startFrameNumber, groupOfFramesSize, staticRemovedFrames, parameter.parallel);
@@ -60,7 +62,7 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
 #endif
           for (size_t i = 0; i < staticAddedFrames.size(); i++) {
             if (staticRemovedFrames.at(i)) {
-              for (const PointXYZINormal& pointToRemove : staticRemovedFrames.at(i)->points) {
+              for (const PointT& pointToRemove : staticRemovedFrames.at(i)->points) {
 #if !defined(NDEBUG)
                 bool flag = false;
 #endif
@@ -83,7 +85,7 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
 
             assert(staticFrame->size() == staticFrames.at(i)->size());
 
-            auto tmpFrame = jpcc::make_shared<Frame>();
+            auto tmpFrame = jpcc::make_shared<Frame<PointT>>();
             pcl::copyPointCloud(*staticFrame, *tmpFrame);
             staticFrames.push_back(tmpFrame);
           }
