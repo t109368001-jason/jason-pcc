@@ -1,5 +1,3 @@
-#include <jpcc/visualization/JPCCVisualizer.h>
-
 #include <algorithm>
 #include <string>
 

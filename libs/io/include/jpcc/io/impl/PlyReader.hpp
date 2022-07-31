@@ -27,7 +27,7 @@ void PlyReader<PointT>::load(const size_t          datasetIndex,
                                                          this->datasetParam_.getFrameCounts(datasetIndex));
   if (startFrameNumber >= endFrameNumber) { return; }
 
-  loadPly(frames, this->datasetParam_.getFilePath(datasetIndex), startFrameNumber, endFrameNumber, parallel);
+  loadPly<PointT>(frames, this->datasetParam_.getFilePath(datasetIndex), startFrameNumber, endFrameNumber, parallel);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

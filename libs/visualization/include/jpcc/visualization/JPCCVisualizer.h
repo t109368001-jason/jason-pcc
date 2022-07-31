@@ -50,3 +50,5 @@ class JPCCVisualizer : public JPCCVisualizerBase {
 };
 
 }  // namespace jpcc::visualization
+
+#include <jpcc/visualization/impl/JPCCVisualizer.hpp>

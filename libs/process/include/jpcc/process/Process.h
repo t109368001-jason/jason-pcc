@@ -18,4 +18,4 @@ void quantize(const GroupOfFrame<PointT>& frames, double resolution, bool parall
 
 }  // namespace jpcc::process
 
-#include <jpcc/process/impl/Process.h>
+#include <jpcc/process/impl/Process.hpp>

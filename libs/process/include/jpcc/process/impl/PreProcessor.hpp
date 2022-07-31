@@ -84,7 +84,7 @@ void PreProcessor<PointT>::applyAlgorithm(const std::string&      algorithm,
     removed->clear();
     auto indices = jpcc::make_shared<Indices>();
     filter->filter(*indices);
-    split(frame, indices, frame, removed);
+    split<PointT>(frame, indices, frame, removed);
   }
 }
 

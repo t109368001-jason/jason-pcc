@@ -57,7 +57,7 @@ void quantize(const FramePtr<PointT>& frame, const double resolution) {
           dynamic_cast<const typename OctreePointCloudT::LeafNode*>(node)->getContainer().getPointIndex());
     }
   }
-  process::split(frame, indices, frame, nullptr);
+  process::split<PointT>(frame, indices, frame, nullptr);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

@@ -24,13 +24,13 @@ class JPCCOctreePointCloud : public OctreePointCloud<PointT, LeafContainerT, Bra
 
   JPCCOctreePointCloud(double resolution);
 
-  void setFrame(FrameConstPtr frame);
+  void setFrame(FrameConstPtr<PointT> frame);
 
-  void setFrame(BufferIndex bufferIndex, FrameConstPtr frame);
+  void setFrame(BufferIndex bufferIndex, FrameConstPtr<PointT> frame);
 
-  void addFrame(FrameConstPtr frame);
+  void addFrame(FrameConstPtr<PointT> frame);
 
-  void addFrame(BufferIndex bufferIndex, FrameConstPtr frame);
+  void addFrame(BufferIndex bufferIndex, FrameConstPtr<PointT> frame);
 
  protected:
   void addPointIdx(uindex_t point_idx_arg) override;
