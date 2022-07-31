@@ -1,4 +1,4 @@
-#include "../include/jpcc/segmentation/OctreeContainerStaticFlag.h"
+#include <jpcc/segmentation/OctreeContainerStaticFlag.h>
 
 using namespace std;
 

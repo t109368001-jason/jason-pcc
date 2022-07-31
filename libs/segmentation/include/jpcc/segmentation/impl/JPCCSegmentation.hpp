@@ -1,6 +1,6 @@
 #include <execution>
 
-#include "jpcc/segmentation/JPCCSegmentationOPCGMMCenter.h"
+#include <jpcc/segmentation/JPCCSegmentationOPCGMMCenter.h>
 
 using namespace std;
 using namespace jpcc::octree;

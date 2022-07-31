@@ -7,8 +7,8 @@
 #include <pcl/filters/radius_outlier_removal.h>
 #include <pcl/filters/statistical_outlier_removal.h>
 
-#include "jpcc/process/JPCCConditionalRemoval.h"
-#include "jpcc/process/Process.h"
+#include <jpcc/process/JPCCConditionalRemoval.h>
+#include <jpcc/process/Process.h>
 
 namespace jpcc::process {
 
