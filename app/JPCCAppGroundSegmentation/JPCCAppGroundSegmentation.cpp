@@ -6,7 +6,6 @@
 #include <jpcc/common/ParameterParser.h>
 #include <jpcc/io/Reader.h>
 #include <jpcc/process/PreProcessor.h>
-#include <jpcc/process/OctreePointCloudOperation.h>
 #include <jpcc/visualization/JPCCVisualizer.h>
 
 #include "AppParameter.h"
@@ -24,9 +23,11 @@ using namespace jpcc::io;
 using namespace jpcc::process;
 using namespace jpcc::visualization;
 
+using PointT = pcl::PointXYZ;
+
 void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
-  JPCCVisualizer::Ptr viewer;
-  if (!parameter.headless) { viewer = jpcc::make_shared<JPCCVisualizer>(parameter.visualizerParameter); }
+  JPCCVisualizer<PointT>::Ptr viewer;
+  if (!parameter.headless) { viewer = jpcc::make_shared<JPCCVisualizer<PointT>>(parameter.visualizerParameter); }
 
   const string cloudPlaneId = "cloudPlane";
   const string cloudOtherId = "cloudOther";
@@ -38,21 +39,21 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
     viewer->setColor(cloudPlaneId, 1.0, 0.0, 1.0);
   }
 
-  const auto framesMap = jpcc::make_shared<GroupOfFrameMap>();
+  const auto framesMap = jpcc::make_shared<GroupOfFrameMap<PointT>>();
 
   {
-    const DatasetReader::Ptr reader = newReader(parameter.reader, parameter.dataset);
-    PreProcessor             preProcessor(parameter.preProcess);
+    const DatasetReader<PointT>::Ptr reader = newReader<PointT>(parameter.reader, parameter.dataset);
+    PreProcessor<PointT>             preProcessor(parameter.preProcess);
 
-    GroupOfFrame frames;
+    GroupOfFrame<PointT> frames;
     clock.start();
     reader->loadAll(parameter.dataset.getStartFrameNumber(), 1, frames, parameter.parallel);
     preProcessor.process(frames, nullptr, parameter.parallel);
     clock.stop();
 
-    auto modelPlane = jpcc::make_shared<pcl::SampleConsensusModelPlane<PointXYZINormal>>(frames.at(0), true);
+    auto modelPlane = jpcc::make_shared<pcl::SampleConsensusModelPlane<PointT>>(frames.at(0), true);
     auto indices    = jpcc::make_shared<Indices>();
-    pcl::RandomSampleConsensus<PointXYZINormal> ransac(modelPlane);
+    pcl::RandomSampleConsensus<PointT> ransac(modelPlane);
     ransac.setDistanceThreshold(parameter.distanceThreshold);
     ransac.computeModel();
     ransac.getInliers(*indices);
@@ -62,13 +63,13 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
 
     if (!viewer) { return; }
 
-    auto framePlane = jpcc::make_shared<Frame>();
-    auto frameOther = jpcc::make_shared<Frame>();
+    auto framePlane = jpcc::make_shared<Frame<PointT>>();
+    auto frameOther = jpcc::make_shared<Frame<PointT>>();
 
-    process::split(frames.at(0), indices, framePlane, frameOther);
+    process::split<PointT>(frames.at(0), indices, framePlane, frameOther);
 
-    framesMap->insert_or_assign(cloudPlaneId, GroupOfFrame{framePlane});
-    framesMap->insert_or_assign(cloudOtherId, GroupOfFrame{frameOther});
+    framesMap->insert_or_assign(cloudPlaneId, GroupOfFrame<PointT>{framePlane});
+    framesMap->insert_or_assign(cloudOtherId, GroupOfFrame<PointT>{frameOther});
   }
   viewer->enqueue(*framesMap);
   viewer->nextFrame();
