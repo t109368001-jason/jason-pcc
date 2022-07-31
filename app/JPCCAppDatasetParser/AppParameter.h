@@ -11,6 +11,7 @@ namespace jpcc {
 class AppParameter : public Parameter {
  public:
   bool                                   parallel;
+  std::string                            outputPointType;
   io::DatasetParameter                   inputDataset;
   io::DatasetReaderParameter             inputReader;
   io::DatasetParameter                   outputDataset;

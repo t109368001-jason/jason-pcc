@@ -18,16 +18,15 @@ using namespace jpcc;
 using namespace jpcc::io;
 using namespace jpcc::process;
 
+template <typename PointT>
 void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
-  const typename DatasetReader::Ptr  reader = newReader(parameter.inputReader, parameter.inputDataset);
-  PreProcessor                       preProcessor(parameter.preProcess);
-  typename JPCCNormalEstimation::Ptr normalEstimation =
-      jpcc::make_shared<JPCCNormalEstimation>(parameter.jpccNormalEstimation);
+  const typename DatasetReader<PointT>::Ptr reader = newReader<PointT>(parameter.inputReader, parameter.inputDataset);
+  PreProcessor<PointT>                      preProcessor(parameter.preProcess);
 
-  GroupOfFrame frames;
-  size_t       groupOfFramesSize = 32;
-  size_t       frameNumber       = parameter.inputDataset.getStartFrameNumber();
-  const size_t endFrameNumber    = parameter.inputDataset.getEndFrameNumber();
+  GroupOfFrame<PointT> frames;
+  size_t               groupOfFramesSize = 32;
+  size_t               frameNumber       = parameter.inputDataset.getStartFrameNumber();
+  const size_t         endFrameNumber    = parameter.inputDataset.getEndFrameNumber();
   while (frameNumber < endFrameNumber) {
     size_t groupOfFramesSize_ = endFrameNumber - frameNumber;
     if (groupOfFramesSize_ < groupOfFramesSize) { groupOfFramesSize = groupOfFramesSize_; }
@@ -35,12 +34,29 @@ void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
     clock.start();
     reader->loadAll(frameNumber, groupOfFramesSize, frames, parameter.parallel);
     preProcessor.process(frames, nullptr, parameter.parallel);
-    normalEstimation->computeInPlaceAll(frames, parameter.parallel);
+    if constexpr (pcl::traits::has_normal_v<PointT>) {
+      auto normalEstimation = jpcc::make_shared<JPCCNormalEstimation<PointT, PointT>>(parameter.jpccNormalEstimation);
+      normalEstimation->computeInPlaceAll(frames, parameter.parallel);
+    }
     clock.stop();
 
-    savePly(frames, parameter.outputDataset.getFilePath(), parameter.parallel);
+    savePly<PointT>(frames, parameter.outputDataset.getFilePath(), parameter.parallel);
 
     frameNumber += groupOfFramesSize;
+  }
+}
+
+void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
+  if (parameter.outputPointType == "PointXYZ") {
+    parse<pcl::PointXYZ>(parameter, clock);
+  } else if (parameter.outputPointType == "PointNormal") {
+    parse<pcl::PointNormal>(parameter, clock);
+  } else if (parameter.outputPointType == "PointXYZI") {
+    parse<pcl::PointXYZI>(parameter, clock);
+  } else if (parameter.outputPointType == "PointXYZINormal") {
+    parse<pcl::PointXYZINormal>(parameter, clock);
+  } else {
+    BOOST_THROW_EXCEPTION(std::logic_error("invalid point type"));
   }
 }
 
