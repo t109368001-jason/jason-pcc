@@ -11,7 +11,7 @@ namespace jpcc::octree {
 
 ChildPattern getTestChildPattern(BufferIndex bufferSelector);
 
-FramePtr getTestCloud(BufferIndex bufferSelector);
+FramePtr<pcl::PointXYZ> getTestCloud(BufferIndex bufferSelector);
 
 std::vector<size_t> getCounts();
 
