@@ -1,5 +1,3 @@
-using namespace std;
-
 namespace jpcc::io {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -9,7 +7,7 @@ DatasetStreamReader<PointT>::DatasetStreamReader(DatasetReaderParameter param, D
     capacity_(0),
     eof_(this->datasetParam_.count()),
     frameBuffers_(this->datasetParam_.count()) {
-  fill(eof_.begin(), eof_.end(), true);
+  std::fill(eof_.begin(), eof_.end(), true);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -20,8 +18,8 @@ void DatasetStreamReader<PointT>::load(const size_t          datasetIndex,
                                        GroupOfFrame<PointT>& frames,
                                        const bool            parallel) {
   frames.clear();
-  const size_t endFrameNumber = min(startFrameNumber + groupOfFramesSize,  //
-                                    this->datasetParam_.getEndFrameNumbers(datasetIndex));
+  const size_t endFrameNumber = std::min(startFrameNumber + groupOfFramesSize,  //
+                                         this->datasetParam_.getEndFrameNumbers(datasetIndex));
   if (startFrameNumber >= endFrameNumber) { return; }
 
   size_t&                     currentFrameNumber = this->currentFrameNumbers_.at(datasetIndex);

@@ -35,8 +35,8 @@ void VoxelPointNormalAngleEntropyToVoxelCount::finalCompute() {
   for (BufferIndex bufferIndex = 0; bufferIndex < BUFFER_SIZE; bufferIndex++) {
     octree_.switchBuffers(bufferIndex);
     for (auto it = octree_.leaf_depth_begin(), end = octree_.leaf_depth_end(); it != end; ++it) {
-      const vector<double>& azimuths_ = it.getLeafContainer().getAzimuths();
-      const vector<double>& zeniths_  = it.getLeafContainer().getZeniths();
+      const std::vector<double>& azimuths_ = it.getLeafContainer().getAzimuths();
+      const std::vector<double>& zeniths_  = it.getLeafContainer().getZeniths();
       if (azimuths_.empty() && zeniths_.empty()) { continue; }
 
       double azimuthEntropy = entropy(azimuths_, 0.0, M_PI * 2, M_PI * 2 / 10.0);
@@ -102,7 +102,7 @@ void VoxelPointNormalAngleEntropyToVoxelCount::getCloud(FramePtr<pcl::PointXYZIN
       auto z =
           static_cast<float>((static_cast<double>(it.getCurrentOctreeKey().z) + 0.5f) * this->resolution_ + min_z_);
 
-      const vector<double>& azimuths_ = it.getLeafContainer().getAzimuths();
+      const std::vector<double>& azimuths_ = it.getLeafContainer().getAzimuths();
       if (azimuths_.empty()) { continue; }
 
       double azimuthEntropy = entropy(azimuths_, 0.0, M_PI * 2, M_PI * 2 / 10.0);

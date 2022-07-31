@@ -4,8 +4,6 @@
 #include <jpcc/io/LvxReader.h>
 #include <jpcc/io/PlyReader.h>
 
-using namespace std;
-
 namespace jpcc::io {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -19,7 +17,7 @@ typename DatasetReader<PointT>::Ptr newReader(const DatasetReaderParameter& para
   } else if (datasetParam.type >= Type::PLY && datasetParam.type < Type::PLY_END) {
     return jpcc::make_shared<PlyReader<PointT>>(param, datasetParam);
   } else {
-    BOOST_THROW_EXCEPTION(logic_error("Not Implemented "));
+    BOOST_THROW_EXCEPTION(std::logic_error("Not Implemented "));
   }
 }
 

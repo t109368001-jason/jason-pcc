@@ -1,6 +1,3 @@
-using namespace std;
-using namespace jpcc::math;
-
 namespace jpcc::segmentation {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -14,7 +11,7 @@ OctreeContainerGMM<PointT>::OctreeContainerGMM() : octree::OctreeContainerLastPo
 template <typename PointT>
 void OctreeContainerGMM<PointT>::reset() {
   GMM::reset();
-  trainSamples_ = make_shared<vector<float>>();
+  trainSamples_ = make_shared<std::vector<float>>();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -34,11 +31,11 @@ void OctreeContainerGMM<PointT>::addTrainSample() {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-void OctreeContainerGMM<PointT>::build(const int            nTrain,
-                                       const int            K,
-                                       const double         alpha,
-                                       const double         minimumVariance,
-                                       const vector<float>& alternateCentroids) {
+void OctreeContainerGMM<PointT>::build(const int                 nTrain,
+                                       const int                 K,
+                                       const double              alpha,
+                                       const double              minimumVariance,
+                                       const std::vector<float>& alternateCentroids) {
   trainSamples_->resize(nTrain, NULL_INTENSITY);
   GMM::build(*trainSamples_, K, minimumVariance, {NULL_INTENSITY}, alternateCentroids);
   trainSamples_ = nullptr;

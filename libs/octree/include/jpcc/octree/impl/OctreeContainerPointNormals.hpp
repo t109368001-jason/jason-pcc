@@ -1,5 +1,3 @@
-using namespace std;
-
 namespace jpcc::octree {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -49,13 +47,13 @@ void OctreeContainerPointNormals<PointT>::addPoint(const PointT& point) {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-const vector<double>& OctreeContainerPointNormals<PointT>::getAzimuths() const {
+const std::vector<double>& OctreeContainerPointNormals<PointT>::getAzimuths() const {
   return azimuths_;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-const vector<double>& OctreeContainerPointNormals<PointT>::getZeniths() const {
+const std::vector<double>& OctreeContainerPointNormals<PointT>::getZeniths() const {
   return zeniths_;
 }
 

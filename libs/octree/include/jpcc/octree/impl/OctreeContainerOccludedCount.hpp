@@ -1,6 +1,3 @@
-using namespace std;
-using namespace Eigen;
-
 namespace jpcc::octree {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -23,9 +20,9 @@ void OctreeContainerOccludedCount<PointT>::addPoint(const PointT& point) {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-void OctreeContainerOccludedCount<PointT>::compute(const Vector3f& min_pt,
-                                                   const Vector3f& max_pt,
-                                                   const size_t    quantCount) {
+void OctreeContainerOccludedCount<PointT>::compute(const Eigen::Vector3f& min_pt,
+                                                   const Eigen::Vector3f& max_pt,
+                                                   const size_t           quantCount) {
   if (count3D_.empty()) { count3D_.resize(quantCount * quantCount * quantCount); }
   for (const PointT& point : pointBuffer_) {
     auto   xIndex = (size_t)((point.x - min_pt.x()) / (max_pt.x() - min_pt.x()) * (float)quantCount);
@@ -41,7 +38,7 @@ void OctreeContainerOccludedCount<PointT>::compute(const Vector3f& min_pt,
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 float OctreeContainerOccludedCount<PointT>::getMinimumOccludedPercentage(const size_t quantCount) {
-  vector<float> occludedPercentage = {
+  std::vector<float> occludedPercentage = {
       getXYOccludedPercentage(quantCount),  //
       getXZOccludedPercentage(quantCount),  //
       getYZOccludedPercentage(quantCount),  //

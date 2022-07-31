@@ -2,9 +2,6 @@
 
 #include <jpcc/segmentation/JPCCSegmentationOPCGMMCenter.h>
 
-using namespace std;
-using namespace jpcc::octree;
-
 namespace jpcc::segmentation {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -15,7 +12,7 @@ JPCCSegmentation<PointT>::JPCCSegmentation(const JPCCSegmentationParameter& para
       parameter.staticPointType == JPCCSegmentationOPCGMMCenter<PointT>::STATIC_POINT_TYPE) {
     backend_ = jpcc::make_shared<JPCCSegmentationOPCGMMCenter<PointT>>(this->parameter_);
   } else {
-    BOOST_THROW_EXCEPTION(logic_error("unsupported staticPointType"));
+    BOOST_THROW_EXCEPTION(std::logic_error("unsupported staticPointType"));
   }
 }
 
