@@ -6,7 +6,7 @@ namespace jpcc::segmentation {
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 OctreeContainerGMM<PointT>::OctreeContainerGMM() : octree::OctreeContainerLastPoint<PointT>(), GMM() {
-  static_assert(!pcl::traits::has_intensity_v<PointT>, "invalid template type");
+  static_assert(pcl::traits::has_intensity_v<PointT>, "invalid template type");
   OctreeContainerGMM::reset();
 }
 
