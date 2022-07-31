@@ -1,7 +1,6 @@
 #include <chrono>
 #include <iostream>
 #include <mutex>
-#include <thread>
 #include <vector>
 
 #include <pcl/registration/icp.h>
@@ -10,7 +9,6 @@
 #include <jpcc/common/ParameterParser.h>
 #include <jpcc/io/Reader.h>
 #include <jpcc/process/PreProcessor.h>
-#include <jpcc/process/OctreePointCloudOperation.h>
 #include <jpcc/visualization/JPCCVisualizer.h>
 
 #include "AppParameter.h"
@@ -24,8 +22,10 @@ using namespace jpcc::io;
 using namespace jpcc::process;
 using namespace jpcc::visualization;
 
+using PointT = pcl::PointXYZ;
+
 void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
-  const auto   viewer    = jpcc::make_shared<JPCCVisualizer>(parameter.visualizerParameter);
+  const auto   viewer    = jpcc::make_shared<JPCCVisualizer<PointT>>(parameter.visualizerParameter);
   const string primaryId = "0";
 
   viewer->addParameter(parameter);
@@ -35,26 +35,26 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
   viewer->setColor("2", 0.0, 1.0, 0.0);
   viewer->setColor("3", 0.0, 0.0, 1.0);
 
-  const DatasetReader::Ptr reader = newReader(parameter.reader, parameter.dataset);
-  PreProcessor             preProcessor(parameter.preProcess);
+  const DatasetReader<PointT>::Ptr reader = newReader<PointT>(parameter.reader, parameter.dataset);
+  PreProcessor<PointT>             preProcessor(parameter.preProcess);
 
-  pcl::Registration<PointXYZINormal, PointXYZINormal>::Ptr registration;
+  pcl::Registration<PointT, PointT>::Ptr registration;
 
   if (parameter.registration == "icp") {
-    auto icp     = pcl::make_shared<pcl::IterativeClosestPoint<PointXYZINormal, PointXYZINormal>>();
+    auto icp     = pcl::make_shared<pcl::IterativeClosestPoint<PointT, PointT>>();
     registration = icp;
   }
   if (parameter.registration == "ndt") {
-    auto ndt = pcl::make_shared<pcl::NormalDistributionsTransform<PointXYZINormal, PointXYZINormal>>();
+    auto ndt = pcl::make_shared<pcl::NormalDistributionsTransform<PointT, PointT>>();
     ndt->setResolution(100.0);
     registration = ndt;
   }
 
-  GroupOfFrame frames0;
-  GroupOfFrame frames1;
-  GroupOfFrame frames2;
-  GroupOfFrame frames3;
-  const auto   framesMap = jpcc::make_shared<GroupOfFrameMap>();
+  GroupOfFrame<PointT> frames0;
+  GroupOfFrame<PointT> frames1;
+  GroupOfFrame<PointT> frames2;
+  GroupOfFrame<PointT> frames3;
+  const auto           framesMap = jpcc::make_shared<GroupOfFrameMap<PointT>>();
 
   size_t startFrameNumber0 = parameter.dataset.getStartFrameNumber();
   size_t startFrameNumber1 = parameter.dataset.getStartFrameNumber();
@@ -81,7 +81,7 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
           preProcessor.process(frames1, nullptr, parameter.parallel);
           clock.stop();
           if (registration && framesMap->find("0") != framesMap->end()) {
-            auto frame = jpcc::make_shared<Frame>();
+            auto frame = jpcc::make_shared<Frame<PointT>>();
 
             registration->setInputSource(frames1.at(0));
             registration->align(*frame);
@@ -97,7 +97,7 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
           preProcessor.process(frames2, nullptr, parameter.parallel);
           clock.stop();
           if (registration && framesMap->find("0") != framesMap->end()) {
-            auto frame = jpcc::make_shared<Frame>();
+            auto frame = jpcc::make_shared<Frame<PointT>>();
 
             registration->setInputSource(frames2.at(0));
             registration->align(*frame);
@@ -113,7 +113,7 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
           preProcessor.process(frames3, nullptr, parameter.parallel);
           clock.stop();
           if (registration && framesMap->find("0") != framesMap->end()) {
-            auto frame = jpcc::make_shared<Frame>();
+            auto frame = jpcc::make_shared<Frame<PointT>>();
 
             registration->setInputSource(frames3.at(0));
             registration->align(*frame);
