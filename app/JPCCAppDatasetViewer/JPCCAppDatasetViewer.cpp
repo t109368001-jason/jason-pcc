@@ -4,10 +4,10 @@
 #include <thread>
 #include <vector>
 
-#include <pcl/io/ply_io.h>
-
 #include <jpcc/common/ParameterParser.h>
 #include <jpcc/io/Reader.h>
+#include <jpcc/octree/JPCCOctreePointCloud.h>
+#include <jpcc/octree/OctreeContainerEditableIndex.h>
 #include <jpcc/process/PreProcessor.h>
 #include <jpcc/visualization/JPCCVisualizer.h>
 
@@ -19,6 +19,7 @@ using namespace pcc;
 using namespace pcc::chrono;
 using namespace jpcc;
 using namespace jpcc::io;
+using namespace jpcc::octree;
 using namespace jpcc::process;
 using namespace jpcc::visualization;
 
@@ -39,14 +40,20 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
       const DatasetReader<PointT>::Ptr reader = newReader<PointT>(parameter.reader, parameter.dataset);
       PreProcessor<PointT>             preProcessor(parameter.preProcess);
 
-      FramePtr<PointT>     staticFrame;
-      GroupOfFrame<PointT> frames;
-      const auto           framesMap         = jpcc::make_shared<GroupOfFrameMap<PointT>>();
-      const size_t         groupOfFramesSize = parameter.groupOfFramesSize;
-      size_t               startFrameNumber  = parameter.dataset.getStartFrameNumber();
-      const size_t         endFrameNumber    = parameter.dataset.getEndFrameNumber();
+      FramePtr<PointT>                                                staticFrame;
+      JPCCOctreePointCloud<PointT, OctreeContainerEditableIndex>::Ptr staticOctree;
+      GroupOfFrame<PointT>                                            frames;
+      const auto   framesMap         = jpcc::make_shared<GroupOfFrameMap<PointT>>();
+      const size_t groupOfFramesSize = parameter.groupOfFramesSize;
+      size_t       startFrameNumber  = parameter.dataset.getStartFrameNumber();
+      const size_t endFrameNumber    = parameter.dataset.getEndFrameNumber();
 
-      if (parameter.dataset.type == Type::PLY_SEG) { staticFrame = jpcc::make_shared<Frame<PointT>>(); }
+      if (parameter.dataset.type == Type::PLY_SEG) {
+        staticFrame = jpcc::make_shared<Frame<PointT>>();
+        staticOctree =
+            jpcc::make_shared<JPCCOctreePointCloud<PointT, OctreeContainerEditableIndex>>(parameter.dataset.resolution);
+        staticOctree->setInputCloud(staticFrame);
+      }
 
       while (run && startFrameNumber < endFrameNumber) {
         clock.start();
@@ -63,24 +70,13 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
           for (size_t i = 0; i < staticAddedFrames.size(); i++) {
             if (staticRemovedFrames.at(i)) {
               for (const PointT& pointToRemove : staticRemovedFrames.at(i)->points) {
-#if !defined(NDEBUG)
-                bool flag = false;
-#endif
-                for (auto it = staticFrame->points.begin(); it < staticFrame->points.end(); it++) {
-                  if (((*it).getVector3fMap() - pointToRemove.getVector3fMap()).norm() < 1) {
-                    staticFrame->erase(it);
-#if !defined(NDEBUG)
-                    flag = true;
-#endif
-                    break;
-                  }
-                }
-                assert(flag);
+                staticOctree->deletePointFromCloud(pointToRemove, staticFrame);
               }
             }
             if (staticAddedFrames.at(i)) {
-              staticFrame->insert(staticFrame->end(), staticAddedFrames.at(i)->points.begin(),
-                                  staticAddedFrames.at(i)->points.end());
+              for (const PointT& pointToAdd : staticAddedFrames.at(i)->points) {
+                staticOctree->addPointToCloud(pointToAdd, staticFrame);
+              }
             }
 
             assert(staticFrame->size() == staticFrames.at(i)->size());
@@ -107,7 +103,7 @@ void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
         startFrameNumber += groupOfFramesSize;
       }
 
-      while (!viewer->isEmpty()) { this_thread::sleep_for(100ms); }
+      while (run && !viewer->isEmpty()) { this_thread::sleep_for(100ms); }
 
     } catch (exception& e) { cerr << e.what() << endl; }
     run = false;

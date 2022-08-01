@@ -58,6 +58,31 @@ void JPCCOctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::ad
                   "addFrame(BufferIndex, FramePtr) only support for OctreeNBuf, please use addFrame(FramePtr)");
   }
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT, typename LeafContainerT, typename BranchContainerT, typename OctreeT>
+void JPCCOctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::deletePointFromCloud(
+    const PointT& point, PointCloudPtr cloud) {
+  if constexpr (std::is_same_v<LeafContainerT, OctreeContainerEditableIndex>) {
+    OctreeKey key;
+    this->genOctreeKeyforPoint(point, key);
+
+    LeafContainerT* container = this->findLeaf(key);
+    if (container) {
+      LeafContainerT* backContainer = this->findLeafAtPoint(cloud->back());
+      assert(backContainer != nullptr);
+      std::swap(cloud->at(container->getPointIndex()), cloud->at(backContainer->getPointIndex()));
+      backContainer->setPointIndex(container->getPointIndex());
+
+      cloud->points.pop_back();
+      cloud->width  = cloud->size();
+      cloud->height = 1;
+      this->removeLeaf(key);
+    }
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename LeafContainerT, typename BranchContainerT, typename OctreeT>
 void jpcc::octree::JPCCOctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::addPointIdx(
     uindex_t point_idx_arg) {

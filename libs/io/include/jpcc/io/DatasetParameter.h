@@ -36,6 +36,7 @@ class DatasetParameter : public virtual Parameter {
   Sensor                                   sensor;
   Type                                     type;
   bool                                     preProcessed;
+  double                                   resolution;
   std::string                              folderPrefix;
   std::string                              folder;
   std::filesystem::path                    folderPath;

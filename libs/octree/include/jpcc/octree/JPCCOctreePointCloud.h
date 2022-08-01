@@ -3,6 +3,7 @@
 #include <pcl/octree/octree_base.h>
 
 #include <jpcc/common/Common.h>
+#include <jpcc/octree/OctreeContainerEditableIndex.h>
 #include <jpcc/octree/OctreeNBuf.h>
 #include <jpcc/octree/OctreePointCloud.h>
 #include <jpcc/octree/type_traits.h>
@@ -16,11 +17,14 @@ template <typename PointT,
 class JPCCOctreePointCloud : public OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT> {
  public:
   using Base = OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>;
+  using Ptr  = shared_ptr<JPCCOctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>>;
 
   using LeafNode   = typename Base::LeafNode;
   using BranchNode = typename Base::BranchNode;
 
   using OctreeKey = typename Base::OctreeKey;
+
+  using PointCloudPtr = typename Base::PointCloudPtr;
 
   JPCCOctreePointCloud(double resolution);
 
@@ -31,6 +35,8 @@ class JPCCOctreePointCloud : public OctreePointCloud<PointT, LeafContainerT, Bra
   void addFrame(FrameConstPtr<PointT> frame);
 
   void addFrame(BufferIndex bufferIndex, FrameConstPtr<PointT> frame);
+
+  void deletePointFromCloud(const PointT& point, PointCloudPtr cloud);
 
  protected:
   void addPointIdx(uindex_t point_idx_arg) override;

@@ -14,6 +14,7 @@ using namespace Eigen;
 #define SENSOR_OPT ".sensor"
 #define TYPE_OPT ".type"
 #define PRE_PROCESSED_OPT ".preProcessed"
+#define RESOLUTION_OPT ".resolution"
 #define FOLDER_PREFIX_OPT ".folderPrefix"
 #define FOLDER_OPT ".folder"
 #define FILES_OPT ".files"
@@ -30,6 +31,7 @@ DatasetParameter::DatasetParameter(const string& prefix, const string& caption) 
     sensor(Sensor::NONE),
     type(Type::NONE),
     preProcessed(false),
+    resolution(0.0),
     folderPrefix("../../dataset/"),
     files(),
     frameCounts(),
@@ -43,6 +45,8 @@ DatasetParameter::DatasetParameter(const string& prefix, const string& caption) 
       (string(prefix_ + PRE_PROCESSED_OPT).c_str(),                                                              //
        value<bool>(&preProcessed)->default_value(preProcessed),                                                  //
        "preProcessed")                                                                                           //
+      (string(prefix_ + RESOLUTION_OPT).c_str(), value<double>(&resolution)->default_value(resolution),          //
+       "resolution")                                                                                             //
       (string(prefix_ + FOLDER_PREFIX_OPT).c_str(),                                                              //
        value<string>(&folderPrefix)->default_value(folderPrefix),                                                //
        "dataset folder prefix")                                                                                  //
@@ -151,6 +155,7 @@ ostream& operator<<(ostream& out, const DatasetParameter& obj) {
       (NAME_OPT, obj.name)                              //
       (SENSOR_OPT, obj.sensor_)                         //
       (TYPE_OPT, obj.type_)                             //
+      (RESOLUTION_OPT, obj.resolution)                  //
       (FOLDER_PREFIX_OPT, obj.folderPrefix)             //
       (FOLDER_OPT, obj.folder)                          //
       (FILES_OPT, obj.files)                            //
