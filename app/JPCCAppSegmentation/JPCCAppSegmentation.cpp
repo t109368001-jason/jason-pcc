@@ -96,37 +96,12 @@ void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
       }
       clock.stop();
 
-      GroupOfFrame<PointOutput> outputDynamicFrames;
-      GroupOfFrame<PointOutput> outputStaticAddedFrames;
-      GroupOfFrame<PointOutput> outputStaticRemovedFrames;
-      GroupOfFrame<PointOutput> outputStaticFrames;
-      for (const auto& frame : dynamicFrames) {
-        auto outputFrame = jpcc::make_shared<Frame<PointOutput>>();
-        pcl::copyPointCloud(*frame, *outputFrame);
-        outputDynamicFrames.push_back(outputFrame);
-      }
-      for (const auto& frame : staticAddedFrames) {
-        auto outputFrame = jpcc::make_shared<Frame<PointOutput>>();
-        pcl::copyPointCloud(*frame, *outputFrame);
-        outputStaticAddedFrames.push_back(outputFrame);
-      }
-      for (const auto& frame : staticRemovedFrames) {
-        auto outputFrame = jpcc::make_shared<Frame<PointOutput>>();
-        pcl::copyPointCloud(*frame, *outputFrame);
-        outputStaticRemovedFrames.push_back(outputFrame);
-      }
+      savePly<PointEncode, PointOutput>(dynamicFrames, parameter.outputDataset.getFilePath(0), parameter.parallel);
+      savePly<PointEncode, PointOutput>(staticAddedFrames, parameter.outputDataset.getFilePath(1), parameter.parallel);
+      savePly<PointEncode, PointOutput>(staticRemovedFrames, parameter.outputDataset.getFilePath(2),
+                                        parameter.parallel);
       if (parameter.outputStatic) {
-        for (const auto& frame : staticFrames) {
-          auto outputFrame = jpcc::make_shared<Frame<PointOutput>>();
-          pcl::copyPointCloud(*frame, *outputFrame);
-          outputStaticFrames.push_back(outputFrame);
-        }
-      }
-      savePly<PointOutput>(outputDynamicFrames, parameter.outputDataset.getFilePath(0), parameter.parallel);
-      savePly<PointOutput>(outputStaticAddedFrames, parameter.outputDataset.getFilePath(1), parameter.parallel);
-      savePly<PointOutput>(outputStaticRemovedFrames, parameter.outputDataset.getFilePath(2), parameter.parallel);
-      if (parameter.outputStatic) {
-        savePly<PointOutput>(outputStaticFrames, parameter.outputDataset.getFilePath(3), parameter.parallel);
+        savePly<PointEncode, PointOutput>(staticFrames, parameter.outputDataset.getFilePath(3), parameter.parallel);
       }
 
       frameNumber += groupOfFramesSize;

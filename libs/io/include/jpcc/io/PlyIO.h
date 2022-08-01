@@ -17,6 +17,9 @@ void loadPly(GroupOfFrame<PointT>& frames,
 template <typename PointT>
 void savePly(const GroupOfFrame<PointT>& frames, const std::string& filePath, bool parallel = false);
 
+template <typename PointIn, typename PointOut>
+void savePly(const GroupOfFrame<PointIn>& frames, const std::string& filePath, bool parallel = false);
+
 }  // namespace jpcc::io
 
 #include <jpcc/io/impl/PlyIO.hpp>

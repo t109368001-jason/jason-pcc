@@ -58,4 +58,29 @@ void savePly(const GroupOfFrame<PointT>& frames, const std::string& filePath, co
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointIn, typename PointOut>
+void savePly(const GroupOfFrame<PointIn>& frames, const std::string& filePath, const bool parallel) {
+  if constexpr (std::is_same_v<PointIn, PointOut>) {
+    savePly<PointIn>(frames, filePath, parallel);
+  } else {
+    auto func = [&](const FramePtr<PointIn>& frame) {
+      if (!frame || frame->empty()) { return; }
+      auto outputFrame = jpcc::make_shared<Frame<PointOut>>();
+      pcl::copyPointCloud(*frame, *outputFrame);
+      char fileName[4096];
+      sprintf(fileName, filePath.c_str(), frame->header.seq);
+
+      const int result = pcl::io::savePLYFileASCII(std::string(fileName), *outputFrame);
+      assert(result != -1);
+    };
+
+    if (parallel) {
+      std::for_each(std::execution::par, frames.begin(), frames.end(), func);
+    } else {
+      std::for_each(frames.begin(), frames.end(), func);
+    }
+  }
+}
+
 }  // namespace jpcc::io
