@@ -5,7 +5,7 @@ namespace jpcc::segmentation {
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 JPCCSegmentationOPCGMMCenter<PointT>::JPCCSegmentationOPCGMMCenter(const JPCCSegmentationParameter& parameter) :
-    JPCCSegmentationBase<PointT>(parameter), Base(parameter.resolution) {
+    JPCCSegmentation<PointT>(parameter), Base(parameter.resolution) {
   for (int i = -1; i >= -(this->parameter_.k); i--) {
     alternateCentroids_.push_back(static_cast<float>(i) / MAX_INTENSITY);
   }

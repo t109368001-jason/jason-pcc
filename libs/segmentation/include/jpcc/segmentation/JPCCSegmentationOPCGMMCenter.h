@@ -3,14 +3,14 @@
 #include <jpcc/common/Common.h>
 
 #include <jpcc/octree/JPCCOctreePointCloud.h>
-#include <jpcc/segmentation/JPCCSegmentationBase.h>
+#include <jpcc/segmentation/JPCCSegmentation.h>
 #include <jpcc/segmentation/OctreeContainerSegmentationGMMCenter.h>
 
 namespace jpcc::segmentation {
 
 template <typename PointT>
 class JPCCSegmentationOPCGMMCenter
-    : virtual public JPCCSegmentationBase<PointT>,
+    : virtual public JPCCSegmentation<PointT>,
       virtual public octree::JPCCOctreePointCloud<PointT, OctreeContainerSegmentationGMMCenter<PointT>> {
  public:
   static constexpr SegmentationType TYPE              = SegmentationType::GMM;

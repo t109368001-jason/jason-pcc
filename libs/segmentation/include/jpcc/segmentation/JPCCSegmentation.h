@@ -1,36 +1,35 @@
 #pragma once
 
-#include <jpcc/octree/JPCCOctreePointCloud.h>
-#include <jpcc/segmentation/JPCCSegmentationBase.h>
+#include <jpcc/common/Common.h>
 #include <jpcc/segmentation/JPCCSegmentationParameter.h>
-#include <jpcc/segmentation/OctreeContainerSegmentationGMMCenter.h>
 
 namespace jpcc::segmentation {
 
 template <typename PointT>
-class JPCCSegmentation : public JPCCSegmentationBase<PointT> {
+class JPCCSegmentation {
  public:
-  using Base = JPCCSegmentation;
+  using Ptr = shared_ptr<JPCCSegmentation>;
 
  protected:
-  typename JPCCSegmentationBase<PointT>::Ptr backend_;
+  const JPCCSegmentationParameter& parameter_;
+  size_t                           startFrameNumber_;
 
  public:
   JPCCSegmentation(const JPCCSegmentationParameter& parameter);
 
-  void appendTrainSamples(const GroupOfFrame<PointT>& groupOfFrame);
+  [[nodiscard]] size_t getNTrain() const;
 
-  void setStartFrameNumber(size_t startFrameNumber) override;
+  virtual void setStartFrameNumber(size_t startFrameNumber);
 
-  void appendTrainSamples(FramePtr<PointT> frame) override;
+  virtual void appendTrainSamples(FramePtr<PointT> frame) = 0;
 
-  void build() override;
+  virtual void build() = 0;
 
-  void segmentation(const FrameConstPtr<PointT>& frame,
-                    FramePtr<PointT>             dynamicFrame,
-                    FramePtr<PointT>             staticFrame,
-                    FramePtr<PointT>             staticFrameAdded,
-                    FramePtr<PointT>             staticFrameRemoved) override;
+  virtual void segmentation(const FrameConstPtr<PointT>& frame,
+                            FramePtr<PointT>             dynamicFrame,
+                            FramePtr<PointT>             staticFrame,
+                            FramePtr<PointT>             staticFrameAdded,
+                            FramePtr<PointT>             staticFrameRemoved) = 0;
 };
 
 }  // namespace jpcc::segmentation

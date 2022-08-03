@@ -6,7 +6,7 @@
 #include <jpcc/io/PlyIO.h>
 #include <jpcc/io/Reader.h>
 #include <jpcc/process/PreProcessor.h>
-#include <jpcc/segmentation/JPCCSegmentation.h>
+#include <jpcc/segmentation/JPCCSegmentationAdapter.h>
 
 #include "AppParameter.h"
 
@@ -23,29 +23,28 @@ using PointEncode = pcl::PointXYZI;
 using PointOutput = pcl::PointXYZ;
 
 void encode(const AppParameter& parameter, StopwatchUserTime& clock) {
-  DatasetReader<PointEncode>::Ptr reader = newReader<PointEncode>(parameter.inputReader, parameter.inputDataset);
-  PreProcessor<PointEncode>       preProcessor(parameter.preProcess);
-  JPCCSegmentation<PointEncode>   gmmSegmentation(parameter.jpccGmmSegmentation);
+  DatasetReader<PointEncode>::Ptr    reader = newReader<PointEncode>(parameter.inputReader, parameter.inputDataset);
+  PreProcessor<PointEncode>          preProcessor(parameter.preProcess);
+  JPCCSegmentation<PointEncode>::Ptr gmmSegmentation =
+      jpcc::make_shared<JPCCSegmentationAdapter<PointEncode>>(parameter.jpccGmmSegmentation);
 
+  clock.start();
   {  // build gaussian mixture model
     GroupOfFrame<PointEncode> frames;
     size_t                    groupOfFramesSize = parameter.groupOfFramesSize;
     size_t                    frameNumber       = parameter.inputDataset.getStartFrameNumber();
-    const size_t              endFrameNumber    = frameNumber + gmmSegmentation.getNTrain();
+    const size_t              endFrameNumber    = frameNumber + gmmSegmentation->getNTrain();
     while (frameNumber < endFrameNumber) {
       reader->loadAll(frameNumber, groupOfFramesSize, frames, parameter.parallel);
       preProcessor.process(frames, nullptr, parameter.parallel);
 
-      clock.start();
-      gmmSegmentation.appendTrainSamples(frames);
-      clock.stop();
+      for (const auto& frame : frames) { gmmSegmentation->appendTrainSamples(frame); }
 
       frameNumber += groupOfFramesSize;
     }
-    clock.start();
-    gmmSegmentation.build();
-    clock.stop();
+    gmmSegmentation->build();
   }
+  clock.stop();
 
   {  // encode
     GroupOfFrame<PointEncode> frames;
@@ -73,7 +72,7 @@ void encode(const AppParameter& parameter, StopwatchUserTime& clock) {
           auto staticAddedFrame   = jpcc::make_shared<Frame<PointEncode>>();
           auto staticRemovedFrame = jpcc::make_shared<Frame<PointEncode>>();
 
-          gmmSegmentation.segmentation(frame, dynamicFrame, nullptr, staticAddedFrame, staticRemovedFrame);
+          gmmSegmentation->segmentation(frame, dynamicFrame, nullptr, staticAddedFrame, staticRemovedFrame);
 
           dynamicFrames.push_back(dynamicFrame);
           staticAddedFrames.push_back(staticAddedFrame);
