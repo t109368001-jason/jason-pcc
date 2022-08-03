@@ -17,7 +17,7 @@ void JPCCSegmentationOPCGMMCenter<PointT>::appendTrainSamples(FramePtr<PointT> f
   for (auto it = this->leaf_depth_begin(), end = this->leaf_depth_end(); it != end; ++it) {
     it.getLeafContainer().resetLastPoint();
   }
-  addFrame(frame);
+  this->addFrame(frame);
   for (auto it = this->leaf_depth_begin(), end = this->leaf_depth_end(); it != end; ++it) {
     it.getLeafContainer().addTrainSample();
   }
@@ -44,7 +44,7 @@ void JPCCSegmentationOPCGMMCenter<PointT>::segmentation(const FrameConstPtr<Poin
   for (auto it = this->leaf_depth_begin(), end = this->leaf_depth_end(); it != end; ++it) {
     it.getLeafContainer().resetLastPoint();
   }
-  addFrame(frame);
+  this->addFrame(frame);
   for (auto it = this->leaf_depth_begin(), end = this->leaf_depth_end(); it != end; ++it) {
     LeafContainer& leafContainer = it.getLeafContainer();
     if (!leafContainer.isBuilt()) {
@@ -54,7 +54,7 @@ void JPCCSegmentationOPCGMMCenter<PointT>::segmentation(const FrameConstPtr<Poin
     bool isStatic = leafContainer.isStatic();
 
     //    if (isStatic && staticFrame) { staticFrame->push_back(leafContainer.getPoint()); }
-    if (!isnan(leafContainer.getLastPoint().intensity)) {
+    if (!std::isnan(leafContainer.getLastPoint().intensity)) {
       const float intensity = leafContainer.getLastPoint().intensity;
 
       if (dynamicFrame) {
@@ -64,7 +64,7 @@ void JPCCSegmentationOPCGMMCenter<PointT>::segmentation(const FrameConstPtr<Poin
 
         if (!isStatic && isDynamic) {
           PointT& point = leafContainer.getLastPoint();
-          assert(!isnan(point.x));
+          assert(!std::isnan(point.x));
           dynamicFrame->points.push_back(point);
         }
       }
@@ -74,7 +74,7 @@ void JPCCSegmentationOPCGMMCenter<PointT>::segmentation(const FrameConstPtr<Poin
 
     bool   updatedIsStatic = leafContainer.getStaticProbability() > this->parameter_.staticThresholdGT;
     PointT center;
-    genLeafNodeCenterFromOctreeKey(it.getCurrentOctreeKey(), center);
+    this->genLeafNodeCenterFromOctreeKey(it.getCurrentOctreeKey(), center);
 
     if (staticFrame && updatedIsStatic) { staticFrame->points.push_back(center); }
     if (staticFrameAdded && !isStatic && updatedIsStatic) { staticFrameAdded->points.push_back(center); }

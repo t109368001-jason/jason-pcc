@@ -24,7 +24,7 @@ void OctreeContainerGMM<PointT>::addPoint(const PointT& point) {
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void OctreeContainerGMM<PointT>::addTrainSample() {
-  if (isnan(this->lastPoint_.x)) { return; }
+  if (std::isnan(this->lastPoint_.x)) { return; }
   if (!trainSamples_) { return; }
   trainSamples_->push_back(this->lastPoint_.intensity);
 }
@@ -44,7 +44,7 @@ void OctreeContainerGMM<PointT>::build(const int                 nTrain,
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void OctreeContainerGMM<PointT>::updateModel(const double alpha, const double nullAlpha, const double minimumVariance) {
-  if (isnan(this->lastPoint_.intensity)) {
+  if (std::isnan(this->lastPoint_.intensity)) {
     GMM::updateModel(NULL_INTENSITY, nullAlpha, minimumVariance);
   } else {
     GMM::updateModel(this->lastPoint_.intensity, alpha, minimumVariance);

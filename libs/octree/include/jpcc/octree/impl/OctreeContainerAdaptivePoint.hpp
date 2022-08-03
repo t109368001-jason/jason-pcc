@@ -28,8 +28,8 @@ void OctreeContainerAdaptivePoint<PointT>::addPoint(const PointT& point) {
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void OctreeContainerAdaptivePoint<PointT>::updateAdaptivePoint(double alpha) {
-  if (isnan(this->lastPoint_.x)) { return; }
-  if (isnan(adaptivePoint_.x)) {
+  if (std::isnan(this->lastPoint_.x)) { return; }
+  if (std::isnan(adaptivePoint_.x)) {
     adaptivePoint_.x = this->lastPoint_.x;
     adaptivePoint_.y = this->lastPoint_.y;
     adaptivePoint_.z = this->lastPoint_.z;
