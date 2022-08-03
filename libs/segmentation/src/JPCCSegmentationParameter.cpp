@@ -8,6 +8,7 @@ using namespace po;
 #define TYPE_OPT ".type"
 #define STATIC_POINT_TYPE_OPT ".staticPointType"
 #define UPDATE_MODEL_BEFORE_N_TRAIN_OPT ".updateModelBeforeNTrain"
+#define OUTPUT_EXISTS_POINT_ONLY_OPT ".outputExistsPointOnly"
 #define RESOLUTION_OPT ".resolution"
 #define K_OPT ".k"
 #define ALPHA_OPT ".alpha"
@@ -21,7 +22,14 @@ JPCCSegmentationParameter::JPCCSegmentationParameter() :
     JPCCSegmentationParameter(JPCC_GMM_SEGMENTATION_OPT_PREFIX, __FUNCTION__) {}
 
 JPCCSegmentationParameter::JPCCSegmentationParameter(const string& prefix, const string& caption) :
-    Parameter(prefix, caption), type_(), staticPointType_(), resolution(0.0), k(3), alpha(0.05) {
+    Parameter(prefix, caption),
+    type_(),
+    staticPointType_(),
+    updateModelBeforeNTrain(false),
+    outputExistsPointOnly(false),
+    resolution(0.0),
+    k(3),
+    alpha(0.05) {
   opts_.add_options()                                                //
       (string(prefix_ + TYPE_OPT).c_str(),                           //
        value<string>(&type_)->required(),                            //
@@ -32,6 +40,9 @@ JPCCSegmentationParameter::JPCCSegmentationParameter(const string& prefix, const
       (string(prefix_ + UPDATE_MODEL_BEFORE_N_TRAIN_OPT).c_str(),    //
        value<bool>(&updateModelBeforeNTrain)->required(),            //
        JPCC_GMM_SEGMENTATION_OPT_PREFIX " updateModelBeforeNTrain")  //
+      (string(prefix_ + OUTPUT_EXISTS_POINT_ONLY_OPT).c_str(),       //
+       value<bool>(&outputExistsPointOnly)->required(),              //
+       JPCC_GMM_SEGMENTATION_OPT_PREFIX " outputExistsPointOnly")    //
       (string(prefix_ + RESOLUTION_OPT).c_str(),                     //
        value<double>(&resolution)->required(),                       //
        JPCC_GMM_SEGMENTATION_OPT_PREFIX " resolution")               //
@@ -85,6 +96,7 @@ ostream& operator<<(ostream& out, const JPCCSegmentationParameter& obj) {
       (TYPE_OPT, obj.type_)                                           //
       (STATIC_POINT_TYPE_OPT, obj.staticPointType_)                   //
       (UPDATE_MODEL_BEFORE_N_TRAIN_OPT, obj.updateModelBeforeNTrain)  //
+      (OUTPUT_EXISTS_POINT_ONLY_OPT, obj.outputExistsPointOnly)       //
       (RESOLUTION_OPT, obj.resolution)                                //
       (K_OPT, obj.k)                                                  //
       (ALPHA_OPT, obj.alpha)                                          //

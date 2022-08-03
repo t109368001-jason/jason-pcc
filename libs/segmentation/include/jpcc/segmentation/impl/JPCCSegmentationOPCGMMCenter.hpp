@@ -74,7 +74,10 @@ void JPCCSegmentationOPCGMMCenter<PointT>::segmentation(const FrameConstPtr<Poin
       leafContainer.updateModel(this->parameter_.alpha, this->parameter_.alpha * this->parameter_.nullAlphaRatio,
                                 this->parameter_.minimumVariance);
     }
-    bool   updatedIsStatic = leafContainer.getStaticProbability() > this->parameter_.staticThresholdGT;
+    bool updatedIsStatic = leafContainer.getStaticProbability() > this->parameter_.staticThresholdGT;
+    if (this->parameter_.outputExistsPointOnly) {
+      updatedIsStatic &= !std::isnan(leafContainer.getLastPoint().intensity);
+    }
     PointT center;
     this->genLeafNodeCenterFromOctreeKey(it.getCurrentOctreeKey(), center);
 

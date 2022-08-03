@@ -21,6 +21,7 @@ class JPCCSegmentationParameter : public virtual Parameter {
   SegmentationType type;
   StaticPointType  staticPointType;
   bool             updateModelBeforeNTrain;
+  bool             outputExistsPointOnly;
   double           resolution;
   int              k;
   double           alpha;
