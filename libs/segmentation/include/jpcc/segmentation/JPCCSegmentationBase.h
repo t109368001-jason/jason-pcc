@@ -12,11 +12,14 @@ class JPCCSegmentationBase {
 
  protected:
   const JPCCSegmentationParameter& parameter_;
+  size_t                           startFrameNumber_;
 
  public:
   JPCCSegmentationBase(const JPCCSegmentationParameter& parameter);
 
   [[nodiscard]] size_t getNTrain() const;
+
+  virtual void setStartFrameNumber(size_t startFrameNumber);
 
   virtual void appendTrainSamples(FramePtr<PointT> frame) = 0;
 

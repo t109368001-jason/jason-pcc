@@ -24,6 +24,13 @@ void JPCCSegmentation<PointT>::appendTrainSamples(const GroupOfFrame<PointT>& gr
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
+void JPCCSegmentation<PointT>::setStartFrameNumber(const size_t startFrameNumber) {
+  JPCCSegmentationBase<PointT>::setStartFrameNumber(startFrameNumber);
+  backend_->setStartFrameNumber(startFrameNumber);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT>
 void JPCCSegmentation<PointT>::appendTrainSamples(FramePtr<PointT> frame) {
   backend_->appendTrainSamples(frame);
 }

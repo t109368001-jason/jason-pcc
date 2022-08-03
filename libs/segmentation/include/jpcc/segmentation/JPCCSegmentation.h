@@ -20,6 +20,8 @@ class JPCCSegmentation : public JPCCSegmentationBase<PointT> {
 
   void appendTrainSamples(const GroupOfFrame<PointT>& groupOfFrame);
 
+  void setStartFrameNumber(size_t startFrameNumber) override;
+
   void appendTrainSamples(FramePtr<PointT> frame) override;
 
   void build() override;

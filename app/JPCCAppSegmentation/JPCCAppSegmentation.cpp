@@ -31,7 +31,8 @@ void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
     GroupOfFrame<PointEncode> frames;
     size_t                    groupOfFramesSize = parameter.groupOfFramesSize;
     size_t                    frameNumber       = parameter.inputDataset.getStartFrameNumber();
-    const size_t              endFrameNumber    = frameNumber + gmmSegmentation.getNTrain();
+    const size_t              endFrameNumber =
+        min(frameNumber + gmmSegmentation.getNTrain(), parameter.inputDataset.getEndFrameNumber());
     while (frameNumber < endFrameNumber) {
       reader->loadAll(frameNumber, groupOfFramesSize, frames, parameter.parallel);
       preProcessor.process(frames, nullptr, parameter.parallel);

@@ -69,9 +69,11 @@ void JPCCSegmentationOPCGMMCenter<PointT>::segmentation(const FrameConstPtr<Poin
         }
       }
     }
-    leafContainer.updateModel(this->parameter_.alpha, this->parameter_.alpha * this->parameter_.nullAlphaRatio,
-                              this->parameter_.minimumVariance);
-
+    if (this->parameter_.updateModelBeforeNTrain ||
+        frame->header.seq >= this->startFrameNumber_ + this->parameter_.nTrain) {
+      leafContainer.updateModel(this->parameter_.alpha, this->parameter_.alpha * this->parameter_.nullAlphaRatio,
+                                this->parameter_.minimumVariance);
+    }
     bool   updatedIsStatic = leafContainer.getStaticProbability() > this->parameter_.staticThresholdGT;
     PointT center;
     this->genLeafNodeCenterFromOctreeKey(it.getCurrentOctreeKey(), center);
