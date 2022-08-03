@@ -2,7 +2,7 @@
 set -ex
 
 OUTPUT_FOLDER_PREFIX=../../dataset/
-OUTPUT_FOLDER=converted/ZX-XS-20220707-ctc-gmm-segmentation[A-0.00164-N-2800]/
+OUTPUT_FOLDER=converted-$(date +%Y%m%d)/ZX-XS-20220707-ctc-gmm-segmentation[A-0.00164-N-2800]/
 
 mkdir -p ${OUTPUT_FOLDER_PREFIX}${OUTPUT_FOLDER}
 
