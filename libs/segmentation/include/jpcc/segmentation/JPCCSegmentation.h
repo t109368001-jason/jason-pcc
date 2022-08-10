@@ -12,18 +12,15 @@ class JPCCSegmentation {
 
  protected:
   const JPCCSegmentationParameter& parameter_;
-  size_t                           startFrameNumber_;
+  int                              startFrameNumber_;
+  bool                             built_;
 
  public:
-  JPCCSegmentation(const JPCCSegmentationParameter& parameter);
+  JPCCSegmentation(const JPCCSegmentationParameter& parameter, int startFrameNumber);
 
-  [[nodiscard]] int getNTrain() const;
-
-  virtual void setStartFrameNumber(size_t startFrameNumber);
+  [[nodiscard]] virtual bool isBuilt() const;
 
   virtual void appendTrainSamples(FramePtr<PointT> frame) = 0;
-
-  virtual void build() = 0;
 
   virtual void segmentation(const FrameConstPtr<PointT>& frame,
                             FramePtr<PointT>             dynamicFrame,

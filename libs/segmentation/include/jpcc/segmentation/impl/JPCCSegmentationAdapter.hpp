@@ -6,11 +6,12 @@ namespace jpcc::segmentation {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-JPCCSegmentationAdapter<PointT>::JPCCSegmentationAdapter(const JPCCSegmentationParameter& parameter) :
-    JPCCSegmentation<PointT>(parameter) {
+JPCCSegmentationAdapter<PointT>::JPCCSegmentationAdapter(const JPCCSegmentationParameter& parameter,
+                                                         const int                        startFrameNumber) :
+    JPCCSegmentation<PointT>(parameter, startFrameNumber) {
   if (parameter.type == JPCCSegmentationOPCGMMCenter<PointT>::TYPE &&
       parameter.staticPointType == JPCCSegmentationOPCGMMCenter<PointT>::STATIC_POINT_TYPE) {
-    backend_ = jpcc::make_shared<JPCCSegmentationOPCGMMCenter<PointT>>(this->parameter_);
+    backend_ = jpcc::make_shared<JPCCSegmentationOPCGMMCenter<PointT>>(parameter, startFrameNumber);
   } else {
     BOOST_THROW_EXCEPTION(std::logic_error("unsupported staticPointType"));
   }
@@ -18,21 +19,14 @@ JPCCSegmentationAdapter<PointT>::JPCCSegmentationAdapter(const JPCCSegmentationP
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-void JPCCSegmentationAdapter<PointT>::setStartFrameNumber(const size_t startFrameNumber) {
-  JPCCSegmentation<PointT>::setStartFrameNumber(startFrameNumber);
-  backend_->setStartFrameNumber(startFrameNumber);
+bool JPCCSegmentationAdapter<PointT>::isBuilt() const {
+  return backend_->isBuilt();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void JPCCSegmentationAdapter<PointT>::appendTrainSamples(FramePtr<PointT> frame) {
   backend_->appendTrainSamples(frame);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-void JPCCSegmentationAdapter<PointT>::build() {
-  backend_->build();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

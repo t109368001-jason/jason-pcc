@@ -25,29 +25,26 @@ using PointOutput = pcl::PointXYZ;
 void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
   DatasetReader<PointEncode>::Ptr    reader = newReader<PointEncode>(parameter.inputReader, parameter.inputDataset);
   PreProcessor<PointEncode>          preProcessor(parameter.preProcess);
-  JPCCSegmentation<PointEncode>::Ptr gmmSegmentation =
-      jpcc::make_shared<JPCCSegmentationAdapter<PointEncode>>(parameter.jpccGmmSegmentation);
+  JPCCSegmentation<PointEncode>::Ptr gmmSegmentation = jpcc::make_shared<JPCCSegmentationAdapter<PointEncode>>(
+      parameter.jpccGmmSegmentation, parameter.inputDataset.getStartFrameNumber());
 
   {
     GroupOfFrame<PointEncode> frames;
     size_t                    groupOfFramesSize = parameter.groupOfFramesSize;
     size_t                    frameNumber       = parameter.inputDataset.getStartFrameNumber();
-    const size_t              endFrameNumber =
-        min(frameNumber + gmmSegmentation->getNTrain(), parameter.inputDataset.getEndFrameNumber());
-    while (frameNumber < endFrameNumber) {
+    const size_t              endFrameNumber    = parameter.inputDataset.getEndFrameNumber();
+    while (!gmmSegmentation->isBuilt() && frameNumber < endFrameNumber) {
+      clock.start();
       reader->loadAll(frameNumber, groupOfFramesSize, frames, parameter.parallel);
       preProcessor.process(frames, nullptr, parameter.parallel);
 
-      clock.start();
       for (const auto& frame : frames) { gmmSegmentation->appendTrainSamples(frame); }
+
       clock.stop();
 
       frameNumber += groupOfFramesSize;
     }
   }
-  clock.start();
-  gmmSegmentation->build();
-  clock.stop();
 
   {
 #if !defined(NDEBUG)
@@ -63,6 +60,7 @@ void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
     const size_t              endFrameNumber    = parameter.inputDataset.getEndFrameNumber();
 
     while (frameNumber < endFrameNumber) {
+      clock.start();
       reader->loadAll(frameNumber, groupOfFramesSize, frames, parameter.parallel);
       preProcessor.process(frames, nullptr, parameter.parallel);
 
@@ -70,7 +68,6 @@ void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
       staticFrames.clear();
       staticAddedFrames.clear();
       staticRemovedFrames.clear();
-      clock.start();
       for (const auto& frame : frames) {
         auto                  dynamicFrame       = jpcc::make_shared<Frame<PointEncode>>();
         auto                  staticAddedFrame   = jpcc::make_shared<Frame<PointEncode>>();
@@ -96,7 +93,6 @@ void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
         staticRemovedFrames.push_back(staticRemovedFrame);
         if (parameter.outputStatic) { staticFrames.push_back(staticFrame); }
       }
-      clock.stop();
 
       savePly<PointEncode, PointOutput>(dynamicFrames, parameter.outputDataset.getFilePath(0), parameter.parallel);
       savePly<PointEncode, PointOutput>(staticAddedFrames, parameter.outputDataset.getFilePath(1), parameter.parallel);
@@ -105,6 +101,7 @@ void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
       if (parameter.outputStatic) {
         savePly<PointEncode, PointOutput>(staticFrames, parameter.outputDataset.getFilePath(3), parameter.parallel);
       }
+      clock.stop();
 
       frameNumber += groupOfFramesSize;
     }

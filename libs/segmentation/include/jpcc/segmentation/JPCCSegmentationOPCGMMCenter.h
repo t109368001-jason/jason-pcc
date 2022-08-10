@@ -25,11 +25,9 @@ class JPCCSegmentationOPCGMMCenter
   std::vector<float> alternateCentroids_;
 
  public:
-  JPCCSegmentationOPCGMMCenter(const JPCCSegmentationParameter& parameter);
+  JPCCSegmentationOPCGMMCenter(const JPCCSegmentationParameter& parameter, int startFrameNumber);
 
   void appendTrainSamples(FramePtr<PointT> frame) override;
-
-  void build() override;
 
   void segmentation(const FrameConstPtr<PointT>& frame,
                     FramePtr<PointT>             dynamicFrame,

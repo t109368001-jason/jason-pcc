@@ -2,19 +2,15 @@ namespace jpcc::segmentation {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-JPCCSegmentation<PointT>::JPCCSegmentation(const JPCCSegmentationParameter& parameter) :
-    parameter_(parameter), startFrameNumber_(0) {}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-int JPCCSegmentation<PointT>::getNTrain() const {
-  return *std::max_element(parameter_.getNTrainVector().begin(), parameter_.getNTrainVector().end());
+JPCCSegmentation<PointT>::JPCCSegmentation(const JPCCSegmentationParameter& parameter, const int startFrameNumber) :
+    parameter_(parameter), startFrameNumber_(startFrameNumber), built_(false) {
+  THROW_IF_NOT(this->startFrameNumber_ >= 0);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-void JPCCSegmentation<PointT>::setStartFrameNumber(const size_t startFrameNumber) {
-  this->startFrameNumber_ = startFrameNumber;
+bool JPCCSegmentation<PointT>::isBuilt() const {
+  return built_;
 }
 
 }  // namespace jpcc::segmentation

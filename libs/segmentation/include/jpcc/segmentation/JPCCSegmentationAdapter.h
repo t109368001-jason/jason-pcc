@@ -16,13 +16,11 @@ class JPCCSegmentationAdapter : public JPCCSegmentation<PointT> {
   typename JPCCSegmentation<PointT>::Ptr backend_;
 
  public:
-  JPCCSegmentationAdapter(const JPCCSegmentationParameter& parameter);
+  JPCCSegmentationAdapter(const JPCCSegmentationParameter& parameter, int startFrameNumber);
 
-  void setStartFrameNumber(size_t startFrameNumber) override;
+  [[nodiscard]] bool isBuilt() const override;
 
   void appendTrainSamples(FramePtr<PointT> frame) override;
-
-  void build() override;
 
   void segmentation(const FrameConstPtr<PointT>& frame,
                     FramePtr<PointT>             dynamicFrame,
