@@ -17,7 +17,7 @@ class JPCCSegmentation {
  public:
   JPCCSegmentation(const JPCCSegmentationParameter& parameter);
 
-  [[nodiscard]] size_t getNTrain() const;
+  [[nodiscard]] int getNTrain() const;
 
   virtual void setStartFrameNumber(size_t startFrameNumber);
 

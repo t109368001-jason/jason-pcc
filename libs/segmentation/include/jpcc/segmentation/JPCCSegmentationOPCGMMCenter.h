@@ -19,7 +19,7 @@ class JPCCSegmentationOPCGMMCenter
   using Ptr  = shared_ptr<JPCCSegmentationOPCGMMCenter>;
   using Base = octree::JPCCOctreePointCloud<PointT, OctreeContainerSegmentationGMMCenter<PointT>>;
 
-  using LeafContainer = typename Base::LeafContainer;
+  using LeafContainer = OctreeContainerSegmentationGMMCenter<PointT>;
 
  protected:
   std::vector<float> alternateCentroids_;

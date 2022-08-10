@@ -6,7 +6,7 @@ namespace jpcc::segmentation {
 template <typename PointT>
 JPCCSegmentationOPCGMMCenter<PointT>::JPCCSegmentationOPCGMMCenter(const JPCCSegmentationParameter& parameter) :
     JPCCSegmentation<PointT>(parameter), Base(parameter.resolution) {
-  for (int i = -1; i >= -(this->parameter_.k); i--) {
+  for (int i = -1; i >= -(this->parameter_.getK()); i--) {
     alternateCentroids_.push_back(static_cast<float>(i) / MAX_INTENSITY);
   }
 }
@@ -29,7 +29,7 @@ void JPCCSegmentationOPCGMMCenter<PointT>::build() {
   for (auto it = this->leaf_depth_begin(), end = this->leaf_depth_end(); it != end; ++it) {
     LeafContainer& leafContainer = it.getLeafContainer();
     assert(!leafContainer.isBuilt());
-    leafContainer.build(this->parameter_.nTrain, this->parameter_.k, this->parameter_.alpha,
+    leafContainer.build(this->parameter_.getNTrain(), this->parameter_.getK(), this->parameter_.getAlpha(),
                         this->parameter_.minimumVariance, alternateCentroids_);
   }
 }
@@ -48,7 +48,7 @@ void JPCCSegmentationOPCGMMCenter<PointT>::segmentation(const FrameConstPtr<Poin
   for (auto it = this->leaf_depth_begin(), end = this->leaf_depth_end(); it != end; ++it) {
     LeafContainer& leafContainer = it.getLeafContainer();
     if (!leafContainer.isBuilt()) {
-      leafContainer.build(this->parameter_.nTrain, this->parameter_.k, this->parameter_.alpha,
+      leafContainer.build(this->parameter_.getNTrain(), this->parameter_.getK(), this->parameter_.getAlpha(),
                           this->parameter_.minimumVariance, alternateCentroids_);
     }
     bool isStatic = leafContainer.isStatic();
@@ -60,7 +60,7 @@ void JPCCSegmentationOPCGMMCenter<PointT>::segmentation(const FrameConstPtr<Poin
       if (dynamicFrame) {
         double probability = leafContainer.getProbability(intensity);
 
-        bool isDynamic = probability < this->parameter_.dynamicThresholdLE;
+        bool isDynamic = probability < this->parameter_.getDynamicThresholdLE();
 
         if (!isStatic && isDynamic) {
           PointT& point = leafContainer.getLastPoint();
@@ -70,12 +70,13 @@ void JPCCSegmentationOPCGMMCenter<PointT>::segmentation(const FrameConstPtr<Poin
       }
     }
     if (this->parameter_.updateModelBeforeNTrain ||
-        frame->header.seq >= this->startFrameNumber_ + this->parameter_.nTrain) {
-      leafContainer.updateModel(this->parameter_.alpha, this->parameter_.alpha * this->parameter_.nullAlphaRatio,
+        frame->header.seq >= this->startFrameNumber_ + this->parameter_.getNTrain()) {
+      leafContainer.updateModel(this->parameter_.getAlpha(),
+                                this->parameter_.getAlpha() * this->parameter_.getNullAlphaRatio(),
                                 this->parameter_.minimumVariance);
     }
-    bool updatedIsStatic = leafContainer.getStaticProbability() > this->parameter_.staticThresholdGT;
-    if (this->parameter_.outputExistsPointOnly) {
+    bool updatedIsStatic = leafContainer.getStaticProbability() > this->parameter_.getStaticThresholdGT();
+    if (this->parameter_.getOutputExistsPointOnly()) {
       updatedIsStatic &= !std::isnan(leafContainer.getLastPoint().intensity);
     }
     PointT center;

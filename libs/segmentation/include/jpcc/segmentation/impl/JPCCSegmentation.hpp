@@ -7,8 +7,8 @@ JPCCSegmentation<PointT>::JPCCSegmentation(const JPCCSegmentationParameter& para
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-size_t JPCCSegmentation<PointT>::getNTrain() const {
-  return parameter_.nTrain;
+int JPCCSegmentation<PointT>::getNTrain() const {
+  return *std::max_element(parameter_.getNTrainVector().begin(), parameter_.getNTrainVector().end());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
