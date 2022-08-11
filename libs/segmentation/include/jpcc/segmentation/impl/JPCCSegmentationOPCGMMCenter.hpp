@@ -51,42 +51,30 @@ void JPCCSegmentationOPCGMMCenter<PointT>::segmentation(const FrameConstPtr<Poin
       leafContainer.build(this->parameter_.getNTrain(), this->parameter_.getK(), this->parameter_.getAlpha(),
                           this->parameter_.minimumVariance, alternateCentroids_);
     }
-    bool isLastStatic = leafContainer.isLastStatic();
-
-    //    if (isLastStatic && staticFrame) { staticFrame->push_back(leafContainer.getPoint()); }
-    if (!std::isnan(leafContainer.getLastPoint().intensity)) {
-      const float intensity = leafContainer.getLastPoint().intensity;
-
-      if (dynamicFrame) {
-        double probability = leafContainer.getProbability(intensity);
-
-        bool isDynamic = probability < this->parameter_.getStaticThreshold();
-
-        if (!isLastStatic && isDynamic) {
-          PointT& point = leafContainer.getLastPoint();
-          assert(!std::isnan(point.x));
-          dynamicFrame->points.push_back(point);
-        }
-      }
+    bool lastIsStatic = leafContainer.isLastStatic();
+    bool isStatic     = leafContainer.isStatic(this->parameter_.getStaticThresholdVector(),
+                                               this->parameter_.getNullStaticThresholdVector());
+    bool isDynamic    = isStatic && !std::isnan(leafContainer.getLastPoint().intensity);
+    if (dynamicFrame && isDynamic) {
+      PointT& point = leafContainer.getLastPoint();
+      assert(!std::isnan(point.x));
+      dynamicFrame->points.push_back(point);
     }
+
+    PointT center;
+    this->genLeafNodeCenterFromOctreeKey(it.getCurrentOctreeKey(), center);
+
+    if (staticFrame && isStatic) { staticFrame->points.push_back(center); }
+    if (staticFrameAdded && !lastIsStatic && isStatic) { staticFrameAdded->points.push_back(center); }
+    if (staticFrameRemoved && lastIsStatic && !isStatic) { staticFrameRemoved->points.push_back(center); }
+
+    leafContainer.setIsLastStatic(isStatic);
     if (this->parameter_.updateModelBeforeNTrain ||
         frame->header.seq >= this->startFrameNumber_ + this->parameter_.getNTrain()) {
       leafContainer.updateModel(this->parameter_.getAlpha(),
                                 this->parameter_.getAlpha() * this->parameter_.getNullAlphaRatio(),
                                 this->parameter_.minimumVariance);
     }
-    bool isStatic = leafContainer.getStaticProbability() > this->parameter_.getNullStaticThreshold();
-    if (this->parameter_.getOutputExistsPointOnly()) {
-      isStatic &= !std::isnan(leafContainer.getLastPoint().intensity);
-    }
-    PointT center;
-    this->genLeafNodeCenterFromOctreeKey(it.getCurrentOctreeKey(), center);
-
-    if (staticFrame && isStatic) { staticFrame->points.push_back(center); }
-    if (staticFrameAdded && !isLastStatic && isStatic) { staticFrameAdded->points.push_back(center); }
-    if (staticFrameRemoved && isLastStatic && !isStatic) { staticFrameRemoved->points.push_back(center); }
-
-    leafContainer.setIsLastStatic(isStatic);
   }
 }
 

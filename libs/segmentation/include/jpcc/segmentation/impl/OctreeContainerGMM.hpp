@@ -43,6 +43,18 @@ void OctreeContainerGMM<PointT>::build(const int                 nTrain,
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
+bool OctreeContainerGMM<PointT>::isStatic(std::vector<double> staticThresholdVector,
+                                          std::vector<double> nullStaticThresholdVector) {
+  if (isnan(this->lastPoint_.intensity)) {
+    return GMM::getStaticProbability() > nullStaticThresholdVector.at(0);
+  } else {
+    if (GMM::getProbability(this->lastPoint_.intensity) > staticThresholdVector.at(0)) { return true; }
+    return false;
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT>
 void OctreeContainerGMM<PointT>::updateModel(const double alpha, const double nullAlpha, const double minimumVariance) {
   if (std::isnan(this->lastPoint_.intensity)) {
     GMM::updateModel(NULL_INTENSITY, nullAlpha, minimumVariance);

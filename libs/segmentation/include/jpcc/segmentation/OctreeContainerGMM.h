@@ -25,6 +25,8 @@ class OctreeContainerGMM : virtual public octree::OctreeContainerLastPoint<Point
   virtual void build(
       int nTrain, int K, double alpha, double minimumVariance, const std::vector<float>& alternateCentroids);
 
+  [[nodiscard]] bool isStatic(std::vector<double> staticThresholdVector, std::vector<double> nullStaticThresholdVector);
+
   virtual void updateModel(double alpha, double nullAlpha, double minimumVariance);
 };
 
