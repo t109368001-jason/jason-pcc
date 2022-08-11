@@ -25,7 +25,7 @@ using PointOutput = pcl::PointXYZ;
 void encode(const AppParameter& parameter, StopwatchUserTime& clockEncode, StopwatchUserTime& clockDecode) {
   DatasetReader<PointEncode>::Ptr    reader = newReader<PointEncode>(parameter.inputReader, parameter.inputDataset);
   PreProcessor<PointEncode>          preProcessor(parameter.preProcess);
-  JPCCSegmentation<PointEncode>::Ptr gmmSegmentation = jpcc::make_shared<JPCCSegmentationAdapter<PointEncode>>(
+  JPCCSegmentation<PointEncode>::Ptr gmmSegmentation = JPCCSegmentationAdapter::build<PointEncode>(
       parameter.jpccGmmSegmentation, parameter.inputDataset.getStartFrameNumber());
 
   clockEncode.start();

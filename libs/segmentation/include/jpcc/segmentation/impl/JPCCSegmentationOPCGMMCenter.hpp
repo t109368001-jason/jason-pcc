@@ -52,6 +52,23 @@ void JPCCSegmentationOPCGMMCenter<PointT, LeafContainerT>::segmentation(const Fr
                                                                         FramePtr<PointT>             staticFrame,
                                                                         FramePtr<PointT>             staticFrameAdded,
                                                                         FramePtr<PointT> staticFrameRemoved) {
+  if (dynamicFrame) {
+    dynamicFrame->clear();
+    dynamicFrame->header = frame->header;
+  }
+  if (staticFrame) {
+    staticFrame->clear();
+    staticFrame->header = frame->header;
+  }
+  if (staticFrameAdded) {
+    staticFrameAdded->clear();
+    staticFrameAdded->header = frame->header;
+  }
+  if (staticFrameRemoved) {
+    staticFrameRemoved->clear();
+    staticFrameRemoved->header = frame->header;
+  }
+
   for (auto it = this->leaf_depth_begin(), end = this->leaf_depth_end(); it != end; ++it) {
     it.getLeafContainer().resetLastPoint();
   }
@@ -90,6 +107,35 @@ void JPCCSegmentationOPCGMMCenter<PointT, LeafContainerT>::segmentation(const Fr
                                   this->parameter_.minimumVariance);
       }
     }
+  }
+
+  if (dynamicFrame) {
+    dynamicFrame->width  = dynamicFrame->size();
+    dynamicFrame->height = 1;
+    cout << "segmentation dynamic "
+         << "frameNumber=" << dynamicFrame->header.seq << ", "
+         << "points=" << dynamicFrame->size() << endl;
+  }
+  if (staticFrame) {
+    staticFrame->width  = staticFrame->size();
+    staticFrame->height = 1;
+    cout << "segmentation static "
+         << "frameNumber=" << staticFrame->header.seq << ", "
+         << "points=" << staticFrame->size() << endl;
+  }
+  if (staticFrameAdded) {
+    staticFrameAdded->width  = staticFrameAdded->size();
+    staticFrameAdded->height = 1;
+    cout << "segmentation static added "
+         << "frameNumber=" << staticFrameAdded->header.seq << ", "
+         << "points=" << staticFrameAdded->size() << endl;
+  }
+  if (staticFrameRemoved) {
+    staticFrameRemoved->width  = staticFrameRemoved->size();
+    staticFrameRemoved->height = 1;
+    cout << "segmentation static removed "
+         << "frameNumber=" << staticFrameRemoved->header.seq << ", "
+         << "points=" << staticFrameRemoved->size() << endl;
   }
 }
 

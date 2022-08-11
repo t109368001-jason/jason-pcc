@@ -7,26 +7,10 @@
 
 namespace jpcc::segmentation {
 
-template <typename PointT>
-class JPCCSegmentationAdapter : public JPCCSegmentation<PointT> {
+class JPCCSegmentationAdapter {
  public:
-  using Base = JPCCSegmentationAdapter;
-
- protected:
-  typename JPCCSegmentation<PointT>::Ptr backend_;
-
- public:
-  JPCCSegmentationAdapter(const JPCCSegmentationParameter& parameter, int startFrameNumber);
-
-  [[nodiscard]] bool isBuilt() const override;
-
-  void appendTrainSamples(FramePtr<PointT> frame) override;
-
-  void segmentation(const FrameConstPtr<PointT>& frame,
-                    FramePtr<PointT>             dynamicFrame,
-                    FramePtr<PointT>             staticFrame,
-                    FramePtr<PointT>             staticFrameAdded,
-                    FramePtr<PointT>             staticFrameRemoved) override;
+  template <typename PointT>
+  static typename JPCCSegmentation<PointT>::Ptr build(const JPCCSegmentationParameter& parameter, int startFrameNumber);
 };
 
 }  // namespace jpcc::segmentation
