@@ -6,11 +6,12 @@
 #include <jpcc/common/Common.h>
 #include <jpcc/math/GMM.h>
 #include <jpcc/octree/OctreeContainerLastPoint.h>
+#include <jpcc/segmentation/IOctreeContainerGMM.h>
 
 namespace jpcc::segmentation {
 
 template <typename PointT>
-class OctreeContainerGMM2L : virtual public octree::OctreeContainerLastPoint<PointT> {
+class OctreeContainerGMM2L : public IOctreeContainerGMM, virtual public octree::OctreeContainerLastPoint<PointT> {
  public:
   static constexpr int SIZE        = 2;
   static constexpr int SHORT_INDEX = 0;
@@ -27,16 +28,21 @@ class OctreeContainerGMM2L : virtual public octree::OctreeContainerLastPoint<Poi
 
   void addPoint(const PointT& point) override;
 
-  [[nodiscard]] bool isBuilt(int index) const;
+  [[nodiscard]] bool isBuilt(int index) const override;
 
-  void addTrainSample();
+  void addTrainSample() override;
 
-  virtual void build(
-      int index, int nTrain, int K, double alpha, double minimumVariance, const std::vector<float>& alternateCentroids);
+  void build(int                       index,
+             int                       nTrain,
+             int                       K,
+             double                    alpha,
+             double                    minimumVariance,
+             const std::vector<float>& alternateCentroids) override;
 
-  [[nodiscard]] bool isStatic(std::vector<double> staticThresholdVector, std::vector<double> nullStaticThresholdVector);
+  [[nodiscard]] bool isStatic(std::vector<double> staticThresholdVector,
+                              std::vector<double> nullStaticThresholdVector) override;
 
-  virtual void updateModel(int index, double alpha, double nullAlpha, double minimumVariance);
+  void updateModel(int index, double alpha, double nullAlpha, double minimumVariance) override;
 };
 
 }  // namespace jpcc::segmentation

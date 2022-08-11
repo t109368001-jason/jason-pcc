@@ -13,12 +13,11 @@ class JPCCSegmentation {
  protected:
   const JPCCSegmentationParameter& parameter_;
   int                              startFrameNumber_;
-  bool                             built_;
 
  public:
   JPCCSegmentation(const JPCCSegmentationParameter& parameter, int startFrameNumber);
 
-  [[nodiscard]] virtual bool isBuilt() const;
+  [[nodiscard]] virtual bool isBuilt() const = 0;
 
   virtual void appendTrainSamples(FramePtr<PointT> frame) = 0;
 

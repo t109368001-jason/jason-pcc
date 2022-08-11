@@ -1,7 +1,8 @@
 #include <execution>
 
 #include <jpcc/segmentation/JPCCSegmentationOPCGMMCenter.h>
-#include <jpcc/segmentation/JPCCSegmentationOPCGMM2LCenter.h>
+#include <jpcc/segmentation/OctreeContainerSegmentationGMMCenter.h>
+#include <jpcc/segmentation/OctreeContainerSegmentationGMM2LCenter.h>
 
 namespace jpcc::segmentation {
 
@@ -10,12 +11,12 @@ template <typename PointT>
 JPCCSegmentationAdapter<PointT>::JPCCSegmentationAdapter(const JPCCSegmentationParameter& parameter,
                                                          const int                        startFrameNumber) :
     JPCCSegmentation<PointT>(parameter, startFrameNumber) {
-  if (parameter.type == JPCCSegmentationOPCGMMCenter<PointT>::TYPE &&
-      parameter.staticPointType == JPCCSegmentationOPCGMMCenter<PointT>::STATIC_POINT_TYPE) {
-    backend_ = jpcc::make_shared<JPCCSegmentationOPCGMMCenter<PointT>>(parameter, startFrameNumber);
-  } else if (parameter.type == JPCCSegmentationOPCGMM2LCenter<PointT>::TYPE &&
-             parameter.staticPointType == JPCCSegmentationOPCGMM2LCenter<PointT>::STATIC_POINT_TYPE) {
-    backend_ = jpcc::make_shared<JPCCSegmentationOPCGMM2LCenter<PointT>>(parameter, startFrameNumber);
+  if (parameter.type == SegmentationType::GMM && parameter.staticPointType == StaticPointType::CENTER) {
+    backend_ = jpcc::make_shared<JPCCSegmentationOPCGMMCenter<PointT, OctreeContainerSegmentationGMMCenter<PointT>>>(
+        parameter, startFrameNumber);
+  } else if (parameter.type == SegmentationType::GMM_2L && parameter.staticPointType == StaticPointType::CENTER) {
+    backend_ = jpcc::make_shared<JPCCSegmentationOPCGMMCenter<PointT, OctreeContainerSegmentationGMM2LCenter<PointT>>>(
+        parameter, startFrameNumber);
   } else {
     BOOST_THROW_EXCEPTION(std::logic_error("unsupported staticPointType"));
   }

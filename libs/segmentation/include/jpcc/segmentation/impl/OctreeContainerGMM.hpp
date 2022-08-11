@@ -23,6 +23,12 @@ void OctreeContainerGMM<PointT>::addPoint(const PointT& point) {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
+bool OctreeContainerGMM<PointT>::isBuilt(const int index) const {
+  return GMM::isBuilt();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT>
 void OctreeContainerGMM<PointT>::addTrainSample() {
   if (std::isnan(this->lastPoint_.x)) { return; }
   if (!trainSamples_) { return; }
@@ -31,7 +37,8 @@ void OctreeContainerGMM<PointT>::addTrainSample() {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-void OctreeContainerGMM<PointT>::build(const int                 nTrain,
+void OctreeContainerGMM<PointT>::build(const int                 index,
+                                       const int                 nTrain,
                                        const int                 K,
                                        const double              alpha,
                                        const double              minimumVariance,
@@ -55,7 +62,10 @@ bool OctreeContainerGMM<PointT>::isStatic(std::vector<double> staticThresholdVec
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-void OctreeContainerGMM<PointT>::updateModel(const double alpha, const double nullAlpha, const double minimumVariance) {
+void OctreeContainerGMM<PointT>::updateModel(const int    index,
+                                             const double alpha,
+                                             const double nullAlpha,
+                                             const double minimumVariance) {
   if (std::isnan(this->lastPoint_.intensity)) {
     GMM::updateModel(NULL_INTENSITY, nullAlpha, minimumVariance);
   } else {

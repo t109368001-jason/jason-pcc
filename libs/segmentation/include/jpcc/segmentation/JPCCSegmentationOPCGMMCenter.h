@@ -1,31 +1,31 @@
 #pragma once
 
+#include <array>
+
 #include <jpcc/common/Common.h>
 
 #include <jpcc/octree/JPCCOctreePointCloud.h>
 #include <jpcc/segmentation/JPCCSegmentation.h>
-#include <jpcc/segmentation/OctreeContainerSegmentationGMMCenter.h>
 
 namespace jpcc::segmentation {
 
-template <typename PointT>
-class JPCCSegmentationOPCGMMCenter
-    : virtual public JPCCSegmentation<PointT>,
-      virtual public octree::JPCCOctreePointCloud<PointT, OctreeContainerSegmentationGMMCenter<PointT>> {
+template <typename PointT, typename LeafContainerT>
+class JPCCSegmentationOPCGMMCenter : virtual public JPCCSegmentation<PointT>,
+                                     virtual public octree::JPCCOctreePointCloud<PointT, LeafContainerT> {
  public:
-  static constexpr SegmentationType TYPE              = SegmentationType::GMM;
-  static constexpr StaticPointType  STATIC_POINT_TYPE = StaticPointType::CENTER;
+  static constexpr int SIZE = LeafContainerT::SIZE;
 
   using Ptr  = shared_ptr<JPCCSegmentationOPCGMMCenter>;
-  using Base = octree::JPCCOctreePointCloud<PointT, OctreeContainerSegmentationGMMCenter<PointT>>;
-
-  using LeafContainer = OctreeContainerSegmentationGMMCenter<PointT>;
+  using Base = octree::JPCCOctreePointCloud<PointT, LeafContainerT>;
 
  protected:
-  std::vector<float> alternateCentroids_;
+  std::vector<float>     alternateCentroids_;
+  std::array<bool, SIZE> builtVector;
 
  public:
   JPCCSegmentationOPCGMMCenter(const JPCCSegmentationParameter& parameter, int startFrameNumber);
+
+  [[nodiscard]] bool isBuilt() const override;
 
   void appendTrainSamples(FramePtr<PointT> frame) override;
 
