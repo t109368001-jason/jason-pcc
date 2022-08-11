@@ -21,8 +21,8 @@ class JPCCSegmentationParameter : public virtual Parameter {
   std::vector<double> alphaVector_;
   std::vector<double> nullAlphaRatioVector_;
   std::vector<int>    nTrainVector_;
-  std::vector<double> dynamicThresholdLEVector_;
-  std::vector<double> staticThresholdGTVector_;
+  std::vector<double> staticThresholdVector_;
+  std::vector<double> nullStaticThresholdVector_;
 
  public:
   SegmentationType type;
@@ -44,24 +44,24 @@ class JPCCSegmentationParameter : public virtual Parameter {
   [[nodiscard]] double getAlpha() const;
   [[nodiscard]] double getNullAlphaRatio() const;
   [[nodiscard]] int    getNTrain() const;
-  [[nodiscard]] double getDynamicThresholdLE() const;
-  [[nodiscard]] double getStaticThresholdGT() const;
+  [[nodiscard]] double getStaticThreshold() const;
+  [[nodiscard]] double getNullStaticThreshold() const;
 
   [[nodiscard]] bool   getOutputExistsPointOnly(int index) const;
   [[nodiscard]] int    getK(int index) const;
   [[nodiscard]] double getAlpha(int index) const;
   [[nodiscard]] double getNullAlphaRatio(int index) const;
   [[nodiscard]] int    getNTrain(int index) const;
-  [[nodiscard]] double getDynamicThresholdLE(int index) const;
-  [[nodiscard]] double getStaticThresholdGT(int index) const;
+  [[nodiscard]] double getStaticThreshold(int index) const;
+  [[nodiscard]] double getNullStaticThreshold(int index) const;
 
   [[nodiscard]] const std::vector<bool>&   getOutputExistsPointOnlyVector() const;
   [[nodiscard]] const std::vector<int>&    getKVector() const;
   [[nodiscard]] const std::vector<double>& getAlphaVector() const;
   [[nodiscard]] const std::vector<double>& getNullAlphaRatioVector() const;
   [[nodiscard]] const std::vector<int>&    getNTrainVector() const;
-  [[nodiscard]] const std::vector<double>& getDynamicThresholdLEVector() const;
-  [[nodiscard]] const std::vector<double>& getStaticThresholdGTVector() const;
+  [[nodiscard]] const std::vector<double>& getStaticThresholdVector() const;
+  [[nodiscard]] const std::vector<double>& getNullStaticThresholdVector() const;
 
   friend std::ostream& operator<<(std::ostream& out, const JPCCSegmentationParameter& obj);
 };

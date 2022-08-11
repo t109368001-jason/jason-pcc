@@ -60,7 +60,7 @@ void JPCCSegmentationOPCGMMCenter<PointT>::segmentation(const FrameConstPtr<Poin
       if (dynamicFrame) {
         double probability = leafContainer.getProbability(intensity);
 
-        bool isDynamic = probability < this->parameter_.getDynamicThresholdLE();
+        bool isDynamic = probability < this->parameter_.getStaticThreshold();
 
         if (!isLastStatic && isDynamic) {
           PointT& point = leafContainer.getLastPoint();
@@ -75,7 +75,7 @@ void JPCCSegmentationOPCGMMCenter<PointT>::segmentation(const FrameConstPtr<Poin
                                 this->parameter_.getAlpha() * this->parameter_.getNullAlphaRatio(),
                                 this->parameter_.minimumVariance);
     }
-    bool isStatic = leafContainer.getStaticProbability() > this->parameter_.getStaticThresholdGT();
+    bool isStatic = leafContainer.getStaticProbability() > this->parameter_.getNullStaticThreshold();
     if (this->parameter_.getOutputExistsPointOnly()) {
       isStatic &= !std::isnan(leafContainer.getLastPoint().intensity);
     }

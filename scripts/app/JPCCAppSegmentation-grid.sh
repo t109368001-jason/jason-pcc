@@ -54,8 +54,8 @@ for K in "${K_LIST[@]}"; do
           --jpccGMMSegmentationParameter.k "${K}" \
           --jpccGMMSegmentationParameter.alpha "${ALPHA}" \
           --jpccGMMSegmentationParameter.nTrain "${N}" \
-          --jpccGMMSegmentationParameter.staticThresholdGT "${STATIC_THRESHOLD}" \
-          --jpccGMMSegmentationParameter.dynamicThresholdLE "${DYNAMIC_THRESHOLD}" \
+          --jpccGMMSegmentationParameter.nullStaticThreshold "${STATIC_THRESHOLD}" \
+          --jpccGMMSegmentationParameter.staticThreshold "${DYNAMIC_THRESHOLD}" \
           --configs cfg/app/Segmentation/ctc-raw.cfg |& tee "${OUTPUT_FOLDER_PREFIX}${OUTPUT_FOLDER}JPCCAppSegmentation-$(date +%Y%m%d-%H%M%S).log" &
       done
     done

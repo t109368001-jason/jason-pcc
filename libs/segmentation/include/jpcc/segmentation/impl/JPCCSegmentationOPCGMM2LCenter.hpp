@@ -62,8 +62,8 @@ void JPCCSegmentationOPCGMM2LCenter<PointT>::segmentation(const FrameConstPtr<Po
       }
     }
     bool lastIsStatic = leafContainer.isLastStatic();
-    bool isStatic     = leafContainer.isStatic(this->parameter_.getDynamicThresholdLEVector(),
-                                               this->parameter_.getStaticThresholdGTVector());
+    bool isStatic     = leafContainer.isStatic(this->parameter_.getStaticThresholdVector(),
+                                               this->parameter_.getNullStaticThresholdVector());
     bool isDynamic    = isStatic && !std::isnan(leafContainer.getLastPoint().intensity);
     if (dynamicFrame && isDynamic) {
       PointT& point = leafContainer.getLastPoint();

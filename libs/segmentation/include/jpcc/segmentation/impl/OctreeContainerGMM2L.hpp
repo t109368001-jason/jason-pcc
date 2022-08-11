@@ -52,15 +52,15 @@ void OctreeContainerGMM2L<PointT>::build(const int                 index,
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-bool OctreeContainerGMM2L<PointT>::isStatic(std::vector<double> dynamicThresholdLEVector,
-                                            std::vector<double> staticThresholdGTVector) {
+bool OctreeContainerGMM2L<PointT>::isStatic(std::vector<double> staticThresholdVector,
+                                            std::vector<double> nullStaticThresholdVector) {
   if (isnan(this->lastPoint_.intensity)) {
-    return gmms_.at(LONG_INDEX).getStaticProbability() > staticThresholdGTVector.at(LONG_INDEX);
+    return gmms_.at(LONG_INDEX).getStaticProbability() > nullStaticThresholdVector.at(LONG_INDEX);
   } else {
-    if (gmms_.at(SHORT_INDEX).getProbability(this->lastPoint_.intensity) > dynamicThresholdLEVector.at(SHORT_INDEX)) {
+    if (gmms_.at(SHORT_INDEX).getProbability(this->lastPoint_.intensity) > staticThresholdVector.at(SHORT_INDEX)) {
       return true;
     }
-    if (gmms_.at(LONG_INDEX).getProbability(this->lastPoint_.intensity) > dynamicThresholdLEVector.at(LONG_INDEX)) {
+    if (gmms_.at(LONG_INDEX).getProbability(this->lastPoint_.intensity) > staticThresholdVector.at(LONG_INDEX)) {
       return true;
     }
     return false;
