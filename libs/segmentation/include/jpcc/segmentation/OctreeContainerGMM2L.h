@@ -15,7 +15,7 @@ class OctreeContainerGMM2L : public IOctreeContainerGMM, virtual public octree::
  public:
   static constexpr int SIZE        = 2;
   static constexpr int SHORT_INDEX = 0;
-  static constexpr int LONG_INDEX  = 0;
+  static constexpr int LONG_INDEX  = 1;
 
  protected:
   std::array<shared_ptr<std::vector<float>>, SIZE> trainSamplesVector_;

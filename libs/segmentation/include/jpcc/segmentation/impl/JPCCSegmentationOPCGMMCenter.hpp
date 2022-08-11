@@ -33,10 +33,10 @@ void JPCCSegmentationOPCGMMCenter<PointT, LeafContainerT>::appendTrainSamples(Fr
     it.getLeafContainer().addTrainSample();
   }
   for (size_t i = 0; i < SIZE; i++) {
-    if ((frame->header.seq - this->startFrameNumber_ + 1) >= this->parameter_.getNTrain(i)) {
+    if (!this->builtVector.at(i) &&
+        (frame->header.seq - this->startFrameNumber_ + 1) >= this->parameter_.getNTrain(i)) {
       for (auto it = this->leaf_depth_begin(), end = this->leaf_depth_end(); it != end; ++it) {
         LeafContainerT& leafContainer = it.getLeafContainer();
-        assert(!leafContainer.isBuilt(i));
         leafContainer.build(i, this->parameter_.getNTrain(i), this->parameter_.getK(i), this->parameter_.getAlpha(i),
                             this->parameter_.minimumVariance, alternateCentroids_);
       }
