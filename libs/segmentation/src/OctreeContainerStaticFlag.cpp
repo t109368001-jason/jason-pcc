@@ -5,15 +5,15 @@ using namespace std;
 namespace jpcc::segmentation {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-OctreeContainerStaticFlag::OctreeContainerStaticFlag() : OctreeContainerBase(), isStatic_(false) {}
+OctreeContainerStaticFlag::OctreeContainerStaticFlag() : OctreeContainerBase(), isLastStatic_(false) {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void OctreeContainerStaticFlag::reset() { isStatic_ = false; }
+void OctreeContainerStaticFlag::reset() { isLastStatic_ = false; }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-bool OctreeContainerStaticFlag::isStatic() const { return isStatic_; }
+bool OctreeContainerStaticFlag::isLastStatic() const { return isLastStatic_; }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void OctreeContainerStaticFlag::setIsStatic(const bool isStatic) { isStatic_ = isStatic; }
+void OctreeContainerStaticFlag::setIsLastStatic(const bool isStatic) { isLastStatic_ = isStatic; }
 
 }  // namespace jpcc::segmentation

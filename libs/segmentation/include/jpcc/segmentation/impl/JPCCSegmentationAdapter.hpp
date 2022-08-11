@@ -1,6 +1,7 @@
 #include <execution>
 
 #include <jpcc/segmentation/JPCCSegmentationOPCGMMCenter.h>
+#include <jpcc/segmentation/JPCCSegmentationOPCGMM2LCenter.h>
 
 namespace jpcc::segmentation {
 
@@ -12,6 +13,9 @@ JPCCSegmentationAdapter<PointT>::JPCCSegmentationAdapter(const JPCCSegmentationP
   if (parameter.type == JPCCSegmentationOPCGMMCenter<PointT>::TYPE &&
       parameter.staticPointType == JPCCSegmentationOPCGMMCenter<PointT>::STATIC_POINT_TYPE) {
     backend_ = jpcc::make_shared<JPCCSegmentationOPCGMMCenter<PointT>>(parameter, startFrameNumber);
+  } else if (parameter.type == JPCCSegmentationOPCGMM2LCenter<PointT>::TYPE &&
+             parameter.staticPointType == JPCCSegmentationOPCGMM2LCenter<PointT>::STATIC_POINT_TYPE) {
+    backend_ = jpcc::make_shared<JPCCSegmentationOPCGMM2LCenter<PointT>>(parameter, startFrameNumber);
   } else {
     BOOST_THROW_EXCEPTION(std::logic_error("unsupported staticPointType"));
   }

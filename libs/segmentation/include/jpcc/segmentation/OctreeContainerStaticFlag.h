@@ -10,16 +10,16 @@ namespace jpcc::segmentation {
 
 class OctreeContainerStaticFlag : virtual public pcl::octree::OctreeContainerBase {
  protected:
-  bool isStatic_;
+  bool isLastStatic_;
 
  public:
   OctreeContainerStaticFlag();
 
   void reset() override;
 
-  bool isStatic() const;
+  bool isLastStatic() const;
 
-  void setIsStatic(bool isStatic);
+  void setIsLastStatic(bool isStatic);
 };
 
 }  // namespace jpcc::segmentation

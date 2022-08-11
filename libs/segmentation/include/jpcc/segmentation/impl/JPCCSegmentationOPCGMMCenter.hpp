@@ -51,9 +51,9 @@ void JPCCSegmentationOPCGMMCenter<PointT>::segmentation(const FrameConstPtr<Poin
       leafContainer.build(this->parameter_.getNTrain(), this->parameter_.getK(), this->parameter_.getAlpha(),
                           this->parameter_.minimumVariance, alternateCentroids_);
     }
-    bool isStatic = leafContainer.isStatic();
+    bool isLastStatic = leafContainer.isLastStatic();
 
-    //    if (isStatic && staticFrame) { staticFrame->push_back(leafContainer.getPoint()); }
+    //    if (isLastStatic && staticFrame) { staticFrame->push_back(leafContainer.getPoint()); }
     if (!std::isnan(leafContainer.getLastPoint().intensity)) {
       const float intensity = leafContainer.getLastPoint().intensity;
 
@@ -62,7 +62,7 @@ void JPCCSegmentationOPCGMMCenter<PointT>::segmentation(const FrameConstPtr<Poin
 
         bool isDynamic = probability < this->parameter_.getDynamicThresholdLE();
 
-        if (!isStatic && isDynamic) {
+        if (!isLastStatic && isDynamic) {
           PointT& point = leafContainer.getLastPoint();
           assert(!std::isnan(point.x));
           dynamicFrame->points.push_back(point);
@@ -75,18 +75,18 @@ void JPCCSegmentationOPCGMMCenter<PointT>::segmentation(const FrameConstPtr<Poin
                                 this->parameter_.getAlpha() * this->parameter_.getNullAlphaRatio(),
                                 this->parameter_.minimumVariance);
     }
-    bool updatedIsStatic = leafContainer.getStaticProbability() > this->parameter_.getStaticThresholdGT();
+    bool isStatic = leafContainer.getStaticProbability() > this->parameter_.getStaticThresholdGT();
     if (this->parameter_.getOutputExistsPointOnly()) {
-      updatedIsStatic &= !std::isnan(leafContainer.getLastPoint().intensity);
+      isStatic &= !std::isnan(leafContainer.getLastPoint().intensity);
     }
     PointT center;
     this->genLeafNodeCenterFromOctreeKey(it.getCurrentOctreeKey(), center);
 
-    if (staticFrame && updatedIsStatic) { staticFrame->points.push_back(center); }
-    if (staticFrameAdded && !isStatic && updatedIsStatic) { staticFrameAdded->points.push_back(center); }
-    if (staticFrameRemoved && isStatic && !updatedIsStatic) { staticFrameRemoved->points.push_back(center); }
+    if (staticFrame && isStatic) { staticFrame->points.push_back(center); }
+    if (staticFrameAdded && !isLastStatic && isStatic) { staticFrameAdded->points.push_back(center); }
+    if (staticFrameRemoved && isLastStatic && !isStatic) { staticFrameRemoved->points.push_back(center); }
 
-    leafContainer.setIsStatic(updatedIsStatic);
+    leafContainer.setIsLastStatic(isStatic);
   }
 }
 

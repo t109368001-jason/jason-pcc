@@ -27,7 +27,7 @@ class GMM {
              const std::vector<float>& seedCentroids,
              const std::vector<float>& alternateCentroids);
 
-  [[nodiscard]] bool isBuilt();
+  [[nodiscard]] bool isBuilt() const;
 
   [[nodiscard]] double getProbability(float sample);
 
