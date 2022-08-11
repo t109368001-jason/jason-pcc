@@ -25,16 +25,16 @@ using PointOutput = pcl::PointXYZ;
 void encode(const AppParameter& parameter, StopwatchUserTime& clockEncode, StopwatchUserTime& clockDecode) {
   DatasetReader<PointEncode>::Ptr    reader = newReader<PointEncode>(parameter.inputReader, parameter.inputDataset);
   PreProcessor<PointEncode>          preProcessor(parameter.preProcess);
-  JPCCSegmentation<PointEncode>::Ptr gmmSegmentation =
-      jpcc::make_shared<JPCCSegmentationAdapter<PointEncode>>(parameter.jpccGmmSegmentation);
+  JPCCSegmentation<PointEncode>::Ptr gmmSegmentation = jpcc::make_shared<JPCCSegmentationAdapter<PointEncode>>(
+      parameter.jpccGmmSegmentation, parameter.inputDataset.getStartFrameNumber());
 
   clockEncode.start();
   {  // build gaussian mixture model
     GroupOfFrame<PointEncode> frames;
     size_t                    groupOfFramesSize = parameter.groupOfFramesSize;
     size_t                    frameNumber       = parameter.inputDataset.getStartFrameNumber();
-    const size_t              endFrameNumber    = frameNumber + gmmSegmentation->getNTrain();
-    while (frameNumber < endFrameNumber) {
+    const size_t              endFrameNumber    = parameter.inputDataset.getEndFrameNumber();
+    while (!gmmSegmentation->isBuilt() && frameNumber < endFrameNumber) {
       reader->loadAll(frameNumber, groupOfFramesSize, frames, parameter.parallel);
       preProcessor.process(frames, nullptr, parameter.parallel);
 
@@ -42,7 +42,6 @@ void encode(const AppParameter& parameter, StopwatchUserTime& clockEncode, Stopw
 
       frameNumber += groupOfFramesSize;
     }
-    gmmSegmentation->build();
   }
   clockEncode.stop();
 
