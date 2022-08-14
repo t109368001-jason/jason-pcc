@@ -143,7 +143,7 @@ if __name__ == '__main__':
              title=r"Gaussian Mixture Model $K=3$")
 
     plot_gmm([{"u": 128 / 255, "s": 0.04, "w": 0.1,
-               "sd_multiplier_list": [0.5, 1, 2]
+               "sd_multiplier_list": [1, 2, 3]
                }],
              "gmm_10w_sd_multiplier[0.5,1,2].png",
              title="Probability of Background GMM Cluster", xlim=(0, 1), ylim=[-0.4, 1.2])
