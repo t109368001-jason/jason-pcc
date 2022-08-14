@@ -1,9 +1,7 @@
 #pragma once
 
-#include <jpcc/octree/JPCCOctreePointCloud.h>
 #include <jpcc/segmentation/JPCCSegmentation.h>
 #include <jpcc/segmentation/JPCCSegmentationParameter.h>
-#include <jpcc/segmentation/OctreeContainerSegmentationGMMCenter.h>
 
 namespace jpcc::segmentation {
 
