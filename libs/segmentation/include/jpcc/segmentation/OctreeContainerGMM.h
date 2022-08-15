@@ -37,8 +37,8 @@ class OctreeContainerGMM : public IOctreeContainerGMM,
                      double                    minimumVariance,
                      const std::vector<float>& alternateCentroids) override;
 
-  [[nodiscard]] bool isStatic(std::vector<double> staticThresholdVector,
-                              std::vector<double> nullStaticThresholdVector) override;
+  [[nodiscard]] bool isStatic(const std::vector<double>& staticThresholdVector,
+                              const std::vector<double>& nullStaticThresholdVector) override;
 
   virtual void updateModel(int index, double alpha, double nullAlpha, double minimumVariance) override;
 };

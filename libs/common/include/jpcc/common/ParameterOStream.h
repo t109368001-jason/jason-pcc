@@ -23,7 +23,7 @@ class ParameterOStream {
 
  protected:
   template <typename T>
-  void operator()(std::vector<T> value);
+  void operator()(const std::vector<T>& value);
 
   void operator()(bool value);
 
