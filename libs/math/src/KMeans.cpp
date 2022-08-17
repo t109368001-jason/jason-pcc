@@ -1,4 +1,4 @@
-#include <jpcc/math/GMM.h>
+#include <jpcc/math/KMeans.h>
 
 #include <numeric>
 
