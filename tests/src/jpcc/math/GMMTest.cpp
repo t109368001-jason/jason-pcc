@@ -96,9 +96,8 @@ TEST(GMMTest, getOptimalModelIndex) {
 
   // then
   for (size_t k = 0; k < K; k++) {
-    const pair<size_t, double>& result = gmm.getOptimalModelIndex(means.at(k));
-    EXPECT_NEAR(result.first, k, TOLERANCE);
-    EXPECT_NEAR(result.second, (1 / sqrt(M_PI * 2) / variances.at(k)) / K, TOLERANCE);
+    const int& index = gmm.getOptimalModelIndex(means.at(k));
+    EXPECT_EQ(index, k);
   }
 }
 
