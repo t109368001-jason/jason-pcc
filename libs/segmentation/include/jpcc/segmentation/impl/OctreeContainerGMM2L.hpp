@@ -45,8 +45,8 @@ void OctreeContainerGMM2L<PointT>::build(const int                 index,
                                          const double              alpha,
                                          const double              minimumVariance,
                                          const std::vector<float>& alternateCentroids) {
-  trainSamplesVector_.at(index)->resize(nTrain, NULL_INTENSITY);
-  gmms_.at(index).build(*trainSamplesVector_.at(index), K, minimumVariance, {NULL_INTENSITY}, alternateCentroids);
+  gmms_.at(index).buildN(*trainSamplesVector_.at(index), K, nTrain, minimumVariance, NULL_INTENSITY,
+                         alternateCentroids);
   trainSamplesVector_.at(index) = nullptr;
 }
 

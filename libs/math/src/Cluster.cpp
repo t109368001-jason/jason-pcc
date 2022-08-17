@@ -21,6 +21,15 @@ Cluster::Cluster(const std::vector<float>& samples, const double weight, const d
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
+Cluster::Cluster(const float sample, const double weight, const double minimumVariance) : weight_(weight) {
+  assert(!isnan(weight_));
+  mean_     = sample;
+  variance_ = minimumVariance;
+  assert(!isnan(mean_));
+  assert(!isnan(variance_));
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
 double Cluster::getProbability(const float sample) const {
   assert(!isnan(sample));
   double tmp         = exp((-0.5) * pow(sample - mean_, 2) / variance_);

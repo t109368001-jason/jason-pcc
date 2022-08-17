@@ -9,27 +9,17 @@ using namespace std;
 namespace jpcc::math {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-GMM::GMM(vector<float>&       samples,
-         const int            K,
-         const double         minimumVariance,
-         const vector<float>& seedCentroids,
-         const vector<float>& alternateCentroids) {
-  build(samples, K, minimumVariance, seedCentroids, alternateCentroids);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-void GMM::build(vector<float>&       samples,
-                const int            K,
-                const double         minimumVariance,
-                const vector<float>& seedCentroids,
-                const vector<float>& alternateCentroids) {
+void GMM::buildN(vector<float>&       samples,
+                 const int            K,
+                 const int            N,
+                 const double         minimumVariance,
+                 const float          nullSample,
+                 const vector<float>& alternateCentroids) {
+  int    K_ = K - 1;
   size_t k;
 
   vector<float> centroids;
-  for (const auto& seedCentroid : seedCentroids) {
-    centroids.push_back(seedCentroid);
-    samples.push_back(seedCentroid);
-  }
+
   // get centroids
   vector<float> uniqueSamples;
   for (const auto& sample : samples) {
@@ -42,11 +32,11 @@ void GMM::build(vector<float>&       samples,
     }
     if (!anyEqual) {
       uniqueSamples.push_back(sample);
-      if (uniqueSamples.size() >= K) { break; }
+      if (uniqueSamples.size() >= K_) { break; }
     }
   }
-  if (uniqueSamples.size() >= K) {
-    while (centroids.size() < K) {
+  if (uniqueSamples.size() >= K_) {
+    while (centroids.size() < K_) {
       const float sample = samples.at(rand() % samples.size());
       bool        exists = false;
       for (const auto& centroid : centroids) {
@@ -58,7 +48,7 @@ void GMM::build(vector<float>&       samples,
       if (!exists) { centroids.push_back(sample); }
     }
   } else {
-    for (size_t i = 0; i < uniqueSamples.size() && centroids.size() < K; i++) {
+    for (size_t i = 0; i < uniqueSamples.size() && centroids.size() < K_; i++) {
       const float sample = uniqueSamples.at(i);
       bool        exists = false;
       for (float centroid : centroids) {
@@ -69,24 +59,19 @@ void GMM::build(vector<float>&       samples,
       }
       if (!exists) { centroids.push_back(sample); }
     }
-    for (size_t i = 0; i < alternateCentroids.size() && centroids.size() < K; i++) {
+    for (size_t i = 0; i < alternateCentroids.size() && centroids.size() < K_; i++) {
       centroids.push_back(alternateCentroids.at(i));
       samples.push_back(alternateCentroids.at(i));
     }
   }
 
-  vector<float> previousCentroids;
-  for (const auto& centroid : centroids) {
-    assert(!isnan(centroid));
-    previousCentroids.push_back(centroid);
-  }
+  vector<vector<float>> clusters(K_);
+  kmeans(samples, K_, centroids, clusters);
 
-  vector<vector<float>> clusters(K);
-  kmeans(samples, K, centroids, clusters);
-
-  for (k = 0; k < K; k++) {
-    const double weight = static_cast<double>(clusters.at(k).size()) / static_cast<double>(samples.size());
-    clusters_.emplace_back(clusters.at(k), weight, minimumVariance);
+  clusters_.emplace_back(nullSample, (1 - samples.size() / N), minimumVariance);
+  for (const auto& cluster : clusters) {
+    const double weight = static_cast<double>(cluster.size()) / static_cast<double>(N);
+    clusters_.emplace_back(cluster, weight, minimumVariance);
   }
   sort(clusters_.begin(), clusters_.end());
 }

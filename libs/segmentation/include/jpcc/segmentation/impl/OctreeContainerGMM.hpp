@@ -43,8 +43,7 @@ void OctreeContainerGMM<PointT>::build(const int                 index,
                                        const double              alpha,
                                        const double              minimumVariance,
                                        const std::vector<float>& alternateCentroids) {
-  trainSamples_->resize(nTrain, NULL_INTENSITY);
-  GMM::build(*trainSamples_, K, minimumVariance, {NULL_INTENSITY}, alternateCentroids);
+  GMM::buildN(*trainSamples_, K, nTrain, minimumVariance, NULL_INTENSITY, alternateCentroids);
   trainSamples_ = nullptr;
 }
 

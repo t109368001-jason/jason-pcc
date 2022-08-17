@@ -13,6 +13,8 @@ class Cluster {
  public:
   Cluster(const std::vector<float>& samples, double weight, double minimumVariance);
 
+  Cluster(float sample, double weight, double minimumVariance);
+
   [[nodiscard]] double getProbability(float sample) const;
 
   [[nodiscard]] double getStaticProbability() const;

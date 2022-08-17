@@ -15,17 +15,12 @@ class GMM {
  public:
   GMM() = default;
 
-  GMM(std::vector<float>&       samples,
-      int                       K,
-      double                    minimumVariance,
-      const std::vector<float>& seedCentroids,
-      const std::vector<float>& alternateCentroids);
-
-  void build(std::vector<float>&       samples,
-             int                       K,
-             double                    minimumVariance,
-             const std::vector<float>& seedCentroids,
-             const std::vector<float>& alternateCentroids);
+  void buildN(std::vector<float>&       samples,
+              int                       K,
+              int                       N,
+              double                    minimumVariance,
+              float                     nullSample,
+              const std::vector<float>& alternateCentroids);
 
   [[nodiscard]] bool isBuilt() const;
 

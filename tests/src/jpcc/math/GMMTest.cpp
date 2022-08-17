@@ -16,16 +16,20 @@ TEST(GMMTest, new_by_3_samples) {
   for (size_t k = 0; k < K; k++) { samples.push_back((float)k); }
 
   // when
-  const GMM gmm(samples, K, 0, {}, {});
+  GMM gmm;
+  gmm.buildN(samples, K + 1, samples.size(), 0, 1000, {});
 
   // then
   const vector<Cluster>& clusters = gmm.getClusters();
-  EXPECT_EQ(clusters.size(), K);
+  EXPECT_EQ(clusters.size(), K + 1);
   for (size_t k = 0; k < K; k++) {
     EXPECT_NEAR(clusters.at(k).getWeight(), 1.0 / K, TOLERANCE);
     EXPECT_NEAR(clusters.at(k).getMean(), k, TOLERANCE);
     EXPECT_NEAR(clusters.at(k).getVariance(), 0, TOLERANCE);
   }
+  EXPECT_NEAR(clusters.at(K).getWeight(), 0, TOLERANCE);
+  EXPECT_NEAR(clusters.at(K).getMean(), 1000, TOLERANCE);
+  EXPECT_NEAR(clusters.at(K).getVariance(), 0, TOLERANCE);
 }
 
 TEST(GMMTest, new_by_3_unique_samples) {
@@ -42,16 +46,20 @@ TEST(GMMTest, new_by_3_unique_samples) {
   for (size_t k = 0; k < K; k++) { totalCount += counts.at(k); }
 
   // when
-  const GMM gmm(samples, K, 0, {}, {});
+  GMM gmm;
+  gmm.buildN(samples, K + 1, samples.size(), 0, 1000, {});
 
   // then
   const vector<Cluster>& clusters = gmm.getClusters();
-  EXPECT_EQ(clusters.size(), K);
+  EXPECT_EQ(clusters.size(), K + 1);
   for (size_t k = 0; k < K; k++) {
     EXPECT_NEAR(clusters.at(k).getWeight(), (double)counts.at(k) / (double)totalCount, TOLERANCE);
     EXPECT_NEAR(clusters.at(k).getMean(), k, TOLERANCE);
     EXPECT_NEAR(clusters.at(k).getVariance(), 0, TOLERANCE);
   }
+  EXPECT_NEAR(clusters.at(K).getWeight(), 0, TOLERANCE);
+  EXPECT_NEAR(clusters.at(K).getMean(), 1000, TOLERANCE);
+  EXPECT_NEAR(clusters.at(K).getVariance(), 0, TOLERANCE);
 }
 
 TEST(GMMTest, new_3_cluster_3_variance) {
@@ -68,16 +76,20 @@ TEST(GMMTest, new_3_cluster_3_variance) {
   }
 
   // when
-  const GMM gmm(samples, K, 0, {}, {});
+  GMM gmm;
+  gmm.buildN(samples, K + 1, samples.size(), 0, 1000, {});
 
   // then
   const vector<Cluster>& clusters = gmm.getClusters();
-  EXPECT_EQ(clusters.size(), K);
+  EXPECT_EQ(clusters.size(), K + 1);
   for (size_t k = 0; k < K; k++) {
     EXPECT_NEAR(clusters.at(k).getWeight(), 1.0 / K, TOLERANCE);
     EXPECT_NEAR(clusters.at(k).getMean(), means.at(k), TOLERANCE);
     EXPECT_NEAR(clusters.at(k).getVariance(), variances.at(k), TOLERANCE);
   }
+  EXPECT_NEAR(clusters.at(K).getWeight(), 0, TOLERANCE);
+  EXPECT_NEAR(clusters.at(K).getMean(), 1000, TOLERANCE);
+  EXPECT_NEAR(clusters.at(K).getVariance(), 0, TOLERANCE);
 }
 
 TEST(GMMTest, getOptimalModelIndex) {
@@ -92,7 +104,8 @@ TEST(GMMTest, getOptimalModelIndex) {
       samples.push_back(means.at(k) + variances.at(k));
     }
   }
-  const GMM gmm(samples, K, 0, {}, {});
+  GMM gmm;
+  gmm.buildN(samples, K + 1, samples.size(), 0, 1000, {});
 
   // then
   for (size_t k = 0; k < K; k++) {
@@ -114,7 +127,8 @@ TEST(GMMTest, updateModel) {
       samples.push_back(means.at(k) + sqrt(variances.at(k)));
     }
   }
-  GMM gmm(samples, K, 0, {}, {});
+  GMM gmm;
+  gmm.buildN(samples, K + 1, samples.size(), 0, 1000, {});
 
   // when
   vector<float> newSamples;
@@ -126,7 +140,7 @@ TEST(GMMTest, updateModel) {
 
   // then
   const vector<Cluster>& clusters = gmm.getClusters();
-  EXPECT_EQ(clusters.size(), K);
+  EXPECT_EQ(clusters.size(), K + 1);
   EXPECT_NEAR(clusters.at(0).getWeight(), 0.7610093851, TOLERANCE);
   EXPECT_NEAR(clusters.at(0).getMean(), 1.000249155528542, TOLERANCE);
   EXPECT_NEAR(clusters.at(0).getVariance(), 1.1445250926215722, TOLERANCE);
@@ -136,6 +150,9 @@ TEST(GMMTest, updateModel) {
   EXPECT_NEAR(clusters.at(2).getWeight(), 0.1194953075, TOLERANCE);
   EXPECT_NEAR(clusters.at(2).getMean(), 499.9999921, TOLERANCE);
   EXPECT_NEAR(clusters.at(2).getVariance(), 100, TOLERANCE);
+  EXPECT_NEAR(clusters.at(K).getWeight(), 0, TOLERANCE);
+  EXPECT_NEAR(clusters.at(K).getMean(), 1000, TOLERANCE);
+  EXPECT_NEAR(clusters.at(K).getVariance(), 0, TOLERANCE);
 }
 
 }  // namespace jpcc::octree
