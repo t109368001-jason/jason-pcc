@@ -15,6 +15,8 @@ class Cluster {
 
   [[nodiscard]] double getProbability(float sample) const;
 
+  [[nodiscard]] double getStaticProbability() const;
+
   void addSample(float sample, bool matched, double alpha, double minimumVariance);
 
   void checkVariance(double minimumVariance);

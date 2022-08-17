@@ -47,9 +47,9 @@ void GMM::build(vector<float>&       samples,
   }
   if (uniqueSamples.size() >= K) {
     while (centroids.size() < K) {
-      float sample = samples.at(rand() % samples.size());
-      bool  exists = false;
-      for (float centroid : centroids) {
+      const float sample = samples.at(rand() % samples.size());
+      bool        exists = false;
+      for (const auto& centroid : centroids) {
         if (sample == centroid) {
           exists = true;
           break;
@@ -59,8 +59,8 @@ void GMM::build(vector<float>&       samples,
     }
   } else {
     for (size_t i = 0; i < uniqueSamples.size() && centroids.size() < K; i++) {
-      float sample = uniqueSamples.at(i);
-      bool  exists = false;
+      const float sample = uniqueSamples.at(i);
+      bool        exists = false;
       for (float centroid : centroids) {
         if (sample == centroid) {
           exists = true;
@@ -85,7 +85,7 @@ void GMM::build(vector<float>&       samples,
   kmeans(samples, K, centroids, clusters);
 
   for (k = 0; k < K; k++) {
-    double weight = static_cast<double>(clusters.at(k).size()) / static_cast<double>(samples.size());
+    const double weight = static_cast<double>(clusters.at(k).size()) / static_cast<double>(samples.size());
     clusters_.emplace_back(clusters.at(k), weight, minimumVariance);
   }
   sort(clusters_.begin(), clusters_.end());
@@ -100,13 +100,14 @@ bool GMM::isBuilt() const { return !clusters_.empty(); }
   double totalProbability = 0.0;
 
   for (const auto& cluster : clusters_) {
-    double probability = cluster.getWeight() * cluster.getProbability(sample);
+    const double probability = cluster.getWeight() * cluster.getProbability(sample);
     if (cluster.getMean() < 0) {
       totalProbability -= probability;
     } else {
       totalProbability += probability;
     }
   }
+  assert(!isnan(totalProbability));
   return totalProbability;
 }
 
@@ -115,36 +116,36 @@ bool GMM::isBuilt() const { return !clusters_.empty(); }
   double totalProbability = 0.0;
 
   for (const auto& cluster : clusters_) {
-    double probability = cluster.getWeight() * cluster.getProbability(static_cast<float>(cluster.getMean()));
+    const double probability = cluster.getWeight() * cluster.getStaticProbability();
     if (cluster.getMean() < 0) {
       totalProbability -= probability;
     } else {
       totalProbability += probability;
     }
   }
+  assert(!isnan(totalProbability));
   return totalProbability;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pair<size_t, double> GMM::getOptimalModelIndex(const float sample) const {
+size_t GMM::getOptimalModelIndex(const float sample) const {
   assert(!isnan(sample));
-  pair<size_t, double> optimalIndexProbability;
-  optimalIndexProbability.first  = 0;
-  optimalIndexProbability.second = clusters_.at(0).getWeight() * clusters_.at(0).getProbability(sample);
+  size_t optimalIndex       = 0;
+  double optimalProbability = clusters_.at(0).getWeight() * clusters_.at(0).getProbability(sample);
   for (size_t k = 1; k < clusters_.size(); k++) {
     double probability = clusters_.at(k).getWeight() * clusters_.at(k).getProbability(sample);
-    if (probability > optimalIndexProbability.second) {
-      optimalIndexProbability.first  = k;
-      optimalIndexProbability.second = probability;
+    if (probability >= optimalProbability) {
+      optimalIndex       = k;
+      optimalProbability = probability;
     }
   }
-  return optimalIndexProbability;
+  return optimalIndex;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void GMM::updateModel(float sample, const double alpha, const double minimumVariance) {
   assert(!isnan(sample));
-  size_t optimalIndex = getOptimalModelIndex(sample).first;
+  const size_t optimalIndex = getOptimalModelIndex(sample);
   for (size_t k = 0; k < clusters_.size(); k++) {
     clusters_.at(k).addSample(sample, k == optimalIndex, alpha, minimumVariance);
   }
@@ -155,9 +156,8 @@ void GMM::updateModel(float sample, const double alpha, const double minimumVari
 void GMM::normalizeWeights() {
   double sum = 0.0;
   for (const Cluster& cluster : clusters_) { sum += cluster.getWeight(); }
-  double multiplier = 1.0 / sum;
 
-  for (Cluster& cluster : clusters_) { cluster.getWeight() *= multiplier; }
+  for (Cluster& cluster : clusters_) { cluster.getWeight() /= sum; }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

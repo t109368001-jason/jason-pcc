@@ -33,7 +33,7 @@ class GMM {
 
   [[nodiscard]] double getStaticProbability();
 
-  [[nodiscard]] std::pair<size_t, double> getOptimalModelIndex(float sample) const;
+  [[nodiscard]] size_t getOptimalModelIndex(float sample) const;
 
   void updateModel(float sample, double alpha, double minimumVariance);
 

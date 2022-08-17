@@ -19,11 +19,19 @@ Cluster::Cluster(const std::vector<float>& samples, const double weight, const d
   assert(!isnan(mean_));
   assert(!isnan(variance_));
 }
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 double Cluster::getProbability(const float sample) const {
   assert(!isnan(sample));
   double tmp         = exp((-0.5) * pow(sample - mean_, 2) / variance_);
   double probability = tmp / sqrt(2 * M_PI * variance_);
+  assert(!isnan(probability));
+  return probability;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+double Cluster::getStaticProbability() const {
+  double probability = 1 / sqrt(2 * M_PI * variance_);
   assert(!isnan(probability));
   return probability;
 }

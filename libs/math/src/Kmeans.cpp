@@ -28,7 +28,7 @@ void kmeans(const std::vector<float>&        samples,
       size_t minIndex    = 0;
       float  minDistance = abs(sample - centroids.at(0));
       for (k = 1; k < K; k++) {
-        float distance = abs(sample - centroids.at(k));
+        const float distance = abs(sample - centroids.at(k));
         if (distance < minDistance) {
           minIndex    = k;
           minDistance = distance;
