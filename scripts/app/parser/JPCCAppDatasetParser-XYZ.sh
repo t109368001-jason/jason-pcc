@@ -4,7 +4,7 @@ set -ex
 mkdir -p ./logs
 
 OUTPUT_FOLDER_PREFIX="../../dataset/"
-OUTPUT_FOLDER="converted-$(date +%Y%m%d)/ZX-XS-20220707-ctc-pre-processed-xyz/"
+OUTPUT_FOLDER="converted-$(date +%Y%m%d-%H)/ZX-XS-20220707-ctc-pre-processed-xyz/"
 
 mkdir -p "${OUTPUT_FOLDER_PREFIX}${OUTPUT_FOLDER}"
 
