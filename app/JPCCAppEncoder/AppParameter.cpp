@@ -14,9 +14,11 @@ using namespace po;
 AppParameter::AppParameter() :
     Parameter(APP_OPT_PREFIX, __FUNCTION__),
     parallel(false),
+    groupOfFramesSize(32),
     inputDataset("dataset", "InputDatasetParameter"),
     inputReader("reader", "InputDatasetReaderParameter"),
     outputDataset("outputDataset", "OutputDatasetParameter"),
+    preProcess(),
     jpccGmmSegmentation() {
   opts_.add_options()                                                        //
       (string(prefix_ + PARALLEL_OPT).c_str(),                               //

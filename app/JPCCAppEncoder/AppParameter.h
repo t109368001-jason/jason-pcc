@@ -11,7 +11,6 @@ namespace jpcc {
 class AppParameter : public Parameter {
  public:
   bool                                    parallel;
-  bool                                    headless;
   size_t                                  groupOfFramesSize;
   io::DatasetParameter                    inputDataset;
   io::DatasetReaderParameter              inputReader;
