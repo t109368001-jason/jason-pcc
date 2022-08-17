@@ -48,7 +48,7 @@ for K in "${K_LIST[@]}"; do
 
         mkdir -p "${OUTPUT_FOLDER_PREFIX}${OUTPUT_FOLDER}"
 
-        ./bin/JPCCAppSegmentation \
+        ./bin/JPCCAppEncoder \
           --app.parallel false \
           --outputDataset.folder "${OUTPUT_FOLDER}" \
           --jpccGMMSegmentationParameter.k "${K}" \
@@ -61,7 +61,7 @@ for K in "${K_LIST[@]}"; do
           --jpccGMMSegmentationParameter.nullStaticThreshold "${NULL_STATIC_THRESHOLD}" \
           --jpccGMMSegmentationParameter.staticThreshold "${STATIC_THRESHOLD}" \
           --jpccGMMSegmentationParameter.staticThreshold "${STATIC_THRESHOLD}" \
-          --configs cfg/app/Segmentation/ctc-raw.cfg |& tee "${OUTPUT_FOLDER_PREFIX}${OUTPUT_FOLDER}JPCCAppSegmentation-$(date +%Y%m%d-%H%M%S).log" &
+          --configs cfg/app/Segmentation/ctc-raw.cfg |& tee "${OUTPUT_FOLDER_PREFIX}${OUTPUT_FOLDER}JPCCAppEncoder-$(date +%Y%m%d-%H%M%S).log" &
       done
     done
   done

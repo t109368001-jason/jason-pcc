@@ -46,6 +46,9 @@ void encode(const AppParameter& parameter, StopwatchUserTime& clock) {
   clock.stop();
 
   {  // encode
+#if !defined(NDEBUG)
+    size_t staticPointSize = 0;
+#endif
     GroupOfFrame<PointEncode> frames;
     GroupOfFrame<PointEncode> dynamicFrames;
     GroupOfFrame<PointEncode> staticAddedFrames;
@@ -71,7 +74,17 @@ void encode(const AppParameter& parameter, StopwatchUserTime& clock) {
           auto staticAddedFrame   = jpcc::make_shared<Frame<PointEncode>>();
           auto staticRemovedFrame = jpcc::make_shared<Frame<PointEncode>>();
 
+#if defined(NDEBUG)
           gmmSegmentation->segmentation(frame, dynamicFrame, nullptr, staticAddedFrame, staticRemovedFrame);
+
+#else
+          auto staticFrame = jpcc::make_shared<Frame<PointEncode>>();
+          gmmSegmentation->segmentation(frame, dynamicFrame, staticFrame, staticAddedFrame, staticRemovedFrame);
+
+          staticPointSize += staticAddedFrame->size();
+          staticPointSize -= staticRemovedFrame->size();
+          assert(staticPointSize == staticFrame->size());
+#endif
 
           dynamicFrames.push_back(dynamicFrame);
           staticAddedFrames.push_back(staticAddedFrame);
