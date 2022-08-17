@@ -39,7 +39,7 @@ class OctreeContainerGMM : public IOctreeContainerGMM,
 
   [[nodiscard]] bool isStatic(const std::vector<double>& staticThresholdVector,
                               const std::vector<double>& nullStaticThresholdVector,
-                              const std::vector<double>& outputExistsPointOnlyVector) override;
+                              const std::vector<bool>&   outputExistsPointOnlyVector) override;
 
   virtual void updateModel(int index, double alpha, double nullAlpha, double minimumVariance) override;
 };

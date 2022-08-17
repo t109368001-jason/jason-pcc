@@ -51,10 +51,10 @@ void OctreeContainerGMM<PointT>::build(const int                 index,
 template <typename PointT>
 bool OctreeContainerGMM<PointT>::isStatic(const std::vector<double>& staticThresholdVector,
                                           const std::vector<double>& nullStaticThresholdVector,
-                                          const std::vector<double>& outputExistsPointOnlyVector) {
+                                          const std::vector<bool>&   outputExistsPointOnlyVector) {
   if (isnan(this->lastPoint_.intensity)) {
     if (!outputExistsPointOnlyVector.at(0)) {
-      if (GMM::getStaticProbability() > nullStaticThresholdVector.at(0);) { return true; }
+      if (GMM::getStaticProbability() > nullStaticThresholdVector.at(0)) { return true; }
     }
     return false;
   } else {
