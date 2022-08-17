@@ -31,7 +31,7 @@ class Cluster {
 
   [[nodiscard]] double getVariance() const;
 
-  bool operator<(const Cluster& obj) const;
+  [[nodiscard]] bool operator<(const Cluster& obj) const;
 };
 
 }  // namespace jpcc::math

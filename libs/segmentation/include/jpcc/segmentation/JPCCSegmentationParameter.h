@@ -66,8 +66,8 @@ class JPCCSegmentationParameter : public virtual Parameter {
   friend std::ostream& operator<<(std::ostream& out, const JPCCSegmentationParameter& obj);
 };
 
-SegmentationType getSegmentationType(const std::string& type);
+[[nodiscard]] SegmentationType getSegmentationType(const std::string& type);
 
-StaticPointType getStaticPointType(const std::string& type);
+[[nodiscard]] StaticPointType getStaticPointType(const std::string& type);
 
 }  // namespace jpcc::segmentation

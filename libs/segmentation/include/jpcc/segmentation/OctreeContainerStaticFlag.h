@@ -17,7 +17,7 @@ class OctreeContainerStaticFlag : virtual public pcl::octree::OctreeContainerBas
 
   void reset() override;
 
-  bool isLastStatic() const;
+  [[nodiscard]] bool isLastStatic() const;
 
   void setIsLastStatic(bool isStatic);
 };

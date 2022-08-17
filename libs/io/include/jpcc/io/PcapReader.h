@@ -32,7 +32,7 @@ class PcapReader : public DatasetStreamReader<PointT> {
 
   void load_(size_t datasetIndex, size_t startFrameNumber, size_t groupOfFramesSize) override;
 
-  int parseDataPacket(void* pcap, GroupOfFrame<PointT>& frameBuffer);
+  [[nodiscard]] int parseDataPacket(void* pcap, GroupOfFrame<PointT>& frameBuffer);
 };
 
 }  // namespace jpcc::io

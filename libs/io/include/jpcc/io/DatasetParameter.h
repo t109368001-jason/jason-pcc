@@ -81,8 +81,8 @@ class DatasetParameter : public virtual Parameter {
   friend std::ostream& operator<<(std::ostream& out, const DatasetParameter& obj);
 };
 
-Sensor getSensor(const std::string& sensor);
+[[nodiscard]] Sensor getSensor(const std::string& sensor);
 
-Type getType(const std::string& type);
+[[nodiscard]] Type getType(const std::string& type);
 
 }  // namespace jpcc::io
