@@ -5,6 +5,7 @@
 #include <jpcc/common/ParameterParser.h>
 #include <jpcc/io/PlyIO.h>
 #include <jpcc/io/Reader.h>
+#include <jpcc/metric/JPCCMetric.h>
 #include <jpcc/process/PreProcessor.h>
 #include <jpcc/segmentation/JPCCSegmentationAdapter.h>
 
@@ -12,35 +13,20 @@
 
 using namespace std;
 using namespace std::chrono;
-using namespace pcc;
-using namespace pcc::chrono;
 using namespace jpcc;
 using namespace jpcc::io;
+using namespace jpcc::metric;
 using namespace jpcc::process;
 using namespace jpcc::segmentation;
 
 using PointEncode = pcl::PointXYZI;
 using PointOutput = pcl::PointXYZ;
 
-void encode(const AppParameter& parameter) {
+void encode(const AppParameter& parameter, JPCCMetric& metric) {
   DatasetReader<PointEncode>::Ptr    reader = newReader<PointEncode>(parameter.inputReader, parameter.inputDataset);
   PreProcessor<PointEncode>          preProcessor(parameter.preProcess);
   JPCCSegmentation<PointEncode>::Ptr gmmSegmentation = JPCCSegmentationAdapter::build<PointEncode>(
       parameter.jpccGmmSegmentation, (int)parameter.inputDataset.getStartFrameNumber());
-
-  // TODO extract JPCCMetric
-  Stopwatch<steady_clock> clockLoad;
-  Stopwatch<steady_clock> clockPreProcess;
-  Stopwatch<steady_clock> clockBuild;
-  Stopwatch<steady_clock> clockEncode;
-  Stopwatch<steady_clock> clockSave;
-  Stopwatch<steady_clock> clockMetric;
-
-  uint64_t rawPoints           = 0;
-  uint64_t preProcessedPoints  = 0;
-  uint64_t dynamicPoints       = 0;
-  uint64_t staticAddedPoints   = 0;
-  uint64_t staticRemovedPoints = 0;
 
   {  // build gaussian mixture model
     GroupOfFrame<PointEncode> frames;
@@ -48,17 +34,17 @@ void encode(const AppParameter& parameter) {
     size_t                    frameNumber       = parameter.inputDataset.getStartFrameNumber();
     const size_t              endFrameNumber    = parameter.inputDataset.getEndFrameNumber();
     while (!gmmSegmentation->isBuilt() && frameNumber < endFrameNumber) {
-      clockLoad.start();
+      metric.start("Load");
       reader->loadAll(frameNumber, groupOfFramesSize, frames, parameter.parallel);
-      clockLoad.stop();
+      metric.stop("Load");
 
-      clockPreProcess.start();
+      metric.start("PreProcess");
       preProcessor.process(frames, nullptr, parameter.parallel);
-      clockPreProcess.stop();
+      metric.stop("PreProcess");
 
-      clockBuild.start();
+      metric.start("Build");
       for (const auto& frame : frames) { gmmSegmentation->appendTrainSamples(frame); }
-      clockBuild.stop();
+      metric.stop("Build");
 
       frameNumber += groupOfFramesSize;
     }
@@ -76,20 +62,24 @@ void encode(const AppParameter& parameter) {
   const size_t              endFrameNumber    = parameter.inputDataset.getEndFrameNumber();
 
   while (frameNumber < endFrameNumber) {
-    clockLoad.start();
+    metric.start("Load");
     reader->loadAll(frameNumber, groupOfFramesSize, frames, parameter.parallel);
-    clockLoad.stop();
+    metric.stop("Load");
 
-    clockMetric.start();
-    for (const auto& frame : frames) { rawPoints += frame->size(); }
-    clockMetric.stop();
+    metric.start("Metric");
+    metric.add<PointEncode>("Raw", frames);
+    metric.stop("Metric");
 
-    clockPreProcess.start();
+    metric.start("PreProcess");
     preProcessor.process(frames, nullptr, parameter.parallel);
-    clockPreProcess.stop();
+    metric.stop("PreProcess");
+
+    metric.start("Metric");
+    metric.add<PointEncode>("PreProcessed", frames);
+    metric.stop("Metric");
 
     // TODO extract JPCCEncoder
-    clockEncode.start();
+    metric.start("Encode");
     dynamicFrames.clear();
     staticAddedFrames.clear();
     staticRemovedFrames.clear();
@@ -114,40 +104,23 @@ void encode(const AppParameter& parameter) {
       staticAddedFrames.push_back(staticAddedFrame);
       staticRemovedFrames.push_back(staticRemovedFrame);
     }
-    clockEncode.stop();
+    metric.stop("Encode");
 
-    clockSave.start();
+    metric.start("Save");
     // TODO extract JPCCWriter
     savePly<PointEncode, PointOutput>(dynamicFrames, parameter.outputDataset.getFilePath(0), parameter.parallel);
     savePly<PointEncode, PointOutput>(staticAddedFrames, parameter.outputDataset.getFilePath(1), parameter.parallel);
     savePly<PointEncode, PointOutput>(staticRemovedFrames, parameter.outputDataset.getFilePath(2), parameter.parallel);
-    clockSave.stop();
+    metric.stop("Save");
 
-    clockMetric.start();
-    for (const auto& frame : frames) { preProcessedPoints += frame->size(); }
-    for (const auto& frame : dynamicFrames) { dynamicPoints += frame->size(); }
-    for (const auto& frame : staticAddedFrames) { staticAddedPoints += frame->size(); }
-    for (const auto& frame : staticRemovedFrames) { staticRemovedPoints += frame->size(); }
-    clockMetric.stop();
+    metric.start("Metric");
+    metric.add<PointEncode>("Dynamic", dynamicFrames);
+    metric.add<PointEncode>("StaticAdded", staticAddedFrames);
+    metric.add<PointEncode>("StaticRemoved", staticRemovedFrames);
+    metric.stop("Metric");
 
     frameNumber += groupOfFramesSize;
   }
-
-  cout << "\n\nMetrics:" << endl;
-  cout << "  Points: " << endl;
-  cout << "    Raw            : " << preProcessedPoints << endl;
-  cout << "    PreProcessed   : " << preProcessedPoints << endl;
-  cout << "    Dynamic        : " << dynamicPoints << endl;
-  cout << "    StaticAdded    : " << staticAddedPoints << endl;
-  cout << "    StaticRemoved  : " << staticRemovedPoints << endl;
-
-  cout << "\n\nProcessing time:\n";
-  cout << "  Load       : " << (float)clockLoad.count().count() / 1000000000.0 << " s" << endl;
-  cout << "  PreProcess : " << (float)clockPreProcess.count().count() / 1000000000.0 << " s" << endl;
-  cout << "  Build      : " << (float)clockBuild.count().count() / 1000000000.0 << " s" << endl;
-  cout << "  Encode     : " << (float)clockEncode.count().count() / 1000000000.0 << " s" << endl;
-  cout << "  Save       : " << (float)clockSave.count().count() / 1000000000.0 << " s" << endl;
-  cout << "  Metric     : " << (float)clockMetric.count().count() / 1000000000.0 << " s" << endl;
 }
 
 int main(int argc, char* argv[]) {
@@ -166,15 +139,13 @@ int main(int argc, char* argv[]) {
 
   try {
     // Timers to count elapsed wall/user time
-    Stopwatch<steady_clock> clockWall;
+    JPCCMetric metric;
 
-    clockWall.start();
-    encode(parameter);
-    clockWall.stop();
+    metric.start("Wall");
+    encode(parameter, metric);
+    metric.stop("Wall");
 
-    auto totalWall = duration_cast<milliseconds>(clockWall.count()).count();
-    cout << "Processing time (wall): " << (float)totalWall / 1000.0 << " s\n";
-    cout << "Peak memory: " << getPeakMemory() << " KB\n";
+    metric.show();
   } catch (exception& e) { cerr << e.what() << endl; }
 
   cout << "JPCC App Encoder End" << endl;
