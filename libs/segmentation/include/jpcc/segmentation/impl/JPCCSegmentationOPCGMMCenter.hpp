@@ -25,12 +25,11 @@ bool JPCCSegmentationOPCGMMCenter<PointT, LeafContainerT>::isBuilt() const {
 template <typename PointT, typename LeafContainerT>
 void JPCCSegmentationOPCGMMCenter<PointT, LeafContainerT>::appendTrainSamples(FramePtr<PointT> frame) {
   if (this->isBuilt()) { return; }
-  for (auto it = this->leaf_depth_begin(), end = this->leaf_depth_end(); it != end; ++it) {
-    it.getLeafContainer().resetLastPoint();
-  }
   this->addFrame(frame);
   for (auto it = this->leaf_depth_begin(), end = this->leaf_depth_end(); it != end; ++it) {
-    it.getLeafContainer().addTrainSample();
+    LeafContainerT& leafContainer = it.getLeafContainer();
+    leafContainer.addTrainSample();
+    leafContainer.resetLastPoint();
   }
   for (size_t i = 0; i < SIZE; i++) {
     if (!this->builtVector.at(i) &&
@@ -69,9 +68,6 @@ void JPCCSegmentationOPCGMMCenter<PointT, LeafContainerT>::segmentation(const Fr
     staticFrameRemoved->header = frame->header;
   }
 
-  for (auto it = this->leaf_depth_begin(), end = this->leaf_depth_end(); it != end; ++it) {
-    it.getLeafContainer().resetLastPoint();
-  }
   this->addFrame(frame);
   for (auto it = this->leaf_depth_begin(), end = this->leaf_depth_end(); it != end; ++it) {
     LeafContainerT& leafContainer = it.getLeafContainer();
@@ -107,6 +103,7 @@ void JPCCSegmentationOPCGMMCenter<PointT, LeafContainerT>::segmentation(const Fr
                                   this->parameter_.minimumVariance);
       }
     }
+    leafContainer.resetLastPoint();
   }
 
   if (dynamicFrame) {
