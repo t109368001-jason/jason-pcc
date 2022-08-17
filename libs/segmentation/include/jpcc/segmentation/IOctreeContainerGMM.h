@@ -22,7 +22,8 @@ class IOctreeContainerGMM {
                      const std::vector<float>& alternateCentroids) = 0;
 
   [[nodiscard]] virtual bool isStatic(const std::vector<double>& staticThresholdVector,
-                                      const std::vector<double>& nullStaticThresholdVector) = 0;
+                                      const std::vector<double>& nullStaticThresholdVector,
+                                      const std::vector<double>& outputExistsPointOnlyVector) = 0;
 
   virtual void updateModel(int index, double alpha, double nullAlpha, double minimumVariance) = 0;
 };

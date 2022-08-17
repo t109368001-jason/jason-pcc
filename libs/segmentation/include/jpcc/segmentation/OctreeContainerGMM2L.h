@@ -40,7 +40,8 @@ class OctreeContainerGMM2L : public IOctreeContainerGMM, virtual public octree::
              const std::vector<float>& alternateCentroids) override;
 
   [[nodiscard]] bool isStatic(const std::vector<double>& staticThresholdVector,
-                              const std::vector<double>& nullStaticThresholdVector) override;
+                              const std::vector<double>& nullStaticThresholdVector,
+                              const std::vector<double>& outputExistsPointOnlyVector) override;
 
   void updateModel(int index, double alpha, double nullAlpha, double minimumVariance) override;
 };

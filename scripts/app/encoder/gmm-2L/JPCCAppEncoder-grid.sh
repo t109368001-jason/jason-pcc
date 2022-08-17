@@ -57,7 +57,7 @@ for K in "${K_LIST[@]}"; do
           --jpccGMMSegmentationParameter.nTrain "${N}" \
           --jpccGMMSegmentationParameter.alpha 0.000255 \
           --jpccGMMSegmentationParameter.nTrain 18090 \
-          --jpccGMMSegmentationParameter.nullStaticThreshold 0 \
+          --jpccGMMSegmentationParameter.nullStaticThreshold "${NULL_STATIC_THRESHOLD}" \
           --jpccGMMSegmentationParameter.nullStaticThreshold "${NULL_STATIC_THRESHOLD}" \
           --jpccGMMSegmentationParameter.staticThreshold "${STATIC_THRESHOLD}" \
           --jpccGMMSegmentationParameter.staticThreshold "${STATIC_THRESHOLD}" \
