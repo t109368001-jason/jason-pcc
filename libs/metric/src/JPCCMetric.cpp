@@ -23,15 +23,20 @@ void JPCCMetric::addBytes(const std::string& name, const uint64_t bytes) { bytes
 //////////////////////////////////////////////////////////////////////////////////////////////
 void JPCCMetric::show() const {
   cout << endl;
-  cout << "Points:" << endl;
-  for (const auto& [name, points] : pointsMap_) { cout << "\t" << name << ": " << points << " points" << endl; }
-  cout << "Bytes:" << endl;
-  for (const auto& [name, bytes] : bytesMap_) { cout << "\t" << name << ": " << bytes << " bytes" << endl; }
-  cout << "Processing time:" << endl;
-  for (const auto& [name, stopWatch] : clockMap_) {
-    cout << "\t" << name << ": " << (float)stopWatch.count().count() / 1000000000.0 << " s" << endl;
+  cout << "Metric:" << endl;
+  cout << "  Points:" << endl;
+  for (const auto& [name, points] : pointsMap_) {  //
+    cout << "    " << name << ": " << points << " points" << endl;
   }
-  cout << "Peak memory: " << getPeakMemory() << " KB\n";
+  cout << "  Bytes:" << endl;
+  for (const auto& [name, bytes] : bytesMap_) {  //
+    cout << "    " << name << ": " << bytes << " bytes" << endl;
+  }
+  cout << "  Processing time:" << endl;
+  for (const auto& [name, stopWatch] : clockMap_) {
+    cout << "    " << name << ": " << (float)stopWatch.count().count() / 1000000000.0 << " s" << endl;
+  }
+  cout << "Peak memory: " << getPeakMemory() << " KB\n\n";
 }
 
 }  // namespace jpcc::metric
