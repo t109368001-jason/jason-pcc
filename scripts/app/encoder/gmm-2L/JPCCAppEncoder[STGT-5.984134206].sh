@@ -10,4 +10,4 @@ mkdir -p "${OUTPUT_FOLDER_PREFIX}${OUTPUT_FOLDER}"
   --jpccGMMSegmentationParameter.nullStaticThreshold -5.984134206 \
   --jpccGMMSegmentationParameter.nullStaticThreshold -5.984134206 \
   --outputDataset.folder "${OUTPUT_FOLDER}" \
-  --configs cfg/app/Segmentation/ctc-raw.cfg |& tee "${OUTPUT_FOLDER_PREFIX}${OUTPUT_FOLDER}JPCCAppEncoder-$(date +%Y%m%d-%H%M%S).log"
+  --configs cfg/app/Encoder/ctc-raw.cfg |& tee "${OUTPUT_FOLDER_PREFIX}${OUTPUT_FOLDER}JPCCAppEncoder-$(date +%Y%m%d-%H%M%S).log"

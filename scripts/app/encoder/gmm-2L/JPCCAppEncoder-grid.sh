@@ -61,7 +61,7 @@ for K in "${K_LIST[@]}"; do
           --jpccGMMSegmentationParameter.nullStaticThreshold "${NULL_STATIC_THRESHOLD}" \
           --jpccGMMSegmentationParameter.staticThreshold "${STATIC_THRESHOLD}" \
           --jpccGMMSegmentationParameter.staticThreshold "${STATIC_THRESHOLD}" \
-          --configs cfg/app/Segmentation/ctc-raw.cfg |& tee "${OUTPUT_FOLDER_PREFIX}${OUTPUT_FOLDER}JPCCAppEncoder-$(date +%Y%m%d-%H%M%S).log" &
+          --configs cfg/app/Encoder/ctc-raw.cfg |& tee "${OUTPUT_FOLDER_PREFIX}${OUTPUT_FOLDER}JPCCAppEncoder-$(date +%Y%m%d-%H%M%S).log" &
       done
     done
   done
