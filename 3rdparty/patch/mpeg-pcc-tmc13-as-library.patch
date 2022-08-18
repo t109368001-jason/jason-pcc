@@ -1,0 +1,116 @@
+diff --git a/tmc3/CMakeLists.txt b/tmc3/CMakeLists.txt
+index 68d9e76..519adc1 100644
+--- a/tmc3/CMakeLists.txt
++++ b/tmc3/CMakeLists.txt
+@@ -161,12 +161,13 @@ include_directories(
+   "${CMAKE_CURRENT_SOURCE_DIR}/../dependencies/program-options-lite"
+ )
+ 
+-add_executable (tmc3
++add_library (tmc3
+   ${PROJECT_CPP_FILES}
+   ${PROJECT_INC_FILES}
+   ${PROJECT_IN_FILES}
+   ${VERSION_FILE}
+ )
++target_include_directories(tmc3 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+ add_dependencies(tmc3 genversion)
+ 
+ add_executable (ply-merge EXCLUDE_FROM_ALL
+@@ -177,5 +178,3 @@ add_executable (ply-merge EXCLUDE_FROM_ALL
+   ${VERSION_FILE}
+ )
+ add_dependencies(ply-merge genversion)
+-
+-install (TARGETS tmc3 DESTINATION bin)
+diff --git a/tmc3/TMC3.cpp b/tmc3/TMC3.cpp
+index 54ebfc9..65a71df 100644
+--- a/tmc3/TMC3.cpp
++++ b/tmc3/TMC3.cpp
+@@ -207,46 +207,46 @@ void convertFromGbr(
+ 
+ //============================================================================
+ 
+-int
+-main(int argc, char* argv[])
+-{
+-  cout << "MPEG PCC tmc3 version " << ::pcc::version << endl;
+-
+-  Parameters params;
+-
+-  try {
+-    if (!ParseParameters(argc, argv, params))
+-      return 1;
+-  }
+-  catch (df::program_options_lite::ParseFailure& e) {
+-    std::cerr << "Error parsing option \"" << e.arg << "\" with argument \""
+-              << e.val << "\"." << std::endl;
+-    return 1;
+-  }
+-
+-  // Timers to count elapsed wall/user time
+-  pcc::chrono::Stopwatch<std::chrono::steady_clock> clock_wall;
+-  pcc::chrono::Stopwatch<pcc::chrono::utime_inc_children_clock> clock_user;
+-
+-  clock_wall.start();
+-
+-  int ret = 0;
+-  if (params.isDecoder) {
+-    ret = SequenceDecoder(&params).decompress(&clock_user);
+-  } else {
+-    ret = SequenceEncoder(&params).compress(&clock_user);
+-  }
+-
+-  clock_wall.stop();
+-
+-  using namespace std::chrono;
+-  auto total_wall = duration_cast<milliseconds>(clock_wall.count()).count();
+-  auto total_user = duration_cast<milliseconds>(clock_user.count()).count();
+-  std::cout << "Processing time (wall): " << total_wall / 1000.0 << " s\n";
+-  std::cout << "Processing time (user): " << total_user / 1000.0 << " s\n";
+-
+-  return ret;
+-}
++//int
++//main(int argc, char* argv[])
++//{
++//  cout << "MPEG PCC tmc3 version " << ::pcc::version << endl;
++//
++//  Parameters params;
++//
++//  try {
++//    if (!ParseParameters(argc, argv, params))
++//      return 1;
++//  }
++//  catch (df::program_options_lite::ParseFailure& e) {
++//    std::cerr << "Error parsing option \"" << e.arg << "\" with argument \""
++//              << e.val << "\"." << std::endl;
++//    return 1;
++//  }
++//
++//  // Timers to count elapsed wall/user time
++//  pcc::chrono::Stopwatch<std::chrono::steady_clock> clock_wall;
++//  pcc::chrono::Stopwatch<pcc::chrono::utime_inc_children_clock> clock_user;
++//
++//  clock_wall.start();
++//
++//  int ret = 0;
++//  if (params.isDecoder) {
++//    ret = SequenceDecoder(&params).decompress(&clock_user);
++//  } else {
++//    ret = SequenceEncoder(&params).compress(&clock_user);
++//  }
++//
++//  clock_wall.stop();
++//
++//  using namespace std::chrono;
++//  auto total_wall = duration_cast<milliseconds>(clock_wall.count()).count();
++//  auto total_user = duration_cast<milliseconds>(clock_user.count()).count();
++//  std::cout << "Processing time (wall): " << total_wall / 1000.0 << " s\n";
++//  std::cout << "Processing time (user): " << total_user / 1000.0 << " s\n";
++//
++//  return ret;
++//}
+ 
+ //---------------------------------------------------------------------------
+ 

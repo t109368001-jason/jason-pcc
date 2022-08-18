@@ -45,6 +45,9 @@ find_package(PCL 1.12.0 REQUIRED COMPONENTS common features filters io octree sa
 
 find_package(VTK 9.0.3 REQUIRED COMPONENTS CommonCore)
 
+include(3rdparty/cmake/mpeg-pcc-tmc13.cmake)
+add_subdirectory(3rdparty/mpeg-pcc-tmc13)
+
 include(cmake/jpcc-target.cmake)
 
 add_subdirectory(libs/pcc_common)

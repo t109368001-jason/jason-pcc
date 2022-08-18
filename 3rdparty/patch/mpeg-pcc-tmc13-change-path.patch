@@ -1,0 +1,15 @@
+diff --git a/tmc3/CMakeLists.txt b/tmc3/CMakeLists.txt
+index 68d9e76..b67e6f0 100644
+--- a/tmc3/CMakeLists.txt
++++ b/tmc3/CMakeLists.txt
+@@ -28,8 +28,8 @@ add_custom_target(
+                            -D VERSION_EXTRA=${VERSION_EXTRA}
+                            -D VERSION_CACHE_FILE=${VERSION_CACHE_FILE}
+                            -D GIT_EXECUTABLE=${GIT_EXECUTABLE}
+-                           -P ${CMAKE_SOURCE_DIR}/scripts/genversion.cmake
+-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
++                           -P ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/genversion.cmake
++  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/..
+ )
+ 
+ add_custom_command(
