@@ -67,7 +67,7 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
     metric.stop("Load");
 
     metric.start("Metric");
-    metric.add<PointEncode>("Raw", frames);
+    metric.addPoints<PointEncode>("Raw", frames);
     metric.stop("Metric");
 
     metric.start("PreProcess");
@@ -114,9 +114,9 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
     metric.stop("Save");
 
     metric.start("Metric");
-    metric.add<PointEncode>("Dynamic", dynamicFrames);
-    metric.add<PointEncode>("StaticAdded", staticAddedFrames);
-    metric.add<PointEncode>("StaticRemoved", staticRemovedFrames);
+    metric.addPoints<PointEncode>("Dynamic", dynamicFrames);
+    metric.addPoints<PointEncode>("StaticAdded", staticAddedFrames);
+    metric.addPoints<PointEncode>("StaticRemoved", staticRemovedFrames);
     metric.stop("Metric");
 
     frameNumber += groupOfFramesSize;
