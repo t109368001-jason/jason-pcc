@@ -6,6 +6,8 @@
 #include <jpcc/io/PlyIO.h>
 #include <jpcc/io/Reader.h>
 #include <jpcc/metric/JPCCMetric.h>
+#include <jpcc/octree/OctreeContainerEditableIndex.h>
+#include <jpcc/process/JPCCNormalEstimation.h>
 #include <jpcc/process/PreProcessor.h>
 #include <jpcc/segmentation/JPCCSegmentationAdapter.h>
 
@@ -16,17 +18,20 @@ using namespace std::chrono;
 using namespace jpcc;
 using namespace jpcc::io;
 using namespace jpcc::metric;
+using namespace jpcc::octree;
 using namespace jpcc::process;
 using namespace jpcc::segmentation;
 
 using PointEncode = pcl::PointXYZI;
 using PointOutput = pcl::PointXYZ;
+using PointMetric = pcl::PointXYZINormal;
 
 void encode(const AppParameter& parameter, JPCCMetric& metric) {
   DatasetReader<PointEncode>::Ptr    reader = newReader<PointEncode>(parameter.inputReader, parameter.inputDataset);
   PreProcessor<PointEncode>          preProcessor(parameter.preProcess);
   JPCCSegmentation<PointEncode>::Ptr gmmSegmentation = JPCCSegmentationAdapter::build<PointEncode>(
       parameter.jpccGmmSegmentation, (int)parameter.inputDataset.getStartFrameNumber());
+  JPCCNormalEstimation<PointEncode, PointMetric> normalEstimation(parameter.normalEstimation);
 
   {  // build gaussian mixture model
     GroupOfFrame<PointEncode> frames;
@@ -35,15 +40,15 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
     const size_t              endFrameNumber    = parameter.inputDataset.getEndFrameNumber();
     while (!gmmSegmentation->isBuilt() && frameNumber < endFrameNumber) {
       {
-        auto clock = metric.start("Load", frameNumber);
+        ScopeStopwatch clock = metric.start("Load", frameNumber);
         reader->loadAll(frameNumber, groupOfFramesSize, frames, parameter.parallel);
       }
       {
-        auto clock = metric.start("PreProcess", frameNumber);
+        ScopeStopwatch clock = metric.start("PreProcess", frameNumber);
         preProcessor.process(frames, nullptr, parameter.parallel);
       }
       for (const auto& frame : frames) {
-        auto clock = metric.start("Build", frame->header.seq);
+        ScopeStopwatch clock = metric.start("Build", frame->header.seq);
         gmmSegmentation->appendTrainSamples(frame);
       }
 
@@ -58,19 +63,25 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
   GroupOfFrame<PointEncode> dynamicFrames;
   GroupOfFrame<PointEncode> staticAddedFrames;
   GroupOfFrame<PointEncode> staticRemovedFrames;
+  GroupOfFrame<PointEncode> reconstructFrames;
   size_t                    groupOfFramesSize = parameter.groupOfFramesSize;
   size_t                    frameNumber       = parameter.inputDataset.getStartFrameNumber();
   const size_t              endFrameNumber    = parameter.inputDataset.getEndFrameNumber();
 
+  auto staticFrame  = jpcc::make_shared<Frame<PointEncode>>();
+  auto staticOctree = jpcc::make_shared<JPCCOctreePointCloud<PointEncode, OctreeContainerEditableIndex>>(
+      parameter.jpccGmmSegmentation.resolution);
+  staticOctree->setInputCloud(staticFrame);
+
   while (frameNumber < endFrameNumber) {
     {
-      auto clock = metric.start("Load", frameNumber);
+      ScopeStopwatch clock = metric.start("Load", frameNumber);
       reader->loadAll(frameNumber, groupOfFramesSize, frames, parameter.parallel);
     }
     metric.addPoints<PointEncode>("Raw", frames);
 
     {
-      auto clock = metric.start("PreProcess", frameNumber);
+      ScopeStopwatch clock = metric.start("PreProcess", frameNumber);
       preProcessor.process(frames, nullptr, parameter.parallel);
     }
     metric.addPoints<PointEncode>("PreProcessed", frames);
@@ -86,7 +97,7 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
 
 #if defined(NDEBUG)
       {
-        auto clock = metric.start("Encode", frame->header.seq);
+        ScopeStopwatch clock = metric.start("Encode", frame->header.seq);
         gmmSegmentation->segmentation(frame, dynamicFrame, nullptr, staticAddedFrame, staticRemovedFrame);
       }
 
@@ -104,12 +115,41 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
       staticRemovedFrames.push_back(staticRemovedFrame);
     }
     {
-      auto clock = metric.start("Save", frameNumber);
+      ScopeStopwatch clock = metric.start("Save", frameNumber);
       // TODO extract JPCCWriter
       savePly<PointEncode, PointOutput>(dynamicFrames, parameter.outputDataset.getFilePath(0), parameter.parallel);
       savePly<PointEncode, PointOutput>(staticAddedFrames, parameter.outputDataset.getFilePath(1), parameter.parallel);
       savePly<PointEncode, PointOutput>(staticRemovedFrames, parameter.outputDataset.getFilePath(2),
                                         parameter.parallel);
+    }
+
+    for (size_t i = 0; i < staticAddedFrames.size(); i++) {
+      staticFrame->header  = frames.at(i)->header;
+      ScopeStopwatch clock = metric.start("Decode", staticFrame->header.seq);
+      if (staticRemovedFrames.at(i)) {
+        for (const PointEncode& pointToRemove : staticRemovedFrames.at(i)->points) {
+          staticOctree->deletePointFromCloud(pointToRemove, staticFrame);
+        }
+      }
+      if (staticAddedFrames.at(i)) {
+        for (const PointEncode& pointToAdd : staticAddedFrames.at(i)->points) {
+          staticOctree->addPointToCloud(pointToAdd, staticFrame);
+        }
+      }
+      assert(staticFrame->size() == staticFrames.at(i)->size());
+
+      auto tmpFrame = jpcc::make_shared<Frame<PointEncode>>();
+      pcl::copyPointCloud(*staticFrame, *tmpFrame);
+      reconstructFrames.push_back(tmpFrame);
+    }
+
+    {
+      for (size_t i = 0; i < frames.size(); i++) {
+        FramePtr<PointMetric> frameWithNormal            = normalEstimation.compute(frames.at(i));
+        FramePtr<PointMetric> reconstructFrameWithNormal = normalEstimation.compute(reconstructFrames.at(i));
+        metric.addPSNR<PointMetric, PointMetric>("A2B", frameWithNormal, reconstructFrameWithNormal);
+        metric.addPSNR<PointMetric, PointMetric>("B2A", reconstructFrameWithNormal, frameWithNormal);
+      }
     }
 
     metric.addPoints<PointEncode>("Dynamic", dynamicFrames);
@@ -139,7 +179,7 @@ int main(int argc, char* argv[]) {
     JPCCMetric metric(parameter.metricParameter);
 
     {
-      auto clock = metric.start("Wall", parameter.inputDataset.getStartFrameNumber());
+      ScopeStopwatch clock = metric.start("Wall", parameter.inputDataset.getStartFrameNumber());
       encode(parameter, metric);
     }
 

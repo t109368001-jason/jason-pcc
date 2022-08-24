@@ -16,6 +16,7 @@ class JPCCMetricParameter : public virtual Parameter {
 
  public:
   std::filesystem::path outputCSVFolderPath;
+  double                maximumValue;
 
   JPCCMetricParameter();
 
