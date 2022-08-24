@@ -57,10 +57,8 @@ void JPCCMetric::computePSNR(const FramePtr<PointA>& frameA,
                              double&                 c2pPSNR) {
   static_assert(pcl::traits::has_normal_v<PointB>, "invalid template type");
 
-  double maxC2c = (std::numeric_limits<double>::min)();
-  double maxC2p = (std::numeric_limits<double>::min)();
-  double sseC2p = 0;
   double sseC2c = 0;
+  double sseC2p = 0;
 
   pcl::KdTreeFLANN<PointB> kdtree;
 
@@ -87,14 +85,12 @@ void JPCCMetric::computePSNR(const FramePtr<PointA>& frameA,
 
     // mean square distance
     sseC2c += distProjC2c;
-    if (distProjC2c > maxC2c) { maxC2c = distProjC2c; }
     sseC2p += distProjC2p;
-    if (distProjC2p > maxC2p) { maxC2p = distProjC2p; }
   }
 
-  c2cMSE  = float(sseC2c / frameA->size());
+  c2cMSE  = sseC2c / frameA->size();
   c2cPSNR = 10 * log10((3 * pow(parameter_.maximumValue, 2)) / c2cMSE);
-  c2pMSE  = float(sseC2p / frameA->size());
+  c2pMSE  = sseC2p / frameA->size();
   c2pPSNR = 10 * log10((3 * pow(parameter_.maximumValue, 2)) / c2pMSE);
 }
 
