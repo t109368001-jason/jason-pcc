@@ -1,27 +1,31 @@
 #pragma once
 
 #include <map>
+#include <set>
 #include <string>
 
 #include <jpcc/common/Common.h>
+#include <jpcc/common/ScopeStopwatch.h>
+#include <jpcc/metric/JPCCMetricParameter.h>
 
 namespace jpcc::metric {
 
 class JPCCMetric {
  public:
-  using Stopwatch = pcc::chrono::Stopwatch<std::chrono::steady_clock>;
+  using FrameNumber = decltype(pcl::PCLHeader::seq);
 
  protected:
-  std::map<std::string, Stopwatch> clockMap_;
-  std::map<std::string, uint64_t>  pointsMap_;
-  std::map<std::string, uint64_t>  bytesMap_;
+  const JPCCMetricParameter&                              parameter_;
+  std::set<FrameNumber>                                   frameNumberSet_;
+  std::set<std::string>                                   pointsNameSet_;
+  std::set<std::string>                                   bytesNameSet_;
+  std::set<std::string>                                   clockNameSet_;
+  std::map<FrameNumber, std::map<std::string, uint64_t>>  pointsMapMap_;
+  std::map<FrameNumber, std::map<std::string, uint64_t>>  bytesMapMap_;
+  std::map<FrameNumber, std::map<std::string, Stopwatch>> clockMapMap_;
 
  public:
-  JPCCMetric();
-
-  void start(const std::string& name);
-
-  void stop(const std::string& name);
+  JPCCMetric(const JPCCMetricParameter& parameter);
 
   template <typename PointT>
   void addPoints(const std::string& name, const FramePtr<PointT>& frame);
@@ -29,9 +33,11 @@ class JPCCMetric {
   template <typename PointT>
   void addPoints(const std::string& name, const GroupOfFrame<PointT>& frames);
 
-  void addBytes(const std::string& name, uint64_t bytes);
+  void addBytes(const std::string& name, FrameNumber frameNumber, uint64_t bytes);
 
-  void show() const;
+  ScopeStopwatch start(const std::string& name, FrameNumber frameNumber);
+
+  void writeAndShow();
 };
 
 }  // namespace jpcc::metric

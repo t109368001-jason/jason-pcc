@@ -34,17 +34,18 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
     size_t                    frameNumber       = parameter.inputDataset.getStartFrameNumber();
     const size_t              endFrameNumber    = parameter.inputDataset.getEndFrameNumber();
     while (!gmmSegmentation->isBuilt() && frameNumber < endFrameNumber) {
-      metric.start("Load");
-      reader->loadAll(frameNumber, groupOfFramesSize, frames, parameter.parallel);
-      metric.stop("Load");
-
-      metric.start("PreProcess");
-      preProcessor.process(frames, nullptr, parameter.parallel);
-      metric.stop("PreProcess");
-
-      metric.start("Build");
-      for (const auto& frame : frames) { gmmSegmentation->appendTrainSamples(frame); }
-      metric.stop("Build");
+      {
+        auto clock = metric.start("Load", frameNumber);
+        reader->loadAll(frameNumber, groupOfFramesSize, frames, parameter.parallel);
+      }
+      {
+        auto clock = metric.start("PreProcess", frameNumber);
+        preProcessor.process(frames, nullptr, parameter.parallel);
+      }
+      for (const auto& frame : frames) {
+        auto clock = metric.start("Build", frame->header.seq);
+        gmmSegmentation->appendTrainSamples(frame);
+      }
 
       frameNumber += groupOfFramesSize;
     }
@@ -62,24 +63,19 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
   const size_t              endFrameNumber    = parameter.inputDataset.getEndFrameNumber();
 
   while (frameNumber < endFrameNumber) {
-    metric.start("Load");
-    reader->loadAll(frameNumber, groupOfFramesSize, frames, parameter.parallel);
-    metric.stop("Load");
-
-    metric.start("Metric");
+    {
+      auto clock = metric.start("Load", frameNumber);
+      reader->loadAll(frameNumber, groupOfFramesSize, frames, parameter.parallel);
+    }
     metric.addPoints<PointEncode>("Raw", frames);
-    metric.stop("Metric");
 
-    metric.start("PreProcess");
-    preProcessor.process(frames, nullptr, parameter.parallel);
-    metric.stop("PreProcess");
-
-    metric.start("Metric");
-    metric.add<PointEncode>("PreProcessed", frames);
-    metric.stop("Metric");
+    {
+      auto clock = metric.start("PreProcess", frameNumber);
+      preProcessor.process(frames, nullptr, parameter.parallel);
+    }
+    metric.addPoints<PointEncode>("PreProcessed", frames);
 
     // TODO extract JPCCEncoder
-    metric.start("Encode");
     dynamicFrames.clear();
     staticAddedFrames.clear();
     staticRemovedFrames.clear();
@@ -89,7 +85,10 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
       auto staticRemovedFrame = jpcc::make_shared<Frame<PointEncode>>();
 
 #if defined(NDEBUG)
-      gmmSegmentation->segmentation(frame, dynamicFrame, nullptr, staticAddedFrame, staticRemovedFrame);
+      {
+        auto clock = metric.start("Encode", frame->header.seq);
+        gmmSegmentation->segmentation(frame, dynamicFrame, nullptr, staticAddedFrame, staticRemovedFrame);
+      }
 
 #else
       auto staticFrame = jpcc::make_shared<Frame<PointEncode>>();
@@ -104,20 +103,18 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
       staticAddedFrames.push_back(staticAddedFrame);
       staticRemovedFrames.push_back(staticRemovedFrame);
     }
-    metric.stop("Encode");
+    {
+      auto clock = metric.start("Save", frameNumber);
+      // TODO extract JPCCWriter
+      savePly<PointEncode, PointOutput>(dynamicFrames, parameter.outputDataset.getFilePath(0), parameter.parallel);
+      savePly<PointEncode, PointOutput>(staticAddedFrames, parameter.outputDataset.getFilePath(1), parameter.parallel);
+      savePly<PointEncode, PointOutput>(staticRemovedFrames, parameter.outputDataset.getFilePath(2),
+                                        parameter.parallel);
+    }
 
-    metric.start("Save");
-    // TODO extract JPCCWriter
-    savePly<PointEncode, PointOutput>(dynamicFrames, parameter.outputDataset.getFilePath(0), parameter.parallel);
-    savePly<PointEncode, PointOutput>(staticAddedFrames, parameter.outputDataset.getFilePath(1), parameter.parallel);
-    savePly<PointEncode, PointOutput>(staticRemovedFrames, parameter.outputDataset.getFilePath(2), parameter.parallel);
-    metric.stop("Save");
-
-    metric.start("Metric");
     metric.addPoints<PointEncode>("Dynamic", dynamicFrames);
     metric.addPoints<PointEncode>("StaticAdded", staticAddedFrames);
     metric.addPoints<PointEncode>("StaticRemoved", staticRemovedFrames);
-    metric.stop("Metric");
 
     frameNumber += groupOfFramesSize;
   }
@@ -139,13 +136,14 @@ int main(int argc, char* argv[]) {
 
   try {
     // Timers to count elapsed wall/user time
-    JPCCMetric metric;
+    JPCCMetric metric(parameter.metricParameter);
 
-    metric.start("Wall");
-    encode(parameter, metric);
-    metric.stop("Wall");
+    {
+      auto clock = metric.start("Wall", parameter.inputDataset.getStartFrameNumber());
+      encode(parameter, metric);
+    }
 
-    metric.show();
+    metric.writeAndShow();
   } catch (exception& e) { cerr << e.what() << endl; }
 
   cout << "JPCC App Encoder End" << endl;

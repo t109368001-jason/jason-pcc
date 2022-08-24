@@ -4,8 +4,10 @@ namespace jpcc::metric {
 template <typename PointT>
 void JPCCMetric::addPoints(const std::string& name, const FramePtr<PointT>& frame) {
   const auto& points = frame->size();
-  pointsMap_[name] += points;
-  bytesMap_[name] += points * sizeof(float) * 3;
+  frameNumberSet_.insert(frame->header.seq);
+  pointsNameSet_.insert(name);
+  pointsMapMap_[frame->header.seq][name] += points;
+  addBytes(name, frame->header.seq, points * sizeof(float) * 3);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

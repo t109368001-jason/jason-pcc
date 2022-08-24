@@ -33,6 +33,7 @@ AppParameter::AppParameter() :
   opts_.add(outputDataset.getOpts());
   opts_.add(preProcess.getOpts());
   opts_.add(jpccGmmSegmentation.getOpts());
+  opts_.add(metricParameter.getOpts());
 }
 
 void AppParameter::notify() {
@@ -41,6 +42,7 @@ void AppParameter::notify() {
   outputDataset.notify(false);
   preProcess.notify();
   jpccGmmSegmentation.notify();
+  metricParameter.notify();
   const filesystem::path& path = filesystem::path(outputDataset.getFilePath(0));
   if (!filesystem::exists(path.parent_path())) { filesystem::create_directories(path.parent_path()); }
 }
@@ -55,6 +57,7 @@ ostream& operator<<(ostream& out, const AppParameter& obj) {
   out << obj.outputDataset;
   out << obj.preProcess;
   out << obj.jpccGmmSegmentation;
+  out << obj.metricParameter;
   return out;
 }
 

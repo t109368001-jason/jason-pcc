@@ -3,6 +3,7 @@
 #include <jpcc/common/Parameter.h>
 #include <jpcc/io/DatasetParameter.h>
 #include <jpcc/io/DatasetReaderParameter.h>
+#include <jpcc/metric/JPCCMetricParameter.h>
 #include <jpcc/process/PreProcessParameter.h>
 #include <jpcc/segmentation/JPCCSegmentationParameter.h>
 
@@ -17,6 +18,7 @@ class AppParameter : public Parameter {
   io::DatasetParameter                    outputDataset;
   process::PreProcessParameter            preProcess;
   segmentation::JPCCSegmentationParameter jpccGmmSegmentation;
+  metric::JPCCMetricParameter             metricParameter;
 
   AppParameter();
 

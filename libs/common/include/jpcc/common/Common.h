@@ -41,6 +41,8 @@ using GroupOfFrameConst = std::vector<FrameConstPtr<PointT>>;
 template <typename PointT>
 using GroupOfFrameMap = std::map<std::string, GroupOfFrame<PointT>>;
 
+using Stopwatch = pcc::chrono::Stopwatch<std::chrono::steady_clock>;
+
 template <class T>
 struct dependent_false : std::false_type {};
 
