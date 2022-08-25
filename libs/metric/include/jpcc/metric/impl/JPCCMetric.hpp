@@ -27,6 +27,7 @@ void JPCCMetric::addPSNR(const std::string& name, const FramePtr<PointA>& frameA
   double c2pPSNR = 0;
 
   computePSNR<PointA, PointB>(frameA, frameB, c2cMSE, c2cPSNR, c2pMSE, c2pPSNR);
+
   frameNumberSet_.insert(frameA->header.seq);
   c2cMSENameSet_.insert(name);
   c2cPSNRNameSet_.insert(name);
@@ -60,28 +61,36 @@ void JPCCMetric::computePSNR(const FramePtr<PointA>& frameA,
   double sseC2c = 0;
   double sseC2p = 0;
 
+  size_t             K = 1;
+  std::vector<int>   pointIdxKNNSearch(K);
+  std::vector<float> pointKNNSquaredDistance(K);
+
   pcl::KdTreeFLANN<PointB> kdtree;
 
   kdtree.setInputCloud(frameB);
 
   for (size_t indexA = 0; indexA < frameA->size(); indexA++) {
+    const PointA& pointA = frameA->at(indexA);
     // For point 'i' in A, find its nearest neighbor in B. store it in 'j'
-    size_t             K = 1;
-    std::vector<int>   pointIdxKNNSearch(K);
-    std::vector<float> pointKNNSquaredDistance(K);
-    int                ret = kdtree.nearestKSearch(frameA->at(indexA), K, pointIdxKNNSearch, pointKNNSquaredDistance);
+    int ret = kdtree.nearestKSearch(pointA, K, pointIdxKNNSearch, pointKNNSquaredDistance);
     THROW_IF_NOT(ret == K);
 
-    size_t indexB = pointIdxKNNSearch.at(0);
+    const PointB& pointB = frameB->at(pointIdxKNNSearch.at(0));
+
     // Compute point-to-point, which should be equal to sqrt( dist[0] )
-    double distProjC2c = pointKNNSquaredDistance.at(0);
+    const double distProjC2c = pointKNNSquaredDistance.at(0);
 
     // Compute point-to-plane, normals in B will be used for point-to-plane
-    std::vector<float> errVector(3);
-    for (size_t j = 0; j < 3; j++) { errVector[j] = frameA->at(indexA).data[j] - frameB->at(indexB).data[j]; }
-    double distProjC2p = pow(errVector[0] * frameB->at(indexB).data_n[0] + errVector[1] * frameB->at(indexB).data_n[1] +
-                                 errVector[2] * frameB->at(indexB).data_n[2],
-                             2.F);
+    double distProjC2p;
+    if (!std::isnan(pointB.normal_x)) {
+      float errX  = pointA.x - pointB.x;
+      float errY  = pointA.y - pointB.y;
+      float errZ  = pointA.z - pointB.z;
+      distProjC2p = errX * pointB.normal_x + errY * pointB.normal_y + errZ * pointB.normal_z;
+      distProjC2p *= distProjC2p;
+    } else {
+      distProjC2p = distProjC2c;
+    }
 
     // mean square distance
     sseC2c += distProjC2c;
