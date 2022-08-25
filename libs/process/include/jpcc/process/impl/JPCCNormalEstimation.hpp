@@ -27,7 +27,8 @@ void JPCCNormalEstimation<PointIn, PointOut>::computeInPlace(FramePtr<PointIn>& 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointIn, typename PointOut>
 FramePtr<PointOut> JPCCNormalEstimation<PointIn, PointOut>::compute(FramePtr<PointIn>& frame) const {
-  auto             output = jpcc::make_shared<jpcc::Frame<PointOut>>();
+  auto output = jpcc::make_shared<jpcc::Frame<PointOut>>();
+  pcl::copyPointCloud(*frame, *output);
   NormalEstimation ne(normalEstimation_);
   ne.setInputCloud(frame);
   ne.compute(*output);
