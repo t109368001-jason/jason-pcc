@@ -68,6 +68,7 @@ void JPCCMetric::writeAndShow() {
       metricCSV << duration << ",";
       clockSumMap_[name] += duration;
     }
+    metricCSV << std::endl;
   }
   std::ofstream metricSummaryCSV(parameter_.outputCSVFolderPath / "metric-summary.csv");
   metricSummaryCSV << "Frame Count," << frameNumberSet_.size() << endl;
