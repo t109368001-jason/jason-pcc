@@ -26,10 +26,10 @@ class JPCCMetric {
   std::set<std::string>                                   clockNameSet_;
   std::map<FrameNumber, std::map<std::string, uint64_t>>  pointsMapMap_;
   std::map<FrameNumber, std::map<std::string, uint64_t>>  bytesMapMap_;
-  std::map<FrameNumber, std::map<std::string, uint64_t>>  c2cMSEMapMap_;
-  std::map<FrameNumber, std::map<std::string, uint64_t>>  c2cPSNRMapMap_;
-  std::map<FrameNumber, std::map<std::string, uint64_t>>  c2pMSEMapMap_;
-  std::map<FrameNumber, std::map<std::string, uint64_t>>  c2pPSNRMapMap_;
+  std::map<FrameNumber, std::map<std::string, double>>    c2cMSEMapMap_;
+  std::map<FrameNumber, std::map<std::string, double>>    c2cPSNRMapMap_;
+  std::map<FrameNumber, std::map<std::string, double>>    c2pMSEMapMap_;
+  std::map<FrameNumber, std::map<std::string, double>>    c2pPSNRMapMap_;
   std::map<FrameNumber, std::map<std::string, Stopwatch>> clockMapMap_;
 
  public:

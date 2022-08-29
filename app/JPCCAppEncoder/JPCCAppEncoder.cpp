@@ -56,37 +56,43 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
     }
   }
 
+  size_t       groupOfFramesSize = parameter.groupOfFramesSize;
+  size_t       frameNumber       = parameter.inputDataset.getStartFrameNumber();
+  const size_t endFrameNumber    = parameter.inputDataset.getEndFrameNumber();
+
+  auto staticFrame = jpcc::make_shared<Frame<PointEncode>>();
+
+  JPCCOctreePointCloud<PointEncode, OctreeContainerEditableIndex> staticOctree =
+      (parameter.jpccGmmSegmentation.resolution);
+  staticOctree.setInputCloud(staticFrame);
+
   GroupOfFrame<PointEncode> frames;
   GroupOfFrame<PointEncode> dynamicFrames;
   GroupOfFrame<PointEncode> staticAddedFrames;
   GroupOfFrame<PointEncode> staticRemovedFrames;
   GroupOfFrame<PointEncode> reconstructFrames;
-  size_t                    groupOfFramesSize = parameter.groupOfFramesSize;
-  size_t                    frameNumber       = parameter.inputDataset.getStartFrameNumber();
-  const size_t              endFrameNumber    = parameter.inputDataset.getEndFrameNumber();
-
-  auto staticFrame  = jpcc::make_shared<Frame<PointEncode>>();
-  auto staticOctree = jpcc::make_shared<JPCCOctreePointCloud<PointEncode, OctreeContainerEditableIndex>>(
-      parameter.jpccGmmSegmentation.resolution);
-  staticOctree->setInputCloud(staticFrame);
-
   while (frameNumber < endFrameNumber) {
-    {
+    {  // clear
+      frames.clear();
+      dynamicFrames.clear();
+      staticAddedFrames.clear();
+      staticRemovedFrames.clear();
+      reconstructFrames.clear();
+    }
+    {  // load
       ScopeStopwatch clock = metric.start("Load", frameNumber);
       reader->loadAll(frameNumber, groupOfFramesSize, frames, parameter.parallel);
     }
     metric.addPoints<PointEncode>("Raw", frames);
 
-    {
+    {  // preprocess
       ScopeStopwatch clock = metric.start("PreProcess", frameNumber);
       preProcessor.process(frames, nullptr, parameter.parallel);
     }
     metric.addPoints<PointEncode>("PreProcessed", frames);
 
     // TODO extract JPCCEncoder
-    dynamicFrames.clear();
-    staticAddedFrames.clear();
-    staticRemovedFrames.clear();
+    // encode
     for (const auto& frame : frames) {
       auto dynamicFrame       = jpcc::make_shared<Frame<PointEncode>>();
       auto staticAddedFrame   = jpcc::make_shared<Frame<PointEncode>>();
@@ -101,7 +107,7 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
       staticAddedFrames.push_back(staticAddedFrame);
       staticRemovedFrames.push_back(staticRemovedFrame);
     }
-    {
+    {  // save
       ScopeStopwatch clock = metric.start("Save", frameNumber);
       // TODO extract JPCCWriter
       savePly<PointEncode, PointOutput>(dynamicFrames, parameter.outputDataset.getFilePath(0), parameter.parallel);
@@ -110,17 +116,22 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
                                         parameter.parallel);
     }
 
+    metric.addPoints<PointEncode>("Dynamic", dynamicFrames);
+    metric.addPoints<PointEncode>("StaticAdded", staticAddedFrames);
+    metric.addPoints<PointEncode>("StaticRemoved", staticRemovedFrames);
+
+    // decode
     for (size_t i = 0; i < staticAddedFrames.size(); i++) {
       staticFrame->header  = frames.at(i)->header;
       ScopeStopwatch clock = metric.start("Decode", staticFrame->header.seq);
       if (staticRemovedFrames.at(i)) {
         for (const PointEncode& pointToRemove : staticRemovedFrames.at(i)->points) {
-          staticOctree->deletePointFromCloud(pointToRemove, staticFrame);
+          staticOctree.deletePointFromCloud(pointToRemove, staticFrame);
         }
       }
       if (staticAddedFrames.at(i)) {
         for (const PointEncode& pointToAdd : staticAddedFrames.at(i)->points) {
-          staticOctree->addPointToCloud(pointToAdd, staticFrame);
+          staticOctree.addPointToCloud(pointToAdd, staticFrame);
         }
       }
 
@@ -129,18 +140,12 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
       reconstructFrames.push_back(tmpFrame);
     }
 
-    {
-      for (size_t i = 0; i < frames.size(); i++) {
-        FramePtr<PointMetric> frameWithNormal            = normalEstimation.compute(frames.at(i));
-        FramePtr<PointMetric> reconstructFrameWithNormal = normalEstimation.compute(reconstructFrames.at(i));
-        metric.addPSNR<PointMetric, PointMetric>("A2B", frameWithNormal, reconstructFrameWithNormal);
-        metric.addPSNR<PointMetric, PointMetric>("B2A", reconstructFrameWithNormal, frameWithNormal);
-      }
+    for (size_t i = 0; i < frames.size(); i++) {
+      FramePtr<PointMetric> frameWithNormal            = normalEstimation.compute(frames.at(i));
+      FramePtr<PointMetric> reconstructFrameWithNormal = normalEstimation.compute(reconstructFrames.at(i));
+      metric.addPSNR<PointMetric, PointMetric>("A2B", frameWithNormal, reconstructFrameWithNormal);
+      metric.addPSNR<PointMetric, PointMetric>("B2A", reconstructFrameWithNormal, frameWithNormal);
     }
-
-    metric.addPoints<PointEncode>("Dynamic", dynamicFrames);
-    metric.addPoints<PointEncode>("StaticAdded", staticAddedFrames);
-    metric.addPoints<PointEncode>("StaticRemoved", staticRemovedFrames);
 
     frameNumber += groupOfFramesSize;
   }

@@ -9,6 +9,10 @@ void JPCCMetric::addPoints(const std::string& name, const FramePtr<PointT>& fram
   frameNumberSet_.insert(frame->header.seq);
   pointsNameSet_.insert(name);
   pointsMapMap_[frame->header.seq][name] += points;
+  std::cout << __FUNCTION__ << "() "
+            << "name=" << name << ", "
+            << "frameNumber=" << frame->header.seq << ", "
+            << "points=" << points << std::endl;
   addBytes(name, frame->header.seq, points * sizeof(float) * 3);
 }
 
@@ -37,6 +41,14 @@ void JPCCMetric::addPSNR(const std::string& name, const FramePtr<PointA>& frameA
   c2cPSNRMapMap_[frameA->header.seq][name] = c2cPSNR;
   c2pMSEMapMap_[frameA->header.seq][name]  = c2pMSE;
   c2pPSNRMapMap_[frameA->header.seq][name] = c2pPSNR;
+  std::cout << __FUNCTION__ << "() "
+            << "name=" << name << ", "
+            << "frameNumberA=" << frameA->header.seq << ", "
+            << "frameNumberB=" << frameB->header.seq << ", "
+            << "c2cMSE=" << c2cMSE << ", "
+            << "c2cPSNR=" << c2cPSNR << ", "
+            << "c2pMSE=" << c2pMSE << ", "
+            << "c2pPSNR=" << c2pPSNR << std::endl;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

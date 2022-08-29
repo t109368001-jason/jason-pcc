@@ -16,13 +16,25 @@ JPCCMetric::JPCCMetric(const JPCCMetricParameter& parameter) :
     frameNumberSet_(),
     pointsNameSet_(),
     bytesNameSet_(),
+    c2cMSENameSet_(),
+    c2cPSNRNameSet_(),
+    c2pMSENameSet_(),
+    c2pPSNRNameSet_(),
     clockNameSet_(),
-    clockMapMap_(),
     pointsMapMap_(),
-    bytesMapMap_() {}
+    bytesMapMap_(),
+    c2cMSEMapMap_(),
+    c2cPSNRMapMap_(),
+    c2pMSEMapMap_(),
+    c2pPSNRMapMap_(),
+    clockMapMap_() {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void JPCCMetric::addBytes(const std::string& name, FrameNumber frameNumber, const uint64_t bytes) {
+  cout << __FUNCTION__ << "() "
+       << "name=" << name << ", "
+       << "frameNumber=" << frameNumber << ", "
+       << "bytes=" << bytes << std::endl;
   frameNumberSet_.insert(frameNumber);
   bytesNameSet_.insert(name);
   bytesMapMap_[frameNumber][name] = bytes;
@@ -40,28 +52,60 @@ ScopeStopwatch JPCCMetric::start(const std::string& name, const FrameNumber fram
 void JPCCMetric::writeAndShow() {
   std::map<std::string, uint64_t> pointsSumMap_;
   std::map<std::string, uint64_t> bytesSumMap_;
+  std::map<std::string, double>   c2cMSESumMap_;
+  std::map<std::string, double>   c2cPSNRSumMap_;
+  std::map<std::string, double>   c2pMSESumMap_;
+  std::map<std::string, double>   c2pPSNRSumMap_;
   std::map<std::string, double>   clockSumMap_;
 
   std::ofstream metricCSV(parameter_.outputCSVFolderPath / "metric.csv");
   {  // write header
     for (const auto& name : pointsNameSet_) { metricCSV << name << " (points),"; }
     for (const auto& name : bytesNameSet_) { metricCSV << name << " (bytes),"; }
+    for (const auto& name : c2cMSENameSet_) { metricCSV << name << " (mm^2),"; }
+    for (const auto& name : c2cPSNRNameSet_) { metricCSV << name << " (db),"; }
+    for (const auto& name : c2pMSENameSet_) { metricCSV << name << " (mm^2),"; }
+    for (const auto& name : c2pPSNRNameSet_) { metricCSV << name << " (db),"; }
     for (const auto& name : clockNameSet_) { metricCSV << name << " (s),"; }
     metricCSV << std::endl;
   }
   for (const auto& frameNumber : frameNumberSet_) {  // write rows
-    auto& pointsMap = pointsMapMap_[frameNumber];
-    auto& bytesMap  = bytesMapMap_[frameNumber];
-    auto& clockMap  = clockMapMap_[frameNumber];
+    auto& pointsMap  = pointsMapMap_[frameNumber];
+    auto& bytesMap   = bytesMapMap_[frameNumber];
+    auto& c2cMSEMap  = c2cMSEMapMap_[frameNumber];
+    auto& c2cPSNRMap = c2cPSNRMapMap_[frameNumber];
+    auto& c2pMSEMap  = c2pMSEMapMap_[frameNumber];
+    auto& c2pPSNRMap = c2pPSNRMapMap_[frameNumber];
+    auto& clockMap   = clockMapMap_[frameNumber];
     for (const auto& name : pointsNameSet_) {
-      const uint64_t& points = pointsMap[name];
+      const auto& points = pointsMap[name];
       metricCSV << points << ",";
       pointsSumMap_[name] += points;
     }
     for (const auto& name : bytesNameSet_) {
-      const uint64_t& bytes = bytesMap[name];
+      const auto& bytes = bytesMap[name];
       metricCSV << bytes << ",";
       bytesSumMap_[name] += bytes;
+    }
+    for (const auto& name : c2cMSENameSet_) {
+      const auto& mse = c2cMSEMap[name];
+      metricCSV << mse << ",";
+      c2cMSESumMap_[name] += mse;
+    }
+    for (const auto& name : c2cPSNRNameSet_) {
+      const auto& psnr = c2cPSNRMap[name];
+      metricCSV << psnr << ",";
+      c2cPSNRSumMap_[name] += psnr;
+    }
+    for (const auto& name : c2pMSENameSet_) {
+      const auto& mse = c2pMSEMap[name];
+      metricCSV << mse << ",";
+      c2pMSESumMap_[name] += mse;
+    }
+    for (const auto& name : c2pPSNRNameSet_) {
+      const auto& psnr = c2pPSNRMap[name];
+      metricCSV << psnr << ",";
+      c2pPSNRSumMap_[name] += psnr;
     }
     for (const auto& name : clockNameSet_) {
       double duration = (double)clockMap[name].count().count() / 1000000000.0;
@@ -76,6 +120,10 @@ void JPCCMetric::writeAndShow() {
   size_t maxNameLength = 0;
   for (const auto& name : pointsNameSet_) { maxNameLength = max(maxNameLength, name.size()); }
   for (const auto& name : bytesNameSet_) { maxNameLength = max(maxNameLength, name.size()); }
+  for (const auto& name : c2cMSENameSet_) { maxNameLength = max(maxNameLength, name.size()); }
+  for (const auto& name : c2cPSNRNameSet_) { maxNameLength = max(maxNameLength, name.size()); }
+  for (const auto& name : c2pMSENameSet_) { maxNameLength = max(maxNameLength, name.size()); }
+  for (const auto& name : c2pPSNRNameSet_) { maxNameLength = max(maxNameLength, name.size()); }
   for (const auto& name : clockNameSet_) { maxNameLength = max(maxNameLength, name.size()); }
   cout << endl;
   cout << "Metric:" << endl;
@@ -90,6 +138,30 @@ void JPCCMetric::writeAndShow() {
     metricSummaryCSV << name << " (bytes)," << bytes << endl;
     cout << "    " << std::setfill(' ') << std::setw(maxNameLength) << name << left << ": " << bytes << " bytes"
          << endl;
+  }
+  cout << "  MSE (c2c):" << endl;
+  for (const auto& [name, mse] : c2cMSESumMap_) {  //
+    metricSummaryCSV << name << " (mm^2)," << mse << endl;
+    cout << "    " << std::setfill(' ') << std::setw(maxNameLength) << name << left << ": "
+         << mse / frameNumberSet_.size() << " mm^2" << endl;
+  }
+  cout << "  PSNR (c2c):" << endl;
+  for (const auto& [name, psnr] : c2cPSNRSumMap_) {  //
+    metricSummaryCSV << name << " (db)," << psnr << endl;
+    cout << "    " << std::setfill(' ') << std::setw(maxNameLength) << name << left << ": "
+         << psnr / frameNumberSet_.size() << " db" << endl;
+  }
+  cout << "  MSE (c2p):" << endl;
+  for (const auto& [name, mse] : c2pMSESumMap_) {  //
+    metricSummaryCSV << name << " (mm^2)," << mse << endl;
+    cout << "    " << std::setfill(' ') << std::setw(maxNameLength) << name << left << ": "
+         << mse / frameNumberSet_.size() << " mm^2" << endl;
+  }
+  cout << "  PSNR (c2p):" << endl;
+  for (const auto& [name, psnr] : c2pPSNRSumMap_) {  //
+    metricSummaryCSV << name << " (db)," << psnr << endl;
+    cout << "    " << std::setfill(' ') << std::setw(maxNameLength) << name << left << ": "
+         << psnr / frameNumberSet_.size() << " db" << endl;
   }
   cout << "  Processing time:" << endl;
   for (const auto& [name, duration] : clockSumMap_) {
