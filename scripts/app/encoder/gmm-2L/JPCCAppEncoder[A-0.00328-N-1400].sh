@@ -12,5 +12,5 @@ mkdir -p "${OUTPUT_FOLDER_PREFIX}${OUTPUT_FOLDER}"
   --jpccGMMSegmentationParameter.alpha 0.000255 \
   --jpccGMMSegmentationParameter.nTrain 18090 \
   --outputDataset.folder "${OUTPUT_FOLDER}" \
-  --jpccMetricParameter.outputCSVFolder "${OUTPUT_FOLDER_PREFIX}${OUTPUT_FOLDER}"
+  --jpccMetricParameter.outputCSVFolder "${OUTPUT_FOLDER_PREFIX}${OUTPUT_FOLDER}" \
   --configs cfg/app/Encoder/ctc-raw.cfg |& tee "${OUTPUT_FOLDER_PREFIX}${OUTPUT_FOLDER}JPCCAppEncoder-$(date +%Y%m%d-%H%M%S).log"
