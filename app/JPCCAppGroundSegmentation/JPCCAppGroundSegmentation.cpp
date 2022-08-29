@@ -17,7 +17,6 @@
 using namespace std;
 using namespace std::chrono;
 using namespace pcc;
-using namespace pcc::chrono;
 using namespace jpcc;
 using namespace jpcc::io;
 using namespace jpcc::process;
@@ -25,7 +24,7 @@ using namespace jpcc::visualization;
 
 using PointT = pcl::PointXYZ;
 
-void main_(const AppParameter& parameter, StopwatchUserTime& clock) {
+void main_(const AppParameter& parameter, Stopwatch& clock) {
   JPCCVisualizer<PointT>::Ptr viewer;
   if (!parameter.headless) { viewer = jpcc::make_shared<JPCCVisualizer<PointT>>(parameter.visualizerParameter); }
 
@@ -97,19 +96,17 @@ int main(int argc, char* argv[]) {
   try {
     ParameterParser pp;
     // Timers to count elapsed wall/user time
-    Stopwatch<steady_clock> clockWall;
-    StopwatchUserTime       clockUser;
+    Stopwatch clockWall;
+    Stopwatch clockUser;
 
     clockWall.start();
     main_(parameter, clockUser);
     clockWall.stop();
 
-    auto totalWall      = duration_cast<milliseconds>(clockWall.count()).count();
-    auto totalUserSelf  = duration_cast<milliseconds>(clockUser.self.count()).count();
-    auto totalUserChild = duration_cast<milliseconds>(clockUser.children.count()).count();
+    auto totalWall = duration_cast<milliseconds>(clockWall.count()).count();
+    auto totalUser = duration_cast<milliseconds>(clockUser.count()).count();
     cout << "Processing time (wall): " << (float)totalWall / 1000.0 << " s\n";
-    cout << "Processing time (user.self): " << (float)totalUserSelf / 1000.0 << " s\n";
-    cout << "Processing time (user.children): " << (float)totalUserChild / 1000.0 << " s\n";
+    cout << "Processing time (user): " << (float)totalUser / 1000.0 << " s\n";
     cout << "Peak memory: " << getPeakMemory() << " KB\n";
   } catch (exception& e) { cerr << e.what() << endl; }
 

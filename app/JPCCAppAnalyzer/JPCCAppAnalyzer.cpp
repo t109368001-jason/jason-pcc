@@ -30,7 +30,6 @@ using namespace std::chrono;
 using namespace std::filesystem;
 using namespace pcl::octree;
 using namespace pcc;
-using namespace pcc::chrono;
 using namespace jpcc;
 using namespace jpcc::io;
 using namespace jpcc::process;
@@ -85,7 +84,7 @@ void previewOnly(const AppParameter& parameter) {
   viewer->spin();
 }
 
-void analyze(const AppParameter& parameter, StopwatchUserTime& clock, const Analyzer::Ptr& analyzer) {
+void analyze(const AppParameter& parameter, Stopwatch& clock, const Analyzer::Ptr& analyzer) {
   cout << analyzer->getFilepath() << " start" << endl;
 
   const typename DatasetReader<PointT>::Ptr          reader = newReader<PointT>(parameter.reader, parameter.dataset);
@@ -184,19 +183,17 @@ void main_(AppParameter& parameter) {
           cout << analyzer->getFilepath() << " running, skip analyze." << endl;
           continue;
         }
-        Stopwatch<steady_clock> clockWall;
-        StopwatchUserTime       clockUser;
+        Stopwatch clockWall;
+        Stopwatch clockUser;
 
         clockWall.start();
         analyze(parameter, clockUser, analyzer);
         clockWall.stop();
 
-        auto totalWall      = duration_cast<milliseconds>(clockWall.count()).count();
-        auto totalUserSelf  = duration_cast<milliseconds>(clockUser.self.count()).count();
-        auto totalUserChild = duration_cast<milliseconds>(clockUser.children.count()).count();
+        auto totalWall = duration_cast<milliseconds>(clockWall.count()).count();
+        auto totalUser = duration_cast<milliseconds>(clockUser.count()).count();
         cout << "Processing time (wall): " << (float)totalWall / 1000.0 << " s\n";
-        cout << "Processing time (user.self): " << (float)totalUserSelf / 1000.0 << " s\n";
-        cout << "Processing time (user.children): " << (float)totalUserChild / 1000.0 << " s\n";
+        cout << "Processing time (user): " << (float)totalUser / 1000.0 << " s\n";
         cout << "Peak memory: " << getPeakMemory() << " KB\n";
 
         analyzer->releaseLockFile();

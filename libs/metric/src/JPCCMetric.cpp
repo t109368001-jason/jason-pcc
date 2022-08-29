@@ -6,7 +6,6 @@
 
 using namespace std;
 using namespace pcc;
-using namespace pcc::chrono;
 
 namespace jpcc::metric {
 

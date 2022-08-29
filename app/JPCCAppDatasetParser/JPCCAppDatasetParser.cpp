@@ -13,13 +13,12 @@
 using namespace std;
 using namespace std::chrono;
 using namespace pcc;
-using namespace pcc::chrono;
 using namespace jpcc;
 using namespace jpcc::io;
 using namespace jpcc::process;
 
 template <typename PointT>
-void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
+void parse(const AppParameter& parameter, Stopwatch& clock) {
   const typename DatasetReader<PointT>::Ptr reader = newReader<PointT>(parameter.inputReader, parameter.inputDataset);
   PreProcessor<PointT>                      preProcessor(parameter.preProcess);
 
@@ -46,7 +45,7 @@ void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
   }
 }
 
-void parse(const AppParameter& parameter, StopwatchUserTime& clock) {
+void parse(const AppParameter& parameter, Stopwatch& clock) {
   if (parameter.outputPointType == "PointXYZ") {
     parse<pcl::PointXYZ>(parameter, clock);
   } else if (parameter.outputPointType == "PointNormal") {
@@ -76,19 +75,17 @@ int main(int argc, char* argv[]) {
 
   try {
     // Timers to count elapsed wall/user time
-    Stopwatch<steady_clock> clockWall;
-    StopwatchUserTime       clockUser;
+    Stopwatch clockWall;
+    Stopwatch clockUser;
 
     clockWall.start();
     parse(parameter, clockUser);
     clockWall.stop();
 
-    auto totalWall      = duration_cast<milliseconds>(clockWall.count()).count();
-    auto totalUserSelf  = duration_cast<milliseconds>(clockUser.self.count()).count();
-    auto totalUserChild = duration_cast<milliseconds>(clockUser.children.count()).count();
+    auto totalWall = duration_cast<milliseconds>(clockWall.count()).count();
+    auto totalUser = duration_cast<milliseconds>(clockUser.count()).count();
     cout << "Processing time (wall): " << (float)totalWall / 1000.0 << " s\n";
-    cout << "Processing time (user.self): " << (float)totalUserSelf / 1000.0 << " s\n";
-    cout << "Processing time (user.children): " << (float)totalUserChild / 1000.0 << " s\n";
+    cout << "Processing time (user): " << (float)totalUser / 1000.0 << " s\n";
     cout << "Peak memory: " << getPeakMemory() << " KB\n";
   } catch (exception& e) { cerr << e.what() << endl; }
 
