@@ -47,6 +47,7 @@ find_package(VTK 9.0.3 REQUIRED COMPONENTS CommonCore)
 
 include(3rdparty/cmake/mpeg-pcc-tmc13.cmake)
 add_subdirectory(3rdparty/mpeg-pcc-tmc13)
+target_include_directories(tmc3 PUBLIC 3rdparty/mpeg-pcc-tmc13)
 
 include(cmake/jpcc-target.cmake)
 
@@ -59,6 +60,7 @@ add_subdirectory(libs/metric)
 add_subdirectory(libs/octree)
 add_subdirectory(libs/process)
 add_subdirectory(libs/segmentation)
+add_subdirectory(libs/encoder)
 add_subdirectory(libs/visualization)
 
 add_subdirectory(app)
