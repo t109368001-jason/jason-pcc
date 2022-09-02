@@ -4,11 +4,10 @@
 #include <string>
 
 #include <jpcc/common/Parameter.h>
-#include <jpcc/encoder/JPCCEncoderTMC3Parameter.h>
+#include <jpcc/coder/CoderBackendType.h>
+#include <jpcc/coder/JPCCEncoderTMC3Parameter.h>
 
-namespace jpcc::encoder {
-
-enum class EncoderBackendType { NONE, TMC3 };
+namespace jpcc::coder {
 
 #define JPCC_ENCODER_OPT_PREFIX "jpccEncoderParameter"
 
@@ -17,7 +16,7 @@ class JPCCEncoderParameter : public virtual Parameter {
   std::string backendType_;
 
  public:
-  EncoderBackendType       backendType;
+  CoderBackendType         backendType;
   JPCCEncoderTMC3Parameter tmc3;
 
   JPCCEncoderParameter();
@@ -29,5 +28,4 @@ class JPCCEncoderParameter : public virtual Parameter {
   friend std::ostream& operator<<(std::ostream& out, const JPCCEncoderParameter& obj);
 };
 
-[[nodiscard]] EncoderBackendType getEncoderBackendType(const std::string& encoderBackendType);
-}  // namespace jpcc::encoder
+}  // namespace jpcc::coder
