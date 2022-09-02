@@ -4,10 +4,10 @@
 
 #include <jpcc/common/ParameterParser.h>
 #include <jpcc/coder/JPCCEncoderAdapter.h>
+#include <jpcc/coder/JPCCDecoderAdapter.h>
 #include <jpcc/io/PlyIO.h>
 #include <jpcc/io/Reader.h>
 #include <jpcc/metric/JPCCMetric.h>
-#include <jpcc/octree/OctreeContainerEditableIndex.h>
 #include <jpcc/process/JPCCNormalEstimation.h>
 #include <jpcc/process/PreProcessor.h>
 #include <jpcc/segmentation/JPCCSegmentationAdapter.h>
@@ -34,8 +34,22 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
   JPCCSegmentation<PointEncode>::Ptr gmmSegmentation = JPCCSegmentationAdapter::build<PointEncode>(
       parameter.jpccGmmSegmentation, (int)parameter.inputDataset.getStartFrameNumber());
   JPCCNormalEstimation<PointEncode, PointMetric> normalEstimation(parameter.normalEstimation);
-  JPCCEncoder<PointEncode>::Ptr dynamicEncoder = JPCCEncoderAdapter::build<PointEncode>(parameter.jpccEncoderStatic);
-  JPCCEncoder<PointEncode>::Ptr staticEncoder  = JPCCEncoderAdapter::build<PointEncode>(parameter.jpccEncoderDynamic);
+  JPCCEncoder<PointEncode>::Ptr                  dynamicEncoder;
+  JPCCEncoder<PointEncode>::Ptr                  staticEncoder;
+  JPCCDecoder<PointEncode>::Ptr                  dynamicDecoder;
+  JPCCDecoder<PointEncode>::Ptr                  staticDecoder;
+  if (parameter.jpccEncoderDynamic.backendType != CoderBackendType::NONE) {
+    dynamicEncoder = JPCCEncoderAdapter::build<PointEncode>(parameter.jpccEncoderDynamic);
+  }
+  if (parameter.jpccEncoderStatic.backendType != CoderBackendType::NONE) {
+    staticEncoder = JPCCEncoderAdapter::build<PointEncode>(parameter.jpccEncoderStatic);
+  }
+  if (parameter.jpccDecoderDynamic.backendType != CoderBackendType::NONE) {
+    dynamicDecoder = JPCCDecoderAdapter::build<PointEncode>(parameter.jpccDecoderDynamic);
+  }
+  if (parameter.jpccDecoderStatic.backendType != CoderBackendType::NONE) {
+    staticDecoder = JPCCDecoderAdapter::build<PointEncode>(parameter.jpccDecoderStatic);
+  }
 
   {  // build gaussian mixture model
     GroupOfFrame<PointEncode> frames;
@@ -64,23 +78,22 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
   size_t       frameNumber       = parameter.inputDataset.getStartFrameNumber();
   const size_t endFrameNumber    = parameter.inputDataset.getEndFrameNumber();
 
-  auto staticFrame = jpcc::make_shared<Frame<PointEncode>>();
-
-  JPCCOctreePointCloud<PointEncode, OctreeContainerEditableIndex> staticOctree =
-      (parameter.jpccGmmSegmentation.resolution);
-  staticOctree.setInputCloud(staticFrame);
-
-  GroupOfFrame<PointEncode> frames;
-  GroupOfFrame<PointEncode> dynamicFrames;
-  GroupOfFrame<PointEncode> staticAddedFrames;
-  GroupOfFrame<PointEncode> staticRemovedFrames;
-  GroupOfFrame<PointEncode> reconstructFrames;
+  GroupOfFrame<PointEncode>             frames;
+  GroupOfFrame<PointEncode>             dynamicFrames;
+  GroupOfFrame<PointEncode>             staticFrames;
+  GroupOfFrame<PointEncode>             staticAddedFrames;
+  GroupOfFrame<PointEncode>             staticRemovedFrames;
+  vector<JPCCCoderContext<PointEncode>> dynamicContexts;
+  vector<JPCCCoderContext<PointEncode>> staticContexts;
+  GroupOfFrame<PointEncode>             reconstructFrames;
   while (frameNumber < endFrameNumber) {
     {  // clear
       frames.clear();
       dynamicFrames.clear();
       staticAddedFrames.clear();
       staticRemovedFrames.clear();
+      dynamicContexts.clear();
+      staticContexts.clear();
       reconstructFrames.clear();
     }
     {  // load
@@ -99,49 +112,74 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
     // encode
     for (const auto& frame : frames) {
       auto dynamicFrame       = jpcc::make_shared<Frame<PointEncode>>();
+      auto staticFrame        = jpcc::make_shared<Frame<PointEncode>>();
       auto staticAddedFrame   = jpcc::make_shared<Frame<PointEncode>>();
       auto staticRemovedFrame = jpcc::make_shared<Frame<PointEncode>>();
 
       {
         ScopeStopwatch clock = metric.start("Encode", frame->header.seq);
-        gmmSegmentation->segmentation(frame, dynamicFrame, nullptr, staticAddedFrame, staticRemovedFrame);
+        gmmSegmentation->segmentation(frame, dynamicFrame, staticFrame, staticAddedFrame, staticRemovedFrame);
       }
 
       dynamicFrames.push_back(dynamicFrame);
+      staticFrames.push_back(staticFrame);
       staticAddedFrames.push_back(staticAddedFrame);
       staticRemovedFrames.push_back(staticRemovedFrame);
+      JPCCCoderContext<PointEncode> dynamicContext;
+      dynamicContext.pclFrame = dynamicFrame;
+      JPCCCoderContext<PointEncode> staticContext;
+      staticContext.pclFrame = staticFrame;
+      dynamicContexts.push_back(dynamicContext);
+      staticContexts.push_back(staticContext);
     }
-    {  // save
-      ScopeStopwatch clock = metric.start("Save", frameNumber);
-      // TODO extract JPCCWriter
-      savePly<PointEncode, PointOutput>(dynamicFrames, parameter.outputDataset.getFilePath(0), parameter.parallel);
-      savePly<PointEncode, PointOutput>(staticAddedFrames, parameter.outputDataset.getFilePath(1), parameter.parallel);
-      savePly<PointEncode, PointOutput>(staticRemovedFrames, parameter.outputDataset.getFilePath(2),
-                                        parameter.parallel);
+    if (dynamicEncoder) {
+      for (auto& dynamicContext : dynamicContexts) {
+        dynamicEncoder->convertFromPCL(dynamicContext);
+        dynamicEncoder->encode(dynamicContext);
+        {  // save
+          ScopeStopwatch clock = metric.start("Save", frameNumber);
+          // TODO save
+        }
+      }
+    } else {
+      {  // save
+        ScopeStopwatch clock = metric.start("Save", frameNumber);
+        // TODO extract JPCCWriter
+        savePly<PointEncode, PointOutput>(dynamicFrames, parameter.outputDataset.getFilePath(0), parameter.parallel);
+      }
+      metric.addPoints<PointEncode>("Dynamic", dynamicFrames);
     }
-
-    metric.addPoints<PointEncode>("Dynamic", dynamicFrames);
-    metric.addPoints<PointEncode>("StaticAdded", staticAddedFrames);
-    metric.addPoints<PointEncode>("StaticRemoved", staticRemovedFrames);
+    if (staticEncoder) {
+      for (auto& staticContext : staticContexts) {
+        dynamicEncoder->convertFromPCL(staticContext);
+        dynamicEncoder->encode(staticContext);
+        {  // save
+          ScopeStopwatch clock = metric.start("Save", frameNumber);
+          // TODO save
+        }
+      }
+    } else {
+      {  // save
+        ScopeStopwatch clock = metric.start("Save", frameNumber);
+        // TODO extract JPCCWriter
+        savePly<PointEncode, PointOutput>(staticAddedFrames, parameter.outputDataset.getFilePath(1),
+                                          parameter.parallel);
+        savePly<PointEncode, PointOutput>(staticRemovedFrames, parameter.outputDataset.getFilePath(2),
+                                          parameter.parallel);
+      }
+      metric.addPoints<PointEncode>("StaticAdded", staticAddedFrames);
+      metric.addPoints<PointEncode>("StaticRemoved", staticRemovedFrames);
+    }
 
     // decode
-    for (size_t i = 0; i < staticAddedFrames.size(); i++) {
-      staticFrame->header  = frames.at(i)->header;
-      ScopeStopwatch clock = metric.start("Decode", staticFrame->header.seq);
-      if (staticRemovedFrames.at(i)) {
-        for (const PointEncode& pointToRemove : staticRemovedFrames.at(i)->points) {
-          staticOctree.deletePointFromCloud(pointToRemove, staticFrame);
-        }
+    if (dynamicDecoder) {
+    } else {
+      for (size_t i = 0; i < frames.size(); i++) {
+        auto reconstructFrame = jpcc::make_shared<Frame<PointEncode>>();
+        pcl::copyPointCloud(*dynamicFrames.at(i), *reconstructFrame);
+        pcl::copyPointCloud(*staticFrames.at(i), *reconstructFrame);
+        reconstructFrames.push_back(reconstructFrame);
       }
-      if (staticAddedFrames.at(i)) {
-        for (const PointEncode& pointToAdd : staticAddedFrames.at(i)->points) {
-          staticOctree.addPointToCloud(pointToAdd, staticFrame);
-        }
-      }
-
-      auto tmpFrame = jpcc::make_shared<Frame<PointEncode>>();
-      pcl::copyPointCloud(*staticFrame, *tmpFrame);
-      reconstructFrames.push_back(tmpFrame);
     }
 
     for (size_t i = 0; i < frames.size(); i++) {

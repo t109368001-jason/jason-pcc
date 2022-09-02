@@ -13,9 +13,9 @@ class JPCCEncoderTMC3 : public virtual JPCCEncoder<PointT>, protected pcc::PCCTM
  public:
   JPCCEncoderTMC3(const JPCCEncoderParameter& parameter);
 
-  void convertFromPCL(JPCCEncoderContext<PointT>& context) override;
+  void convertFromPCL(JPCCCoderContext<PointT>& context) override;
 
-  void encode(JPCCEncoderContext<PointT>& context) override;
+  void encode(JPCCCoderContext<PointT>& context) override;
 
  protected:
   void onOutputBuffer(const pcc::PayloadBuffer& buffer) override;

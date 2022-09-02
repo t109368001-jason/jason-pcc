@@ -2,12 +2,12 @@ namespace jpcc::coder {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-JPCCEncoderTMC3<PointT>::JPCCEncoderTMC3(const JPCCEncoderParameter& parameter) :
-    JPCCEncoder<PointT>(parameter), encoder() {}
+JPCCDecoderTMC3<PointT>::JPCCDecoderTMC3(const JPCCDecoderParameter& parameter) :
+    JPCCDecoder<PointT>(parameter), decoder(parameter.tmc3) {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-void JPCCEncoderTMC3<PointT>::convertFromPCL(JPCCCoderContext<PointT>& context) {
+void JPCCDecoderTMC3<PointT>::convertFromPCL(JPCCDecoderContext<PointT>& context) {
   auto frame = make_shared<pcc::PCCPointSet3>();
 
   frame->reserve(context.pclFrame->size());
@@ -22,20 +22,13 @@ void JPCCEncoderTMC3<PointT>::convertFromPCL(JPCCCoderContext<PointT>& context) 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-void JPCCEncoderTMC3<PointT>::encode(JPCCCoderContext<PointT>& context) {
-  encoder.compress(*static_cast<pcc::PCCPointSet3*>(context.frame.get()),
-                   static_cast<pcc::EncoderParams*>(&this->parameter_.tmc3), this, nullptr);
+void JPCCDecoderTMC3<PointT>::decode(JPCCDecoderContext<PointT>& context) {
+  decoder.decompress(static_cast<pcc::PayloadBuffer*>(context.encodedFrame.get()), this);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-void JPCCEncoderTMC3<PointT>::onOutputBuffer(const pcc::PayloadBuffer& buffer) {
-  // TODO
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-void JPCCEncoderTMC3<PointT>::onPostRecolour(const pcc::PCCPointSet3& set3) {
+void JPCCDecoderTMC3<PointT>::onOutputCloud(const pcc::CloudFrame& frame) {
   // TODO
 }
 

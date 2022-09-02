@@ -19,7 +19,11 @@ AppParameter::AppParameter() :
     inputReader("reader", "InputDatasetReaderParameter"),
     outputDataset("outputDataset", "OutputDatasetParameter"),
     preProcess(),
-    jpccGmmSegmentation() {
+    jpccGmmSegmentation(),
+    jpccEncoderDynamic("jpccEncoderDynamic", "JPCCEncoderTMC3Dynamic"),
+    jpccEncoderStatic("jpccEncoderStatic", "JPCCEncoderTMC3Static"),
+    jpccDecoderDynamic("jpccDecoderDynamic", "JPCCDecoderTMC3Dynamic"),
+    jpccDecoderStatic("jpccDecoderStatic", "JPCCDecoderTMC3Static") {
   opts_.add_options()                                                        //
       (string(prefix_ + PARALLEL_OPT).c_str(),                               //
        value<bool>(&parallel)->default_value(parallel),                      //
@@ -33,8 +37,10 @@ AppParameter::AppParameter() :
   opts_.add(outputDataset.getOpts());
   opts_.add(preProcess.getOpts());
   opts_.add(jpccGmmSegmentation.getOpts());
-  opts_.add(jpccEncoderStatic.getOpts());
   opts_.add(jpccEncoderDynamic.getOpts());
+  opts_.add(jpccEncoderStatic.getOpts());
+  opts_.add(jpccDecoderDynamic.getOpts());
+  opts_.add(jpccDecoderStatic.getOpts());
   opts_.add(normalEstimation.getOpts());
   opts_.add(metricParameter.getOpts());
 }
@@ -45,8 +51,10 @@ void AppParameter::notify() {
   outputDataset.notify(false);
   preProcess.notify();
   jpccGmmSegmentation.notify();
-  jpccEncoderStatic.notify();
   jpccEncoderDynamic.notify();
+  jpccEncoderStatic.notify();
+  jpccDecoderDynamic.notify();
+  jpccDecoderStatic.notify();
   normalEstimation.notify();
   metricParameter.notify();
   const filesystem::path& path = filesystem::path(outputDataset.getFilePath(0));
@@ -63,8 +71,10 @@ ostream& operator<<(ostream& out, const AppParameter& obj) {
   out << obj.outputDataset;
   out << obj.preProcess;
   out << obj.jpccGmmSegmentation;
-  out << obj.jpccEncoderStatic;
   out << obj.jpccEncoderDynamic;
+  out << obj.jpccEncoderStatic;
+  out << obj.jpccDecoderDynamic;
+  out << obj.jpccDecoderStatic;
   out << obj.normalEstimation;
   out << obj.metricParameter;
   return out;

@@ -2,11 +2,11 @@ namespace jpcc::coder {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-JPCCEncoder<PointT>::JPCCEncoder(const JPCCEncoderParameter& parameter) : parameter_(parameter) {}
+JPCCDecoder<PointT>::JPCCDecoder(const JPCCDecoderParameter& parameter) : parameter_(parameter) {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-void JPCCEncoder<PointT>::convertFromPCL(JPCCCoderContext<PointT>& context) {
+void JPCCDecoder<PointT>::convertFromPCL(JPCCDecoderContext<PointT>& context) {
   context.frame = context.pclFrame;
 }
 
