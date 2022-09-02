@@ -10,7 +10,10 @@ using namespace po;
 JPCCEncoderParameter::JPCCEncoderParameter() : JPCCEncoderParameter(JPCC_ENCODER_OPT_PREFIX, __FUNCTION__) {}
 
 JPCCEncoderParameter::JPCCEncoderParameter(const string& prefix, const string& caption) :
-    Parameter(prefix, caption), backendType_("none") {
+    Parameter(prefix, caption),
+    backendType_("none"),
+    backendType(EncoderBackendType::NONE),
+    tmc3("tmc3", "JPCCEncoderTMC3Parameter") {
   opts_.add_options()                               //
       (string(prefix_ + BACKEND_TYPE_OPT).c_str(),  //
        value<string>(&backendType_)->required(),    //

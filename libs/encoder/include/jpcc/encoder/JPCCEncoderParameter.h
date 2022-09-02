@@ -4,6 +4,7 @@
 #include <string>
 
 #include <jpcc/common/Parameter.h>
+#include <jpcc/encoder/JPCCEncoderTMC3Parameter.h>
 
 namespace jpcc::encoder {
 
@@ -16,7 +17,8 @@ class JPCCEncoderParameter : public virtual Parameter {
   std::string backendType_;
 
  public:
-  EncoderBackendType backendType;
+  EncoderBackendType       backendType;
+  JPCCEncoderTMC3Parameter tmc3;
 
   JPCCEncoderParameter();
 

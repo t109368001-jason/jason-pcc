@@ -3,6 +3,7 @@
 #include <vector>
 
 #include <jpcc/common/ParameterParser.h>
+#include <jpcc/encoder/JPCCEncoderAdapter.h>
 #include <jpcc/io/PlyIO.h>
 #include <jpcc/io/Reader.h>
 #include <jpcc/metric/JPCCMetric.h>
@@ -16,6 +17,7 @@
 using namespace std;
 using namespace std::chrono;
 using namespace jpcc;
+using namespace jpcc::encoder;
 using namespace jpcc::io;
 using namespace jpcc::metric;
 using namespace jpcc::octree;
@@ -32,6 +34,8 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
   JPCCSegmentation<PointEncode>::Ptr gmmSegmentation = JPCCSegmentationAdapter::build<PointEncode>(
       parameter.jpccGmmSegmentation, (int)parameter.inputDataset.getStartFrameNumber());
   JPCCNormalEstimation<PointEncode, PointMetric> normalEstimation(parameter.normalEstimation);
+  JPCCEncoder<PointEncode>::Ptr dynamicEncoder = JPCCEncoderAdapter::build<PointEncode>(parameter.jpccEncoderStatic);
+  JPCCEncoder<PointEncode>::Ptr staticEncoder  = JPCCEncoderAdapter::build<PointEncode>(parameter.jpccEncoderDynamic);
 
   {  // build gaussian mixture model
     GroupOfFrame<PointEncode> frames;

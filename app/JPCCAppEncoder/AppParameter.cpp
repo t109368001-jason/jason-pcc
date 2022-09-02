@@ -33,6 +33,8 @@ AppParameter::AppParameter() :
   opts_.add(outputDataset.getOpts());
   opts_.add(preProcess.getOpts());
   opts_.add(jpccGmmSegmentation.getOpts());
+  opts_.add(jpccEncoderStatic.getOpts());
+  opts_.add(jpccEncoderDynamic.getOpts());
   opts_.add(normalEstimation.getOpts());
   opts_.add(metricParameter.getOpts());
 }
@@ -43,6 +45,8 @@ void AppParameter::notify() {
   outputDataset.notify(false);
   preProcess.notify();
   jpccGmmSegmentation.notify();
+  jpccEncoderStatic.notify();
+  jpccEncoderDynamic.notify();
   normalEstimation.notify();
   metricParameter.notify();
   const filesystem::path& path = filesystem::path(outputDataset.getFilePath(0));
@@ -59,6 +63,8 @@ ostream& operator<<(ostream& out, const AppParameter& obj) {
   out << obj.outputDataset;
   out << obj.preProcess;
   out << obj.jpccGmmSegmentation;
+  out << obj.jpccEncoderStatic;
+  out << obj.jpccEncoderDynamic;
   out << obj.normalEstimation;
   out << obj.metricParameter;
   return out;
