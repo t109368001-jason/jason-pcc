@@ -60,7 +60,7 @@ add_subdirectory(libs/metric)
 add_subdirectory(libs/octree)
 add_subdirectory(libs/process)
 add_subdirectory(libs/segmentation)
-add_subdirectory(libs/encoder)
+add_subdirectory(libs/coder)
 add_subdirectory(libs/visualization)
 
 add_subdirectory(app)

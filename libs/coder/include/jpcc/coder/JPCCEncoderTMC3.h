@@ -1,9 +1,9 @@
 #pragma once
 
-#include <jpcc/encoder/JPCCEncoder.h>
+#include <jpcc/coder/JPCCEncoder.h>
 #include <PCCTMC3Encoder.h>
 
-namespace jpcc::encoder {
+namespace jpcc::coder {
 
 template <typename PointT>
 class JPCCEncoderTMC3 : public virtual JPCCEncoder<PointT>, protected pcc::PCCTMC3Encoder3::Callbacks {
@@ -22,6 +22,6 @@ class JPCCEncoderTMC3 : public virtual JPCCEncoder<PointT>, protected pcc::PCCTM
   void onPostRecolour(const pcc::PCCPointSet3& set3) override;
 };
 
-}  // namespace jpcc::encoder
+}  // namespace jpcc::coder
 
-#include <jpcc/encoder/impl/JPCCEncoderTMC3.hpp>
+#include <jpcc/coder/impl/JPCCEncoderTMC3.hpp>

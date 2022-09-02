@@ -3,7 +3,7 @@
 #include <vector>
 
 #include <jpcc/common/ParameterParser.h>
-#include <jpcc/encoder/JPCCEncoderAdapter.h>
+#include <jpcc/coder/JPCCEncoderAdapter.h>
 #include <jpcc/io/PlyIO.h>
 #include <jpcc/io/Reader.h>
 #include <jpcc/metric/JPCCMetric.h>
@@ -17,7 +17,7 @@
 using namespace std;
 using namespace std::chrono;
 using namespace jpcc;
-using namespace jpcc::encoder;
+using namespace jpcc::coder;
 using namespace jpcc::io;
 using namespace jpcc::metric;
 using namespace jpcc::octree;

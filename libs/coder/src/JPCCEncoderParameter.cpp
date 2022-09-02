@@ -1,6 +1,6 @@
-#include <jpcc/encoder/JPCCEncoderParameter.h>
+#include <jpcc/coder/JPCCEncoderParameter.h>
 
-namespace jpcc::encoder {
+namespace jpcc::coder {
 
 using namespace std;
 using namespace po;
@@ -12,7 +12,7 @@ JPCCEncoderParameter::JPCCEncoderParameter() : JPCCEncoderParameter(JPCC_ENCODER
 JPCCEncoderParameter::JPCCEncoderParameter(const string& prefix, const string& caption) :
     Parameter(prefix, caption),
     backendType_("none"),
-    backendType(EncoderBackendType::NONE),
+    backendType(CoderBackendType::NONE),
     tmc3("tmc3", "JPCCEncoderTMC3Parameter") {
   opts_.add_options()                               //
       (string(prefix_ + BACKEND_TYPE_OPT).c_str(),  //
@@ -21,7 +21,7 @@ JPCCEncoderParameter::JPCCEncoderParameter(const string& prefix, const string& c
       ;
 }
 
-void JPCCEncoderParameter::notify() { backendType = getEncoderBackendType(backendType_); }
+void JPCCEncoderParameter::notify() { backendType = getCoderBackendType(backendType_); }
 
 ostream& operator<<(ostream& out, const JPCCEncoderParameter& obj) {
   obj.coutParameters(out)                   //
@@ -30,14 +30,4 @@ ostream& operator<<(ostream& out, const JPCCEncoderParameter& obj) {
   return out;
 }
 
-EncoderBackendType getEncoderBackendType(const std::string& encoderBackendType) {
-  if (encoderBackendType == "none") {
-    return EncoderBackendType::NONE;
-  } else if (encoderBackendType == "tmc3") {
-    return EncoderBackendType::TMC3;
-  } else {
-    throw logic_error("invalid encoderBackendType");
-  }
-}
-
-}  // namespace jpcc::encoder
+}  // namespace jpcc::coder

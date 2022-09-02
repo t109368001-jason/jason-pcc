@@ -1,4 +1,4 @@
-namespace jpcc::encoder {
+namespace jpcc::coder {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
@@ -39,4 +39,4 @@ void JPCCEncoderTMC3<PointT>::onPostRecolour(const pcc::PCCPointSet3& set3) {
   // TODO
 }
 
-}  // namespace jpcc::encoder
+}  // namespace jpcc::coder

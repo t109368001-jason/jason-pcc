@@ -1,4 +1,4 @@
-namespace jpcc::encoder {
+namespace jpcc::coder {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
@@ -10,4 +10,4 @@ void JPCCEncoder<PointT>::convertFromPCL(JPCCEncoderContext<PointT>& context) {
   context.frame = context.pclFrame;
 }
 
-}  // namespace jpcc::encoder
+}  // namespace jpcc::coder

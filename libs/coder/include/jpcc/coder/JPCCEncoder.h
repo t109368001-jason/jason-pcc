@@ -1,16 +1,10 @@
 #pragma once
 
 #include <jpcc/common/Common.h>
-#include <jpcc/encoder/JPCCEncoderParameter.h>
+#include <jpcc/coder/JPCCEncoderContext.h>
+#include <jpcc/coder/JPCCEncoderParameter.h>
 
-namespace jpcc::encoder {
-
-template <typename PointT>
-struct JPCCEncoderContext {
-  FramePtr<PointT> pclFrame;
-  shared_ptr<void> frame;
-  shared_ptr<void> encodedFrame;
-};
+namespace jpcc::coder {
 
 template <typename PointT>
 class JPCCEncoder {
@@ -28,6 +22,6 @@ class JPCCEncoder {
   virtual void encode(JPCCEncoderContext<PointT>& context) = 0;
 };
 
-}  // namespace jpcc::encoder
+}  // namespace jpcc::coder
 
-#include <jpcc/encoder/impl/JPCCEncoder.hpp>
+#include <jpcc/coder/impl/JPCCEncoder.hpp>
