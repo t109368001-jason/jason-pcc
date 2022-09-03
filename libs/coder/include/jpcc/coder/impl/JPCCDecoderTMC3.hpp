@@ -49,7 +49,8 @@ void JPCCDecoderTMC3<PointT>::convertToPCL(JPCCCoderContext<PointT>& context) {
         PointT((*reconstructFrame)[i].x(), (*reconstructFrame)[i].y(), (*reconstructFrame)[i].z());
   }
 
-  context.reconstructPclFrame = reconstructPclFrame;
+  context.reconstructPclFrame         = reconstructPclFrame;
+  context.reconstructPclFrame->header = context.pclFrame->header;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

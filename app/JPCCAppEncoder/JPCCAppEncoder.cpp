@@ -193,8 +193,7 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
     }
 
     for (auto& frame : frames) {
-      auto reconstructFrame    = jpcc::make_shared<Frame<PointEncode>>();
-      reconstructFrame->header = frame->header;
+      auto reconstructFrame = jpcc::make_shared<Frame<PointEncode>>();
       reconstructFrames.push_back(reconstructFrame);
     }
 
