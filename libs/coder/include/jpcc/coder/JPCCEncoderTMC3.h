@@ -8,7 +8,8 @@ namespace jpcc::coder {
 template <typename PointT>
 class JPCCEncoderTMC3 : public virtual JPCCEncoder<PointT>, protected pcc::PCCTMC3Encoder3::Callbacks {
  protected:
-  pcc::PCCTMC3Encoder3 encoder;
+  pcc::PCCTMC3Encoder3      encoder_;
+  JPCCCoderContext<PointT>* contextPtr_;
 
  public:
   JPCCEncoderTMC3(const JPCCEncoderParameter& parameter);

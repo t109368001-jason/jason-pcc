@@ -17,7 +17,7 @@ class JPCCEncoder {
  public:
   JPCCEncoder(const JPCCEncoderParameter& parameter);
 
-  virtual void convertFromPCL(JPCCCoderContext<PointT>& context);
+  virtual void convertFromPCL(JPCCCoderContext<PointT>& context) = 0;
 
   virtual void encode(JPCCCoderContext<PointT>& context) = 0;
 };

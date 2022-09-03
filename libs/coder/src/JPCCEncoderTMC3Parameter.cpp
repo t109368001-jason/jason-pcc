@@ -213,7 +213,6 @@ void JPCCEncoderTMC3Parameter::setDefault() {
   sps.seq_geom_scale_unit_flag                      = ScaleUnit::kDimensionless;
   codedGeomScale                                    = 1.;
   seqGeomScale                                      = 1.;
-  seqGeomScale                                      = 1.;
   extGeomScale                                      = 1.;
   sps.geometry_axis_order                           = AxisOrder::kXYZ;
   autoSeqBbox                                       = true;

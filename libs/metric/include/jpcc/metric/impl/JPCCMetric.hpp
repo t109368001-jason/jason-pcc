@@ -13,7 +13,6 @@ void JPCCMetric::addPoints(const std::string& name, const FramePtr<PointT>& fram
             << "name=" << name << ", "
             << "frameNumber=" << frame->header.seq << ", "
             << "points=" << points << std::endl;
-  addBytes(name, frame->header.seq, points * sizeof(float) * 3);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

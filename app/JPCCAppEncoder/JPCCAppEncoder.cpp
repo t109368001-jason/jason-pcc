@@ -78,6 +78,9 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
   size_t       frameNumber       = parameter.inputDataset.getStartFrameNumber();
   const size_t endFrameNumber    = parameter.inputDataset.getEndFrameNumber();
 
+  std::ofstream dynamicOfs("./bin/output-dynamic.bin", std::ios::binary);
+  std::ofstream staticOfs("./bin/output-static.bin", std::ios::binary);
+
   GroupOfFrame<PointEncode>             frames;
   GroupOfFrame<PointEncode>             dynamicFrames;
   GroupOfFrame<PointEncode>             staticFrames;
@@ -101,15 +104,18 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
       reader->loadAll(frameNumber, groupOfFramesSize, frames, parameter.parallel);
     }
     metric.addPoints<PointEncode>("Raw", frames);
+    for (const auto& frame : frames) { metric.addBytes("Raw", frame->header.seq, frame->size() * sizeof(float) * 3); }
 
     {  // preprocess
       ScopeStopwatch clock = metric.start("PreProcess", frameNumber);
       preProcessor.process(frames, nullptr, parameter.parallel);
     }
     metric.addPoints<PointEncode>("PreProcessed", frames);
+    for (const auto& frame : frames) {
+      metric.addBytes("PreProcessed", frame->header.seq, frame->size() * sizeof(float) * 3);
+    }
 
-    // TODO extract JPCCEncoder
-    // encode
+    // segmentation
     for (const auto& frame : frames) {
       auto dynamicFrame       = jpcc::make_shared<Frame<PointEncode>>();
       auto staticFrame        = jpcc::make_shared<Frame<PointEncode>>();
@@ -132,14 +138,18 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
       dynamicContexts.push_back(dynamicContext);
       staticContexts.push_back(staticContext);
     }
+
+    // encode
     if (dynamicEncoder) {
       for (auto& dynamicContext : dynamicContexts) {
         dynamicEncoder->convertFromPCL(dynamicContext);
         dynamicEncoder->encode(dynamicContext);
         {  // save
           ScopeStopwatch clock = metric.start("Save", frameNumber);
-          // TODO save
+          dynamicOfs.write(dynamicContext.encodedBytes.data(), dynamicContext.encodedBytes.size());
         }
+        metric.addPoints<PointEncode>("Dynamic", dynamicContext.pclFrame);
+        metric.addBytes("Dynamic", dynamicContext.pclFrame->header.seq, dynamicContext.encodedBytes.size());
       }
     } else {
       {  // save
@@ -148,6 +158,9 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
         savePly<PointEncode, PointOutput>(dynamicFrames, parameter.outputDataset.getFilePath(0), parameter.parallel);
       }
       metric.addPoints<PointEncode>("Dynamic", dynamicFrames);
+      for (const auto& frame : dynamicFrames) {
+        metric.addBytes("Dynamic", frame->header.seq, frame->size() * sizeof(float) * 3);
+      }
     }
     if (staticEncoder) {
       for (auto& staticContext : staticContexts) {
@@ -155,8 +168,10 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
         dynamicEncoder->encode(staticContext);
         {  // save
           ScopeStopwatch clock = metric.start("Save", frameNumber);
-          // TODO save
+          staticOfs.write(staticContext.encodedBytes.data(), staticContext.encodedBytes.size());
         }
+        metric.addPoints<PointEncode>("Static", staticContext.pclFrame);
+        metric.addBytes("Static", staticContext.pclFrame->header.seq, staticContext.encodedBytes.size());
       }
     } else {
       {  // save
@@ -168,18 +183,41 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
                                           parameter.parallel);
       }
       metric.addPoints<PointEncode>("StaticAdded", staticAddedFrames);
+      for (const auto& frame : staticAddedFrames) {
+        metric.addBytes("StaticAdded", frame->header.seq, frame->size() * sizeof(float) * 3);
+      }
       metric.addPoints<PointEncode>("StaticRemoved", staticRemovedFrames);
+      for (const auto& frame : staticRemovedFrames) {
+        metric.addBytes("StaticRemoved", frame->header.seq, frame->size() * sizeof(float) * 3);
+      }
+    }
+
+    for (auto& frame : frames) {
+      auto reconstructFrame    = jpcc::make_shared<Frame<PointEncode>>();
+      reconstructFrame->header = frame->header;
+      reconstructFrames.push_back(reconstructFrame);
     }
 
     // decode
     if (dynamicDecoder) {
+      for (size_t i = 0; i < dynamicContexts.size(); i++) {
+        dynamicDecoder->decode(dynamicContexts.at(i));
+        dynamicDecoder->convertToPCL(dynamicContexts.at(i));
+        pcl::copyPointCloud(*dynamicContexts.at(i).reconstructPclFrame, *reconstructFrames.at(i));
+      }
     } else {
       for (size_t i = 0; i < frames.size(); i++) {
-        auto reconstructFrame = jpcc::make_shared<Frame<PointEncode>>();
-        pcl::copyPointCloud(*dynamicFrames.at(i), *reconstructFrame);
-        pcl::copyPointCloud(*staticFrames.at(i), *reconstructFrame);
-        reconstructFrames.push_back(reconstructFrame);
+        pcl::copyPointCloud(*dynamicFrames.at(i), *reconstructFrames.at(i));
       }
+    }
+    if (staticDecoder) {
+      for (size_t i = 0; i < staticContexts.size(); i++) {
+        staticDecoder->decode(staticContexts.at(i));
+        staticDecoder->convertToPCL(staticContexts.at(i));
+        pcl::copyPointCloud(*staticContexts.at(i).reconstructPclFrame, *reconstructFrames.at(i));
+      }
+    } else {
+      for (size_t i = 0; i < frames.size(); i++) { pcl::copyPointCloud(*staticFrames.at(i), *reconstructFrames.at(i)); }
     }
 
     for (size_t i = 0; i < frames.size(); i++) {

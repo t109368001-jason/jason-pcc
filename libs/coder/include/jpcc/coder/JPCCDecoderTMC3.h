@@ -8,14 +8,15 @@ namespace jpcc::coder {
 template <typename PointT>
 class JPCCDecoderTMC3 : public virtual JPCCDecoder<PointT>, protected pcc::PCCTMC3Decoder3::Callbacks {
  protected:
-  pcc::PCCTMC3Decoder3 decoder;
+  pcc::PCCTMC3Decoder3      decoder;
+  JPCCCoderContext<PointT>* contextPtr_;
 
  public:
   JPCCDecoderTMC3(const JPCCDecoderParameter& parameter);
 
-  void convertFromPCL(JPCCDecoderContext<PointT>& context) override;
+  void decode(JPCCCoderContext<PointT>& context) override;
 
-  void decode(JPCCDecoderContext<PointT>& context) override;
+  void convertToPCL(JPCCCoderContext<PointT>& context) override;
 
  protected:
   void onOutputCloud(const pcc::CloudFrame& frame) override;
