@@ -17,18 +17,22 @@ void JPCCDecoderTMC3<PointT>::decode(JPCCCoderContext<PointT>& context) {
   std::istrstream is(contextPtr_->encodedBytes.data(), contextPtr_->encodedBytes.size());
 
   pcc::PayloadBuffer buffer;
-  while (!is.eof() && !context.reconstructFrame) {
+  while (true) {
     pcc::PayloadBuffer* bufferPtr = &buffer;
     readTlv(is, &buffer);
 
     // at end of file (or other error), flush decoder
-    if (!is) { bufferPtr = nullptr; }
+    if (!is) {  //
+      bufferPtr = nullptr;
+    }
 
     if (decoder.decompress(bufferPtr, this)) {
       BOOST_THROW_EXCEPTION(std::logic_error("decompress point cloud error"));
     }
 
-    if (!bufferPtr) { break; }
+    if (!bufferPtr) {  //
+      break;
+    }
   }
 
   assert(context.reconstructFrame);
@@ -57,7 +61,10 @@ void JPCCDecoderTMC3<PointT>::convertToPCL(JPCCCoderContext<PointT>& context) {
 template <typename PointT>
 void JPCCDecoderTMC3<PointT>::onOutputCloud(const pcc::CloudFrame& frame) {
   if (contextPtr_) {
-    auto reconstructFrame         = make_shared<pcc::PCCPointSet3>(frame.cloud);
+    auto reconstructFrame = make_shared<pcc::PCCPointSet3>(frame.cloud);
+    for (size_t i = 0; i < frame.cloud.getPointCount(); i++) {  //
+      (*reconstructFrame)[i] += frame.outputOrigin;
+    }
     contextPtr_->reconstructFrame = reconstructFrame;
   }
 }
