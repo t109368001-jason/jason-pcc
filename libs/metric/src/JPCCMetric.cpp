@@ -119,13 +119,18 @@ void JPCCMetric::writeAndShow() {
   }
   std::ofstream metricSummaryCSV(parameter_.outputCSVFolderPath / "metric-summary.csv");
   metricSummaryCSV << "Platform," << BOOST_PLATFORM << endl;
-#ifdef __cplusplus
+#if defined(BOOST_CXX_VERSION)
+  metricSummaryCSV << "C++ Version," << BOOST_CXX_VERSION << endl;
+#elif defined(__cplusplus)
   metricSummaryCSV << "C++ Version," << __cplusplus << endl;
 #endif
   metricSummaryCSV << "Compiler," << BOOST_COMPILER << endl;
+
   cout << "Environment Info:" << endl;
   cout << "  Platform          :" << BOOST_PLATFORM << endl;
-#ifdef __cplusplus
+#if defined(BOOST_CXX_VERSION)
+  cout << "  C++ Version       :" << BOOST_CXX_VERSION << endl;
+#elif defined(__cplusplus)
   cout << "  C++ Version       :" << __cplusplus << endl;
 #endif
   cout << "  Compiler          :" << BOOST_COMPILER << endl;
