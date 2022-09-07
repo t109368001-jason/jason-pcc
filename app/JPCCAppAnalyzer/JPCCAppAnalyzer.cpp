@@ -1,4 +1,3 @@
-#include <array>
 #include <chrono>
 #include <filesystem>
 #include <iostream>
@@ -166,7 +165,7 @@ void main_(AppParameter& parameter) {
       };
       if (frequency == 10.0) {
         for (const auto& quantResolution : parameter.quantResolutions) {
-          if (quantResolution > resolution) { continue; }
+          if ((double)quantResolution > resolution) { continue; }
 
           analyzers.push_back(  //
               jpcc::make_shared<VoxelOccludedPercentageToVoxelCount>(frequency, resolution, parameter.outputDir,

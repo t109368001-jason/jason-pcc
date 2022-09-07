@@ -25,7 +25,6 @@ class VoxelOccludedPercentageToVoxelCount : public Analyzer {
                                                       pcl::octree::OctreeContainerEmpty>>;
 
  protected:
-  const size_t quantResolution_;
   const size_t quantCount_;
   OctreeT      octree_;
 

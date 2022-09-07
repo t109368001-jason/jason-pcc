@@ -20,7 +20,6 @@ VoxelOccludedPercentageToVoxelCount::VoxelOccludedPercentageToVoxelCount(const f
              outputDir,
              "VoxelOccludedPercentageToVoxelCount",
              "[" + to_string(quantResolution) + "]"),
-    quantResolution_(quantResolution),
     quantCount_((size_t)(resolution / (double)quantResolution)),
     octree_(resolution) {}
 
