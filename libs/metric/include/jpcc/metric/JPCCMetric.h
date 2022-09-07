@@ -47,7 +47,7 @@ class JPCCMetric {
   void addPSNR(const std::string& name, const FramePtr<PointA>& frameA, const FramePtr<PointB>& frameB);
 
   template <typename PointA, typename PointB>
-  void addPSNR(const std::string& name, const GroupOfFrame<PointA>& frameA, const GroupOfFrame<PointB>& frameB);
+  void addPSNR(const std::string& name, const GroupOfFrame<PointA>& framesA, const GroupOfFrame<PointB>& framesB);
 
   template <typename PointA, typename PointB>
   void computePSNR(const FramePtr<PointA>& frameA,

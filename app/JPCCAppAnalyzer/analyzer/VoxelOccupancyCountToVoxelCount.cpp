@@ -74,7 +74,7 @@ void VoxelOccupancyCountToVoxelCount::getCloud(FramePtr<pcl::PointXYZINormal>& c
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void VoxelOccupancyCountToVoxelCount::reset() {
-  Analyzer::reset();
+  VoxelPointCountToVoxelCount::reset();
   octree_.deleteTree();
 }
 

@@ -1,4 +1,4 @@
-#include <strstream>
+#include <sstream>
 
 #include <io_tlv.h>
 
@@ -14,7 +14,7 @@ template <typename PointT>
 void JPCCDecoderTMC3<PointT>::decode(JPCCCoderContext<PointT>& context) {
   contextPtr_ = &context;
   contextPtr_->encodedBytes;
-  std::istrstream is(contextPtr_->encodedBytes.data(), contextPtr_->encodedBytes.size());
+  std::istringstream is(std::string(contextPtr_->encodedBytes.begin(), contextPtr_->encodedBytes.end()));
 
   pcc::PayloadBuffer buffer;
   while (true) {
@@ -22,17 +22,13 @@ void JPCCDecoderTMC3<PointT>::decode(JPCCCoderContext<PointT>& context) {
     readTlv(is, &buffer);
 
     // at end of file (or other error), flush decoder
-    if (!is) {  //
-      bufferPtr = nullptr;
-    }
+    if (!is) { bufferPtr = nullptr; }
 
     if (decoder.decompress(bufferPtr, this)) {
       BOOST_THROW_EXCEPTION(std::logic_error("decompress point cloud error"));
     }
 
-    if (!bufferPtr) {  //
-      break;
-    }
+    if (!bufferPtr) { break; }
   }
 
   assert(context.reconstructFrame);

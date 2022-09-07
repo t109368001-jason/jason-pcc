@@ -90,6 +90,9 @@ constexpr float HI_RES_VERTICAL_SIN[] = {
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wattributes"
+
 #pragma pack(push, 1)
 typedef struct LaserReturn {
   uint16_t distance;
@@ -113,6 +116,8 @@ struct DataPacket {
   uint8_t                   sensorType;
 };
 #pragma pack(pop)
+
+#pragma GCC diagnostic pop
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
