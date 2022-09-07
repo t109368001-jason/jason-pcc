@@ -119,23 +119,28 @@ void JPCCMetric::writeAndShow() {
   }
   std::ofstream metricSummaryCSV(parameter_.outputCSVFolderPath / "metric-summary.csv");
   metricSummaryCSV << "Platform," << BOOST_PLATFORM << endl;
-  metricSummaryCSV << "C++ Version," << BOOST_CXX_VERSION << endl;
+#ifdef __cplusplus
+  metricSummaryCSV << "C++ Version," << __cplusplus << endl;
+#endif
   metricSummaryCSV << "Compiler," << BOOST_COMPILER << endl;
   cout << "Environment Info:" << endl;
   cout << "  Platform          :" << BOOST_PLATFORM << endl;
-  cout << "  C++ Version       :" << BOOST_CXX_VERSION << endl;
+#ifdef __cplusplus
+  cout << "  C++ Version       :" << __cplusplus << endl;
+#endif
   cout << "  Compiler          :" << BOOST_COMPILER << endl;
 
-  metricSummaryCSV << "Frame Count," << frameNumberSet_.size() << endl;
+  unsigned long frameCount = frameNumberSet_.size();
+  metricSummaryCSV << "Frame Count," << frameCount << endl;
 
-  size_t maxNameLength = 0;
-  for (const auto& name : pointsNameSet_) { maxNameLength = max(maxNameLength, name.size()); }
-  for (const auto& name : bytesNameSet_) { maxNameLength = max(maxNameLength, name.size()); }
-  for (const auto& name : c2cMSENameSet_) { maxNameLength = max(maxNameLength, name.size()); }
-  for (const auto& name : c2cPSNRNameSet_) { maxNameLength = max(maxNameLength, name.size()); }
-  for (const auto& name : c2pMSENameSet_) { maxNameLength = max(maxNameLength, name.size()); }
-  for (const auto& name : c2pPSNRNameSet_) { maxNameLength = max(maxNameLength, name.size()); }
-  for (const auto& name : clockNameSet_) { maxNameLength = max(maxNameLength, name.size()); }
+  int maxNameLength = 0;
+  for (const auto& name : pointsNameSet_) { maxNameLength = max(maxNameLength, (int)name.size()); }
+  for (const auto& name : bytesNameSet_) { maxNameLength = max(maxNameLength, (int)name.size()); }
+  for (const auto& name : c2cMSENameSet_) { maxNameLength = max(maxNameLength, (int)name.size()); }
+  for (const auto& name : c2cPSNRNameSet_) { maxNameLength = max(maxNameLength, (int)name.size()); }
+  for (const auto& name : c2pMSENameSet_) { maxNameLength = max(maxNameLength, (int)name.size()); }
+  for (const auto& name : c2pPSNRNameSet_) { maxNameLength = max(maxNameLength, (int)name.size()); }
+  for (const auto& name : clockNameSet_) { maxNameLength = max(maxNameLength, (int)name.size()); }
   cout << endl;
   cout << "Metric:" << endl;
   cout << "  Points:" << endl;
@@ -152,27 +157,27 @@ void JPCCMetric::writeAndShow() {
   }
   cout << "  MSE (c2c):" << endl;
   for (const auto& [name, mse] : c2cMSESumMap_) {  //
-    metricSummaryCSV << name << " (mm^2)," << mse / frameNumberSet_.size() << endl;
-    cout << "    " << std::setfill(' ') << std::setw(maxNameLength) << name << left << ": "
-         << mse / frameNumberSet_.size() << " mm^2" << endl;
+    metricSummaryCSV << name << " (mm^2)," << mse / (double)frameCount << endl;
+    cout << "    " << std::setfill(' ') << std::setw(maxNameLength) << name << left << ": " << mse / (double)frameCount
+         << " mm^2" << endl;
   }
   cout << "  PSNR (c2c):" << endl;
   for (const auto& [name, psnr] : c2cPSNRSumMap_) {  //
-    metricSummaryCSV << name << " (db)," << psnr / frameNumberSet_.size() << endl;
-    cout << "    " << std::setfill(' ') << std::setw(maxNameLength) << name << left << ": "
-         << psnr / frameNumberSet_.size() << " db" << endl;
+    metricSummaryCSV << name << " (db)," << psnr / (double)frameCount << endl;
+    cout << "    " << std::setfill(' ') << std::setw(maxNameLength) << name << left << ": " << psnr / (double)frameCount
+         << " db" << endl;
   }
   cout << "  MSE (c2p):" << endl;
   for (const auto& [name, mse] : c2pMSESumMap_) {  //
-    metricSummaryCSV << name << " (mm^2)," << mse / frameNumberSet_.size() << endl;
-    cout << "    " << std::setfill(' ') << std::setw(maxNameLength) << name << left << ": "
-         << mse / frameNumberSet_.size() << " mm^2" << endl;
+    metricSummaryCSV << name << " (mm^2)," << mse / (double)frameCount << endl;
+    cout << "    " << std::setfill(' ') << std::setw(maxNameLength) << name << left << ": " << mse / (double)frameCount
+         << " mm^2" << endl;
   }
   cout << "  PSNR (c2p):" << endl;
   for (const auto& [name, psnr] : c2pPSNRSumMap_) {  //
-    metricSummaryCSV << name << " (db)," << psnr / frameNumberSet_.size() << endl;
-    cout << "    " << std::setfill(' ') << std::setw(maxNameLength) << name << left << ": "
-         << psnr / frameNumberSet_.size() << " db" << endl;
+    metricSummaryCSV << name << " (db)," << psnr / (double)frameCount << endl;
+    cout << "    " << std::setfill(' ') << std::setw(maxNameLength) << name << left << ": " << psnr / (double)frameCount
+         << " db" << endl;
   }
   cout << "  Processing time:" << endl;
   for (const auto& [name, duration] : clockSumMap_) {
