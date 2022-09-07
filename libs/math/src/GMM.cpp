@@ -1,6 +1,7 @@
 #include <jpcc/math/GMM.h>
 
-#include <numeric>
+#include <random>
+#include <iterator>
 
 #include <jpcc/math/KMeans.h>
 
@@ -37,15 +38,20 @@ void GMM::buildN(vector<float>&       samples,
   }
   if (uniqueSamples.size() >= K_) {
     while (centroids.size() < K_) {
-      const float sample = samples.at(rand() % samples.size());
-      bool        exists = false;
+      std::random_device              rd;
+      std::mt19937                    gen(rd());
+      std::uniform_int_distribution<> dis(0, std::distance(samples.begin(), samples.end()) - 1);
+      auto                            sampleIter = samples.begin();
+      std::advance(sampleIter, dis(gen));
+
+      bool exists = false;
       for (const auto& centroid : centroids) {
-        if (sample == centroid) {
+        if (*sampleIter == centroid) {
           exists = true;
           break;
         }
       }
-      if (!exists) { centroids.push_back(sample); }
+      if (!exists) { centroids.push_back(*sampleIter); }
     }
   } else {
     for (size_t i = 0; i < uniqueSamples.size() && centroids.size() < K_; i++) {

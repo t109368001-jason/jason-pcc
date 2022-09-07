@@ -1,6 +1,5 @@
 #include <jpcc/io/Pcap.h>
 
-#include <exception>
 #include <iomanip>
 #include <sstream>
 #include <stdexcept>

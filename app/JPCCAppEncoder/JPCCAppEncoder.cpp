@@ -219,12 +219,11 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
       for (size_t i = 0; i < frames.size(); i++) { pcl::copyPointCloud(*staticFrames.at(i), *reconstructFrames.at(i)); }
     }
 
-    for (size_t i = 0; i < frames.size(); i++) {
-      FramePtr<PointMetric> frameWithNormal            = normalEstimation.compute(frames.at(i));
-      FramePtr<PointMetric> reconstructFrameWithNormal = normalEstimation.compute(reconstructFrames.at(i));
-      metric.addPSNR<PointMetric, PointMetric>("A2B", frameWithNormal, reconstructFrameWithNormal);
-      metric.addPSNR<PointMetric, PointMetric>("B2A", reconstructFrameWithNormal, frameWithNormal);
-    }
+    GroupOfFrame<PointMetric> framesWithNormal = normalEstimation.computeAll(frames, parameter.parallel);
+    GroupOfFrame<PointMetric> reconstructFramesWithNormal =
+        normalEstimation.computeAll(reconstructFrames, parameter.parallel);
+    metric.addPSNR<PointMetric, PointMetric>("A2B", framesWithNormal, reconstructFramesWithNormal);
+    metric.addPSNR<PointMetric, PointMetric>("B2A", reconstructFramesWithNormal, framesWithNormal);
 
     frameNumber += groupOfFramesSize;
   }

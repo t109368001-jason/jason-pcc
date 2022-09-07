@@ -21,10 +21,6 @@ class DatasetReaderBase {
  public:
   DatasetReaderBase(DatasetReaderParameter param, DatasetParameter datasetParam);
 
-  [[nodiscard]] const DatasetReaderParameter& getReaderParameter() const;
-
-  [[nodiscard]] const DatasetParameter& getDatasetParameter() const;
-
   void open(size_t startFrameNumber);
 
   [[nodiscard]] bool isOpen() const;

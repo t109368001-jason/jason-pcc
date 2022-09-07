@@ -22,7 +22,21 @@ JPCCSegmentationParameter::JPCCSegmentationParameter() :
     JPCCSegmentationParameter(JPCC_GMM_SEGMENTATION_OPT_PREFIX, __FUNCTION__) {}
 
 JPCCSegmentationParameter::JPCCSegmentationParameter(const string& prefix, const string& caption) :
-    Parameter(prefix, caption), type_(), staticPointType_(), updateModelBeforeNTrain(false) {
+    Parameter(prefix, caption),
+    type_(),
+    staticPointType_(),
+    outputExistsPointOnlyVector_(),
+    kVector_(),
+    alphaVector_(),
+    nullAlphaRatioVector_(),
+    nTrainVector_(),
+    staticThresholdVector_(),
+    nullStaticThresholdVector_(),
+    type(SegmentationType::GMM_2L),
+    staticPointType(StaticPointType::CENTER),
+    updateModelBeforeNTrain(false),
+    resolution(100.0),
+    minimumVariance(0.0016) {
   opts_.add_options()                                                //
       (string(prefix_ + TYPE_OPT).c_str(),                           //
        value<string>(&type_)->required(),                            //

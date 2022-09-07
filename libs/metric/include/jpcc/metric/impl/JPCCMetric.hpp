@@ -56,7 +56,7 @@ void JPCCMetric::addPSNR(const std::string&          name,
                          const GroupOfFrame<PointA>& framesA,
                          const GroupOfFrame<PointB>& framesB) {
   assert(framesA.size() == framesB.size());
-  for (size_t i = 0; i < framesA.size(); i++) { addPSNR(name, framesA.at(i), framesB.at(i)); }
+  for (size_t i = 0; i < framesA.size(); i++) { this->addPSNR<PointA, PointB>(name, framesA.at(i), framesB.at(i)); }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

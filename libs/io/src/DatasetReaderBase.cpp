@@ -9,19 +9,13 @@ namespace jpcc::io {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 DatasetReaderBase::DatasetReaderBase(DatasetReaderParameter param, DatasetParameter datasetParam) :
-    param_(move(param)),
-    datasetParam_(move(datasetParam)),
+    param_(std::move(param)),
+    datasetParam_(std::move(datasetParam)),
     datasetIndices_(datasetParam_.count()),
     currentFrameNumbers_(datasetParam_.count()) {
   assert(datasetParam_.count() > 0);
   generate(datasetIndices_.begin(), datasetIndices_.end(), [n = 0]() mutable { return n++; });
 }
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-const DatasetReaderParameter& DatasetReaderBase::getReaderParameter() const { return param_; }
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-const DatasetParameter& DatasetReaderBase::getDatasetParameter() const { return datasetParam_; }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void DatasetReaderBase::open(const size_t startFrameNumber) {

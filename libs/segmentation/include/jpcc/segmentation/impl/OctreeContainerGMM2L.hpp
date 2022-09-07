@@ -10,8 +10,8 @@ OctreeContainerGMM2L<PointT>::OctreeContainerGMM2L() : octree::OctreeContainerLa
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void OctreeContainerGMM2L<PointT>::reset() {
-  for (auto& gmm : gmms_) { gmm.reset(); }
-  for (auto& trainSamples : trainSamplesVector_) { trainSamples = make_shared<std::vector<float>>(); }
+  for (auto& gmm : gmmArray_) { gmm.reset(); }
+  for (auto& trainSamples : trainSamplesArray_) { trainSamples = make_shared<std::vector<float>>(); }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -24,14 +24,14 @@ void OctreeContainerGMM2L<PointT>::addPoint(const PointT& point) {
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 bool OctreeContainerGMM2L<PointT>::isBuilt(const int index) const {
-  return gmms_.at(index).isBuilt();
+  return gmmArray_.at(index).isBuilt();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void OctreeContainerGMM2L<PointT>::addTrainSample() {
   if (std::isnan(this->lastPoint_.x)) { return; }
-  for (auto& trainSamples : trainSamplesVector_) {
+  for (auto& trainSamples : trainSamplesArray_) {
     if (!trainSamples) { continue; }
     trainSamples->push_back(this->lastPoint_.intensity);
   }
@@ -45,9 +45,9 @@ void OctreeContainerGMM2L<PointT>::build(const int                 index,
                                          const double              alpha,
                                          const double              minimumVariance,
                                          const std::vector<float>& alternateCentroids) {
-  gmms_.at(index).buildN(*trainSamplesVector_.at(index), K, nTrain, minimumVariance, NULL_INTENSITY,
-                         alternateCentroids);
-  trainSamplesVector_.at(index) = nullptr;
+  gmmArray_.at(index).buildN(*trainSamplesArray_.at(index), K, nTrain, minimumVariance, NULL_INTENSITY,
+                             alternateCentroids);
+  trainSamplesArray_.at(index) = nullptr;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -57,17 +57,17 @@ bool OctreeContainerGMM2L<PointT>::isStatic(const std::vector<double>& staticThr
                                             const std::vector<bool>&   outputExistsPointOnlyVector) {
   if (isnan(this->lastPoint_.intensity)) {
     if (!outputExistsPointOnlyVector.at(LONG_INDEX)) {
-      if (gmms_.at(LONG_INDEX).getStaticProbability() > nullStaticThresholdVector.at(LONG_INDEX)) { return true; }
+      if (gmmArray_.at(LONG_INDEX).getStaticProbability() > nullStaticThresholdVector.at(LONG_INDEX)) { return true; }
     }
     if (!outputExistsPointOnlyVector.at(SHORT_INDEX)) {
-      if (gmms_.at(SHORT_INDEX).getStaticProbability() > nullStaticThresholdVector.at(SHORT_INDEX)) { return true; }
+      if (gmmArray_.at(SHORT_INDEX).getStaticProbability() > nullStaticThresholdVector.at(SHORT_INDEX)) { return true; }
     }
     return false;
   } else {
-    if (gmms_.at(SHORT_INDEX).getProbability(this->lastPoint_.intensity) > staticThresholdVector.at(SHORT_INDEX)) {
+    if (gmmArray_.at(SHORT_INDEX).getProbability(this->lastPoint_.intensity) > staticThresholdVector.at(SHORT_INDEX)) {
       return true;
     }
-    if (gmms_.at(LONG_INDEX).getProbability(this->lastPoint_.intensity) > staticThresholdVector.at(LONG_INDEX)) {
+    if (gmmArray_.at(LONG_INDEX).getProbability(this->lastPoint_.intensity) > staticThresholdVector.at(LONG_INDEX)) {
       return true;
     }
     return false;
@@ -81,9 +81,9 @@ void OctreeContainerGMM2L<PointT>::updateModel(const int    index,
                                                const double nullAlpha,
                                                const double minimumVariance) {
   if (std::isnan(this->lastPoint_.intensity)) {
-    gmms_.at(index).updateModel(NULL_INTENSITY, nullAlpha, minimumVariance);
+    gmmArray_.at(index).updateModel(NULL_INTENSITY, nullAlpha, minimumVariance);
   } else {
-    gmms_.at(index).updateModel(this->lastPoint_.intensity, alpha, minimumVariance);
+    gmmArray_.at(index).updateModel(this->lastPoint_.intensity, alpha, minimumVariance);
   }
 }
 

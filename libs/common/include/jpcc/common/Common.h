@@ -14,8 +14,10 @@
 
 #define JPCC_NOT_USED(x)
 
-#define THROW_IF_NOT(expression) \
-  if (!(expression)) { BOOST_THROW_EXCEPTION(std::logic_error(#expression)); }
+#define THROW_IF_NOT(expression)                                                 \
+  do {                                                                           \
+    if (!(expression)) { BOOST_THROW_EXCEPTION(std::logic_error(#expression)); } \
+  } while (0)
 
 namespace jpcc {
 
@@ -36,8 +38,6 @@ using FrameConstPtr = typename Frame<PointT>::ConstPtr;
 
 template <typename PointT>
 using GroupOfFrame = std::vector<FramePtr<PointT>>;
-template <typename PointT>
-using GroupOfFrameConst = std::vector<FrameConstPtr<PointT>>;
 template <typename PointT>
 using GroupOfFrameMap = std::map<std::string, GroupOfFrame<PointT>>;
 

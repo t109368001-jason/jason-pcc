@@ -30,18 +30,18 @@ class OctreeContainerGMM : public IOctreeContainerGMM,
 
   void addTrainSample() override;
 
-  virtual void build(int                       index,
-                     int                       nTrain,
-                     int                       K,
-                     double                    alpha,
-                     double                    minimumVariance,
-                     const std::vector<float>& alternateCentroids) override;
+  void build(int                       index,
+             int                       nTrain,
+             int                       K,
+             double                    alpha,
+             double                    minimumVariance,
+             const std::vector<float>& alternateCentroids) override;
 
   [[nodiscard]] bool isStatic(const std::vector<double>& staticThresholdVector,
                               const std::vector<double>& nullStaticThresholdVector,
                               const std::vector<bool>&   outputExistsPointOnlyVector) override;
 
-  virtual void updateModel(int index, double alpha, double nullAlpha, double minimumVariance) override;
+  void updateModel(int index, double alpha, double nullAlpha, double minimumVariance) override;
 };
 
 }  // namespace jpcc::segmentation

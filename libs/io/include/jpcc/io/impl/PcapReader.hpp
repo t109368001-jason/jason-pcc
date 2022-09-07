@@ -90,8 +90,10 @@ constexpr float HI_RES_VERTICAL_SIN[] = {
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////
+#if defined(__GNUC__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wattributes"
+#endif  // defined(__GNUC__)
 
 #pragma pack(push, 1)
 typedef struct LaserReturn {
@@ -117,7 +119,9 @@ struct DataPacket {
 };
 #pragma pack(pop)
 
+#if defined(__GNUC__)
 #pragma GCC diagnostic pop
+#endif  // defined(__GNUC__)
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
