@@ -4,6 +4,8 @@
 #include <iomanip>
 #include <iostream>
 
+#include <boost/config.hpp>
+
 using namespace std;
 using namespace pcc;
 
@@ -116,6 +118,14 @@ void JPCCMetric::writeAndShow() {
     metricCSV << std::endl;
   }
   std::ofstream metricSummaryCSV(parameter_.outputCSVFolderPath / "metric-summary.csv");
+  metricSummaryCSV << "Platform," << BOOST_PLATFORM << endl;
+  metricSummaryCSV << "C++ Version," << BOOST_CXX_VERSION << endl;
+  metricSummaryCSV << "Compiler," << BOOST_COMPILER << endl;
+  cout << "Environment Info:" << endl;
+  cout << "  Platform          :" << BOOST_PLATFORM << endl;
+  cout << "  C++ Version       :" << BOOST_CXX_VERSION << endl;
+  cout << "  Compiler          :" << BOOST_COMPILER << endl;
+
   metricSummaryCSV << "Frame Count," << frameNumberSet_.size() << endl;
 
   size_t maxNameLength = 0;
