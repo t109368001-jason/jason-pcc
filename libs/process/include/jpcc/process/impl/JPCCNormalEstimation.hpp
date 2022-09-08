@@ -41,11 +41,11 @@ void JPCCNormalEstimation<PointIn, PointOut>::computeInPlaceAll(GroupOfFrame<Poi
   if constexpr (!pcl::traits::has_normal_v<PointIn>) {
     static_assert(dependent_false_v<PointIn>, "invalid template type");
   }
-  if (parallel) {
+  if (!parallel) {
+    for (const auto& frame : frames) { this->computeInPlace(frame); }
+  } else {
     std::for_each(std::execution::par_unseq, frames.begin(), frames.end(),
                   [this](FramePtr<PointIn>& frame) { this->computeInPlace(frame); });
-  } else {
-    std::for_each(frames.begin(), frames.end(), [this](FramePtr<PointIn>& frame) { this->computeInPlace(frame); });
   }
 }
 
@@ -55,11 +55,11 @@ GroupOfFrame<PointOut> JPCCNormalEstimation<PointIn, PointOut>::computeAll(Group
                                                                            bool                   parallel) const {
   jpcc::GroupOfFrame<PointOut> outputs;
   outputs.resize(frames.size());
-  if (parallel) {
-    std::transform(std::execution::par_unseq, frames.begin(), frames.end(), outputs.begin(),
+  if (!parallel) {
+    std::transform(frames.begin(), frames.end(), outputs.begin(),
                    [this](FramePtr<PointIn>& frame) { return this->compute(frame); });
   } else {
-    std::transform(frames.begin(), frames.end(), outputs.begin(),
+    std::transform(std::execution::par_unseq, frames.begin(), frames.end(), outputs.begin(),
                    [this](FramePtr<PointIn>& frame) { return this->compute(frame); });
   }
   return outputs;

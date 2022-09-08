@@ -63,11 +63,10 @@ void quantize(const FramePtr<PointT>& frame, const double resolution) {
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void quantize(const GroupOfFrame<PointT>& frames, const double resolution, const bool parallel) {
-  if (parallel) {
-    std::for_each(std::execution::par_unseq, frames.begin(), frames.end(),
-                  [&resolution](const auto& frame) { quantize(frame, resolution); });
+  if (!parallel) {
+    for (const auto& frame : frames) { quantize(frame, resolution); }
   } else {
-    std::for_each(std::execution::seq, frames.begin(), frames.end(),
+    std::for_each(std::execution::par_unseq, frames.begin(), frames.end(),
                   [&resolution](const auto& frame) { quantize(frame, resolution); });
   }
 }

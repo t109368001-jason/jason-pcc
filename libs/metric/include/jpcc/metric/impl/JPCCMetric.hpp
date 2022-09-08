@@ -1,3 +1,7 @@
+#include <execution>
+
+#include <boost/range/counting_range.hpp>
+
 #include <pcl/kdtree/kdtree_flann.h>
 
 namespace jpcc::metric {
@@ -54,9 +58,18 @@ void JPCCMetric::addPSNR(const std::string& name, const FramePtr<PointA>& frameA
 template <typename PointA, typename PointB>
 void JPCCMetric::addPSNR(const std::string&          name,
                          const GroupOfFrame<PointA>& framesA,
-                         const GroupOfFrame<PointB>& framesB) {
+                         const GroupOfFrame<PointB>& framesB,
+                         const bool                  parallel) {
   assert(framesA.size() == framesB.size());
-  for (size_t i = 0; i < framesA.size(); i++) { this->addPSNR<PointA, PointB>(name, framesA.at(i), framesB.at(i)); }
+  if (!parallel) {
+    for (size_t i = 0; i < framesA.size(); i++) { this->addPSNR<PointA, PointB>(name, framesA.at(i), framesB.at(i)); }
+  } else {
+    const auto range = boost::counting_range<size_t>(0, framesA.size());
+    std::for_each(std::execution::par, range.begin(), range.end(),
+                  [&](const size_t& i) {  //
+                    this->addPSNR<PointA, PointB>(name, framesA.at(i), framesB.at(i));
+                  });
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

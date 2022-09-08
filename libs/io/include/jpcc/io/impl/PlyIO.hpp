@@ -32,10 +32,10 @@ void loadPly(GroupOfFrame<PointT>& frames,
     }
   };
 
-  if (parallel) {
-    std::for_each(std::execution::par, frameNumbers.begin(), frameNumbers.end(), func);
-  } else {
+  if (!parallel) {
     std::for_each(frameNumbers.begin(), frameNumbers.end(), func);
+  } else {
+    std::for_each(std::execution::par, frameNumbers.begin(), frameNumbers.end(), func);
   }
 }
 
@@ -51,10 +51,10 @@ void savePly(const GroupOfFrame<PointT>& frames, const std::string& filePath, co
     assert(result != -1);
   };
 
-  if (parallel) {
-    std::for_each(std::execution::par, frames.begin(), frames.end(), func);
-  } else {
+  if (!parallel) {
     std::for_each(frames.begin(), frames.end(), func);
+  } else {
+    std::for_each(std::execution::par, frames.begin(), frames.end(), func);
   }
 }
 
@@ -75,10 +75,10 @@ void savePly(const GroupOfFrame<PointIn>& frames, const std::string& filePath, c
       assert(result != -1);
     };
 
-    if (parallel) {
-      std::for_each(std::execution::par, frames.begin(), frames.end(), func);
-    } else {
+    if (!parallel) {
       std::for_each(frames.begin(), frames.end(), func);
+    } else {
+      std::for_each(std::execution::par, frames.begin(), frames.end(), func);
     }
   }
 }

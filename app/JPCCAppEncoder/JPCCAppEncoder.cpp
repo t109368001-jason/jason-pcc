@@ -2,6 +2,10 @@
 #include <iostream>
 #include <vector>
 
+#include <boost/range/counting_range.hpp>
+#include <boost/range/algorithm.hpp>
+#include <boost/range/algorithm_ext.hpp>
+
 #include <jpcc/common/ParameterParser.h>
 #include <jpcc/coder/JPCCEncoderAdapter.h>
 #include <jpcc/coder/JPCCDecoderAdapter.h>
@@ -205,8 +209,16 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
         pcl::copyPointCloud(*dynamicContexts.at(i).reconstructPclFrame, *reconstructFrames.at(i));
       }
     } else {
-      for (size_t i = 0; i < frames.size(); i++) {
-        pcl::copyPointCloud(*dynamicFrames.at(i), *reconstructFrames.at(i));
+      if (!parameter.parallel) {
+        for (size_t i = 0; i < frames.size(); i++) {
+          pcl::copyPointCloud(*dynamicFrames.at(i), *reconstructFrames.at(i));
+        }
+      } else {
+        const auto range = boost::counting_range<size_t>(0, dynamicFrames.size());
+        std::for_each(std::execution::par, range.begin(), range.end(),
+                      [&](const size_t& i) {  //
+                        pcl::copyPointCloud(*dynamicFrames.at(i), *reconstructFrames.at(i));
+                      });
       }
     }
     if (staticDecoder) {
@@ -216,14 +228,24 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
         pcl::copyPointCloud(*staticContexts.at(i).reconstructPclFrame, *reconstructFrames.at(i));
       }
     } else {
-      for (size_t i = 0; i < frames.size(); i++) { pcl::copyPointCloud(*staticFrames.at(i), *reconstructFrames.at(i)); }
+      if (!parameter.parallel) {
+        for (size_t i = 0; i < frames.size(); i++) {
+          pcl::copyPointCloud(*staticFrames.at(i), *reconstructFrames.at(i));
+        }
+      } else {
+        const auto range = boost::counting_range<size_t>(0, staticFrames.size());
+        std::for_each(std::execution::par, range.begin(), range.end(),
+                      [&](const size_t& i) {  //
+                        pcl::copyPointCloud(*staticFrames.at(i), *reconstructFrames.at(i));
+                      });
+      }
     }
 
     GroupOfFrame<PointMetric> framesWithNormal = normalEstimation.computeAll(frames, parameter.parallel);
     GroupOfFrame<PointMetric> reconstructFramesWithNormal =
         normalEstimation.computeAll(reconstructFrames, parameter.parallel);
-    metric.addPSNR<PointMetric, PointMetric>("A2B", framesWithNormal, reconstructFramesWithNormal);
-    metric.addPSNR<PointMetric, PointMetric>("B2A", reconstructFramesWithNormal, framesWithNormal);
+    metric.addPSNR<PointMetric, PointMetric>("A2B", framesWithNormal, reconstructFramesWithNormal, parameter.parallel);
+    metric.addPSNR<PointMetric, PointMetric>("B2A", reconstructFramesWithNormal, framesWithNormal, parameter.parallel);
 
     frameNumber += groupOfFramesSize;
   }

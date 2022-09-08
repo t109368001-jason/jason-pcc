@@ -20,12 +20,12 @@ void DatasetReader<PointT>::loadAll(const size_t          startFrameNumber,
 
   std::vector<GroupOfFrame<PointT>> sources;
   sources.resize(datasetIndices_.size());
-  if (parallel) {
-    std::for_each(std::execution::par, datasetIndices_.begin(), datasetIndices_.end(), [&](const size_t& datasetIndex) {
+  if (!parallel) {
+    std::for_each(datasetIndices_.begin(), datasetIndices_.end(), [&](const size_t& datasetIndex) {
       load(datasetIndex, startFrameNumber, groupOfFramesSize, sources.at(datasetIndex), false);
     });
   } else {
-    std::for_each(datasetIndices_.begin(), datasetIndices_.end(), [&](const size_t& datasetIndex) {
+    std::for_each(std::execution::par, datasetIndices_.begin(), datasetIndices_.end(), [&](const size_t& datasetIndex) {
       load(datasetIndex, startFrameNumber, groupOfFramesSize, sources.at(datasetIndex), false);
     });
   }
