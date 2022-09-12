@@ -6,7 +6,7 @@ using namespace std;
 using namespace po;
 
 #define TYPE_OPT ".type"
-#define OUTPUT_TYPE_OPT ".outputType_"
+#define OUTPUT_TYPE_OPT ".outputType"
 #define STATIC_POINT_TYPE_OPT ".staticPointType"
 #define UPDATE_MODEL_BEFORE_N_TRAIN_OPT ".updateModelBeforeNTrain"
 #define OUTPUT_EXISTS_POINT_ONLY_OPT ".outputExistsPointOnly"
