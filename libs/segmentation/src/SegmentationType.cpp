@@ -1,4 +1,4 @@
-#include <jpcc/common/SegmentationType.h>
+#include <jpcc/segmentation/SegmentationType.h>
 
 #include <stdexcept>
 
@@ -6,7 +6,7 @@
 
 using namespace std;
 
-namespace jpcc {
+namespace jpcc::segmentation {
 
 SegmentationType getSegmentationType(const string& segmentationType) {
   if (segmentationType == "gmm") {
@@ -18,4 +18,4 @@ SegmentationType getSegmentationType(const string& segmentationType) {
   }
 }
 
-}  // namespace jpcc
+}  // namespace jpcc::segmentation

@@ -4,7 +4,7 @@
 #include <string>
 
 #include <jpcc/common/Parameter.h>
-#include <jpcc/common/SegmentationType.h>
+#include <jpcc/segmentation/SegmentationType.h>
 
 namespace jpcc::segmentation {
 
