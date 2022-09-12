@@ -41,11 +41,11 @@ JPCCSegmentationParameter::JPCCSegmentationParameter(const string& prefix, const
     minimumVariance(0.0016) {
   opts_.add_options()                                                //
       (string(prefix_ + TYPE_OPT).c_str(),                           //
-       value<string>(&outputType_)->required(),                      //
-       "outputType")                                                 //
-      (string(prefix_ + OUTPUT_TYPE_OPT).c_str(),                    //
        value<string>(&type_)->required(),                            //
        "type")                                                       //
+      (string(prefix_ + OUTPUT_TYPE_OPT).c_str(),                    //
+       value<string>(&outputType_)->required(),                      //
+       "outputType")                                                 //
       (string(prefix_ + STATIC_POINT_TYPE_OPT).c_str(),              //
        value<string>(&staticPointType_)->required(),                 //
        "staticPointType, [center]")                                  //
