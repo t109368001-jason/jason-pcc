@@ -11,7 +11,7 @@ JPCCEncoderTMC3<PointT>::JPCCEncoderTMC3(const JPCCEncoderParameter& parameter) 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-void JPCCEncoderTMC3<PointT>::convertFromPCL(JPCCCoderContext<PointT>& context) {
+void JPCCEncoderTMC3<PointT>::convertFromPCL(JPCCContext<PointT>& context) {
   context.frame = make_shared<pcc::PCCPointSet3>();
 
   auto* frame = static_cast<pcc::PCCPointSet3*>(context.frame.get());
@@ -26,7 +26,7 @@ void JPCCEncoderTMC3<PointT>::convertFromPCL(JPCCCoderContext<PointT>& context) 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-void JPCCEncoderTMC3<PointT>::encode(JPCCCoderContext<PointT>& context) {
+void JPCCEncoderTMC3<PointT>::encode(JPCCContext<PointT>& context) {
   contextPtr_ = &context;
   encoder_.compress(*static_cast<pcc::PCCPointSet3*>(context.frame.get()),
                     static_cast<pcc::EncoderParams*>(&this->parameter_.tmc3), this, nullptr);

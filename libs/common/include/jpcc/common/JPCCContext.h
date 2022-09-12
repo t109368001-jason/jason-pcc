@@ -5,7 +5,7 @@
 namespace jpcc::coder {
 
 template <typename PointT>
-struct JPCCCoderContext {
+struct JPCCContext {
   FramePtr<PointT>  pclFrame;
   shared_ptr<void>  frame;
   std::vector<char> encodedBytes;

@@ -11,7 +11,7 @@ JPCCDecoderTMC3<PointT>::JPCCDecoderTMC3(const JPCCDecoderParameter& parameter) 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-void JPCCDecoderTMC3<PointT>::decode(JPCCCoderContext<PointT>& context) {
+void JPCCDecoderTMC3<PointT>::decode(JPCCContext<PointT>& context) {
   contextPtr_ = &context;
   contextPtr_->encodedBytes;
   std::istringstream is(std::string(contextPtr_->encodedBytes.begin(), contextPtr_->encodedBytes.end()));
@@ -38,7 +38,7 @@ void JPCCDecoderTMC3<PointT>::decode(JPCCCoderContext<PointT>& context) {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-void JPCCDecoderTMC3<PointT>::convertToPCL(JPCCCoderContext<PointT>& context) {
+void JPCCDecoderTMC3<PointT>::convertToPCL(JPCCContext<PointT>& context) {
   auto* reconstructFrame    = static_cast<pcc::PCCPointSet3*>(context.reconstructFrame.get());
   auto  reconstructPclFrame = make_shared<Frame<PointT>>();
 

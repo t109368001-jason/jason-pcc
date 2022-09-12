@@ -9,9 +9,9 @@ class JPCCDecoderNone : public virtual JPCCDecoder<PointT> {
  public:
   JPCCDecoderNone(const JPCCDecoderParameter& parameter);
 
-  void decode(JPCCCoderContext<PointT>& context) override;
+  void decode(JPCCContext<PointT>& context) override;
 
-  void convertToPCL(JPCCCoderContext<PointT>& context) override;
+  void convertToPCL(JPCCContext<PointT>& context) override;
 };
 
 }  // namespace jpcc::coder

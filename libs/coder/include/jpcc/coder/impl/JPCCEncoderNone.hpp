@@ -10,12 +10,12 @@ JPCCEncoderNone<PointT>::JPCCEncoderNone(const JPCCEncoderParameter& parameter) 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-void JPCCEncoderNone<PointT>::convertFromPCL(JPCCCoderContext<PointT>& context) {
+void JPCCEncoderNone<PointT>::convertFromPCL(JPCCContext<PointT>& context) {
   context.frame = context.pclFrame;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-void JPCCEncoderNone<PointT>::encode(JPCCCoderContext<PointT>& context) {}
+void JPCCEncoderNone<PointT>::encode(JPCCContext<PointT>& context) {}
 
 }  // namespace jpcc::coder

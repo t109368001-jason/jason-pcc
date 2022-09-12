@@ -74,14 +74,14 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
   std::ofstream dynamicOfs("./bin/output-dynamic.bin", std::ios::binary);
   std::ofstream staticOfs("./bin/output-static.bin", std::ios::binary);
 
-  GroupOfFrame<PointEncode>             frames;
-  GroupOfFrame<PointEncode>             dynamicFrames;
-  GroupOfFrame<PointEncode>             staticFrames;
-  GroupOfFrame<PointEncode>             staticAddedFrames;
-  GroupOfFrame<PointEncode>             staticRemovedFrames;
-  vector<JPCCCoderContext<PointEncode>> dynamicContexts;
-  vector<JPCCCoderContext<PointEncode>> staticContexts;
-  GroupOfFrame<PointEncode>             reconstructFrames;
+  GroupOfFrame<PointEncode>        frames;
+  GroupOfFrame<PointEncode>        dynamicFrames;
+  GroupOfFrame<PointEncode>        staticFrames;
+  GroupOfFrame<PointEncode>        staticAddedFrames;
+  GroupOfFrame<PointEncode>        staticRemovedFrames;
+  vector<JPCCContext<PointEncode>> dynamicContexts;
+  vector<JPCCContext<PointEncode>> staticContexts;
+  GroupOfFrame<PointEncode>        reconstructFrames;
   while (frameNumber < endFrameNumber) {
     {  // clear
       frames.clear();
@@ -124,9 +124,9 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
       staticFrames.push_back(staticFrame);
       staticAddedFrames.push_back(staticAddedFrame);
       staticRemovedFrames.push_back(staticRemovedFrame);
-      JPCCCoderContext<PointEncode> dynamicContext;
+      JPCCContext<PointEncode> dynamicContext;
       dynamicContext.pclFrame = dynamicFrame;
-      JPCCCoderContext<PointEncode> staticContext;
+      JPCCContext<PointEncode> staticContext;
       staticContext.pclFrame = staticFrame;
       dynamicContexts.push_back(dynamicContext);
       staticContexts.push_back(staticContext);

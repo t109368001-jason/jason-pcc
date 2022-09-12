@@ -8,15 +8,15 @@ namespace jpcc::coder {
 template <typename PointT>
 class JPCCEncoderTMC3 : public virtual JPCCEncoder<PointT>, protected pcc::PCCTMC3Encoder3::Callbacks {
  protected:
-  pcc::PCCTMC3Encoder3      encoder_;
-  JPCCCoderContext<PointT>* contextPtr_;
+  pcc::PCCTMC3Encoder3 encoder_;
+  JPCCContext<PointT>* contextPtr_;
 
  public:
   JPCCEncoderTMC3(const JPCCEncoderParameter& parameter);
 
-  void convertFromPCL(JPCCCoderContext<PointT>& context) override;
+  void convertFromPCL(JPCCContext<PointT>& context) override;
 
-  void encode(JPCCCoderContext<PointT>& context) override;
+  void encode(JPCCContext<PointT>& context) override;
 
  protected:
   void onOutputBuffer(const pcc::PayloadBuffer& buffer) override;
