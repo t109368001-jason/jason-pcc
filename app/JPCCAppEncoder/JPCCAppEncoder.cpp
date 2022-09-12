@@ -96,17 +96,13 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
       ScopeStopwatch clock = metric.start("Load", frameNumber);
       reader->loadAll(frameNumber, groupOfFramesSize, frames, parameter.parallel);
     }
-    metric.addPoints<PointEncode>("Raw", frames);
-    for (const auto& frame : frames) { metric.addBytes("Raw", frame->header.seq, frame->size() * sizeof(float) * 3); }
+    metric.addPoints<PointEncode>("Raw", frames, true);
 
     {  // preprocess
       ScopeStopwatch clock = metric.start("PreProcess", frameNumber);
       preProcessor.process(frames, nullptr, parameter.parallel);
     }
-    metric.addPoints<PointEncode>("PreProcessed", frames);
-    for (const auto& frame : frames) {
-      metric.addBytes("PreProcessed", frame->header.seq, frame->size() * sizeof(float) * 3);
-    }
+    metric.addPoints<PointEncode>("PreProcessed", frames, true);
 
     // segmentation
     for (const auto& frame : frames) {
@@ -157,10 +153,7 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
         // TODO extract JPCCWriter
         savePly<PointEncode, PointOutput>(dynamicFrames, parameter.outputDataset.getFilePath(0), parameter.parallel);
       }
-      metric.addPoints<PointEncode>("Dynamic", dynamicFrames);
-      for (const auto& frame : dynamicFrames) {
-        metric.addBytes("Dynamic", frame->header.seq, frame->size() * sizeof(float) * 3);
-      }
+      metric.addPoints<PointEncode>("Dynamic", dynamicFrames, true);
     }
     if (parameter.jpccEncoderStatic.backendType != CoderBackendType::NONE) {
       for (auto& staticContext : staticContexts) {
@@ -180,14 +173,8 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
         savePly<PointEncode, PointOutput>(staticRemovedFrames, parameter.outputDataset.getFilePath(2),
                                           parameter.parallel);
       }
-      metric.addPoints<PointEncode>("StaticAdded", staticAddedFrames);
-      for (const auto& frame : staticAddedFrames) {
-        metric.addBytes("StaticAdded", frame->header.seq, frame->size() * sizeof(float) * 3);
-      }
-      metric.addPoints<PointEncode>("StaticRemoved", staticRemovedFrames);
-      for (const auto& frame : staticRemovedFrames) {
-        metric.addBytes("StaticRemoved", frame->header.seq, frame->size() * sizeof(float) * 3);
-      }
+      metric.addPoints<PointEncode>("StaticAdded", staticAddedFrames, true);
+      metric.addPoints<PointEncode>("StaticRemoved", staticRemovedFrames, true);
     }
 
     for (auto& frame : frames) {

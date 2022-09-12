@@ -8,21 +8,23 @@ namespace jpcc::metric {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-void JPCCMetric::addPoints(const std::string& name, const FramePtr<PointT>& frame) {
-  const auto& points = frame->size();
-  frameNumberSet_.insert(frame->header.seq);
+void JPCCMetric::addPoints(const std::string& name, const FramePtr<PointT>& frame, bool addBytes) {
+  uint32_t    frameNumber = frame->header.seq;
+  const auto& points      = frame->size();
+  frameNumberSet_.insert(frameNumber);
   pointsNameSet_.insert(name);
-  pointsMapMap_[frame->header.seq][name] += points;
+  pointsMapMap_[frameNumber][name] += points;
   std::cout << __FUNCTION__ << "() "
             << "name=" << name << ", "
-            << "frameNumber=" << frame->header.seq << ", "
+            << "frameNumber=" << frameNumber << ", "
             << "points=" << points << std::endl;
+  if (addBytes) { this->addBytes(name, frameNumber, points * sizeof(float) * 3); }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-void JPCCMetric::addPoints(const std::string& name, const GroupOfFrame<PointT>& frames) {
-  for (const auto& frame : frames) { addPoints<PointT>(name, frame); }
+void JPCCMetric::addPoints(const std::string& name, const GroupOfFrame<PointT>& frames, bool addBytes) {
+  for (const auto& frame : frames) { this->addPoints<PointT>(name, frame, addBytes); }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
