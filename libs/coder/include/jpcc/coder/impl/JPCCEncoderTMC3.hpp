@@ -39,11 +39,11 @@ void JPCCEncoderTMC3<PointT>::onOutputBuffer(const pcc::PayloadBuffer& buffer) {
     std::stringstream os;
     pcc::writeTlv(buffer, os);
 #if !defined(NDEBUG)
-    size_t oldSize = contextPtr_->encodedBytes.size();
+    size_t oldSize = encodedBytesPtr_->size();
 #endif
     std::string tmpString = os.str();
     for (char& i : tmpString) { encodedBytesPtr_->push_back(i); }
-    assert((buffer.size() + 5) == (contextPtr_->encodedBytes.size() - oldSize));
+    assert((buffer.size() + 5) == (encodedBytesPtr_->size() - oldSize));
   }
 }
 

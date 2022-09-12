@@ -30,7 +30,7 @@ void JPCCDecoderTMC3<PointT>::decode(const std::vector<char>& encodedBytes, shar
     if (!bufferPtr) { break; }
   }
 
-  assert(context.reconstructFrame);
+  assert(*reconstructFramePtr_);
 
   reconstructFramePtr_ = nullptr;
 }
