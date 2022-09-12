@@ -181,7 +181,7 @@ Sensor getSensor(const string& sensor) {
   } else if (sensor == "hdl-32") {
     return Sensor::HDL_32;
   } else {
-    throw logic_error("invalid sensor");
+    BOOST_THROW_EXCEPTION(logic_error("invalid sensor"));
   }
 }
 
@@ -197,7 +197,7 @@ Type getType(const string& type) {
   } else if (type == "lvx") {
     return Type::LVX;
   } else {
-    throw logic_error("invalid type");
+    BOOST_THROW_EXCEPTION(logic_error("invalid type"));
   }
 }
 

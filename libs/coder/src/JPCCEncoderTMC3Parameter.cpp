@@ -320,7 +320,7 @@ static std::istream& operator>>(std::istream& in, ScaleUnit& val) {
     if (str == "metre")
       val = ScaleUnit::kMetre;
     else if (!str.empty())
-      throw std::runtime_error("Cannot parse unit");
+      BOOST_THROW_EXCEPTION(std::runtime_error("Cannot parse unit"));
   }
   return in;
 }

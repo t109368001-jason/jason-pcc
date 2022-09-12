@@ -2,6 +2,8 @@
 
 #include <stdexcept>
 
+#include <boost/throw_exception.hpp>
+
 using namespace std;
 
 namespace jpcc {
@@ -12,7 +14,7 @@ SegmentationType getSegmentationType(const string& segmentationType) {
   } else if (segmentationType == "gmm-2l") {
     return SegmentationType::GMM_2L;
   } else {
-    throw logic_error("invalid segmentationType");
+    BOOST_THROW_EXCEPTION(logic_error("invalid segmentationType"));
   }
 }
 

@@ -16,7 +16,7 @@ LvxReader<PointT>::LvxReader(DatasetReaderParameter param, DatasetParameter data
   } else if (this->datasetParam_.sensor == Sensor::MID_70) {
     this->capacity_ = (size_t)((double)(100000) / this->param_.frequency * 1.05);
   } else {
-    throw std::logic_error("sensor not support");
+    BOOST_THROW_EXCEPTION(std::logic_error("sensor not support"));
   }
   for (size_t i = 0; i < this->datasetParam_.count(); i++) {
     lvxs_.emplace_back(nullptr, [](LvxHandler* ptr) {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <jpcc/common/Common.h>
+#include <string>
 
 namespace jpcc {
 

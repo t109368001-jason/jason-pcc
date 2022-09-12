@@ -163,7 +163,7 @@ StaticPointType getStaticPointType(const string& staticPointType) {
   if (staticPointType == "center") {
     return StaticPointType::CENTER;
   } else {
-    throw logic_error("invalid staticPointType");
+    BOOST_THROW_EXCEPTION(logic_error("invalid staticPointType"));
   }
 }
 

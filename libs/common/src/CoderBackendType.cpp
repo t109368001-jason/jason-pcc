@@ -1,5 +1,9 @@
 #include <jpcc/common/CoderBackendType.h>
 
+#include <stdexcept>
+
+#include <boost/throw_exception.hpp>
+
 using namespace std;
 
 namespace jpcc {
@@ -10,7 +14,7 @@ CoderBackendType getCoderBackendType(const std::string& coderBackendType) {
   } else if (coderBackendType == "tmc3") {
     return CoderBackendType::TMC3;
   } else {
-    throw logic_error("invalid encoderBackendType");
+    BOOST_THROW_EXCEPTION(logic_error("invalid encoderBackendType"));
   }
 }
 

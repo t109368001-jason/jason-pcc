@@ -162,7 +162,7 @@ PcapReader<PointT>::PcapReader(DatasetReaderParameter param, DatasetParameter da
     }
     this->capacity_ = (size_t)((double)(695000) / this->param_.frequency);
   } else {
-    throw std::logic_error("sensor not support");
+    BOOST_THROW_EXCEPTION(std::logic_error("sensor not support"));
   }
   this->currentFrameNumbers_.resize(this->datasetParam_.count());
   for (size_t i = 0; i < this->datasetParam_.count(); i++) { pcaps_.emplace_back(nullptr, &pcapClose); }

@@ -55,7 +55,7 @@ bool ParameterParser::parse(int argc, char* argv[]) {
   } catch (exception& e) {
     cerr << e.what() << endl;
     cout << opts_ << "\n";
-    throw e;
+    BOOST_THROW_EXCEPTION(e);
   }
 }
 
@@ -75,7 +75,7 @@ void ParameterParser::parseConfigs(const variables_map& vmArg) {
     // check if config parsed then return
     if (pCfgs_.find(config) != pCfgs_.end()) { return; }
     ifstream ifs(config.c_str());
-    if (!ifs.good()) { throw runtime_error("'" + config + "' not found"); }
+    if (!ifs.good()) { BOOST_THROW_EXCEPTION(runtime_error("'" + config + "' not found")); }
     const parsed_options cfgOpts = parse_config_file(ifs, opts_, true);
     variables_map        vm;
     store(cfgOpts, vm);
@@ -88,13 +88,13 @@ void ParameterParser::parseConfigs(const variables_map& vmArg) {
 
 void ParameterParser::conflicting_options(const variables_map& vm, const string& opt1, const string& opt2) {
   if (vm.count(opt1) && !vm[opt1].defaulted() && vm.count(opt2) && !vm[opt2].defaulted())
-    throw logic_error(string("Conflicting options '") + opt1 + "' and '" + opt2 + "'.");
+    BOOST_THROW_EXCEPTION(logic_error(string("Conflicting options '") + opt1 + "' and '" + opt2 + "'."));
 }
 
 void ParameterParser::option_dependency(const variables_map& vm, const string& opt, const string& requiredOpt) {
   if (vm.count(opt) && !vm[opt].defaulted())
     if (vm.count(requiredOpt) == 0 || vm[requiredOpt].defaulted())
-      throw logic_error(string("Option '") + opt + "' requires option '" + requiredOpt + "'.");
+      BOOST_THROW_EXCEPTION(logic_error(string("Option '") + opt + "' requires option '" + requiredOpt + "'."));
 }
 
 }  // namespace jpcc
