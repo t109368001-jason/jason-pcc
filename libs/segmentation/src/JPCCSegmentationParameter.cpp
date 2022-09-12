@@ -159,12 +159,4 @@ ostream& operator<<(ostream& out, const JPCCSegmentationParameter& obj) {
   return out;
 }
 
-StaticPointType getStaticPointType(const string& staticPointType) {
-  if (staticPointType == "center") {
-    return StaticPointType::CENTER;
-  } else {
-    BOOST_THROW_EXCEPTION(logic_error("invalid staticPointType"));
-  }
-}
-
 }  // namespace jpcc::segmentation

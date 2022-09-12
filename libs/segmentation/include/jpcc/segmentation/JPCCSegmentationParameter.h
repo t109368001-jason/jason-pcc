@@ -5,10 +5,9 @@
 
 #include <jpcc/common/Parameter.h>
 #include <jpcc/segmentation/SegmentationType.h>
+#include <jpcc/segmentation/StaticPointType.h>
 
 namespace jpcc::segmentation {
-
-enum class StaticPointType { CENTER };
 
 #define JPCC_GMM_SEGMENTATION_OPT_PREFIX "jpccGMMSegmentationParameter"
 
@@ -65,7 +64,5 @@ class JPCCSegmentationParameter : public virtual Parameter {
 
   friend std::ostream& operator<<(std::ostream& out, const JPCCSegmentationParameter& obj);
 };
-
-[[nodiscard]] StaticPointType getStaticPointType(const std::string& type);
 
 }  // namespace jpcc::segmentation
