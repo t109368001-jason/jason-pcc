@@ -4,7 +4,7 @@
 #include <string>
 
 #include <jpcc/common/Parameter.h>
-#include <jpcc/coder/CoderBackendType.h>
+#include <jpcc/common/CoderBackendType.h>
 #include <jpcc/coder/JPCCDecoderTMC3Parameter.h>
 
 namespace jpcc::coder {

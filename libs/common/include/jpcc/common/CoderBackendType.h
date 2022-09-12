@@ -2,9 +2,9 @@
 
 #include <jpcc/common/Common.h>
 
-namespace jpcc::coder {
+namespace jpcc {
 
 enum class CoderBackendType { NONE, TMC3 };
 
 [[nodiscard]] CoderBackendType getCoderBackendType(const std::string& coderBackendType);
-}  // namespace jpcc::coder
+}  // namespace jpcc

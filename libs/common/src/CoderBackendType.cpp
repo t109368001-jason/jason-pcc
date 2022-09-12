@@ -1,8 +1,8 @@
-#include <jpcc/coder/CoderBackendType.h>
+#include <jpcc/common/CoderBackendType.h>
 
 using namespace std;
 
-namespace jpcc::coder {
+namespace jpcc {
 
 CoderBackendType getCoderBackendType(const std::string& coderBackendType) {
   if (coderBackendType == "none") {
@@ -14,4 +14,4 @@ CoderBackendType getCoderBackendType(const std::string& coderBackendType) {
   }
 }
 
-}  // namespace jpcc::coder
+}  // namespace jpcc

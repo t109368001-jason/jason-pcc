@@ -2,7 +2,7 @@
 
 #include <jpcc/common/Common.h>
 
-namespace jpcc::coder {
+namespace jpcc {
 
 template <typename PointT>
 struct JPCCContext {
@@ -13,4 +13,4 @@ struct JPCCContext {
   FramePtr<PointT>  reconstructPclFrame;
 };
 
-}  // namespace jpcc::coder
+}  // namespace jpcc
