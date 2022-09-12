@@ -9,14 +9,14 @@ template <typename PointT>
 class JPCCEncoderTMC3 : public virtual JPCCEncoder<PointT>, protected pcc::PCCTMC3Encoder3::Callbacks {
  protected:
   pcc::PCCTMC3Encoder3 encoder_;
-  JPCCContext<PointT>* contextPtr_;
+  std::vector<char>*   encodedBytesPtr_;
 
  public:
   JPCCEncoderTMC3(const JPCCEncoderParameter& parameter);
 
-  void convertFromPCL(JPCCContext<PointT>& context) override;
+  void convertFromPCL(const FramePtr<PointT>& pclFrame, shared_ptr<void>& frame) override;
 
-  void encode(JPCCContext<PointT>& context) override;
+  void encode(const shared_ptr<void>& frame, std::vector<char>& encodedBytes) override;
 
  protected:
   void onOutputBuffer(const pcc::PayloadBuffer& buffer) override;

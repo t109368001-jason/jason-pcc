@@ -11,39 +11,38 @@ JPCCEncoderTMC3<PointT>::JPCCEncoderTMC3(const JPCCEncoderParameter& parameter) 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-void JPCCEncoderTMC3<PointT>::convertFromPCL(JPCCContext<PointT>& context) {
-  context.frame = make_shared<pcc::PCCPointSet3>();
+void JPCCEncoderTMC3<PointT>::convertFromPCL(const FramePtr<PointT>& pclFrame, shared_ptr<void>& frame) {
+  frame = make_shared<pcc::PCCPointSet3>();
 
-  auto* frame = static_cast<pcc::PCCPointSet3*>(context.frame.get());
+  auto* frame_ = static_cast<pcc::PCCPointSet3*>(frame.get());
 
-  frame->resize(context.pclFrame->size());
+  frame_->resize(pclFrame->size());
 
-  for (int i = 0; i < frame->getPointCount(); i++) {
-    (*frame)[i] =
-        pcc::PCCPointSet3::PointType(context.pclFrame->at(i).x, context.pclFrame->at(i).y, context.pclFrame->at(i).z);
+  for (int i = 0; i < frame_->getPointCount(); i++) {
+    (*frame_)[i] = pcc::PCCPointSet3::PointType(pclFrame->at(i).x, pclFrame->at(i).y, pclFrame->at(i).z);
   }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-void JPCCEncoderTMC3<PointT>::encode(JPCCContext<PointT>& context) {
-  contextPtr_ = &context;
-  encoder_.compress(*static_cast<pcc::PCCPointSet3*>(context.frame.get()),
+void JPCCEncoderTMC3<PointT>::encode(const shared_ptr<void>& frame, std::vector<char>& encodedBytes) {
+  encodedBytesPtr_ = &encodedBytes;
+  encoder_.compress(*static_cast<pcc::PCCPointSet3*>(frame.get()),
                     static_cast<pcc::EncoderParams*>(&this->parameter_.tmc3), this, nullptr);
-  contextPtr_ = nullptr;
+  encodedBytesPtr_ = nullptr;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void JPCCEncoderTMC3<PointT>::onOutputBuffer(const pcc::PayloadBuffer& buffer) {
-  if (contextPtr_) {
+  if (encodedBytesPtr_) {
     std::stringstream os;
     pcc::writeTlv(buffer, os);
 #if !defined(NDEBUG)
     size_t oldSize = contextPtr_->encodedBytes.size();
 #endif
     std::string tmpString = os.str();
-    for (char& i : tmpString) { contextPtr_->encodedBytes.push_back(i); }
+    for (char& i : tmpString) { encodedBytesPtr_->push_back(i); }
     assert((buffer.size() + 5) == (contextPtr_->encodedBytes.size() - oldSize));
   }
 }

@@ -4,6 +4,7 @@
 #include <string>
 
 #include <jpcc/common/Parameter.h>
+#include <jpcc/common/SegmentationOutputType.h>
 #include <jpcc/segmentation/SegmentationType.h>
 #include <jpcc/segmentation/StaticPointType.h>
 
@@ -14,6 +15,7 @@ namespace jpcc::segmentation {
 class JPCCSegmentationParameter : public virtual Parameter {
  protected:
   std::string         type_;
+  std::string         outputType_;
   std::string         staticPointType_;
   std::vector<bool>   outputExistsPointOnlyVector_;
   std::vector<int>    kVector_;
@@ -24,11 +26,12 @@ class JPCCSegmentationParameter : public virtual Parameter {
   std::vector<double> nullStaticThresholdVector_;
 
  public:
-  SegmentationType type;
-  StaticPointType  staticPointType;
-  bool             updateModelBeforeNTrain;
-  double           resolution{};
-  double           minimumVariance{};
+  SegmentationType       type;
+  SegmentationOutputType outputType;
+  StaticPointType        staticPointType;
+  bool                   updateModelBeforeNTrain;
+  double                 resolution{};
+  double                 minimumVariance{};
 
   JPCCSegmentationParameter();
 

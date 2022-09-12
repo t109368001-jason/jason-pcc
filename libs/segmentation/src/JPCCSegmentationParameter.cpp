@@ -6,6 +6,7 @@ using namespace std;
 using namespace po;
 
 #define TYPE_OPT ".type"
+#define OUTPUT_TYPE_OPT ".outputType_"
 #define STATIC_POINT_TYPE_OPT ".staticPointType"
 #define UPDATE_MODEL_BEFORE_N_TRAIN_OPT ".updateModelBeforeNTrain"
 #define OUTPUT_EXISTS_POINT_ONLY_OPT ".outputExistsPointOnly"
@@ -24,6 +25,7 @@ JPCCSegmentationParameter::JPCCSegmentationParameter() :
 JPCCSegmentationParameter::JPCCSegmentationParameter(const string& prefix, const string& caption) :
     Parameter(prefix, caption),
     type_(),
+    outputType_(),
     staticPointType_(),
     outputExistsPointOnlyVector_(),
     kVector_(),
@@ -39,6 +41,9 @@ JPCCSegmentationParameter::JPCCSegmentationParameter(const string& prefix, const
     minimumVariance(0.0016) {
   opts_.add_options()                                                //
       (string(prefix_ + TYPE_OPT).c_str(),                           //
+       value<string>(&outputType_)->required(),                      //
+       "outputType")                                                 //
+      (string(prefix_ + OUTPUT_TYPE_OPT).c_str(),                    //
        value<string>(&type_)->required(),                            //
        "type")                                                       //
       (string(prefix_ + STATIC_POINT_TYPE_OPT).c_str(),              //
@@ -90,6 +95,7 @@ void JPCCSegmentationParameter::getShowTexts(vector<string>& showTexts) const {
 
 void JPCCSegmentationParameter::notify() {
   type            = getSegmentationType(type_);
+  outputType      = getSegmentationOutputType(outputType_);
   staticPointType = getStaticPointType(staticPointType_);
   assert(resolution > 0.0);
   assert(!outputExistsPointOnlyVector_.empty());
@@ -144,6 +150,7 @@ const std::vector<double>& JPCCSegmentationParameter::getNullStaticThresholdVect
 ostream& operator<<(ostream& out, const JPCCSegmentationParameter& obj) {
   obj.coutParameters(out)                                               //
       (TYPE_OPT, obj.type_)                                             //
+      (OUTPUT_TYPE_OPT, obj.outputType_)                                //
       (STATIC_POINT_TYPE_OPT, obj.staticPointType_)                     //
       (UPDATE_MODEL_BEFORE_N_TRAIN_OPT, obj.updateModelBeforeNTrain)    //
       (OUTPUT_EXISTS_POINT_ONLY_OPT, obj.outputExistsPointOnlyVector_)  //

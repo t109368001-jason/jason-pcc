@@ -1,7 +1,6 @@
 #pragma once
 
 #include <jpcc/common/Common.h>
-#include <jpcc/common/JPCCContext.h>
 #include <jpcc/coder/JPCCEncoderParameter.h>
 
 namespace jpcc::coder {
@@ -17,9 +16,9 @@ class JPCCEncoder {
  public:
   JPCCEncoder(const JPCCEncoderParameter& parameter);
 
-  virtual void convertFromPCL(JPCCContext<PointT>& context) = 0;
+  virtual void convertFromPCL(const FramePtr<PointT>& pclFrame, shared_ptr<void>& frame) = 0;
 
-  virtual void encode(JPCCContext<PointT>& context) = 0;
+  virtual void encode(const shared_ptr<void>& frame, std::vector<char>& encodedBytes) = 0;
 };
 
 }  // namespace jpcc::coder

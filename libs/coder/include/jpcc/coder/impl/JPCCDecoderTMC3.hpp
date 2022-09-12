@@ -11,10 +11,9 @@ JPCCDecoderTMC3<PointT>::JPCCDecoderTMC3(const JPCCDecoderParameter& parameter) 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-void JPCCDecoderTMC3<PointT>::decode(JPCCContext<PointT>& context) {
-  contextPtr_ = &context;
-  contextPtr_->encodedBytes;
-  std::istringstream is(std::string(contextPtr_->encodedBytes.begin(), contextPtr_->encodedBytes.end()));
+void JPCCDecoderTMC3<PointT>::decode(const std::vector<char>& encodedBytes, shared_ptr<void>& reconstructFrame) {
+  reconstructFramePtr_ = &reconstructFrame;
+  std::istringstream is(std::string(encodedBytes.begin(), encodedBytes.end()));
 
   pcc::PayloadBuffer buffer;
   while (true) {
@@ -33,35 +32,32 @@ void JPCCDecoderTMC3<PointT>::decode(JPCCContext<PointT>& context) {
 
   assert(context.reconstructFrame);
 
-  contextPtr_ = nullptr;
+  reconstructFramePtr_ = nullptr;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-void JPCCDecoderTMC3<PointT>::convertToPCL(JPCCContext<PointT>& context) {
-  auto* reconstructFrame    = static_cast<pcc::PCCPointSet3*>(context.reconstructFrame.get());
-  auto  reconstructPclFrame = make_shared<Frame<PointT>>();
+void JPCCDecoderTMC3<PointT>::convertToPCL(shared_ptr<void>& reconstructFrame, FramePtr<PointT>& reconstructPclFrame) {
+  auto reconstructFrame_ = std::static_pointer_cast<pcc::PCCPointSet3>(reconstructFrame);
 
-  reconstructPclFrame->resize(reconstructFrame->getPointCount());
+  reconstructPclFrame->resize(reconstructFrame_->getPointCount());
 
   for (int i = 0; i < reconstructPclFrame->size(); i++) {
     reconstructPclFrame->at(i) =
-        PointT((*reconstructFrame)[i].x(), (*reconstructFrame)[i].y(), (*reconstructFrame)[i].z());
+        PointT((*reconstructFrame_)[i].x(), (*reconstructFrame_)[i].y(), (*reconstructFrame_)[i].z());
   }
-
-  context.reconstructPclFrame         = reconstructPclFrame;
-  context.reconstructPclFrame->header = context.pclFrame->header;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void JPCCDecoderTMC3<PointT>::onOutputCloud(const pcc::CloudFrame& frame) {
-  if (contextPtr_) {
+  if (reconstructFramePtr_) {
     auto reconstructFrame = make_shared<pcc::PCCPointSet3>(frame.cloud);
     for (size_t i = 0; i < frame.cloud.getPointCount(); i++) {  //
       (*reconstructFrame)[i] += frame.outputOrigin;
     }
-    contextPtr_->reconstructFrame = reconstructFrame;
+
+    (*reconstructFramePtr_) = reconstructFrame;
   }
 }
 

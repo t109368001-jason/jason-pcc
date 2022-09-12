@@ -10,12 +10,12 @@ JPCCDecoderNone<PointT>::JPCCDecoderNone(const JPCCDecoderParameter& parameter) 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-void JPCCDecoderNone<PointT>::decode(JPCCContext<PointT>& context) {}
+void JPCCDecoderNone<PointT>::decode(const std::vector<char>& encodedBytes, shared_ptr<void>& reconstructFrame) {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-void JPCCDecoderNone<PointT>::convertToPCL(JPCCContext<PointT>& context) {
-  context.reconstructPclFrame = std::static_pointer_cast<Frame<PointT>>(context.reconstructFrame);
+void JPCCDecoderNone<PointT>::convertToPCL(shared_ptr<void>& reconstructFrame, FramePtr<PointT>& reconstructPclFrame) {
+  reconstructPclFrame = std::static_pointer_cast<Frame<PointT>>(reconstructFrame);
 }
 
 }  // namespace jpcc::coder
