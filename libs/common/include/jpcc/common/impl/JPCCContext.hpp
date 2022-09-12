@@ -1,7 +1,39 @@
 namespace jpcc {
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-void JPCCContext<PointT>::init(size_t frameCount) {
+void JPCCContext<PointT>::init(const size_t frameCount) {
+  clear();
+  resize(frameCount);
+  std::for_each(pclFrames.begin(), pclFrames.end(), [](auto& frame) { frame = jpcc::make_shared<Frame<PointT>>(); });
+  std::for_each(dynamicPclFrames.begin(), dynamicPclFrames.end(),
+                [](auto& frame) { frame = jpcc::make_shared<Frame<PointT>>(); });
+  std::for_each(dynamicReconstructPclFrames.begin(), dynamicReconstructPclFrames.end(),
+                [](auto& frame) { frame = jpcc::make_shared<Frame<PointT>>(); });
+  if (segmentationOutputType == SegmentationOutputType::DYNAMIC_STATIC) {  //
+    std::for_each(staticPclFrames.begin(), staticPclFrames.end(),
+                  [](auto& frame) { frame = jpcc::make_shared<Frame<PointT>>(); });
+    std::for_each(staticReconstructPclFrames.begin(), staticReconstructPclFrames.end(),
+                  [](auto& frame) { frame = jpcc::make_shared<Frame<PointT>>(); });
+  }
+  if (segmentationOutputType == SegmentationOutputType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED) {  //
+    std::for_each(staticAddedPclFrames.begin(), staticAddedPclFrames.end(),
+                  [](auto& frame) { frame = jpcc::make_shared<Frame<PointT>>(); });
+    std::for_each(staticRemovedPclFrames.begin(), staticRemovedPclFrames.end(),
+                  [](auto& frame) { frame = jpcc::make_shared<Frame<PointT>>(); });
+    std::for_each(staticAddedReconstructPclFrames.begin(), staticAddedReconstructPclFrames.end(),
+                  [](auto& frame) { frame = jpcc::make_shared<Frame<PointT>>(); });
+    std::for_each(staticRemovedReconstructPclFrames.begin(), staticRemovedReconstructPclFrames.end(),
+                  [](auto& frame) { frame = jpcc::make_shared<Frame<PointT>>(); });
+  }
+  std::for_each(reconstructPclFrames.begin(), reconstructPclFrames.end(),
+                [](auto& frame) { frame = jpcc::make_shared<Frame<PointT>>(); });
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT>
+void JPCCContext<PointT>::resize(const size_t frameCount) {
+  clear();
   pclFrames.resize(frameCount);
   dynamicPclFrames.resize(frameCount);
   dynamicFrames.resize(frameCount);
@@ -30,6 +62,7 @@ void JPCCContext<PointT>::init(size_t frameCount) {
   reconstructPclFrames.resize(frameCount);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void JPCCContext<PointT>::clear() {
   pclFrames.clear();

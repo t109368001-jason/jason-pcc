@@ -3,8 +3,6 @@
 #include <vector>
 
 #include <boost/range/counting_range.hpp>
-#include <boost/range/algorithm.hpp>
-#include <boost/range/algorithm_ext.hpp>
 
 #include <jpcc/common/JPCCContext.h>
 #include <jpcc/common/ParameterParser.h>
@@ -117,9 +115,11 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
     // segmentation
     for (size_t i = 0; i < context.pclFrames.size(); i++) {
       ScopeStopwatch clock = metric.start("Encode", context.pclFrames.at(i)->header.seq);
-      gmmSegmentation->segmentation(context.pclFrames.at(i), context.dynamicPclFrames.at(i),
-                                    context.staticPclFrames.at(i), context.staticAddedPclFrames.at(i),
-                                    context.staticRemovedPclFrames.at(i));
+      gmmSegmentation->segmentation(
+          context.pclFrames.at(i), context.dynamicPclFrames.at(i),
+          !context.staticPclFrames.empty() ? context.staticPclFrames.at(i) : nullptr,
+          !context.staticAddedPclFrames.empty() ? context.staticAddedPclFrames.at(i) : nullptr,
+          !context.staticRemovedPclFrames.empty() ? context.staticRemovedPclFrames.at(i) : nullptr);
     }
 
     // encode
@@ -318,6 +318,9 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
     }
     for (size_t i = 0; i < context.staticReconstructPclFrames.size(); i++) {
       pcl::copyPointCloud(*context.staticReconstructPclFrames.at(i), *context.reconstructPclFrames.at(i));
+    }
+    for (size_t i = 0; i < context.dynamicReconstructPclFrames.size(); i++) {
+      context.reconstructPclFrames.at(i)->header = context.pclFrames.at(i)->header;
     }
 
     GroupOfFrame<PointMetric> framesWithNormal = normalEstimation.computeAll(context.pclFrames, parameter.parallel);

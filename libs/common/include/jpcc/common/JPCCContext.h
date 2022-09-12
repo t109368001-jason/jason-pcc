@@ -43,6 +43,8 @@ struct JPCCContext {
 
   void init(size_t frameCount);
 
+  void resize(size_t frameCount);
+
   void clear();
 };
 
