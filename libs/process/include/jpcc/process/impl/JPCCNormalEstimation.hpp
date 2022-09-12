@@ -42,7 +42,7 @@ void JPCCNormalEstimation<PointIn, PointOut>::computeInPlaceAll(GroupOfFrame<Poi
     static_assert(dependent_false_v<PointIn>, "invalid template type");
   }
   if (!parallel) {
-    for (const auto& frame : frames) { this->computeInPlace(frame); }
+    for (auto& frame : frames) { this->computeInPlace(frame); }
   } else {
     std::for_each(std::execution::par_unseq, frames.begin(), frames.end(),
                   [this](FramePtr<PointIn>& frame) { this->computeInPlace(frame); });
