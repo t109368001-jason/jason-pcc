@@ -38,22 +38,11 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
   JPCCSegmentation<PointEncode>::Ptr gmmSegmentation = JPCCSegmentationAdapter::build<PointEncode>(
       parameter.jpccGmmSegmentation, (int)parameter.inputDataset.getStartFrameNumber());
   JPCCNormalEstimation<PointEncode, PointMetric> normalEstimation(parameter.normalEstimation);
-  JPCCEncoder<PointEncode>::Ptr                  dynamicEncoder;
-  JPCCEncoder<PointEncode>::Ptr                  staticEncoder;
-  JPCCDecoder<PointEncode>::Ptr                  dynamicDecoder;
-  JPCCDecoder<PointEncode>::Ptr                  staticDecoder;
-  if (parameter.jpccEncoderDynamic.backendType != CoderBackendType::NONE) {
-    dynamicEncoder = JPCCEncoderAdapter::build<PointEncode>(parameter.jpccEncoderDynamic);
-  }
-  if (parameter.jpccEncoderStatic.backendType != CoderBackendType::NONE) {
-    staticEncoder = JPCCEncoderAdapter::build<PointEncode>(parameter.jpccEncoderStatic);
-  }
-  if (parameter.jpccDecoderDynamic.backendType != CoderBackendType::NONE) {
-    dynamicDecoder = JPCCDecoderAdapter::build<PointEncode>(parameter.jpccDecoderDynamic);
-  }
-  if (parameter.jpccDecoderStatic.backendType != CoderBackendType::NONE) {
-    staticDecoder = JPCCDecoderAdapter::build<PointEncode>(parameter.jpccDecoderStatic);
-  }
+
+  auto dynamicEncoder = JPCCEncoderAdapter::build<PointEncode>(parameter.jpccEncoderDynamic);
+  auto staticEncoder  = JPCCEncoderAdapter::build<PointEncode>(parameter.jpccEncoderStatic);
+  auto dynamicDecoder = JPCCDecoderAdapter::build<PointEncode>(parameter.jpccDecoderDynamic);
+  auto staticDecoder  = JPCCDecoderAdapter::build<PointEncode>(parameter.jpccDecoderStatic);
 
   {  // build gaussian mixture model
     GroupOfFrame<PointEncode> frames;
@@ -144,10 +133,17 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
     }
 
     // encode
-    if (dynamicEncoder) {
+    for (auto& dynamicContext : dynamicContexts) {
+      dynamicEncoder->convertFromPCL(dynamicContext);
+      dynamicEncoder->encode(dynamicContext);
+    }
+    for (auto& staticContext : staticContexts) {
+      dynamicEncoder->convertFromPCL(staticContext);
+      dynamicEncoder->encode(staticContext);
+    }
+    // save
+    if (parameter.jpccEncoderDynamic.backendType != CoderBackendType::NONE) {
       for (auto& dynamicContext : dynamicContexts) {
-        dynamicEncoder->convertFromPCL(dynamicContext);
-        dynamicEncoder->encode(dynamicContext);
         {  // save
           ScopeStopwatch clock = metric.start("Save", frameNumber);
           dynamicOfs.write(dynamicContext.encodedBytes.data(), dynamicContext.encodedBytes.size());
@@ -166,10 +162,8 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
         metric.addBytes("Dynamic", frame->header.seq, frame->size() * sizeof(float) * 3);
       }
     }
-    if (staticEncoder) {
+    if (parameter.jpccEncoderStatic.backendType != CoderBackendType::NONE) {
       for (auto& staticContext : staticContexts) {
-        dynamicEncoder->convertFromPCL(staticContext);
-        dynamicEncoder->encode(staticContext);
         {  // save
           ScopeStopwatch clock = metric.start("Save", frameNumber);
           staticOfs.write(staticContext.encodedBytes.data(), staticContext.encodedBytes.size());
@@ -202,7 +196,7 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
     }
 
     // decode
-    if (dynamicDecoder) {
+    if (parameter.jpccDecoderDynamic.backendType != CoderBackendType::NONE) {
       for (size_t i = 0; i < dynamicContexts.size(); i++) {
         dynamicDecoder->decode(dynamicContexts.at(i));
         dynamicDecoder->convertToPCL(dynamicContexts.at(i));
@@ -221,7 +215,7 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
                       });
       }
     }
-    if (staticDecoder) {
+    if (parameter.jpccDecoderStatic.backendType != CoderBackendType::NONE) {
       for (size_t i = 0; i < staticContexts.size(); i++) {
         staticDecoder->decode(staticContexts.at(i));
         staticDecoder->convertToPCL(staticContexts.at(i));
