@@ -16,9 +16,19 @@ class JPCCDecoder {
  public:
   JPCCDecoder(const JPCCDecoderParameter& parameter);
 
+  virtual bool isThreadSafe();
+
   virtual void decode(const std::vector<char>& encodedBytes, shared_ptr<void>& reconstructFrame) = 0;
 
+  virtual void decode(const std::vector<std::vector<char>>& encodedFramesBytes,
+                      std::vector<shared_ptr<void>>&        reconstructFrames,
+                      bool                                  parallel);
+
   virtual void convertToPCL(shared_ptr<void>& reconstructFrame, FramePtr<PointT>& reconstructPclFrame) = 0;
+
+  virtual void convertToPCL(std::vector<shared_ptr<void>>& reconstructFrames,
+                            GroupOfFrame<PointT>&          reconstructPclFrames,
+                            bool                           parallel);
 };
 
 }  // namespace jpcc::coder

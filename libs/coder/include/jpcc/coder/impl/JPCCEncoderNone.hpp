@@ -10,6 +10,12 @@ JPCCEncoderNone<PointT>::JPCCEncoderNone(const JPCCEncoderParameter& parameter) 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
+bool JPCCEncoderNone<PointT>::isThreadSafe() {
+  return true;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT>
 void JPCCEncoderNone<PointT>::convertFromPCL(const FramePtr<PointT>& pclFrame, shared_ptr<void>& frame) {
   frame = pclFrame;
 }

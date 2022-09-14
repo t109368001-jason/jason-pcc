@@ -123,22 +123,16 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
     }
 
     // encode
-    for (size_t i = 0; i < context.dynamicPclFrames.size(); i++) {
-      dynamicEncoder->convertFromPCL(context.dynamicPclFrames.at(i), context.dynamicFrames.at(i));
-      dynamicEncoder->encode(context.dynamicFrames.at(i), context.dynamicEncodedFramesBytes.at(i));
-    }
-    for (size_t i = 0; i < context.staticPclFrames.size(); i++) {
-      staticEncoder->convertFromPCL(context.staticPclFrames.at(i), context.staticFrames.at(i));
-      staticEncoder->encode(context.staticFrames.at(i), context.staticEncodedFramesBytes.at(i));
-    }
-    for (size_t i = 0; i < context.staticAddedPclFrames.size(); i++) {
-      staticAddedEncoder->convertFromPCL(context.staticAddedPclFrames.at(i), context.staticAddedFrames.at(i));
-      staticAddedEncoder->encode(context.staticAddedFrames.at(i), context.staticAddedEncodedFramesBytes.at(i));
-    }
-    for (size_t i = 0; i < context.staticRemovedPclFrames.size(); i++) {
-      staticRemovedEncoder->convertFromPCL(context.staticRemovedPclFrames.at(i), context.staticRemovedFrames.at(i));
-      staticRemovedEncoder->encode(context.staticRemovedFrames.at(i), context.staticRemovedEncodedFramesBytes.at(i));
-    }
+    dynamicEncoder->convertFromPCL(context.dynamicPclFrames, context.dynamicFrames, parameter.parallel);
+    dynamicEncoder->encode(context.dynamicFrames, context.dynamicEncodedFramesBytes, parameter.parallel);
+    staticEncoder->convertFromPCL(context.staticPclFrames, context.staticFrames, parameter.parallel);
+    staticEncoder->encode(context.staticFrames, context.staticEncodedFramesBytes, parameter.parallel);
+    staticAddedEncoder->convertFromPCL(context.staticAddedPclFrames, context.staticAddedFrames, parameter.parallel);
+    staticAddedEncoder->encode(context.staticAddedFrames, context.staticAddedEncodedFramesBytes, parameter.parallel);
+    staticRemovedEncoder->convertFromPCL(context.staticRemovedPclFrames, context.staticRemovedFrames,
+                                         parameter.parallel);
+    staticRemovedEncoder->encode(context.staticRemovedFrames, context.staticRemovedEncodedFramesBytes,
+                                 parameter.parallel);
 
     // TODO extract JPCCWriter
     // save
@@ -219,10 +213,9 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
 
     // decode
     if (parameter.jpccDecoderDynamic.backendType != CoderBackendType::NONE) {
-      for (size_t i = 0; i < context.dynamicEncodedFramesBytes.size(); i++) {
-        dynamicDecoder->decode(context.dynamicEncodedFramesBytes.at(i), context.dynamicReconstructFrames.at(i));
-        dynamicDecoder->convertToPCL(context.dynamicReconstructFrames.at(i), context.dynamicReconstructPclFrames.at(i));
-      }
+      dynamicDecoder->decode(context.dynamicEncodedFramesBytes, context.dynamicReconstructFrames, parameter.parallel);
+      dynamicDecoder->convertToPCL(context.dynamicReconstructFrames, context.dynamicReconstructPclFrames,
+                                   parameter.parallel);
     } else {
       if (!parameter.parallel) {
         for (size_t i = 0; i < context.dynamicPclFrames.size(); i++) {
@@ -237,10 +230,9 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
       }
     }
     if (parameter.jpccDecoderStatic.backendType != CoderBackendType::NONE) {
-      for (size_t i = 0; i < context.staticEncodedFramesBytes.size(); i++) {
-        staticDecoder->decode(context.staticEncodedFramesBytes.at(i), context.staticReconstructFrames.at(i));
-        staticDecoder->convertToPCL(context.staticReconstructFrames.at(i), context.staticReconstructPclFrames.at(i));
-      }
+      staticDecoder->decode(context.staticEncodedFramesBytes, context.staticReconstructFrames, parameter.parallel);
+      staticDecoder->convertToPCL(context.staticReconstructFrames, context.staticReconstructPclFrames,
+                                  parameter.parallel);
     } else {
       if (!parameter.parallel) {
         for (size_t i = 0; i < context.staticPclFrames.size(); i++) {
@@ -255,12 +247,10 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
       }
     }
     if (parameter.jpccDecoderStatic.backendType != CoderBackendType::NONE) {
-      for (size_t i = 0; i < context.staticAddedEncodedFramesBytes.size(); i++) {
-        staticAddedDecoder->decode(context.staticAddedEncodedFramesBytes.at(i),
-                                   context.staticAddedReconstructFrames.at(i));
-        staticAddedDecoder->convertToPCL(context.staticAddedReconstructFrames.at(i),
-                                         context.staticAddedReconstructPclFrames.at(i));
-      }
+      staticAddedDecoder->decode(context.staticAddedEncodedFramesBytes, context.staticAddedReconstructFrames,
+                                 parameter.parallel);
+      staticAddedDecoder->convertToPCL(context.staticAddedReconstructFrames, context.staticAddedReconstructPclFrames,
+                                       parameter.parallel);
     } else {
       if (!parameter.parallel) {
         for (size_t i = 0; i < context.staticAddedPclFrames.size(); i++) {
@@ -275,12 +265,10 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
       }
     }
     if (parameter.jpccDecoderStatic.backendType != CoderBackendType::NONE) {
-      for (size_t i = 0; i < context.staticRemovedEncodedFramesBytes.size(); i++) {
-        staticRemovedDecoder->decode(context.staticRemovedEncodedFramesBytes.at(i),
-                                     context.staticRemovedReconstructFrames.at(i));
-        staticRemovedDecoder->convertToPCL(context.staticRemovedReconstructFrames.at(i),
-                                           context.staticRemovedReconstructPclFrames.at(i));
-      }
+      staticRemovedDecoder->decode(context.staticRemovedEncodedFramesBytes, context.staticRemovedReconstructFrames,
+                                   parameter.parallel);
+      staticRemovedDecoder->convertToPCL(context.staticRemovedReconstructFrames,
+                                         context.staticRemovedReconstructPclFrames, parameter.parallel);
     } else {
       if (!parameter.parallel) {
         for (size_t i = 0; i < context.staticRemovedPclFrames.size(); i++) {

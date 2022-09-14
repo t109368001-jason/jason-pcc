@@ -21,6 +21,8 @@ class JPCCDecoderTMC3 : public virtual JPCCDecoder<PointT> {
  public:
   JPCCDecoderTMC3(const JPCCDecoderParameter& parameter);
 
+  bool isThreadSafe() override;
+
   void decode(const std::vector<char>& encodedBytes, shared_ptr<void>& reconstructFrame) override;
 
   void convertToPCL(shared_ptr<void>& reconstructFrame, FramePtr<PointT>& reconstructPclFrame) override;

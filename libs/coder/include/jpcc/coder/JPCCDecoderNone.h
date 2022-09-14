@@ -9,6 +9,8 @@ class JPCCDecoderNone : public virtual JPCCDecoder<PointT> {
  public:
   JPCCDecoderNone(const JPCCDecoderParameter& parameter);
 
+  bool isThreadSafe() override;
+
   void decode(const std::vector<char>& encodedBytes, shared_ptr<void>& reconstructFrame) override;
 
   void convertToPCL(shared_ptr<void>& reconstructFrame, FramePtr<PointT>& reconstructPclFrame) override;

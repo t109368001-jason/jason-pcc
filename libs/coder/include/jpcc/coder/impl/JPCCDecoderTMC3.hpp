@@ -18,8 +18,15 @@ JPCCDecoderTMC3<PointT>::JPCCDecoderTMC3(const JPCCDecoderParameter& parameter) 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
+bool JPCCDecoderTMC3<PointT>::isThreadSafe() {
+  return true;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT>
 void JPCCDecoderTMC3<PointT>::decode(const std::vector<char>& encodedBytes, shared_ptr<void>& reconstructFrame) {
-  pcc::PCCTMC3Decoder3                              decoder(this->parameter_.tmc3);
+  JPCCDecoderTMC3Parameter                          parameter = this->parameter_.tmc3;
+  pcc::PCCTMC3Decoder3                              decoder(parameter);
   std::function<void(const pcc::CloudFrame& frame)> onOutputCloud = [&](const pcc::CloudFrame& frame) {
     reconstructFrame       = make_shared<pcc::PCCPointSet3>(frame.cloud);
     auto reconstructFrame_ = std::static_pointer_cast<pcc::PCCPointSet3>(reconstructFrame);
