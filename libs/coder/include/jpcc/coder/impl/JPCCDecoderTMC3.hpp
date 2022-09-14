@@ -5,14 +5,31 @@
 namespace jpcc::coder {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
+PCCTMC3Decoder3LambdaCallbacks::PCCTMC3Decoder3LambdaCallbacks(
+    const std::function<void(const pcc::CloudFrame& frame)>& onOutputCloud) :
+    onOutputCloud_(onOutputCloud) {}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void PCCTMC3Decoder3LambdaCallbacks::onOutputCloud(const pcc::CloudFrame& frame) { onOutputCloud_(frame); }
+
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-JPCCDecoderTMC3<PointT>::JPCCDecoderTMC3(const JPCCDecoderParameter& parameter) :
-    JPCCDecoder<PointT>(parameter), decoder(parameter.tmc3) {}
+JPCCDecoderTMC3<PointT>::JPCCDecoderTMC3(const JPCCDecoderParameter& parameter) : JPCCDecoder<PointT>(parameter) {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void JPCCDecoderTMC3<PointT>::decode(const std::vector<char>& encodedBytes, shared_ptr<void>& reconstructFrame) {
-  reconstructFramePtr_ = &reconstructFrame;
+  pcc::PCCTMC3Decoder3                              decoder(this->parameter_.tmc3);
+  std::function<void(const pcc::CloudFrame& frame)> onOutputCloud = [&](const pcc::CloudFrame& frame) {
+    reconstructFrame       = make_shared<pcc::PCCPointSet3>(frame.cloud);
+    auto reconstructFrame_ = std::static_pointer_cast<pcc::PCCPointSet3>(reconstructFrame);
+    for (size_t i = 0; i < frame.cloud.getPointCount(); i++) {  //
+      (*reconstructFrame_)[i] += frame.outputOrigin;
+    }
+  };
+
+  PCCTMC3Decoder3LambdaCallbacks callback(onOutputCloud);
+
   std::istringstream is(std::string(encodedBytes.begin(), encodedBytes.end()));
 
   pcc::PayloadBuffer buffer;
@@ -23,16 +40,12 @@ void JPCCDecoderTMC3<PointT>::decode(const std::vector<char>& encodedBytes, shar
     // at end of file (or other error), flush decoder
     if (!is) { bufferPtr = nullptr; }
 
-    if (decoder.decompress(bufferPtr, this)) {
+    if (decoder.decompress(bufferPtr, &callback)) {
       BOOST_THROW_EXCEPTION(std::logic_error("decompress point cloud error"));
     }
 
     if (!bufferPtr) { break; }
   }
-
-  assert(*reconstructFramePtr_);
-
-  reconstructFramePtr_ = nullptr;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -45,19 +58,6 @@ void JPCCDecoderTMC3<PointT>::convertToPCL(shared_ptr<void>& reconstructFrame, F
   for (int i = 0; i < reconstructPclFrame->size(); i++) {
     reconstructPclFrame->at(i) =
         PointT((*reconstructFrame_)[i].x(), (*reconstructFrame_)[i].y(), (*reconstructFrame_)[i].z());
-  }
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-void JPCCDecoderTMC3<PointT>::onOutputCloud(const pcc::CloudFrame& frame) {
-  if (reconstructFramePtr_) {
-    auto reconstructFrame = make_shared<pcc::PCCPointSet3>(frame.cloud);
-    for (size_t i = 0; i < frame.cloud.getPointCount(); i++) {  //
-      (*reconstructFrame)[i] += frame.outputOrigin;
-    }
-
-    (*reconstructFramePtr_) = reconstructFrame;
   }
 }
 
