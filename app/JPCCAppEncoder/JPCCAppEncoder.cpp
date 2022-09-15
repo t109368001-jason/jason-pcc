@@ -42,16 +42,8 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
 
   JPCCEncoder<PointEncode>::Ptr dynamicEncoder = JPCCEncoderAdapter::build<PointEncode>(parameter.jpccEncoderDynamic);
   JPCCEncoder<PointEncode>::Ptr staticEncoder  = JPCCEncoderAdapter::build<PointEncode>(parameter.jpccEncoderStatic);
-  JPCCEncoder<PointEncode>::Ptr staticAddedEncoder =
-      JPCCEncoderAdapter::build<PointEncode>(parameter.jpccEncoderStatic);
-  JPCCEncoder<PointEncode>::Ptr staticRemovedEncoder =
-      JPCCEncoderAdapter::build<PointEncode>(parameter.jpccEncoderStatic);
   JPCCDecoder<PointEncode>::Ptr dynamicDecoder = JPCCDecoderAdapter::build<PointEncode>(parameter.jpccDecoderDynamic);
   JPCCDecoder<PointEncode>::Ptr staticDecoder  = JPCCDecoderAdapter::build<PointEncode>(parameter.jpccDecoderStatic);
-  JPCCDecoder<PointEncode>::Ptr staticAddedDecoder =
-      JPCCDecoderAdapter::build<PointEncode>(parameter.jpccDecoderStatic);
-  JPCCDecoder<PointEncode>::Ptr staticRemovedDecoder =
-      JPCCDecoderAdapter::build<PointEncode>(parameter.jpccDecoderStatic);
 
   FramePtr<PointEncode>                                                staticFrame;
   JPCCOctreePointCloud<PointEncode, OctreeContainerEditableIndex>::Ptr staticOctree;
@@ -92,6 +84,8 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
 
   std::ofstream dynamicOfs("./bin/output-dynamic.bin", std::ios::binary);
   std::ofstream staticOfs("./bin/output-static.bin", std::ios::binary);
+  std::ofstream staticAddedOfs("./bin/output-static-added.bin", std::ios::binary);
+  std::ofstream staticRemovedOfs("./bin/output-static-removed.bin", std::ios::binary);
 
   JPCCContext<PointEncode> context;
   context.segmentationOutputType = parameter.jpccGmmSegmentation.outputType;
@@ -114,7 +108,7 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
 
     // segmentation
     for (size_t i = 0; i < context.pclFrames.size(); i++) {
-      ScopeStopwatch clock = metric.start("Encode", context.pclFrames.at(i)->header.seq);
+      ScopeStopwatch clock = metric.start("Segmentation", context.pclFrames.at(i)->header.seq);
       gmmSegmentation->segmentation(
           context.pclFrames.at(i), context.dynamicPclFrames.at(i),
           !context.staticPclFrames.empty() ? context.staticPclFrames.at(i) : nullptr,
@@ -122,17 +116,23 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
           !context.staticRemovedPclFrames.empty() ? context.staticRemovedPclFrames.at(i) : nullptr);
     }
 
+    // convertFromPCL
+    {
+      ScopeStopwatch clock = metric.start("ConvertFromPCL", frameNumber);
+      dynamicEncoder->convertFromPCL(context.dynamicPclFrames, context.dynamicFrames, parameter.parallel);
+      staticEncoder->convertFromPCL(context.staticPclFrames, context.staticFrames, parameter.parallel);
+      staticEncoder->convertFromPCL(context.staticAddedPclFrames, context.staticAddedFrames, parameter.parallel);
+      staticEncoder->convertFromPCL(context.staticRemovedPclFrames, context.staticRemovedFrames, parameter.parallel);
+    }
+
     // encode
-    dynamicEncoder->convertFromPCL(context.dynamicPclFrames, context.dynamicFrames, parameter.parallel);
-    dynamicEncoder->encode(context.dynamicFrames, context.dynamicEncodedFramesBytes, parameter.parallel);
-    staticEncoder->convertFromPCL(context.staticPclFrames, context.staticFrames, parameter.parallel);
-    staticEncoder->encode(context.staticFrames, context.staticEncodedFramesBytes, parameter.parallel);
-    staticAddedEncoder->convertFromPCL(context.staticAddedPclFrames, context.staticAddedFrames, parameter.parallel);
-    staticAddedEncoder->encode(context.staticAddedFrames, context.staticAddedEncodedFramesBytes, parameter.parallel);
-    staticRemovedEncoder->convertFromPCL(context.staticRemovedPclFrames, context.staticRemovedFrames,
-                                         parameter.parallel);
-    staticRemovedEncoder->encode(context.staticRemovedFrames, context.staticRemovedEncodedFramesBytes,
-                                 parameter.parallel);
+    {
+      ScopeStopwatch clock = metric.start("Encode", frameNumber);
+      staticEncoder->encode(context.staticFrames, context.staticEncodedFramesBytes, parameter.parallel);
+      dynamicEncoder->encode(context.dynamicFrames, context.dynamicEncodedFramesBytes, parameter.parallel);
+      staticEncoder->encode(context.staticAddedFrames, context.staticAddedEncodedFramesBytes, parameter.parallel);
+      staticEncoder->encode(context.staticRemovedFrames, context.staticRemovedEncodedFramesBytes, parameter.parallel);
+    }
 
     // TODO extract JPCCWriter
     // save
@@ -143,7 +143,7 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
           dynamicOfs.write(context.dynamicEncodedFramesBytes.at(i).data(),
                            context.dynamicEncodedFramesBytes.at(i).size());
         }
-        metric.addPoints<PointEncode>("Dynamic", context.pclFrames.at(i));
+        metric.addPoints<PointEncode>("Dynamic", context.dynamicPclFrames.at(i));
         metric.addBytes("Dynamic", context.pclFrames.at(i)->header.seq, context.dynamicEncodedFramesBytes.at(i).size());
       }
     } else {
@@ -161,161 +161,135 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
           ScopeStopwatch clock = metric.start("Save", frameNumber);
           staticOfs.write(context.staticEncodedFramesBytes.at(i).data(), context.staticEncodedFramesBytes.at(i).size());
         }
-        metric.addPoints<PointEncode>("Static", context.pclFrames.at(i));
+        metric.addPoints<PointEncode>("Static", context.staticPclFrames.at(i));
         metric.addBytes("Static", context.pclFrames.at(i)->header.seq, context.staticEncodedFramesBytes.at(i).size());
+      }
+      for (size_t i = 0; i < context.staticAddedEncodedFramesBytes.size(); i++) {
+        {  // save
+          ScopeStopwatch clock = metric.start("Save", frameNumber);
+          staticAddedOfs.write(context.staticAddedEncodedFramesBytes.at(i).data(),
+                               context.staticAddedEncodedFramesBytes.at(i).size());
+        }
+        metric.addPoints<PointEncode>("StaticAdded", context.staticAddedPclFrames.at(i));
+        metric.addBytes("StaticAdded", context.pclFrames.at(i)->header.seq,
+                        context.staticAddedEncodedFramesBytes.at(i).size());
+      }
+      for (size_t i = 0; i < context.staticRemovedEncodedFramesBytes.size(); i++) {
+        {  // save
+          ScopeStopwatch clock = metric.start("Save", frameNumber);
+          staticRemovedOfs.write(context.staticRemovedEncodedFramesBytes.at(i).data(),
+                                 context.staticRemovedEncodedFramesBytes.at(i).size());
+        }
+        metric.addPoints<PointEncode>("StaticRemoved", context.staticRemovedPclFrames.at(i));
+        metric.addBytes("StaticRemoved", context.pclFrames.at(i)->header.seq,
+                        context.staticRemovedEncodedFramesBytes.at(i).size());
       }
     } else {
       {  // save
         ScopeStopwatch clock = metric.start("Save", frameNumber);
         savePly<PointEncode, PointOutput>(context.staticPclFrames, parameter.outputDataset.getFilePath(0),
                                           parameter.parallel);
-      }
-      metric.addPoints<PointEncode>("Static", context.staticPclFrames, true);
-    }
-    if (parameter.jpccEncoderStatic.backendType != CoderBackendType::NONE) {
-      for (size_t i = 0; i < context.staticAddedEncodedFramesBytes.size(); i++) {
-        {  // save
-          ScopeStopwatch clock = metric.start("Save", frameNumber);
-          staticOfs.write(context.staticAddedEncodedFramesBytes.at(i).data(),
-                          context.staticAddedEncodedFramesBytes.at(i).size());
-        }
-        metric.addPoints<PointEncode>("StaticAdded", context.pclFrames.at(i));
-        metric.addBytes("StaticAdded", context.pclFrames.at(i)->header.seq,
-                        context.staticAddedEncodedFramesBytes.at(i).size());
-      }
-    } else {
-      {  // save
-        ScopeStopwatch clock = metric.start("Save", frameNumber);
         savePly<PointEncode, PointOutput>(context.staticAddedPclFrames, parameter.outputDataset.getFilePath(0),
                                           parameter.parallel);
-      }
-      metric.addPoints<PointEncode>("StaticAdded", context.staticAddedPclFrames, true);
-    }
-    if (parameter.jpccEncoderStatic.backendType != CoderBackendType::NONE) {
-      for (size_t i = 0; i < context.staticRemovedEncodedFramesBytes.size(); i++) {
-        {  // save
-          ScopeStopwatch clock = metric.start("Save", frameNumber);
-          staticOfs.write(context.staticRemovedEncodedFramesBytes.at(i).data(),
-                          context.staticRemovedEncodedFramesBytes.at(i).size());
-        }
-        metric.addPoints<PointEncode>("StaticRemoved", context.pclFrames.at(i));
-        metric.addBytes("StaticRemoved", context.pclFrames.at(i)->header.seq,
-                        context.staticAddedEncodedFramesBytes.at(i).size());
-      }
-    } else {
-      {  // save
-        ScopeStopwatch clock = metric.start("Save", frameNumber);
         savePly<PointEncode, PointOutput>(context.staticRemovedPclFrames, parameter.outputDataset.getFilePath(0),
                                           parameter.parallel);
       }
+      metric.addPoints<PointEncode>("Static", context.staticPclFrames, true);
+      metric.addPoints<PointEncode>("StaticAdded", context.staticAddedPclFrames, true);
       metric.addPoints<PointEncode>("StaticRemoved", context.staticRemovedPclFrames, true);
     }
 
     // decode
-    if (parameter.jpccDecoderDynamic.backendType != CoderBackendType::NONE) {
-      dynamicDecoder->decode(context.dynamicEncodedFramesBytes, context.dynamicReconstructFrames, parameter.parallel);
+    {
+      ScopeStopwatch clock = metric.start("Decode", frameNumber);
+      if (parameter.jpccDecoderDynamic.backendType != CoderBackendType::NONE) {
+        dynamicDecoder->decode(context.dynamicEncodedFramesBytes, context.dynamicReconstructFrames, parameter.parallel);
+      } else {
+        for (size_t i = 0; i < context.dynamicPclFrames.size(); i++) {
+          context.dynamicReconstructFrames.at(i) = context.dynamicPclFrames.at(i);
+        }
+      }
+      if (parameter.jpccDecoderStatic.backendType != CoderBackendType::NONE) {
+        staticDecoder->decode(context.staticEncodedFramesBytes, context.staticReconstructFrames, parameter.parallel);
+        staticDecoder->decode(context.staticAddedEncodedFramesBytes, context.staticAddedReconstructFrames,
+                              parameter.parallel);
+        staticDecoder->decode(context.staticRemovedEncodedFramesBytes, context.staticRemovedReconstructFrames,
+                              parameter.parallel);
+      } else {
+        for (size_t i = 0; i < context.staticPclFrames.size(); i++) {
+          context.staticReconstructFrames.at(i) = context.staticPclFrames.at(i);
+        }
+        for (size_t i = 0; i < context.staticAddedPclFrames.size(); i++) {
+          context.staticAddedReconstructFrames.at(i) = context.staticAddedPclFrames.at(i);
+        }
+        for (size_t i = 0; i < context.staticRemovedPclFrames.size(); i++) {
+          context.staticRemovedReconstructFrames.at(i) = context.staticRemovedPclFrames.at(i);
+        }
+      }
+    }
+
+    // convertToPCL
+    {
+      ScopeStopwatch clock = metric.start("ConvertToPCL", frameNumber);
       dynamicDecoder->convertToPCL(context.dynamicReconstructFrames, context.dynamicReconstructPclFrames,
                                    parameter.parallel);
-    } else {
-      if (!parameter.parallel) {
-        for (size_t i = 0; i < context.dynamicPclFrames.size(); i++) {
-          context.dynamicReconstructPclFrames.at(i) = context.dynamicPclFrames.at(i);
-        }
-      } else {
-        const auto range = boost::counting_range<size_t>(0, context.dynamicPclFrames.size());
-        std::for_each(std::execution::par, range.begin(), range.end(),
-                      [&](const size_t& i) {  //
-                        context.dynamicReconstructPclFrames.at(i) = context.dynamicPclFrames.at(i);
-                      });
-      }
-    }
-    if (parameter.jpccDecoderStatic.backendType != CoderBackendType::NONE) {
-      staticDecoder->decode(context.staticEncodedFramesBytes, context.staticReconstructFrames, parameter.parallel);
       staticDecoder->convertToPCL(context.staticReconstructFrames, context.staticReconstructPclFrames,
                                   parameter.parallel);
-    } else {
-      if (!parameter.parallel) {
-        for (size_t i = 0; i < context.staticPclFrames.size(); i++) {
-          context.staticReconstructPclFrames.at(i) = context.staticPclFrames.at(i);
-        }
-      } else {
-        const auto range = boost::counting_range<size_t>(0, context.staticPclFrames.size());
-        std::for_each(std::execution::par, range.begin(), range.end(),
-                      [&](const size_t& i) {  //
-                        context.staticReconstructPclFrames.at(i) = context.staticPclFrames.at(i);
-                      });
-      }
+      staticDecoder->convertToPCL(context.staticAddedReconstructFrames, context.staticAddedReconstructPclFrames,
+                                  parameter.parallel);
+      staticDecoder->convertToPCL(context.staticRemovedReconstructFrames, context.staticRemovedReconstructPclFrames,
+                                  parameter.parallel);
     }
-    if (parameter.jpccDecoderStatic.backendType != CoderBackendType::NONE) {
-      staticAddedDecoder->decode(context.staticAddedEncodedFramesBytes, context.staticAddedReconstructFrames,
-                                 parameter.parallel);
-      staticAddedDecoder->convertToPCL(context.staticAddedReconstructFrames, context.staticAddedReconstructPclFrames,
-                                       parameter.parallel);
-    } else {
-      if (!parameter.parallel) {
-        for (size_t i = 0; i < context.staticAddedPclFrames.size(); i++) {
-          context.staticAddedReconstructPclFrames.at(i) = context.staticAddedPclFrames.at(i);
+
+    // combination
+    {
+      ScopeStopwatch clock = metric.start("Combination", frameNumber);
+      if (context.segmentationOutputType == jpcc::SegmentationOutputType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED) {
+        context.staticReconstructPclFrames.resize(context.staticAddedReconstructPclFrames.size());
+        for (size_t i = 0; i < context.staticRemovedReconstructPclFrames.size(); i++) {
+          if (context.staticRemovedReconstructPclFrames.at(i)) {
+            for (const PointEncode& pointToRemove : context.staticRemovedReconstructPclFrames.at(i)->points) {
+              staticOctree->deletePointFromCloud(pointToRemove, staticFrame);
+            }
+          }
+          if (context.staticAddedReconstructPclFrames.at(i)) {
+            for (const PointEncode& pointToAdd : context.staticAddedReconstructPclFrames.at(i)->points) {
+              staticOctree->addPointToCloud(pointToAdd, staticFrame);
+            }
+          }
+          context.staticReconstructPclFrames.at(i) = jpcc::make_shared<Frame<PointEncode>>();
+          pcl::copyPointCloud(*staticFrame, *context.staticReconstructPclFrames.at(i));
         }
-      } else {
-        const auto range = boost::counting_range<size_t>(0, context.staticAddedPclFrames.size());
-        std::for_each(std::execution::par, range.begin(), range.end(),
-                      [&](const size_t& i) {  //
-                        context.staticAddedReconstructPclFrames.at(i) = context.staticAddedPclFrames.at(i);
-                      });
       }
-    }
-    if (parameter.jpccDecoderStatic.backendType != CoderBackendType::NONE) {
-      staticRemovedDecoder->decode(context.staticRemovedEncodedFramesBytes, context.staticRemovedReconstructFrames,
-                                   parameter.parallel);
-      staticRemovedDecoder->convertToPCL(context.staticRemovedReconstructFrames,
-                                         context.staticRemovedReconstructPclFrames, parameter.parallel);
-    } else {
       if (!parameter.parallel) {
-        for (size_t i = 0; i < context.staticRemovedPclFrames.size(); i++) {
-          context.staticRemovedReconstructPclFrames.at(i) = context.staticRemovedPclFrames.at(i);
+        for (size_t i = 0; i < context.pclFrames.size(); i++) {
+          pcl::copyPointCloud(*context.dynamicReconstructPclFrames.at(i), *context.reconstructPclFrames.at(i));
+          pcl::copyPointCloud(*context.staticReconstructPclFrames.at(i), *context.reconstructPclFrames.at(i));
+          context.reconstructPclFrames.at(i)->header = context.pclFrames.at(i)->header;
         }
       } else {
-        const auto range = boost::counting_range<size_t>(0, context.staticRemovedPclFrames.size());
-        std::for_each(std::execution::par, range.begin(), range.end(),
-                      [&](const size_t& i) {  //
-                        context.staticRemovedReconstructPclFrames.at(i) = context.staticRemovedPclFrames.at(i);
-                      });
+        const auto range = boost::counting_range<size_t>(0, context.pclFrames.size());
+        std::for_each(
+            std::execution::par, range.begin(), range.end(),
+            [&](const size_t& i) {  //
+              pcl::copyPointCloud(*context.dynamicReconstructPclFrames.at(i), *context.reconstructPclFrames.at(i));
+              pcl::copyPointCloud(*context.staticReconstructPclFrames.at(i), *context.reconstructPclFrames.at(i));
+              context.reconstructPclFrames.at(i)->header = context.pclFrames.at(i)->header;
+            });
       }
     }
 
-    // reconstruct
-    if (context.segmentationOutputType == jpcc::SegmentationOutputType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED) {
-      context.staticReconstructPclFrames.resize(context.staticAddedReconstructPclFrames.size());
-      for (size_t i = 0; i < context.staticRemovedReconstructPclFrames.size(); i++) {
-        if (context.staticRemovedReconstructPclFrames.at(i)) {
-          for (const PointEncode& pointToRemove : context.staticRemovedReconstructPclFrames.at(i)->points) {
-            staticOctree->deletePointFromCloud(pointToRemove, staticFrame);
-          }
-        }
-        if (context.staticAddedReconstructPclFrames.at(i)) {
-          for (const PointEncode& pointToAdd : context.staticAddedReconstructPclFrames.at(i)->points) {
-            staticOctree->addPointToCloud(pointToAdd, staticFrame);
-          }
-        }
-        context.staticReconstructPclFrames.at(i) = jpcc::make_shared<Frame<PointEncode>>();
-        pcl::copyPointCloud(*staticFrame, *context.staticReconstructPclFrames.at(i));
-      }
-    }
-    for (size_t i = 0; i < context.dynamicReconstructPclFrames.size(); i++) {
-      pcl::copyPointCloud(*context.dynamicReconstructPclFrames.at(i), *context.reconstructPclFrames.at(i));
-    }
-    for (size_t i = 0; i < context.staticReconstructPclFrames.size(); i++) {
-      pcl::copyPointCloud(*context.staticReconstructPclFrames.at(i), *context.reconstructPclFrames.at(i));
-    }
-    for (size_t i = 0; i < context.dynamicReconstructPclFrames.size(); i++) {
-      context.reconstructPclFrames.at(i)->header = context.pclFrames.at(i)->header;
-    }
+    {
+      ScopeStopwatch clock = metric.start("ComputePSNR", frameNumber);
 
-    GroupOfFrame<PointMetric> framesWithNormal = normalEstimation.computeAll(context.pclFrames, parameter.parallel);
-    GroupOfFrame<PointMetric> reconstructFramesWithNormal =
-        normalEstimation.computeAll(context.reconstructPclFrames, parameter.parallel);
-    metric.addPSNR<PointMetric, PointMetric>("A2B", framesWithNormal, reconstructFramesWithNormal, parameter.parallel);
-    metric.addPSNR<PointMetric, PointMetric>("B2A", reconstructFramesWithNormal, framesWithNormal, parameter.parallel);
+      GroupOfFrame<PointMetric> framesWithNormal = normalEstimation.computeAll(context.pclFrames, parameter.parallel);
+      GroupOfFrame<PointMetric> reconstructFramesWithNormal =
+          normalEstimation.computeAll(context.reconstructPclFrames, parameter.parallel);
+      metric.addPSNR<PointMetric, PointMetric>("A2B", framesWithNormal, reconstructFramesWithNormal,
+                                               parameter.parallel);
+      metric.addPSNR<PointMetric, PointMetric>("B2A", reconstructFramesWithNormal, framesWithNormal,
+                                               parameter.parallel);
+    }
 
     frameNumber += groupOfFramesSize;
   }
