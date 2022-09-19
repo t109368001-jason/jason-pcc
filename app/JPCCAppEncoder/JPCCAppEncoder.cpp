@@ -107,13 +107,10 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
     metric.addPoints<PointEncode>("PreProcessed", context.pclFrames, true);
 
     // segmentation
-    for (size_t i = 0; i < context.pclFrames.size(); i++) {
-      ScopeStopwatch clock = metric.start("Segmentation", context.pclFrames.at(i)->header.seq);
-      gmmSegmentation->segmentation(
-          context.pclFrames.at(i), context.dynamicPclFrames.at(i),
-          !context.staticPclFrames.empty() ? context.staticPclFrames.at(i) : nullptr,
-          !context.staticAddedPclFrames.empty() ? context.staticAddedPclFrames.at(i) : nullptr,
-          !context.staticRemovedPclFrames.empty() ? context.staticRemovedPclFrames.at(i) : nullptr);
+    {
+      ScopeStopwatch clock = metric.start("Segmentation", frameNumber);
+      gmmSegmentation->segmentation(context.pclFrames, context.dynamicPclFrames, context.staticPclFrames,
+                                    context.staticAddedPclFrames, context.staticRemovedPclFrames, parameter.parallel);
     }
 
     // convertFromPCL

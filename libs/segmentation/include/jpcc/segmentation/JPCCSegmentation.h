@@ -17,6 +17,8 @@ class JPCCSegmentation {
  public:
   JPCCSegmentation(const JPCCSegmentationParameter& parameter, int startFrameNumber);
 
+  virtual bool isThreadSafe();
+
   [[nodiscard]] virtual bool isBuilt() const = 0;
 
   virtual void appendTrainSamples(FramePtr<PointT> frame) = 0;
@@ -24,8 +26,15 @@ class JPCCSegmentation {
   virtual void segmentation(const FrameConstPtr<PointT>& frame,
                             FramePtr<PointT>             dynamicFrame,
                             FramePtr<PointT>             staticFrame,
-                            FramePtr<PointT>             staticFrameAdded,
-                            FramePtr<PointT>             staticFrameRemoved) = 0;
+                            FramePtr<PointT>             staticAddedFrame,
+                            FramePtr<PointT>             staticRemovedFrame) = 0;
+
+  virtual void segmentation(const GroupOfFrame<PointT>& frames,
+                            const GroupOfFrame<PointT>& dynamicFrames,
+                            const GroupOfFrame<PointT>& staticFrames,
+                            const GroupOfFrame<PointT>& staticAddedFrames,
+                            const GroupOfFrame<PointT>& staticRemovedFrames,
+                            bool                        parallel);
 };
 
 }  // namespace jpcc::segmentation
