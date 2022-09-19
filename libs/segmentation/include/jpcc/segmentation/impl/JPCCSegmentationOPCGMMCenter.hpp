@@ -23,7 +23,7 @@ bool JPCCSegmentationOPCGMMCenter<PointT, LeafContainerT>::isBuilt() const {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename LeafContainerT>
-void JPCCSegmentationOPCGMMCenter<PointT, LeafContainerT>::appendTrainSamplesAndBuild(FramePtr<PointT> frame) {
+void JPCCSegmentationOPCGMMCenter<PointT, LeafContainerT>::appendTrainSamplesAndBuild(const FramePtr<PointT>& frame) {
   if (this->isBuilt()) { return; }
   this->addFrame(frame);
   this->appendTrainSamples(frame);
@@ -33,10 +33,10 @@ void JPCCSegmentationOPCGMMCenter<PointT, LeafContainerT>::appendTrainSamplesAnd
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename LeafContainerT>
 void JPCCSegmentationOPCGMMCenter<PointT, LeafContainerT>::segmentation(const FrameConstPtr<PointT>& frame,
-                                                                        FramePtr<PointT>             dynamicFrame,
-                                                                        FramePtr<PointT>             staticFrame,
-                                                                        FramePtr<PointT>             staticFrameAdded,
-                                                                        FramePtr<PointT> staticFrameRemoved) {
+                                                                        const FramePtr<PointT>&      dynamicFrame,
+                                                                        const FramePtr<PointT>&      staticFrame,
+                                                                        const FramePtr<PointT>&      staticFrameAdded,
+                                                                        const FramePtr<PointT>& staticFrameRemoved) {
   if (dynamicFrame) {
     dynamicFrame->clear();
     dynamicFrame->header = frame->header;
@@ -161,13 +161,14 @@ void JPCCSegmentationOPCGMMCenter<PointT, LeafContainerT>::buildRecursive(const 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename LeafContainerT>
-void JPCCSegmentationOPCGMMCenter<PointT, LeafContainerT>::segmentationRecursive(const FrameConstPtr<PointT>& frame,
-                                                                                 FramePtr<PointT>  dynamicFrame,
-                                                                                 FramePtr<PointT>  staticFrame,
-                                                                                 FramePtr<PointT>  staticFrameAdded,
-                                                                                 FramePtr<PointT>  staticFrameRemoved,
-                                                                                 OctreeKey&        key,
-                                                                                 const BranchNode* branchNode) {
+void JPCCSegmentationOPCGMMCenter<PointT, LeafContainerT>::segmentationRecursive(
+    const FrameConstPtr<PointT>& frame,
+    const FramePtr<PointT>&      dynamicFrame,
+    const FramePtr<PointT>&      staticFrame,
+    const FramePtr<PointT>&      staticFrameAdded,
+    const FramePtr<PointT>&      staticFrameRemoved,
+    OctreeKey&                   key,
+    const BranchNode*            branchNode) {
   for (unsigned char childIndex = 0; childIndex < 8; childIndex++) {
     if (branchNode->hasChild(childIndex)) {
       // add current branch voxel to key

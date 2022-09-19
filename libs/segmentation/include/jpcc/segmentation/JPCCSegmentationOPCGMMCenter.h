@@ -33,13 +33,13 @@ class JPCCSegmentationOPCGMMCenter : virtual public JPCCSegmentation<PointT>,
 
   [[nodiscard]] bool isBuilt() const override;
 
-  void appendTrainSamplesAndBuild(FramePtr<PointT> frame) override;
+  void appendTrainSamplesAndBuild(const FramePtr<PointT>& frame) override;
 
   void segmentation(const FrameConstPtr<PointT>& frame,
-                    FramePtr<PointT>             dynamicFrame,
-                    FramePtr<PointT>             staticFrame,
-                    FramePtr<PointT>             staticFrameAdded,
-                    FramePtr<PointT>             staticFrameRemoved) override;
+                    const FramePtr<PointT>&      dynamicFrame,
+                    const FramePtr<PointT>&      staticFrame,
+                    const FramePtr<PointT>&      staticFrameAdded,
+                    const FramePtr<PointT>&      staticFrameRemoved) override;
 
   void appendTrainSamples(const FramePtr<PointT>& frame);
 
@@ -50,10 +50,10 @@ class JPCCSegmentationOPCGMMCenter : virtual public JPCCSegmentation<PointT>,
   void buildRecursive(const FramePtr<PointT>& frame, size_t index, const BranchNode* branchNode);
 
   void segmentationRecursive(const FrameConstPtr<PointT>& frame,
-                             FramePtr<PointT>             dynamicFrame,
-                             FramePtr<PointT>             staticFrame,
-                             FramePtr<PointT>             staticFrameAdded,
-                             FramePtr<PointT>             staticFrameRemoved,
+                             const FramePtr<PointT>&      dynamicFrame,
+                             const FramePtr<PointT>&      staticFrame,
+                             const FramePtr<PointT>&      staticFrameAdded,
+                             const FramePtr<PointT>&      staticFrameRemoved,
                              OctreeKey&                   key,
                              const BranchNode*            branchNode);
 };

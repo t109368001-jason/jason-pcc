@@ -21,13 +21,13 @@ class JPCCSegmentation {
 
   [[nodiscard]] virtual bool isBuilt() const = 0;
 
-  virtual void appendTrainSamplesAndBuild(FramePtr<PointT> frame) = 0;
+  virtual void appendTrainSamplesAndBuild(const FramePtr<PointT>& frame) = 0;
 
   virtual void segmentation(const FrameConstPtr<PointT>& frame,
-                            FramePtr<PointT>             dynamicFrame,
-                            FramePtr<PointT>             staticFrame,
-                            FramePtr<PointT>             staticAddedFrame,
-                            FramePtr<PointT>             staticRemovedFrame) = 0;
+                            const FramePtr<PointT>&      dynamicFrame,
+                            const FramePtr<PointT>&      staticFrame,
+                            const FramePtr<PointT>&      staticAddedFrame,
+                            const FramePtr<PointT>&      staticRemovedFrame) = 0;
 
   virtual void segmentation(const GroupOfFrame<PointT>& frames,
                             const GroupOfFrame<PointT>& dynamicFrames,
