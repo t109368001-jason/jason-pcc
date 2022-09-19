@@ -51,7 +51,7 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
     while (!gmmSegmentation->isBuilt() && frameNumber < endFrameNumber) {
       {
         ScopeStopwatch clock = metric.start("Load", frameNumber);
-        reader->loadAll(frameNumber, groupOfFramesSize, frames, parameter.parallel);
+        reader->loadAll(frameNumber, parameter.groupOfFramesSize, frames, parameter.parallel);
       }
       {
         ScopeStopwatch clock = metric.start("PreProcess", frameNumber);
@@ -62,13 +62,12 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
         gmmSegmentation->appendTrainSamples(frame);
       }
 
-      frameNumber += groupOfFramesSize;
+      frameNumber += parameter.groupOfFramesSize;
     }
   }
 
-  size_t       groupOfFramesSize = parameter.groupOfFramesSize;
-  size_t       frameNumber       = parameter.inputDataset.getStartFrameNumber();
-  const size_t endFrameNumber    = parameter.inputDataset.getEndFrameNumber();
+  size_t       frameNumber    = parameter.inputDataset.getStartFrameNumber();
+  const size_t endFrameNumber = parameter.inputDataset.getEndFrameNumber();
 
   std::ofstream dynamicOfs("./bin/output-dynamic.bin", std::ios::binary);
   std::ofstream staticOfs("./bin/output-static.bin", std::ios::binary);
@@ -78,6 +77,7 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
   JPCCContext<PointEncode> context;
   context.segmentationOutputType = parameter.jpccGmmSegmentation.outputType;
   while (frameNumber < endFrameNumber) {
+    size_t groupOfFramesSize = std::min(parameter.groupOfFramesSize, endFrameNumber - frameNumber);
     {  // clear
       context.clear();
       context.init(groupOfFramesSize);

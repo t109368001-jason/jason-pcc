@@ -33,7 +33,6 @@ void JPCCContext<PointT>::init(const size_t frameCount) {
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void JPCCContext<PointT>::resize(const size_t frameCount) {
-  clear();
   pclFrames.resize(frameCount);
   dynamicPclFrames.resize(frameCount);
   dynamicFrames.resize(frameCount);
