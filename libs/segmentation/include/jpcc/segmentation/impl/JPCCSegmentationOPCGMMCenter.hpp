@@ -23,25 +23,11 @@ bool JPCCSegmentationOPCGMMCenter<PointT, LeafContainerT>::isBuilt() const {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename LeafContainerT>
-void JPCCSegmentationOPCGMMCenter<PointT, LeafContainerT>::appendTrainSamples(FramePtr<PointT> frame) {
+void JPCCSegmentationOPCGMMCenter<PointT, LeafContainerT>::appendTrainSamplesAndBuild(FramePtr<PointT> frame) {
   if (this->isBuilt()) { return; }
   this->addFrame(frame);
-  for (auto it = this->leaf_depth_begin(), end = this->leaf_depth_end(); it != end; ++it) {
-    LeafContainerT& leafContainer = it.getLeafContainer();
-    leafContainer.addTrainSample();
-    leafContainer.resetLastPoint();
-  }
-  for (size_t i = 0; i < SIZE; i++) {
-    if (!this->builtVector.at(i) &&
-        (frame->header.seq - this->startFrameNumber_ + 1) >= this->parameter_.getNTrain(i)) {
-      for (auto it = this->leaf_depth_begin(), end = this->leaf_depth_end(); it != end; ++it) {
-        LeafContainerT& leafContainer = it.getLeafContainer();
-        leafContainer.build(i, this->parameter_.getNTrain(i), this->parameter_.getK(i), this->parameter_.getAlpha(i),
-                            this->parameter_.minimumVariance, alternateCentroids_);
-      }
-      this->builtVector.at(i) = true;
-    }
-  }
+  this->appendTrainSamples(frame);
+  this->build(frame);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -69,43 +55,10 @@ void JPCCSegmentationOPCGMMCenter<PointT, LeafContainerT>::segmentation(const Fr
   }
 
   this->addFrame(frame);
-  for (auto it = this->leaf_depth_begin(), end = this->leaf_depth_end(); it != end; ++it) {
-    LeafContainerT& leafContainer = it.getLeafContainer();
-    for (size_t i = 0; i < SIZE; i++) {
-      if (!leafContainer.isBuilt(i)) {
-        leafContainer.build(i, this->parameter_.getNTrain(i), this->parameter_.getK(i), this->parameter_.getAlpha(i),
-                            this->parameter_.minimumVariance, alternateCentroids_);
-      }
-    }
-    bool lastIsStatic = leafContainer.isLastStatic();
-    bool isStatic     = leafContainer.isStatic(this->parameter_.getStaticThresholdVector(),
-                                               this->parameter_.getNullStaticThresholdVector(),
-                                               this->parameter_.getOutputExistsPointOnlyVector());
-    bool isDynamic    = !isStatic && !std::isnan(leafContainer.getLastPoint().intensity);
-    if (dynamicFrame && isDynamic) {
-      PointT& point = leafContainer.getLastPoint();
-      assert(!std::isnan(point.x));
-      dynamicFrame->points.push_back(point);
-    }
 
-    PointT center;
-    this->genLeafNodeCenterFromOctreeKey(it.getCurrentOctreeKey(), center);
-
-    if (staticFrame && isStatic) { staticFrame->points.push_back(center); }
-    if (staticFrameAdded && !lastIsStatic && isStatic) { staticFrameAdded->points.push_back(center); }
-    if (staticFrameRemoved && lastIsStatic && !isStatic) { staticFrameRemoved->points.push_back(center); }
-
-    leafContainer.setIsLastStatic(isStatic);
-    for (size_t i = 0; i < SIZE; i++) {
-      if (this->parameter_.updateModelBeforeNTrain ||
-          frame->header.seq >= this->startFrameNumber_ + this->parameter_.getNTrain(i)) {
-        leafContainer.updateModel(i, this->parameter_.getAlpha(i),
-                                  this->parameter_.getAlpha(i) * this->parameter_.getNullAlphaRatio(i),
-                                  this->parameter_.minimumVariance);
-      }
-    }
-    leafContainer.resetLastPoint();
-  }
+  OctreeKey key;
+  this->segmentationRecursive(frame, dynamicFrame, staticFrame, staticFrameAdded, staticFrameRemoved, key,
+                              this->root_node_);
 
   if (dynamicFrame) {
     dynamicFrame->width  = dynamicFrame->size();
@@ -134,6 +87,141 @@ void JPCCSegmentationOPCGMMCenter<PointT, LeafContainerT>::segmentation(const Fr
     cout << "segmentation static removed "
          << "frameNumber=" << staticFrameRemoved->header.seq << ", "
          << "points=" << staticFrameRemoved->size() << endl;
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT, typename LeafContainerT>
+void JPCCSegmentationOPCGMMCenter<PointT, LeafContainerT>::appendTrainSamples(const FramePtr<PointT>& frame) {
+  if (this->isBuilt()) { return; }
+  this->addTrainSampleAndResetLastPointRecursive(frame, this->root_node_);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT, typename LeafContainerT>
+void JPCCSegmentationOPCGMMCenter<PointT, LeafContainerT>::addTrainSampleAndResetLastPointRecursive(
+    const FramePtr<PointT>& frame, const BranchNode* branchNode) {
+  for (unsigned char childIndex = 0; childIndex < 8; childIndex++) {
+    if (branchNode->hasChild(childIndex)) {
+      OctreeNode* childNode = branchNode->getChildPtr(childIndex);
+      switch (childNode->getNodeType()) {
+        case pcl::octree::BRANCH_NODE: {
+          addTrainSampleAndResetLastPointRecursive(frame, dynamic_cast<const BranchNode*>(childNode));
+          break;
+        }
+        case pcl::octree::LEAF_NODE: {
+          LeafContainerT& leafContainer = dynamic_cast<LeafNode*>(childNode)->getContainer();
+          leafContainer.addTrainSample();
+          leafContainer.resetLastPoint();
+          break;
+        }
+        default: break;
+      }
+    }
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT, typename LeafContainerT>
+void JPCCSegmentationOPCGMMCenter<PointT, LeafContainerT>::build(const FramePtr<PointT>& frame) {
+  if (this->isBuilt()) { return; }
+  for (size_t i = 0; i < SIZE; i++) {
+    if (!this->builtVector.at(i) &&
+        (frame->header.seq - this->startFrameNumber_ + 1) >= this->parameter_.getNTrain(i)) {
+      this->buildRecursive(frame, i, this->root_node_);
+      this->builtVector.at(i) = true;
+    }
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT, typename LeafContainerT>
+void JPCCSegmentationOPCGMMCenter<PointT, LeafContainerT>::buildRecursive(const FramePtr<PointT>& frame,
+                                                                          const size_t            index,
+                                                                          const BranchNode*       branchNode) {
+  for (unsigned char childIndex = 0; childIndex < 8; childIndex++) {
+    if (branchNode->hasChild(childIndex)) {
+      OctreeNode* childNode = branchNode->getChildPtr(childIndex);
+      switch (childNode->getNodeType()) {
+        case pcl::octree::BRANCH_NODE: {
+          buildRecursive(frame, index, dynamic_cast<const BranchNode*>(childNode));
+          break;
+        }
+        case pcl::octree::LEAF_NODE: {
+          LeafContainerT& leafContainer = dynamic_cast<LeafNode*>(childNode)->getContainer();
+          leafContainer.build(index, this->parameter_.getNTrain(index), this->parameter_.getK(index),
+                              this->parameter_.getAlpha(index), this->parameter_.minimumVariance, alternateCentroids_);
+          break;
+        }
+        default: break;
+      }
+    }
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT, typename LeafContainerT>
+void JPCCSegmentationOPCGMMCenter<PointT, LeafContainerT>::segmentationRecursive(const FrameConstPtr<PointT>& frame,
+                                                                                 FramePtr<PointT>  dynamicFrame,
+                                                                                 FramePtr<PointT>  staticFrame,
+                                                                                 FramePtr<PointT>  staticFrameAdded,
+                                                                                 FramePtr<PointT>  staticFrameRemoved,
+                                                                                 OctreeKey&        key,
+                                                                                 const BranchNode* branchNode) {
+  for (unsigned char childIndex = 0; childIndex < 8; childIndex++) {
+    if (branchNode->hasChild(childIndex)) {
+      // add current branch voxel to key
+      key.pushBranch(childIndex);
+      OctreeNode* childNode = branchNode->getChildPtr(childIndex);
+      switch (childNode->getNodeType()) {
+        case pcl::octree::BRANCH_NODE: {
+          segmentationRecursive(frame, dynamicFrame, staticFrame, staticFrameAdded, staticFrameRemoved, key,
+                                dynamic_cast<const BranchNode*>(childNode));
+          break;
+        }
+        case pcl::octree::LEAF_NODE: {
+          LeafContainerT& leafContainer = dynamic_cast<LeafNode*>(childNode)->getContainer();
+          for (size_t i = 0; i < SIZE; i++) {
+            if (!leafContainer.isBuilt(i)) {
+              leafContainer.build(i, this->parameter_.getNTrain(i), this->parameter_.getK(i),
+                                  this->parameter_.getAlpha(i), this->parameter_.minimumVariance, alternateCentroids_);
+            }
+          }
+          bool lastIsStatic = leafContainer.isLastStatic();
+          bool isStatic     = leafContainer.isStatic(this->parameter_.getStaticThresholdVector(),
+                                                     this->parameter_.getNullStaticThresholdVector(),
+                                                     this->parameter_.getOutputExistsPointOnlyVector());
+          bool isDynamic    = !isStatic && !std::isnan(leafContainer.getLastPoint().intensity);
+          if (dynamicFrame && isDynamic) {
+            PointT& point = leafContainer.getLastPoint();
+            assert(!std::isnan(point.x));
+            dynamicFrame->points.push_back(point);
+          }
+
+          PointT center;
+          this->genLeafNodeCenterFromOctreeKey(key, center);
+
+          if (staticFrame && isStatic) { staticFrame->points.push_back(center); }
+          if (staticFrameAdded && !lastIsStatic && isStatic) { staticFrameAdded->points.push_back(center); }
+          if (staticFrameRemoved && lastIsStatic && !isStatic) { staticFrameRemoved->points.push_back(center); }
+
+          leafContainer.setIsLastStatic(isStatic);
+          for (size_t i = 0; i < SIZE; i++) {
+            if (this->parameter_.updateModelBeforeNTrain ||
+                frame->header.seq >= this->startFrameNumber_ + this->parameter_.getNTrain(i)) {
+              leafContainer.updateModel(i, this->parameter_.getAlpha(i),
+                                        this->parameter_.getAlpha(i) * this->parameter_.getNullAlphaRatio(i),
+                                        this->parameter_.minimumVariance);
+            }
+          }
+          leafContainer.resetLastPoint();
+          break;
+        }
+        default: break;
+      }
+      // pop current branch voxel from key
+      key.popBranch();
+    }
   }
 }
 

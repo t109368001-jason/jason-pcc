@@ -59,7 +59,7 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
       }
       for (const auto& frame : frames) {
         ScopeStopwatch clock = metric.start("Build", frame->header.seq);
-        gmmSegmentation->appendTrainSamples(frame);
+        gmmSegmentation->appendTrainSamplesAndBuild(frame);
       }
 
       frameNumber += parameter.groupOfFramesSize;
