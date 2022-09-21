@@ -268,15 +268,17 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-  // Timers to count elapsed wall/user time
-  JPCCMetric metric(parameter.metricParameter);
+  try {
+    // Timers to count elapsed wall/user time
+    JPCCMetric metric(parameter.metricParameter);
 
-  {
-    ScopeStopwatch clock = metric.start("Wall", parameter.inputDataset.getStartFrameNumber());
-    encode(parameter, metric);
-  }
+    {
+      ScopeStopwatch clock = metric.start("Wall", parameter.inputDataset.getStartFrameNumber());
+      encode(parameter, metric);
+    }
 
-  metric.writeAndShow();
+    metric.writeAndShow();
+  } catch (exception& e) { cerr << e.what() << endl; }
 
   cout << "JPCC App Encoder End" << endl;
   return 0;
