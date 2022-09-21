@@ -25,8 +25,9 @@ bool JPCCDecoderTMC3<PointT>::isThreadSafe() {
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void JPCCDecoderTMC3<PointT>::decode(const std::vector<char>& encodedBytes, shared_ptr<void>& reconstructFrame) {
-  JPCCDecoderTMC3Parameter                          parameter = this->parameter_.tmc3;
-  pcc::PCCTMC3Decoder3                              decoder(parameter);
+  JPCCDecoderTMC3Parameter parameter = this->parameter_.tmc3;
+  pcc::PCCTMC3Decoder3     decoder(parameter);
+
   std::function<void(const pcc::CloudFrame& frame)> onOutputCloud = [&](const pcc::CloudFrame& frame) {
     reconstructFrame       = make_shared<pcc::PCCPointSet3>(frame.cloud);
     auto reconstructFrame_ = std::static_pointer_cast<pcc::PCCPointSet3>(reconstructFrame);
@@ -44,14 +45,18 @@ void JPCCDecoderTMC3<PointT>::decode(const std::vector<char>& encodedBytes, shar
     pcc::PayloadBuffer* bufferPtr = &buffer;
     readTlv(is, &buffer);
 
+    if (bufferPtr->empty()) { reconstructFrame = make_shared<pcc::PCCPointSet3>(); }
+
     // at end of file (or other error), flush decoder
-    if (!is) { bufferPtr = nullptr; }
+    if (!is || bufferPtr->empty()) { bufferPtr = nullptr; }
 
     if (decoder.decompress(bufferPtr, &callback)) {
       BOOST_THROW_EXCEPTION(std::logic_error("decompress point cloud error"));
     }
 
     if (!bufferPtr) { break; }
+
+    if (reconstructFrame) { break; }
   }
 }
 
@@ -59,6 +64,7 @@ void JPCCDecoderTMC3<PointT>::decode(const std::vector<char>& encodedBytes, shar
 template <typename PointT>
 void JPCCDecoderTMC3<PointT>::convertToPCL(shared_ptr<void>& reconstructFrame, FramePtr<PointT>& reconstructPclFrame) {
   auto reconstructFrame_ = std::static_pointer_cast<pcc::PCCPointSet3>(reconstructFrame);
+  if (!reconstructFrame_) { return; }
 
   reconstructPclFrame->resize(reconstructFrame_->getPointCount());
 

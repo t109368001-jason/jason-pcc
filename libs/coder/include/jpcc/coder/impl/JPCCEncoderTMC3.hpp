@@ -44,6 +44,7 @@ void JPCCEncoderTMC3<PointT>::convertFromPCL(const FramePtr<PointT>& pclFrame, s
 template <typename PointT>
 void JPCCEncoderTMC3<PointT>::encode(const shared_ptr<void>& frame, std::vector<char>& encodedBytes) {
   pcc::EncoderParams   copiedParams = this->parameter_.tmc3;
+  auto                 _frame       = std::static_pointer_cast<pcc::PCCPointSet3>(frame);
   pcc::PCCTMC3Encoder3 encoder_;
 
   std::function<void(const pcc::PayloadBuffer& buffer)> onOutputBuffer =
@@ -61,8 +62,13 @@ void JPCCEncoderTMC3<PointT>::encode(const shared_ptr<void>& frame, std::vector<
 
   PCCTMC3Encoder3LambdaCallbacks callback(onOutputBuffer, onPostRecolour);
 
-  encoder_.compress(*static_cast<pcc::PCCPointSet3*>(frame.get()), static_cast<pcc::EncoderParams*>(&copiedParams),
-                    &callback, nullptr);
+  if (_frame->getPointCount() == 0) {
+    pcc::PayloadBuffer buffer;
+
+    onOutputBuffer(buffer);
+    return;
+  }
+  encoder_.compress(*_frame, static_cast<pcc::EncoderParams*>(&copiedParams), &callback, nullptr);
 }
 
 }  // namespace jpcc::coder
