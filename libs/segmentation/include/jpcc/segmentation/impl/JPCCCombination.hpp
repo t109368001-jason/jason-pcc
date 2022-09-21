@@ -81,8 +81,8 @@ template <typename PointT>
 void JPCCCombination<PointT>::combineDynamicStatic(const FramePtr<PointT>& dynamicFrame,
                                                    const FramePtr<PointT>& staticFrame,
                                                    FramePtr<PointT>&       reconstructFrame) {
-  pcl::copyPointCloud(*dynamicFrame, *reconstructFrame);
-  pcl::copyPointCloud(*staticFrame, *reconstructFrame);
+  if (dynamicFrame) { pcl::copyPointCloud(*dynamicFrame, *reconstructFrame); }
+  if (staticFrame) { pcl::copyPointCloud(*staticFrame, *reconstructFrame); }
 }
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
@@ -92,13 +92,16 @@ void JPCCCombination<PointT>::combineDynamicStatic(const GroupOfFrame<PointT>& d
                                                    bool                        parallel) {
   if (!parallel) {
     for (size_t i = 0; i < dynamicFrames.size(); i++) {
-      this->combineDynamicStatic(dynamicFrames.at(i), staticFrames.at(i), reconstructFrames.at(i));
+      this->combineDynamicStatic(dynamicFrames.at(i), !staticFrames.empty() ? staticFrames.at(i) : nullptr,
+                                 !reconstructFrames.empty() ? reconstructFrames.at(i) : nullptr);
     }
   } else {
     const auto range = boost::counting_range<size_t>(0, dynamicFrames.size());
     std::for_each(std::execution::par, range.begin(), range.end(),
                   [&](const size_t& i) {  //
-                    this->combineDynamicStatic(dynamicFrames.at(i), staticFrames.at(i), reconstructFrames.at(i));
+                    this->combineDynamicStatic(dynamicFrames.at(i),
+                                               !staticFrames.empty() ? staticFrames.at(i) : nullptr,
+                                               !reconstructFrames.empty() ? reconstructFrames.at(i) : nullptr);
                   });
   }
 }
