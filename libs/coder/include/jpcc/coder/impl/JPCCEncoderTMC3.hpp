@@ -51,7 +51,7 @@ void JPCCEncoderTMC3<PointT>::encode(const shared_ptr<void>& frame, std::vector<
         std::stringstream os;
         pcc::writeTlv(buffer, os);
 #if !defined(NDEBUG)
-        size_t oldSize = encodedBytesPtr_->size();
+        size_t oldSize = encodedBytes.size();
 #endif
         std::string tmpString = os.str();
         for (char& i : tmpString) { encodedBytes.push_back(i); }
