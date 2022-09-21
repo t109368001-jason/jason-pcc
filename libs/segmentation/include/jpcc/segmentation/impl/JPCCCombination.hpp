@@ -90,18 +90,19 @@ void JPCCCombination<PointT>::combineDynamicStatic(const GroupOfFrame<PointT>& d
                                                    const GroupOfFrame<PointT>& staticFrames,
                                                    GroupOfFrame<PointT>&       reconstructFrames,
                                                    bool                        parallel) {
+  FramePtr<PointT> emptyFrame;
   if (!parallel) {
     for (size_t i = 0; i < dynamicFrames.size(); i++) {
-      this->combineDynamicStatic(dynamicFrames.at(i), !staticFrames.empty() ? staticFrames.at(i) : nullptr,
-                                 !reconstructFrames.empty() ? reconstructFrames.at(i) : nullptr);
+      this->combineDynamicStatic(dynamicFrames.at(i), !staticFrames.empty() ? staticFrames.at(i) : emptyFrame,
+                                 !reconstructFrames.empty() ? reconstructFrames.at(i) : emptyFrame);
     }
   } else {
     const auto range = boost::counting_range<size_t>(0, dynamicFrames.size());
     std::for_each(std::execution::par, range.begin(), range.end(),
                   [&](const size_t& i) {  //
                     this->combineDynamicStatic(dynamicFrames.at(i),
-                                               !staticFrames.empty() ? staticFrames.at(i) : nullptr,
-                                               !reconstructFrames.empty() ? reconstructFrames.at(i) : nullptr);
+                                               !staticFrames.empty() ? staticFrames.at(i) : emptyFrame,
+                                               !reconstructFrames.empty() ? reconstructFrames.at(i) : emptyFrame);
                   });
   }
 }
