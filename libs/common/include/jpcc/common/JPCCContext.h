@@ -1,6 +1,7 @@
 #pragma once
 
 #include <jpcc/common/Common.h>
+#include <jpcc/common/SegmentationType.h>
 #include <jpcc/common/SegmentationOutputType.h>
 #include <jpcc/common/CoderBackendType.h>
 
@@ -8,6 +9,7 @@ namespace jpcc {
 
 template <typename PointT>
 struct JPCCContext {
+  SegmentationType       segmentationType;
   SegmentationOutputType segmentationOutputType;
 
   GroupOfFrame<PointT> pclFrames;

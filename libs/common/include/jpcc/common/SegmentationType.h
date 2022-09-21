@@ -2,10 +2,10 @@
 
 #include <string>
 
-namespace jpcc::segmentation {
+namespace jpcc {
 
-enum class SegmentationType { GMM, GMM_2L };
+enum class SegmentationType { NONE, GMM, GMM_2L };
 
 [[nodiscard]] SegmentationType getSegmentationType(const std::string& type);
 
-}  // namespace jpcc::segmentation
+}  // namespace jpcc

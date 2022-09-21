@@ -75,6 +75,7 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
   std::ofstream staticRemovedOfs("./bin/output-static-removed.bin", std::ios::binary);
 
   JPCCContext<PointEncode> context;
+  context.segmentationType       = parameter.jpccGmmSegmentation.type;
   context.segmentationOutputType = parameter.jpccGmmSegmentation.outputType;
   while (frameNumber < endFrameNumber) {
     size_t groupOfFramesSize = std::min(parameter.groupOfFramesSize, endFrameNumber - frameNumber);
@@ -267,17 +268,15 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-  try {
-    // Timers to count elapsed wall/user time
-    JPCCMetric metric(parameter.metricParameter);
+  // Timers to count elapsed wall/user time
+  JPCCMetric metric(parameter.metricParameter);
 
-    {
-      ScopeStopwatch clock = metric.start("Wall", parameter.inputDataset.getStartFrameNumber());
-      encode(parameter, metric);
-    }
+  {
+    ScopeStopwatch clock = metric.start("Wall", parameter.inputDataset.getStartFrameNumber());
+    encode(parameter, metric);
+  }
 
-    metric.writeAndShow();
-  } catch (exception& e) { cerr << e.what() << endl; }
+  metric.writeAndShow();
 
   cout << "JPCC App Encoder End" << endl;
   return 0;

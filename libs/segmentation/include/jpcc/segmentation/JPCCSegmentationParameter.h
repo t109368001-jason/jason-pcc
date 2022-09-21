@@ -5,7 +5,7 @@
 
 #include <jpcc/common/Parameter.h>
 #include <jpcc/common/SegmentationOutputType.h>
-#include <jpcc/segmentation/SegmentationType.h>
+#include <jpcc/common/SegmentationType.h>
 #include <jpcc/segmentation/StaticPointType.h>
 
 namespace jpcc::segmentation {
