@@ -16,7 +16,27 @@ bool JPCCDecoderNone<PointT>::isThreadSafe() {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-void JPCCDecoderNone<PointT>::decode(const std::vector<char>& encodedBytes, shared_ptr<void>& reconstructFrame) {}
+void JPCCDecoderNone<PointT>::decode(const std::vector<char>& encodedBytes, shared_ptr<void>& reconstructFrame) {
+  reconstructFrame = make_shared<Frame<PointT>>();
+  auto& _frame     = std::static_pointer_cast<Frame<PointT>>(reconstructFrame);
+
+  std::istringstream is(std::string(encodedBytes.begin(), encodedBytes.end()));
+
+  uint32_t length = 0;
+  length          = (length << 8) | static_cast<unsigned>(is.get());
+  length          = (length << 8) | static_cast<unsigned>(is.get());
+  length          = (length << 8) | static_cast<unsigned>(is.get());
+  length          = (length << 8) | static_cast<unsigned>(is.get());
+
+  if (!is) return;
+
+  _frame->resize(length);
+  for (auto& point : _frame->points) {
+    is.read(reinterpret_cast<char*>(&point.x), sizeof(((PointT*)0)->x));
+    is.read(reinterpret_cast<char*>(&point.y), sizeof(((PointT*)0)->y));
+    is.read(reinterpret_cast<char*>(&point.z), sizeof(((PointT*)0)->z));
+  }
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
