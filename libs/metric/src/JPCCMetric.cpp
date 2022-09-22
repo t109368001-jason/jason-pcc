@@ -32,6 +32,7 @@ JPCCMetric::JPCCMetric(const JPCCMetricParameter& parameter) :
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void JPCCMetric::addBytes(const std::string& name, FrameNumber frameNumber, const uint64_t bytes) {
+  if (bytes == 0) { return; }
   cout << __FUNCTION__ << "() "
        << "name=" << name << ", "
        << "frameNumber=" << frameNumber << ", "

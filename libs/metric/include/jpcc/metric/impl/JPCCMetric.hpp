@@ -9,8 +9,9 @@ namespace jpcc::metric {
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void JPCCMetric::addPoints(const std::string& name, const FramePtr<PointT>& frame, bool addBytes) {
-  uint32_t    frameNumber = frame->header.seq;
-  const auto& points      = frame->size();
+  const auto& points = frame->size();
+  if (points == 0) { return; }
+  uint32_t frameNumber = frame->header.seq;
   frameNumberSet_.insert(frameNumber);
   pointsNameSet_.insert(name);
   pointsMapMap_[frameNumber][name] += points;
@@ -32,8 +33,10 @@ template <typename PointT>
 void JPCCMetric::addPointsAndBytes(const std::string&       name,
                                    const FramePtr<PointT>&  frame,
                                    const std::vector<char>& encodedBytes) {
-  uint32_t    frameNumber = frame->header.seq;
-  const auto& points      = frame->size();
+  if (encodedBytes.size() == 0) { return; }
+  const auto& points = frame->size();
+  if (points == 0) { return; }
+  uint32_t frameNumber = frame->header.seq;
   frameNumberSet_.insert(frameNumber);
   pointsNameSet_.insert(name);
   pointsMapMap_[frameNumber][name] += points;
