@@ -114,9 +114,10 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
       staticEncoder->encode(context.staticRemovedFrames, context.staticRemovedEncodedFramesBytes, parameter.parallel);
     }
     metric.addPointsAndBytes<Point>("Dynamic", context.dynamicPclFrames, context.dynamicEncodedFramesBytes);
-    metric.addPointsAndBytes<Point>("Dynamic", context.staticPclFrames, context.staticEncodedFramesBytes);
-    metric.addPointsAndBytes<Point>("Dynamic", context.staticAddedPclFrames, context.staticAddedEncodedFramesBytes);
-    metric.addPointsAndBytes<Point>("Dynamic", context.staticRemovedPclFrames, context.staticRemovedEncodedFramesBytes);
+    metric.addPointsAndBytes<Point>("Static", context.staticPclFrames, context.staticEncodedFramesBytes);
+    metric.addPointsAndBytes<Point>("StaticAdded", context.staticAddedPclFrames, context.staticAddedEncodedFramesBytes);
+    metric.addPointsAndBytes<Point>("StaticRemoved", context.staticRemovedPclFrames,
+                                    context.staticRemovedEncodedFramesBytes);
 
     // TODO extract JPCCWriter
     {  // save
