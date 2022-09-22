@@ -23,6 +23,8 @@ class JPCCSegmentation {
 
   virtual void appendTrainSamplesAndBuild(const FramePtr<PointT>& frame) = 0;
 
+  virtual void appendTrainSamplesAndBuild(const GroupOfFrame<PointT>& frames, bool parallel);
+
   virtual void segmentation(const FrameConstPtr<PointT>& frame,
                             const FramePtr<PointT>&      dynamicFrame,
                             const FramePtr<PointT>&      staticFrame,

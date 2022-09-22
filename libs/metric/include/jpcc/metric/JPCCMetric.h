@@ -41,6 +41,14 @@ class JPCCMetric {
   template <typename PointT>
   void addPoints(const std::string& name, const GroupOfFrame<PointT>& frames, bool addBytes = false);
 
+  template <typename PointT>
+  void addPointsAndBytes(const std::string& name, const FramePtr<PointT>& frame, const std::vector<char>& encodedBytes);
+
+  template <typename PointT>
+  void addPointsAndBytes(const std::string&                    name,
+                         const GroupOfFrame<PointT>&           frames,
+                         const std::vector<std::vector<char>>& encodedFramesBytes);
+
   void addBytes(const std::string& name, FrameNumber frameNumber, uint64_t bytes);
 
   template <typename PointA, typename PointB>

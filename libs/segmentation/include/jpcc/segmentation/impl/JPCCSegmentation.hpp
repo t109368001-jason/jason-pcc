@@ -15,6 +15,19 @@ bool JPCCSegmentation<PointT>::isThreadSafe() {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
+void JPCCSegmentation<PointT>::appendTrainSamplesAndBuild(const GroupOfFrame<PointT>& frames, const bool parallel) {
+  if (!parallel || !isThreadSafe()) {
+    for (const auto& frame : frames) { this->appendTrainSamplesAndBuild(frame); }
+  } else {
+    std::for_each(std::execution::par, frames.begin(), frames.end(),
+                  [&](const auto& frame) {  //
+                    this->appendTrainSamplesAndBuild(frame);
+                  });
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT>
 void JPCCSegmentation<PointT>::segmentation(const GroupOfFrame<PointT>& frames,
                                             const GroupOfFrame<PointT>& dynamicFrames,
                                             const GroupOfFrame<PointT>& staticFrames,
@@ -38,4 +51,5 @@ void JPCCSegmentation<PointT>::segmentation(const GroupOfFrame<PointT>& frames,
                   });
   }
 }
+
 }  // namespace jpcc::segmentation

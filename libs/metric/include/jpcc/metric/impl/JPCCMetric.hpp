@@ -28,6 +28,35 @@ void JPCCMetric::addPoints(const std::string& name, const GroupOfFrame<PointT>& 
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT>
+void JPCCMetric::addPointsAndBytes(const std::string&       name,
+                                   const FramePtr<PointT>&  frame,
+                                   const std::vector<char>& encodedBytes) {
+  uint32_t    frameNumber = frame->header.seq;
+  const auto& points      = frame->size();
+  frameNumberSet_.insert(frameNumber);
+  pointsNameSet_.insert(name);
+  pointsMapMap_[frameNumber][name] += points;
+  bytesNameSet_.insert(name);
+  bytesMapMap_[frameNumber][name] = encodedBytes.size();
+  std::cout << __FUNCTION__ << "() "
+            << "name=" << name << ", "
+            << "frameNumber=" << frameNumber << ", "
+            << "points=" << points << ", "
+            << "bytes=" << encodedBytes.size() << std::endl;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT>
+void JPCCMetric::addPointsAndBytes(const std::string&                    name,
+                                   const GroupOfFrame<PointT>&           frames,
+                                   const std::vector<std::vector<char>>& encodedFramesBytes) {
+  for (size_t i = 0; i < frames.size(); i++) {
+    this->addPointsAndBytes<PointT>(name, frames.at(i), encodedFramesBytes.at(i));
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointA, typename PointB>
 void JPCCMetric::addPSNR(const std::string& name, const FramePtr<PointA>& frameA, const FramePtr<PointB>& frameB) {
   double c2cMSE  = 0;

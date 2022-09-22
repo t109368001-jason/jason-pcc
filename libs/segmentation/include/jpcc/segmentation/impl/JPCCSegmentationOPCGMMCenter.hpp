@@ -193,14 +193,22 @@ void JPCCSegmentationOPCGMMCenter<PointT, LeafContainerT>::segmentationRecursive
                                                      this->parameter_.getNullStaticThresholdVector(),
                                                      this->parameter_.getOutputExistsPointOnlyVector());
           bool isDynamic    = !isStatic && !std::isnan(leafContainer.getLastPoint().intensity);
+
+          PointT& point = leafContainer.getLastPoint();
           if (dynamicFrame && isDynamic) {
-            PointT& point = leafContainer.getLastPoint();
             assert(!std::isnan(point.x));
             dynamicFrame->points.push_back(point);
           }
 
           PointT center;
           this->genLeafNodeCenterFromOctreeKey(key, center);
+          if constexpr (pcl::traits::has_intensity_v<PointT>) { center.intensity = point.intensity; }
+          if constexpr (pcl::traits::has_normal_v<PointT>) {
+            center.normal_x  = point.normal_x;
+            center.normal_y  = point.normal_y;
+            center.normal_z  = point.normal_z;
+            center.curvature = point.curvature;
+          }
 
           if (staticFrame && isStatic) { staticFrame->points.push_back(center); }
           if (staticFrameAdded && !lastIsStatic && isStatic) { staticFrameAdded->points.push_back(center); }
