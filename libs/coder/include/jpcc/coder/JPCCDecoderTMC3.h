@@ -18,12 +18,18 @@ class PCCTMC3Decoder3LambdaCallbacks : public pcc::PCCTMC3Decoder3::Callbacks {
 
 template <typename PointT>
 class JPCCDecoderTMC3 : public virtual JPCCDecoder<PointT> {
+ protected:
+  pcc::PCCTMC3Decoder3 decoder_;
+  bool                 skipNext_;
+
  public:
-  JPCCDecoderTMC3(const JPCCDecoderParameter& parameter);
+  JPCCDecoderTMC3(JPCCDecoderParameter parameter);
 
   bool isThreadSafe() override;
 
-  void decode(const std::vector<char>& encodedBytes, shared_ptr<void>& reconstructFrame) override;
+  void decode(std::istream& is, shared_ptr<void>& reconstructFrame) override;
+
+  void decode(std::istream& is, std::vector<shared_ptr<void>>& reconstructFrames, bool parallel) override;
 
   void convertToPCL(shared_ptr<void>& reconstructFrame, FramePtr<PointT>& reconstructPclFrame) override;
 };

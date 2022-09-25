@@ -14,7 +14,7 @@ class JPCCEncoder {
   JPCCEncoderParameter parameter_;
 
  public:
-  JPCCEncoder(const JPCCEncoderParameter& parameter);
+  JPCCEncoder(JPCCEncoderParameter parameter);
 
   virtual bool isThreadSafe();
 
@@ -26,9 +26,7 @@ class JPCCEncoder {
 
   virtual void encode(const shared_ptr<void>& frame, std::vector<char>& encodedBytes) = 0;
 
-  virtual void encode(const std::vector<shared_ptr<void>>& frames,
-                      std::vector<std::vector<char>>&      encodedFramesBytes,
-                      bool                                 parallel);
+  virtual void encode(const std::vector<shared_ptr<void>>& frames, std::vector<char>& encodedBytes, bool parallel);
 };
 
 }  // namespace jpcc::coder

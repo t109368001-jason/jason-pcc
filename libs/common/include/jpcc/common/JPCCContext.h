@@ -25,10 +25,10 @@ struct JPCCContext {
   std::vector<shared_ptr<void>> staticAddedFrames;
   std::vector<shared_ptr<void>> staticRemovedFrames;
 
-  std::vector<std::vector<char>> dynamicEncodedFramesBytes;
-  std::vector<std::vector<char>> staticEncodedFramesBytes;
-  std::vector<std::vector<char>> staticAddedEncodedFramesBytes;
-  std::vector<std::vector<char>> staticRemovedEncodedFramesBytes;
+  std::vector<char> dynamicEncodedBytes;
+  std::vector<char> staticEncodedBytes;
+  std::vector<char> staticAddedEncodedBytes;
+  std::vector<char> staticRemovedEncodedBytes;
 
   // coder specified type
   std::vector<shared_ptr<void>> dynamicReconstructFrames;

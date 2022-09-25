@@ -11,16 +11,14 @@ JPCCDecoderNone<PointT>::JPCCDecoderNone(const JPCCDecoderParameter& parameter) 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 bool JPCCDecoderNone<PointT>::isThreadSafe() {
-  return true;
+  return false;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-void JPCCDecoderNone<PointT>::decode(const std::vector<char>& encodedBytes, shared_ptr<void>& reconstructFrame) {
+void JPCCDecoderNone<PointT>::decode(std::istream& is, shared_ptr<void>& reconstructFrame) {
   reconstructFrame = make_shared<Frame<PointT>>();
   auto& _frame     = std::static_pointer_cast<Frame<PointT>>(reconstructFrame);
-
-  std::istringstream is(std::string(encodedBytes.begin(), encodedBytes.end()));
 
   uint32_t length = 0;
   length          = (length << 8) | static_cast<unsigned>(is.get());

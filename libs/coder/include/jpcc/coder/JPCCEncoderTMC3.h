@@ -21,6 +21,9 @@ class PCCTMC3Encoder3LambdaCallbacks : public pcc::PCCTMC3Encoder3::Callbacks {
 
 template <typename PointT>
 class JPCCEncoderTMC3 : public virtual JPCCEncoder<PointT> {
+ protected:
+  pcc::PCCTMC3Encoder3 encoder_;
+
  public:
   JPCCEncoderTMC3(const JPCCEncoderParameter& parameter);
 

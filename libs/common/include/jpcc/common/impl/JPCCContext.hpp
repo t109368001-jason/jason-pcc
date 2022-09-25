@@ -38,14 +38,12 @@ void JPCCContext<PointT>::resize(const size_t frameCount) {
   pclFrames.resize(frameCount);
   dynamicPclFrames.resize(frameCount);
   dynamicFrames.resize(frameCount);
-  dynamicEncodedFramesBytes.resize(frameCount);
   dynamicReconstructFrames.resize(frameCount);
   dynamicReconstructPclFrames.resize(frameCount);
   if (segmentationType != SegmentationType::NONE) {
     if (segmentationOutputType == SegmentationOutputType::DYNAMIC_STATIC) {  //
       staticPclFrames.resize(frameCount);
       staticFrames.resize(frameCount);
-      staticEncodedFramesBytes.resize(frameCount);
       staticReconstructFrames.resize(frameCount);
       staticReconstructPclFrames.resize(frameCount);
     }
@@ -54,8 +52,6 @@ void JPCCContext<PointT>::resize(const size_t frameCount) {
       staticRemovedPclFrames.resize(frameCount);
       staticAddedFrames.resize(frameCount);
       staticRemovedFrames.resize(frameCount);
-      staticAddedEncodedFramesBytes.resize(frameCount);
-      staticRemovedEncodedFramesBytes.resize(frameCount);
       staticAddedReconstructFrames.resize(frameCount);
       staticRemovedReconstructFrames.resize(frameCount);
       staticAddedReconstructPclFrames.resize(frameCount);
@@ -77,10 +73,10 @@ void JPCCContext<PointT>::clear() {
   staticFrames.clear();
   staticAddedFrames.clear();
   staticRemovedFrames.clear();
-  dynamicEncodedFramesBytes.clear();
-  staticEncodedFramesBytes.clear();
-  staticAddedEncodedFramesBytes.clear();
-  staticRemovedEncodedFramesBytes.clear();
+  dynamicEncodedBytes.clear();
+  staticEncodedBytes.clear();
+  staticAddedEncodedBytes.clear();
+  staticRemovedEncodedBytes.clear();
   dynamicReconstructFrames.clear();
   staticReconstructFrames.clear();
   staticAddedReconstructFrames.clear();
