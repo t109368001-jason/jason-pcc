@@ -16,7 +16,9 @@ class JPCCEncoder {
  public:
   JPCCEncoder(JPCCEncoderParameter parameter);
 
-  virtual bool isThreadSafe();
+  virtual bool isConvertFromPCLThreadSafe();
+
+  virtual bool isEncodeThreadSafe();
 
   virtual void convertFromPCL(const FramePtr<PointT>& pclFrame, shared_ptr<void>& frame) = 0;
 

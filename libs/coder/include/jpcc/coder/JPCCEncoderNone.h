@@ -9,7 +9,7 @@ class JPCCEncoderNone : public virtual JPCCEncoder<PointT> {
  public:
   JPCCEncoderNone(const JPCCEncoderParameter& parameter);
 
-  bool isThreadSafe() override;
+  bool isConvertFromPCLThreadSafe() override;
 
   void convertFromPCL(const FramePtr<PointT>& pclFrame, shared_ptr<void>& frame) override;
 

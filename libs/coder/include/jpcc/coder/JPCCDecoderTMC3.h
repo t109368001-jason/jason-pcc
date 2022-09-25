@@ -25,7 +25,7 @@ class JPCCDecoderTMC3 : public virtual JPCCDecoder<PointT> {
  public:
   JPCCDecoderTMC3(JPCCDecoderParameter parameter);
 
-  bool isThreadSafe() override;
+  bool isConvertToPCLThreadSafe() override;
 
   void decode(std::istream& is, shared_ptr<void>& reconstructFrame) override;
 

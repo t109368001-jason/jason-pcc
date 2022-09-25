@@ -6,7 +6,13 @@ JPCCDecoder<PointT>::JPCCDecoder(JPCCDecoderParameter parameter) : parameter_(pa
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-bool JPCCDecoder<PointT>::isThreadSafe() {
+bool JPCCDecoder<PointT>::isDecodeThreadSafe() {
+  return false;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT>
+bool JPCCDecoder<PointT>::isConvertToPCLThreadSafe() {
   return false;
 }
 
@@ -21,7 +27,7 @@ template <typename PointT>
 void JPCCDecoder<PointT>::convertToPCL(std::vector<shared_ptr<void>>& reconstructFrames,
                                        GroupOfFrame<PointT>&          reconstructPclFrames,
                                        bool                           parallel) {
-  if (!parallel || !isThreadSafe()) {
+  if (!parallel || !isConvertToPCLThreadSafe()) {
     for (size_t i = 0; i < reconstructFrames.size(); i++) {
       this->convertToPCL(reconstructFrames.at(i), reconstructPclFrames.at(i));
     }

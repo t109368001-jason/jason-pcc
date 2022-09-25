@@ -10,7 +10,13 @@ JPCCEncoder<PointT>::JPCCEncoder(JPCCEncoderParameter parameter) : parameter_(pa
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-bool JPCCEncoder<PointT>::isThreadSafe() {
+bool JPCCEncoder<PointT>::isConvertFromPCLThreadSafe() {
+  return false;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT>
+bool JPCCEncoder<PointT>::isEncodeThreadSafe() {
   return false;
 }
 
@@ -19,7 +25,7 @@ template <typename PointT>
 void JPCCEncoder<PointT>::convertFromPCL(const GroupOfFrame<PointT>&    pclFrames,
                                          std::vector<shared_ptr<void>>& frames,
                                          const bool                     parallel) {
-  if (!parallel || !isThreadSafe()) {
+  if (!parallel || !isConvertFromPCLThreadSafe()) {
     for (size_t i = 0; i < pclFrames.size(); i++) { this->convertFromPCL(pclFrames.at(i), frames.at(i)); }
   } else {
     const auto range = boost::counting_range<size_t>(0, pclFrames.size());
@@ -35,7 +41,7 @@ template <typename PointT>
 void JPCCEncoder<PointT>::encode(const std::vector<shared_ptr<void>>& frames,
                                  std::vector<char>&                   encodedBytes,
                                  const bool                           parallel) {
-  if (!parallel || !isThreadSafe()) {
+  if (!parallel || !isEncodeThreadSafe()) {
     for (size_t i = 0; i < frames.size(); i++) { this->encode(frames.at(i), encodedBytes); }
   } else {
     std::vector<std::vector<char>> encodedFramesBytes;

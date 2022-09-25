@@ -27,7 +27,7 @@ class JPCCEncoderTMC3 : public virtual JPCCEncoder<PointT> {
  public:
   JPCCEncoderTMC3(const JPCCEncoderParameter& parameter);
 
-  bool isThreadSafe() override;
+  bool isConvertFromPCLThreadSafe() override;
 
   void convertFromPCL(const FramePtr<PointT>& pclFrame, shared_ptr<void>& frame) override;
 

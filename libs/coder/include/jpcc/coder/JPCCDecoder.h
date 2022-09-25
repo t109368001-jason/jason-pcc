@@ -16,7 +16,9 @@ class JPCCDecoder {
  public:
   JPCCDecoder(JPCCDecoderParameter parameter);
 
-  virtual bool isThreadSafe();
+  virtual bool isDecodeThreadSafe();
+
+  virtual bool isConvertToPCLThreadSafe();
 
   virtual void decode(std::istream& is, shared_ptr<void>& reconstructFrame) = 0;
 

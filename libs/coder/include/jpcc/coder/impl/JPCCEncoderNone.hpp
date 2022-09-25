@@ -10,7 +10,7 @@ JPCCEncoderNone<PointT>::JPCCEncoderNone(const JPCCEncoderParameter& parameter) 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-bool JPCCEncoderNone<PointT>::isThreadSafe() {
+bool JPCCEncoderNone<PointT>::isConvertFromPCLThreadSafe() {
   return true;
 }
 
