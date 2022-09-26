@@ -150,9 +150,9 @@ TEST(GMMTest, updateModel) {
   EXPECT_NEAR(clusters[2].getWeight(), 0.1194953075, TOLERANCE);
   EXPECT_NEAR(clusters[2].getMean(), 499.9999921, TOLERANCE);
   EXPECT_NEAR(clusters[2].getVariance(), 100, TOLERANCE);
-  EXPECT_NEAR(clusters[k].getWeight(), 0, TOLERANCE);
-  EXPECT_NEAR(clusters[k].getMean(), 1000, TOLERANCE);
-  EXPECT_NEAR(clusters[k].getVariance(), 0, TOLERANCE);
+  EXPECT_NEAR(clusters[3].getWeight(), 0, TOLERANCE);
+  EXPECT_NEAR(clusters[3].getMean(), 1000, TOLERANCE);
+  EXPECT_NEAR(clusters[3].getVariance(), 0, TOLERANCE);
 }
 
 }  // namespace jpcc::octree
