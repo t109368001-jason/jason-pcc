@@ -66,7 +66,9 @@ void JPCCDecoderTMC3<PointT>::decode(std::istream&                  is,
                                      std::vector<shared_ptr<void>>& reconstructFrames,
                                      bool                           parallel) {
   JPCCDecoder<PointT>::decode(is, reconstructFrames, parallel);
-  skipNext_ = true;
+  if (reconstructFrames.empty()) { return; }
+  auto _lastReconstructFrame = std::static_pointer_cast<pcc::PCCPointSet3>(reconstructFrames.back());
+  if (_lastReconstructFrame->getPointCount() != 0) { skipNext_ = true; }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
