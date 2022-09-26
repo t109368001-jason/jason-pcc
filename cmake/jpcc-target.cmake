@@ -36,4 +36,16 @@ function(JPCC_ADD_EXECUTABLE OUT_NAME)
     if (NOT WIN32)
         target_link_libraries(${EXECUTABLE_NAME} PRIVATE pthread)
     endif (NOT WIN32)
+
+    if (CMAKE_COMPILER_IS_GNUCXX)
+        include(CheckCXXCompilerFlag)
+        check_cxx_compiler_flag("-Wa,-mbig-obj" GNU_BIG_OBJ_FLAG_ENABLE)
+        message(STATUS GNU_BIG_OBJ_FLAG_ENABLE=${GNU_BIG_OBJ_FLAG_ENABLE})
+    endif ()
+
+    # TODO remove if unnecessary
+    target_compile_options(${EXECUTABLE_NAME} PRIVATE
+            $<$<CXX_COMPILER_ID:MSVC>:/bigobj>
+            $<$<AND:$<CXX_COMPILER_ID:GNU>,$<BOOL:${GNU_BIG_OBJ_FLAG_ENABLE}>>:-Wa,-mbig-obj>)
+
 endfunction()
