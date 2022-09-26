@@ -19,13 +19,13 @@ void JPCCConditionalRemoval<PointT>::applyFilter(Indices& indices) {
   int removeIndex = 0;
 
   for (const auto& index : (*this->indices_)) {
-    const PointT& point   = this->input_->at(index);
+    const PointT& point   = (*this->input_)[index];
     bool          predict = param_.condition.predict(point);
     if (!predict) {
-      if (this->extract_removed_indices_) this->removed_indices_->at(removeIndex++) = index;
+      if (this->extract_removed_indices_) (*this->removed_indices_)[removeIndex++] = index;
       continue;
     }
-    indices.at(outputIndex++) = index;
+    indices[outputIndex++] = index;
   }
 
   indices.resize(outputIndex);

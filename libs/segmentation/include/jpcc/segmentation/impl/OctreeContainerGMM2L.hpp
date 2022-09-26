@@ -24,7 +24,7 @@ void OctreeContainerGMM2L<PointT>::addPoint(const PointT& point) {
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 bool OctreeContainerGMM2L<PointT>::isBuilt(const int index) const {
-  return gmmArray_.at(index).isBuilt();
+  return gmmArray_[index].isBuilt();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -45,9 +45,8 @@ void OctreeContainerGMM2L<PointT>::build(const int                 index,
                                          const double              alpha,
                                          const double              minimumVariance,
                                          const std::vector<float>& alternateCentroids) {
-  gmmArray_.at(index).buildN(*trainSamplesArray_.at(index), K, nTrain, minimumVariance, NULL_INTENSITY,
-                             alternateCentroids);
-  trainSamplesArray_.at(index) = nullptr;
+  gmmArray_[index].buildN(*trainSamplesArray_[index], K, nTrain, minimumVariance, NULL_INTENSITY, alternateCentroids);
+  trainSamplesArray_[index] = nullptr;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -56,18 +55,18 @@ bool OctreeContainerGMM2L<PointT>::isStatic(const std::vector<double>& staticThr
                                             const std::vector<double>& nullStaticThresholdVector,
                                             const std::vector<bool>&   outputExistsPointOnlyVector) {
   if (isnan(this->lastPoint_.intensity)) {
-    if (!outputExistsPointOnlyVector.at(LONG_INDEX)) {
-      if (gmmArray_.at(LONG_INDEX).getStaticProbability() > nullStaticThresholdVector.at(LONG_INDEX)) { return true; }
+    if (!outputExistsPointOnlyVector[LONG_INDEX]) {
+      if (gmmArray_[LONG_INDEX].getStaticProbability() > nullStaticThresholdVector[LONG_INDEX]) { return true; }
     }
-    if (!outputExistsPointOnlyVector.at(SHORT_INDEX)) {
-      if (gmmArray_.at(SHORT_INDEX).getStaticProbability() > nullStaticThresholdVector.at(SHORT_INDEX)) { return true; }
+    if (!outputExistsPointOnlyVector[SHORT_INDEX]) {
+      if (gmmArray_[SHORT_INDEX].getStaticProbability() > nullStaticThresholdVector[SHORT_INDEX]) { return true; }
     }
     return false;
   } else {
-    if (gmmArray_.at(SHORT_INDEX).getProbability(this->lastPoint_.intensity) > staticThresholdVector.at(SHORT_INDEX)) {
+    if (gmmArray_[SHORT_INDEX].getProbability(this->lastPoint_.intensity) > staticThresholdVector[SHORT_INDEX]) {
       return true;
     }
-    if (gmmArray_.at(LONG_INDEX).getProbability(this->lastPoint_.intensity) > staticThresholdVector.at(LONG_INDEX)) {
+    if (gmmArray_[LONG_INDEX].getProbability(this->lastPoint_.intensity) > staticThresholdVector[LONG_INDEX]) {
       return true;
     }
     return false;
@@ -81,9 +80,9 @@ void OctreeContainerGMM2L<PointT>::updateModel(const int    index,
                                                const double nullAlpha,
                                                const double minimumVariance) {
   if (std::isnan(this->lastPoint_.intensity)) {
-    gmmArray_.at(index).updateModel(NULL_INTENSITY, nullAlpha, minimumVariance);
+    gmmArray_[index].updateModel(NULL_INTENSITY, nullAlpha, minimumVariance);
   } else {
-    gmmArray_.at(index).updateModel(this->lastPoint_.intensity, alpha, minimumVariance);
+    gmmArray_[index].updateModel(this->lastPoint_.intensity, alpha, minimumVariance);
   }
 }
 

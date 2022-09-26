@@ -93,23 +93,23 @@ void VisualizerParameter::notify() {
     vector<string> ss;
     boost::algorithm::split(ss, idColor, boost::is_any_of(","));
     if (ss.size() == 2) {  // field color
-      string field = ss.at(1);
+      string field = ss[1];
       boost::trim(field);
       THROW_IF_NOT(field == "x" || field == "y" || field == "z");
-      fieldColorMap.insert_or_assign(ss.at(0), field);
+      fieldColorMap.insert_or_assign(ss[0], field);
     } else if (ss.size() == 4) {  // rgb color
-      double r = stod(ss.at(1));
+      double r = stod(ss[1]);
       THROW_IF_NOT(r >= 0.0);
-      double g = stod(ss.at(2));
+      double g = stod(ss[2]);
       THROW_IF_NOT(g >= 0.0);
-      double b = stod(ss.at(3));
+      double b = stod(ss[3]);
       THROW_IF_NOT(b >= 0.0);
       if (r > 1.0 || g > 1.0 || b > 1.0) {
         r /= 255.0;
         g /= 255.0;
         b /= 255.0;
       }
-      rgbColorMap.insert_or_assign(ss.at(0), RGBColor{r, g, b});
+      rgbColorMap.insert_or_assign(ss[0], RGBColor{r, g, b});
     }
   }
   if (outputScreenshot) {

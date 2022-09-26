@@ -165,43 +165,43 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
     {  // copy normal to Reconstruct
       ScopeStopwatch clock = metric.start("CopyNormalToReconstruct", frameNumber);
       for (size_t i = 0; i < context.dynamicReconstructPclFrames.size(); i++) {
-        FramePtr<Point>& dynamicReconstructPclFrame = context.dynamicReconstructPclFrames.at(i);
-        FramePtr<Point>& dynamicPclFrame            = context.dynamicPclFrames.at(i);
+        FramePtr<Point>& dynamicReconstructPclFrame = context.dynamicReconstructPclFrames[i];
+        FramePtr<Point>& dynamicPclFrame            = context.dynamicPclFrames[i];
         for (size_t j = 0; j < dynamicReconstructPclFrame->points.size(); j++) {
-          dynamicReconstructPclFrame->at(j).normal_x  = dynamicPclFrame->at(j).normal_x;
-          dynamicReconstructPclFrame->at(j).normal_y  = dynamicPclFrame->at(j).normal_y;
-          dynamicReconstructPclFrame->at(j).normal_z  = dynamicPclFrame->at(j).normal_z;
-          dynamicReconstructPclFrame->at(j).curvature = dynamicPclFrame->at(j).curvature;
+          (*dynamicReconstructPclFrame)[j].normal_x  = (*dynamicPclFrame)[j].normal_x;
+          (*dynamicReconstructPclFrame)[j].normal_y  = (*dynamicPclFrame)[j].normal_y;
+          (*dynamicReconstructPclFrame)[j].normal_z  = (*dynamicPclFrame)[j].normal_z;
+          (*dynamicReconstructPclFrame)[j].curvature = (*dynamicPclFrame)[j].curvature;
         }
       }
       for (size_t i = 0; i < context.staticReconstructPclFrames.size(); i++) {
-        FramePtr<Point>& staticReconstructPclFrame = context.staticReconstructPclFrames.at(i);
-        FramePtr<Point>& staticPclFrames           = context.staticPclFrames.at(i);
+        FramePtr<Point>& staticReconstructPclFrame = context.staticReconstructPclFrames[i];
+        FramePtr<Point>& staticPclFrames           = context.staticPclFrames[i];
         for (size_t j = 0; j < staticReconstructPclFrame->points.size(); j++) {
-          staticReconstructPclFrame->at(j).normal_x  = staticPclFrames->at(j).normal_x;
-          staticReconstructPclFrame->at(j).normal_y  = staticPclFrames->at(j).normal_y;
-          staticReconstructPclFrame->at(j).normal_z  = staticPclFrames->at(j).normal_z;
-          staticReconstructPclFrame->at(j).curvature = staticPclFrames->at(j).curvature;
+          (*staticReconstructPclFrame)[j].normal_x  = (*staticPclFrames)[j].normal_x;
+          (*staticReconstructPclFrame)[j].normal_y  = (*staticPclFrames)[j].normal_y;
+          (*staticReconstructPclFrame)[j].normal_z  = (*staticPclFrames)[j].normal_z;
+          (*staticReconstructPclFrame)[j].curvature = (*staticPclFrames)[j].curvature;
         }
       }
       for (size_t i = 0; i < context.staticAddedReconstructPclFrames.size(); i++) {
-        FramePtr<Point>& staticAddedReconstructPclFrame = context.staticAddedReconstructPclFrames.at(i);
-        FramePtr<Point>& staticAddedPclFrame            = context.staticAddedPclFrames.at(i);
+        FramePtr<Point>& staticAddedReconstructPclFrame = context.staticAddedReconstructPclFrames[i];
+        FramePtr<Point>& staticAddedPclFrame            = context.staticAddedPclFrames[i];
         for (size_t j = 0; j < staticAddedReconstructPclFrame->points.size(); j++) {
-          staticAddedReconstructPclFrame->at(j).normal_x  = staticAddedPclFrame->at(j).normal_x;
-          staticAddedReconstructPclFrame->at(j).normal_y  = staticAddedPclFrame->at(j).normal_y;
-          staticAddedReconstructPclFrame->at(j).normal_z  = staticAddedPclFrame->at(j).normal_z;
-          staticAddedReconstructPclFrame->at(j).curvature = staticAddedPclFrame->at(j).curvature;
+          (*staticAddedReconstructPclFrame)[j].normal_x  = (*staticAddedPclFrame)[j].normal_x;
+          (*staticAddedReconstructPclFrame)[j].normal_y  = (*staticAddedPclFrame)[j].normal_y;
+          (*staticAddedReconstructPclFrame)[j].normal_z  = (*staticAddedPclFrame)[j].normal_z;
+          (*staticAddedReconstructPclFrame)[j].curvature = (*staticAddedPclFrame)[j].curvature;
         }
       }
       for (size_t i = 0; i < context.staticRemovedReconstructPclFrames.size(); i++) {
-        FramePtr<Point>& staticRemovedReconstructPclFrame = context.staticRemovedReconstructPclFrames.at(i);
-        FramePtr<Point>& staticRemovedPclFrame            = context.staticRemovedPclFrames.at(i);
+        FramePtr<Point>& staticRemovedReconstructPclFrame = context.staticRemovedReconstructPclFrames[i];
+        FramePtr<Point>& staticRemovedPclFrame            = context.staticRemovedPclFrames[i];
         for (size_t j = 0; j < staticRemovedReconstructPclFrame->points.size(); j++) {
-          staticRemovedReconstructPclFrame->at(j).normal_x  = staticRemovedPclFrame->at(j).normal_x;
-          staticRemovedReconstructPclFrame->at(j).normal_y  = staticRemovedPclFrame->at(j).normal_y;
-          staticRemovedReconstructPclFrame->at(j).normal_z  = staticRemovedPclFrame->at(j).normal_z;
-          staticRemovedReconstructPclFrame->at(j).curvature = staticRemovedPclFrame->at(j).curvature;
+          (*staticRemovedReconstructPclFrame)[j].normal_x  = (*staticRemovedPclFrame)[j].normal_x;
+          (*staticRemovedReconstructPclFrame)[j].normal_y  = (*staticRemovedPclFrame)[j].normal_y;
+          (*staticRemovedReconstructPclFrame)[j].normal_z  = (*staticRemovedPclFrame)[j].normal_z;
+          (*staticRemovedReconstructPclFrame)[j].curvature = (*staticRemovedPclFrame)[j].curvature;
         }
       }
     }
@@ -213,7 +213,7 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
     }
     {  // compute PSNR
       for (size_t i = 0; i < context.pclFrames.size(); i++) {
-        context.reconstructPclFrames.at(i)->header = context.pclFrames.at(i)->header;
+        context.reconstructPclFrames[i]->header = context.pclFrames[i]->header;
       }
       ScopeStopwatch clock = metric.start("ComputePSNR", frameNumber);
       metric.addPSNR<Point, Point>("A2B", context.pclFrames, context.reconstructPclFrames, parameter.parallel);

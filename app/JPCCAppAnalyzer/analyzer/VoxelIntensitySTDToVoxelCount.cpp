@@ -45,7 +45,7 @@ void VoxelIntensitySTDToVoxelCount::finalCompute() {
       auto quantizedIntensitySTD = (int)round(intensitySTD);
 
       countMap.try_emplace(quantizedIntensitySTD, array<size_t, BUFFER_SIZE>{0, 0, 0});
-      countMap.at(quantizedIntensitySTD).at(bufferIndex) = countMap.at(quantizedIntensitySTD).at(bufferIndex) + 1;
+      countMap[quantizedIntensitySTD][bufferIndex] = countMap[quantizedIntensitySTD][bufferIndex] + 1;
     }
   }
 
@@ -58,8 +58,8 @@ void VoxelIntensitySTDToVoxelCount::finalCompute() {
       << ","
       << "Voxel Count (Other)" << endl;
   for (const auto& [quantizedIntensitySTD, countArray] : countMap) {
-    ofs << to_string(quantizedIntensitySTD) << "," << countArray.at(0) << "," << countArray.at(1) << ","
-        << countArray.at(2) << endl;
+    ofs << to_string(quantizedIntensitySTD) << "," << countArray[0] << "," << countArray[1] << "," << countArray[2]
+        << endl;
   }
 }
 

@@ -173,14 +173,14 @@ size_t OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::getBranchC
 template <BufferIndex BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
 size_t OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::getLeafCount(
     const BufferIndex bufferIndex) const {
-  return (leaf_counts_.at(bufferIndex));
+  return (leaf_counts_[bufferIndex]);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <BufferIndex BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
 size_t OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::getBranchCount(
     const BufferIndex bufferIndex) const {
-  return (branch_counts_.at(bufferIndex));
+  return (branch_counts_[bufferIndex]);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -331,7 +331,7 @@ void OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::deleteBranch
           branchNode.setChildPtr(_bufferIndex, childIndex, nullptr);
         }
         branch_count_--;
-        branch_counts_.at(bufferIndex)--;
+        branch_counts_[bufferIndex]--;
         break;
       }
 
@@ -341,7 +341,7 @@ void OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::deleteBranch
         // set branch child pointer to 0
         branchNode.setChildPtr(bufferIndex, childIndex, nullptr);
         leaf_count_--;
-        leaf_counts_.at(bufferIndex)--;
+        leaf_counts_[bufferIndex]--;
         break;
       }
       default: break;
@@ -445,7 +445,7 @@ OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::createLeafRecursi
       }
 
       branch_count_++;
-      branch_counts_.at(bufferIndex_)++;
+      branch_counts_[bufferIndex_]++;
     }
     // required branch node already exists - use it
     else
@@ -462,7 +462,7 @@ OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::createLeafRecursi
     // return leaf node
     returnLeaf = createLeafChild(*branchNode, childIndex);
     leaf_count_++;
-    leaf_counts_.at(bufferIndex_)++;
+    leaf_counts_[bufferIndex_]++;
     parentOfLeaf = branchNode;
   } else {
     // leaf node already exist

@@ -55,7 +55,7 @@ void GMM::buildN(vector<float>&       samples,
     }
   } else {
     for (size_t i = 0; i < uniqueSamples.size() && centroids.size() < K_; i++) {
-      const float sample = uniqueSamples.at(i);
+      const float sample = uniqueSamples[i];
       bool        exists = false;
       for (float centroid : centroids) {
         if (sample == centroid) {
@@ -66,8 +66,8 @@ void GMM::buildN(vector<float>&       samples,
       if (!exists) { centroids.push_back(sample); }
     }
     for (size_t i = 0; i < alternateCentroids.size() && centroids.size() < K_; i++) {
-      centroids.push_back(alternateCentroids.at(i));
-      samples.push_back(alternateCentroids.at(i));
+      centroids.push_back(alternateCentroids[i]);
+      samples.push_back(alternateCentroids[i]);
     }
   }
 
@@ -122,9 +122,9 @@ bool GMM::isBuilt() const { return !clusters_.empty(); }
 size_t GMM::getOptimalModelIndex(const float sample) const {
   assert(!isnan(sample));
   size_t optimalIndex       = 0;
-  double optimalProbability = clusters_.at(0).getWeight() * clusters_.at(0).getProbability(sample);
+  double optimalProbability = clusters_.front().getWeight() * clusters_.front().getProbability(sample);
   for (size_t k = 1; k < clusters_.size(); k++) {
-    double probability = clusters_.at(k).getWeight() * clusters_.at(k).getProbability(sample);
+    double probability = clusters_[k].getWeight() * clusters_[k].getProbability(sample);
     if (probability >= optimalProbability) {
       optimalIndex       = k;
       optimalProbability = probability;
@@ -138,7 +138,7 @@ void GMM::updateModel(float sample, const double alpha, const double minimumVari
   assert(!isnan(sample));
   const size_t optimalIndex = getOptimalModelIndex(sample);
   for (size_t k = 0; k < clusters_.size(); k++) {
-    clusters_.at(k).addSample(sample, k == optimalIndex, alpha, minimumVariance);
+    clusters_[k].addSample(sample, k == optimalIndex, alpha, minimumVariance);
   }
   this->normalizeWeights();
 }

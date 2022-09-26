@@ -43,8 +43,7 @@ void VoxelIntensityEntropyToVoxelCount::finalCompute() {
       auto quantizedIntensityEntropy = (int)round(intensityEntropy * 10.0);
 
       countMap.try_emplace(quantizedIntensityEntropy, array<size_t, BUFFER_SIZE>{0, 0, 0});
-      countMap.at(quantizedIntensityEntropy).at(bufferIndex) =
-          countMap.at(quantizedIntensityEntropy).at(bufferIndex) + 1;
+      countMap[quantizedIntensityEntropy][bufferIndex] = countMap[quantizedIntensityEntropy][bufferIndex] + 1;
     }
   }
 
@@ -57,8 +56,8 @@ void VoxelIntensityEntropyToVoxelCount::finalCompute() {
       << ","
       << "Voxel Count (Other)" << endl;
   for (const auto& [quantizedIntensityEntropy, countArray] : countMap) {
-    ofs << to_string(quantizedIntensityEntropy) << "," << countArray.at(0) << "," << countArray.at(1) << ","
-        << countArray.at(2) << endl;
+    ofs << to_string(quantizedIntensityEntropy) << "," << countArray[0] << "," << countArray[1] << "," << countArray[2]
+        << endl;
   }
 }
 

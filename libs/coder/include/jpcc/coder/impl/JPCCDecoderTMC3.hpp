@@ -80,7 +80,7 @@ void JPCCDecoderTMC3<PointT>::convertToPCL(shared_ptr<void>& reconstructFrame, F
   reconstructPclFrame->resize(reconstructFrame_->getPointCount());
 
   for (int i = 0; i < reconstructPclFrame->size(); i++) {
-    reconstructPclFrame->at(i) =
+    (*reconstructPclFrame)[i] =
         PointT((*reconstructFrame_)[i].x(), (*reconstructFrame_)[i].y(), (*reconstructFrame_)[i].z());
   }
 }

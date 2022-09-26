@@ -35,7 +35,7 @@ int JPCCVisualizer<PointT>::updateText(int* windowSize) {
   textHeight = std::min<int>(textHeight, lineHeight_ * lines);
   if ((frameMap_.find(primaryId_) != frameMap_.end())) {
     {
-      const FramePtr<PointT>& cloud = frameMap_.at(primaryId_);
+      const FramePtr<PointT>& cloud = frameMap_[primaryId_];
       const RGBColor&         tc    = getTextColor(primaryId_);
       const std::string       id    = primaryId_ + "FrameId";
       const std::string       text  = "frame: " + std::to_string(cloud->header.seq);
@@ -77,7 +77,7 @@ template <typename PointT>
 void JPCCVisualizer<PointT>::updateQueue() {
   std::lock_guard<std::recursive_mutex> lock(mutex_);
   if (queueMap_.find(primaryId_) != queueMap_.end()) {
-    const FrameQueue& queue      = queueMap_.at(primaryId_);
+    const FrameQueue& queue      = queueMap_[primaryId_];
     const std::string id         = primaryId_ + "QueueSize";
     const std::string text       = "queue: " + std::to_string(queue.size());
     const int         textHeight = textHeightMap[id];
@@ -162,7 +162,7 @@ void JPCCVisualizer<PointT>::enqueue(const GroupOfFrameMap<PointT>& framesMap) {
   std::lock_guard<std::recursive_mutex> lock(mutex_);
   for (const auto& [id, frames] : framesMap) {
     if (queueMap_.find(id) == queueMap_.end()) { queueMap_[id] = FrameQueue(); }
-    FrameQueue& queue = queueMap_.at(id);
+    FrameQueue& queue = queueMap_[id];
     for (const FramePtr<PointT>& frame : frames) { queue.push(frame); }
   }
   updateQueue();
@@ -188,11 +188,10 @@ template <typename PointT>
 typename JPCCVisualizer<PointT>::PointCloudColorPtr JPCCVisualizer<PointT>::getCloudColor(
     const std::string& id, const FramePtr<PointT>& cloud) {
   if (fieldColorMap_.find(id) != fieldColorMap_.end()) {
-    return jpcc::make_shared<pcl::visualization::PointCloudColorHandlerGenericField<PointT>>(cloud,
-                                                                                             fieldColorMap_.at(id));
+    return jpcc::make_shared<pcl::visualization::PointCloudColorHandlerGenericField<PointT>>(cloud, fieldColorMap_[id]);
   } else if (rgbColorMap_.find(id) != rgbColorMap_.end()) {
     return jpcc::make_shared<pcl::visualization::PointCloudColorHandlerCustom<PointT>>(
-        cloud, rgbColorMap_.at(id).at(0) * 255.0, rgbColorMap_.at(id).at(1) * 255.0, rgbColorMap_.at(id).at(2) * 255.0);
+        cloud, rgbColorMap_[id][0] * 255.0, rgbColorMap_[id][1] * 255.0, rgbColorMap_[id][2] * 255.0);
   } else {
     return jpcc::make_shared<pcl::visualization::PointCloudColorHandlerCustom<PointT>>(cloud, 255.0, 255.0, 255.0);
   }

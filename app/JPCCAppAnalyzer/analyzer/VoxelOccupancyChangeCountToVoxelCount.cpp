@@ -49,7 +49,7 @@ void VoxelOccupancyChangeCountToVoxelCount::finalCompute() {
       size_t occupancyChangeCount = it.getLeafContainer().getCount();
 
       countMap.try_emplace(occupancyChangeCount, std::array<size_t, BUFFER_SIZE>{0, 0, 0});
-      countMap.at(occupancyChangeCount).at(bufferIndex) = countMap.at(occupancyChangeCount).at(bufferIndex) + 1;
+      countMap[occupancyChangeCount][bufferIndex] = countMap[occupancyChangeCount][bufferIndex] + 1;
     }
   }
 
@@ -62,8 +62,7 @@ void VoxelOccupancyChangeCountToVoxelCount::finalCompute() {
       << ","
       << "Voxel Count (Other)" << endl;
   for (const auto& [occupancyChangeCount, countArray] : countMap) {
-    ofs << occupancyChangeCount << "," << countArray.at(0) << "," << countArray.at(1) << "," << countArray.at(2)
-        << endl;
+    ofs << occupancyChangeCount << "," << countArray[0] << "," << countArray[1] << "," << countArray[2] << endl;
   }
 }
 

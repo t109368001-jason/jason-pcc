@@ -126,10 +126,9 @@ template <typename PointT, typename LeafContainerT>
 void JPCCSegmentationOPCGMMCenter<PointT, LeafContainerT>::build(const FramePtr<PointT>& frame) {
   if (this->isBuilt()) { return; }
   for (size_t i = 0; i < SIZE; i++) {
-    if (!this->builtVector.at(i) &&
-        (frame->header.seq - this->startFrameNumber_ + 1) >= this->parameter_.getNTrain(i)) {
+    if (!this->builtVector[i] && (frame->header.seq - this->startFrameNumber_ + 1) >= this->parameter_.getNTrain(i)) {
       this->buildRecursive(frame, i, this->root_node_);
-      this->builtVector.at(i) = true;
+      this->builtVector[i] = true;
     }
   }
 }

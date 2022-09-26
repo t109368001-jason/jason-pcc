@@ -36,18 +36,17 @@ void JPCCSegmentation<PointT>::segmentation(const GroupOfFrame<PointT>& frames,
                                             const bool                  parallel) {
   if (!parallel || !isThreadSafe()) {
     for (size_t i = 0; i < frames.size(); i++) {
-      this->segmentation(frames.at(i), dynamicFrames.at(i), !staticFrames.empty() ? staticFrames.at(i) : nullptr,
-                         !staticAddedFrames.empty() ? staticAddedFrames.at(i) : nullptr,
-                         !staticRemovedFrames.empty() ? staticRemovedFrames.at(i) : nullptr);
+      this->segmentation(frames[i], dynamicFrames[i], !staticFrames.empty() ? staticFrames[i] : nullptr,
+                         !staticAddedFrames.empty() ? staticAddedFrames[i] : nullptr,
+                         !staticRemovedFrames.empty() ? staticRemovedFrames[i] : nullptr);
     }
   } else {
     const auto range = boost::counting_range<size_t>(0, frames.size());
     std::for_each(std::execution::par, range.begin(), range.end(),
                   [&](const size_t& i) {  //
-                    this->segmentation(frames.at(i), dynamicFrames.at(i),
-                                       !staticFrames.empty() ? staticFrames.at(i) : nullptr,
-                                       !staticAddedFrames.empty() ? staticAddedFrames.at(i) : nullptr,
-                                       !staticRemovedFrames.empty() ? staticRemovedFrames.at(i) : nullptr);
+                    this->segmentation(frames[i], dynamicFrames[i], !staticFrames.empty() ? staticFrames[i] : nullptr,
+                                       !staticAddedFrames.empty() ? staticAddedFrames[i] : nullptr,
+                                       !staticRemovedFrames.empty() ? staticRemovedFrames[i] : nullptr);
                   });
   }
 }

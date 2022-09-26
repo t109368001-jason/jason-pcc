@@ -53,7 +53,7 @@ void VoxelOccludedPercentageToVoxelCount::finalCompute() {
       int percentage = (int)leafNode.getMinimumOccludedPercentage(quantCount_);
 
       countMap.try_emplace(percentage, array<size_t, BUFFER_SIZE>{0, 0, 0});
-      countMap.at(percentage).at(bufferIndex)++;
+      countMap[percentage][bufferIndex]++;
     }
   }
 
@@ -66,7 +66,7 @@ void VoxelOccludedPercentageToVoxelCount::finalCompute() {
       << ","
       << "Voxel Count (Other)" << endl;
   for (const auto& [percentage, countArray] : countMap) {
-    ofs << percentage << "," << countArray.at(0) << "," << countArray.at(1) << "," << countArray.at(2) << endl;
+    ofs << percentage << "," << countArray[0] << "," << countArray[1] << "," << countArray[2] << endl;
   }
 }
 

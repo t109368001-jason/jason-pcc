@@ -72,7 +72,7 @@ void JPCCCombination<PointT>::combineStaticAddedRemoved(const GroupOfFrame<Point
                                                         GroupOfFrame<PointT>&       staticReconstructFrames) {
   staticReconstructFrames.resize(staticAddedFrames.size());
   for (size_t i = 0; i < staticRemovedFrames.size(); i++) {
-    this->combineStaticAddedRemoved(staticAddedFrames.at(i), staticRemovedFrames.at(i), staticReconstructFrames.at(i));
+    this->combineStaticAddedRemoved(staticAddedFrames[i], staticRemovedFrames[i], staticReconstructFrames[i]);
   }
 }
 
@@ -93,16 +93,15 @@ void JPCCCombination<PointT>::combineDynamicStatic(const GroupOfFrame<PointT>& d
   FramePtr<PointT> emptyFrame;
   if (!parallel) {
     for (size_t i = 0; i < dynamicFrames.size(); i++) {
-      this->combineDynamicStatic(dynamicFrames.at(i), !staticFrames.empty() ? staticFrames.at(i) : emptyFrame,
-                                 !reconstructFrames.empty() ? reconstructFrames.at(i) : emptyFrame);
+      this->combineDynamicStatic(dynamicFrames[i], !staticFrames.empty() ? staticFrames[i] : emptyFrame,
+                                 !reconstructFrames.empty() ? reconstructFrames[i] : emptyFrame);
     }
   } else {
     const auto range = boost::counting_range<size_t>(0, dynamicFrames.size());
     std::for_each(std::execution::par, range.begin(), range.end(),
                   [&](const size_t& i) {  //
-                    this->combineDynamicStatic(dynamicFrames.at(i),
-                                               !staticFrames.empty() ? staticFrames.at(i) : emptyFrame,
-                                               !reconstructFrames.empty() ? reconstructFrames.at(i) : emptyFrame);
+                    this->combineDynamicStatic(dynamicFrames[i], !staticFrames.empty() ? staticFrames[i] : emptyFrame,
+                                               !reconstructFrames.empty() ? reconstructFrames[i] : emptyFrame);
                   });
   }
 }

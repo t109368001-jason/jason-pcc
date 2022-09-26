@@ -40,7 +40,7 @@ void VoxelPointCountToVoxelCount::finalCompute() {
       << ","
       << "Voxel Count (Other)" << endl;
   for (const auto& [occupancyCount, countArray] : countMap) {
-    ofs << occupancyCount << "," << countArray.at(0) << "," << countArray.at(1) << "," << countArray.at(2) << endl;
+    ofs << occupancyCount << "," << countArray[0] << "," << countArray[1] << "," << countArray[2] << endl;
   }
 }
 

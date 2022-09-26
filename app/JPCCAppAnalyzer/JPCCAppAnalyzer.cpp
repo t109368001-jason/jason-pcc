@@ -64,15 +64,15 @@ void previewOnly(const AppParameter& parameter) {
   }
   {
     auto indices = jpcc::make_shared<Indices>();
-    backgroundFilter->setInputCloud(frames.at(0));
+    backgroundFilter->setInputCloud(frames[0]);
     backgroundFilter->filter(*indices);
-    split<PointT>(frames.at(0), indices, background, frames.at(0));
+    split<PointT>(frames[0], indices, background, frames[0]);
   }
   {
     auto indices = jpcc::make_shared<Indices>();
-    dynamicFilter->setInputCloud(frames.at(0));
+    dynamicFilter->setInputCloud(frames[0]);
     dynamicFilter->filter(*indices);
-    split<PointT>(frames.at(0), indices, dynamic, frames.at(0));
+    split<PointT>(frames[0], indices, dynamic, frames[0]);
   }
   viewer->enqueue({
       {"cloud", frames},                                 //

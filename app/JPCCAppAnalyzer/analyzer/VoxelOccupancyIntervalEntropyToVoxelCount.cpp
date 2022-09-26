@@ -50,8 +50,8 @@ void VoxelOccupancyIntervalEntropyToVoxelCount::finalCompute() {
       int quantizedOccupancyIntervalEntropy = (int)round(occupancyIntervalEntropy * 10.0);
 
       countMap.try_emplace(quantizedOccupancyIntervalEntropy, array<size_t, BUFFER_SIZE>{0, 0, 0});
-      countMap.at(quantizedOccupancyIntervalEntropy).at(bufferIndex) =
-          countMap.at(quantizedOccupancyIntervalEntropy).at(bufferIndex) + 1;
+      countMap[quantizedOccupancyIntervalEntropy][bufferIndex] =
+          countMap[quantizedOccupancyIntervalEntropy][bufferIndex] + 1;
     }
   }
 
@@ -64,8 +64,7 @@ void VoxelOccupancyIntervalEntropyToVoxelCount::finalCompute() {
       << ","
       << "Voxel Count (Other)" << endl;
   for (const auto& [occupancyIntervalEntropy, countArray] : countMap) {
-    ofs << occupancyIntervalEntropy << "," << countArray.at(0) << "," << countArray.at(1) << "," << countArray.at(2)
-        << endl;
+    ofs << occupancyIntervalEntropy << "," << countArray[0] << "," << countArray[1] << "," << countArray[2] << endl;
   }
 }
 

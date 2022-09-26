@@ -22,27 +22,27 @@ void kmeans(const std::vector<float>&        samples,
   int  k;
   bool isConverged = false;
   while (!isConverged) {
-    for (k = 0; k < K; k++) { clusters.at(k).clear(); }
+    for (k = 0; k < K; k++) { clusters[k].clear(); }
 
     for (const auto& sample : samples) {
       size_t minIndex    = 0;
-      float  minDistance = abs(sample - centroids.at(0));
+      float  minDistance = abs(sample - centroids.front());
       for (k = 1; k < K; k++) {
-        const float distance = abs(sample - centroids.at(k));
+        const float distance = abs(sample - centroids[k]);
         if (distance < minDistance) {
           minIndex    = k;
           minDistance = distance;
         }
       }
-      clusters.at(minIndex).push_back(sample);
+      clusters[minIndex].push_back(sample);
     }
 
     for (k = 0; k < K; k++) {
-      if (clusters.at(k).empty()) {
+      if (clusters[k].empty()) {
         for (int k2 = 0; k2 < K; k2++) {
-          if (clusters.at(k2).size() < 2) { continue; }
+          if (clusters[k2].size() < 2) { continue; }
           std::vector<float> uniques;
-          for (const auto& sample : clusters.at(k2)) {
+          for (const auto& sample : clusters[k2]) {
             bool exists = false;
             for (const auto& unique : uniques) {
               if (sample == unique) {
@@ -56,19 +56,19 @@ void kmeans(const std::vector<float>&        samples,
             }
           }
           if (uniques.size() > 1) {
-            centroids.at(k) = uniques.at(0);
+            centroids[k] = uniques.front();
             break;
           }
         }
         continue;
       }
-      const float sum = accumulate(clusters.at(k).begin(), clusters.at(k).end(), float{0});
-      centroids.at(k) = static_cast<float>(sum / static_cast<double>(clusters.at(k).size()));
+      const float sum = accumulate(clusters[k].begin(), clusters[k].end(), float{0});
+      centroids[k]    = static_cast<float>(sum / static_cast<double>(clusters[k].size()));
     }
 
     isConverged = true;
     for (k = 0; k < K; k++) {
-      if (centroids.at(k) != previousCentroids.at(k)) { isConverged = false; }
+      if (centroids[k] != previousCentroids[k]) { isConverged = false; }
     }
     copy(centroids.begin(), centroids.end(), previousCentroids.begin());
   }

@@ -14,7 +14,7 @@ typename OctreeCounter<BUFFER_SIZE>::CountMap OctreeCounter<BUFFER_SIZE>::getOcc
     for (auto it = this->leaf_depth_begin(), end = this->leaf_depth_end(); it != end; ++it) {
       const size_t count = it.getLeafContainer().getCount();
       countMap.try_emplace(count, 0);
-      countMap.at(count) = countMap.at(count) + 1;
+      countMap[count] = countMap[count] + 1;
     }
     return countMap;
   } else if constexpr (std::is_same_v<CountMap, std::map<size_t, std::array<size_t, BUFFER_SIZE>>>) {
@@ -24,7 +24,7 @@ typename OctreeCounter<BUFFER_SIZE>::CountMap OctreeCounter<BUFFER_SIZE>::getOcc
       for (auto it = this->leaf_depth_begin(), end = this->leaf_depth_end(); it != end; ++it) {
         const size_t count = it.getLeafContainer().getCount();
         countArrayMap.try_emplace(count, std::array<size_t, BUFFER_SIZE>{0, 0, 0});
-        countArrayMap.at(count).at(bufferIndex) = countArrayMap.at(count).at(bufferIndex) + 1;
+        countArrayMap[count][bufferIndex] = countArrayMap[count][bufferIndex] + 1;
       }
     }
     return countArrayMap;

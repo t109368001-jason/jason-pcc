@@ -15,7 +15,7 @@ void ParameterOStream::operator()(const std::vector<T>& value) {
   out_ << "[";
   for (size_t i = 0; i < value.size(); i++) {
     if (i != 0) { out_ << ", "; }
-    (*this)(value.at(i));
+    (*this)(value[i]);
   }
   out_ << "]";
 }

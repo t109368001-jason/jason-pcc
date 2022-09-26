@@ -36,7 +36,7 @@ void JPCCEncoderTMC3<PointT>::convertFromPCL(const FramePtr<PointT>& pclFrame, s
   _frame->resize(pclFrame->size());
 
   for (int i = 0; i < _frame->getPointCount(); i++) {
-    (*_frame)[i] = pcc::PCCPointSet3::PointType(pclFrame->at(i).x, pclFrame->at(i).y, pclFrame->at(i).z);
+    (*_frame)[i] = pcc::PCCPointSet3::PointType((*pclFrame)[i].x, (*pclFrame)[i].y, (*pclFrame)[i].z);
   }
 }
 

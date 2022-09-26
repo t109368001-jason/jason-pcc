@@ -29,13 +29,13 @@ void JPCCDecoder<PointT>::convertToPCL(std::vector<shared_ptr<void>>& reconstruc
                                        bool                           parallel) {
   if (!parallel || !isConvertToPCLThreadSafe()) {
     for (size_t i = 0; i < reconstructFrames.size(); i++) {
-      this->convertToPCL(reconstructFrames.at(i), reconstructPclFrames.at(i));
+      this->convertToPCL(reconstructFrames[i], reconstructPclFrames[i]);
     }
   } else {
     const auto range = boost::counting_range<size_t>(0, reconstructFrames.size());
     std::for_each(std::execution::par, range.begin(), range.end(),
                   [&](const size_t& i) {  //
-                    this->convertToPCL(reconstructFrames.at(i), reconstructPclFrames.at(i));
+                    this->convertToPCL(reconstructFrames[i], reconstructPclFrames[i]);
                   });
   }
 }

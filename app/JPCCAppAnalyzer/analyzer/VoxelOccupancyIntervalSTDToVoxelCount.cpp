@@ -52,8 +52,7 @@ void VoxelOccupancyIntervalSTDToVoxelCount::finalCompute() {
       int quantizedOccupancyIntervalSTD = (int)round(occupancyIntervalSTD);
 
       countMap.try_emplace(quantizedOccupancyIntervalSTD, array<size_t, BUFFER_SIZE>{0, 0, 0});
-      countMap.at(quantizedOccupancyIntervalSTD).at(bufferIndex) =
-          countMap.at(quantizedOccupancyIntervalSTD).at(bufferIndex) + 1;
+      countMap[quantizedOccupancyIntervalSTD][bufferIndex] = countMap[quantizedOccupancyIntervalSTD][bufferIndex] + 1;
     }
   }
 
@@ -66,8 +65,7 @@ void VoxelOccupancyIntervalSTDToVoxelCount::finalCompute() {
       << ","
       << "Voxel Count (Other)" << endl;
   for (const auto& [occupancyIntervalSTD, countArray] : countMap) {
-    ofs << occupancyIntervalSTD << "," << countArray.at(0) << "," << countArray.at(1) << "," << countArray.at(2)
-        << endl;
+    ofs << occupancyIntervalSTD << "," << countArray[0] << "," << countArray[1] << "," << countArray[2] << endl;
   }
 }
 

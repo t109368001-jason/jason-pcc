@@ -16,9 +16,9 @@ JPCCVisualizerBase::JPCCVisualizerBase(const VisualizerParameter& param) :
   vtkObject::GlobalWarningDisplayOff();
 
   initCameraParameters();
-  setCameraPosition(param_.cameraPosition.at(0), param_.cameraPosition.at(1), param_.cameraPosition.at(2),
-                    param_.cameraPosition.at(3), param_.cameraPosition.at(4), param_.cameraPosition.at(5),
-                    param_.cameraPosition.at(6), param_.cameraPosition.at(7), param_.cameraPosition.at(8));
+  setCameraPosition(param_.cameraPosition[0], param_.cameraPosition[1], param_.cameraPosition[2],
+                    param_.cameraPosition[3], param_.cameraPosition[4], param_.cameraPosition[5],
+                    param_.cameraPosition[6], param_.cameraPosition[7], param_.cameraPosition[8]);
   setBackgroundColor(0, 0, 0);
   addCoordinateSystem(1000.0, "coordinate");
 
@@ -52,8 +52,8 @@ JPCCVisualizerBase::JPCCVisualizerBase(const VisualizerParameter& param) :
 //////////////////////////////////////////////////////////////////////////////////////////////
 void JPCCVisualizerBase::updateOrAddText(const std::string& text, const int ypos, const std::string& id) {
   const RGBColor& tc = getTextColor(id);
-  if (!PCLVisualizer::updateText(text, 5, ypos, fontSize_, tc.at(0), tc.at(1), tc.at(2), id)) {
-    addText(text, 5, ypos, fontSize_, tc.at(0), tc.at(1), tc.at(2), id);
+  if (!PCLVisualizer::updateText(text, 5, ypos, fontSize_, tc[0], tc[1], tc[2], id)) {
+    addText(text, 5, ypos, fontSize_, tc[0], tc[1], tc[2], id);
   }
   textMap_.insert_or_assign(id, text);
   textHeightMap.insert_or_assign(id, ypos);
@@ -70,7 +70,7 @@ int JPCCVisualizerBase::updateText(int* windowSize) {
   }
   if (param_.showParameter) {
     for (size_t i = 0; i < parameterTexts_.size(); i++) {
-      updateOrAddText(parameterTexts_.at(i), textHeight, "parameter" + std::to_string(i));
+      updateOrAddText(parameterTexts_[i], textHeight, "parameter" + std::to_string(i));
       textHeight -= lineHeight_;
     }
   } else {
@@ -143,7 +143,7 @@ void JPCCVisualizerBase::handleKeyboardEvent(const pcl::visualization::KeyboardE
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 RGBColor JPCCVisualizerBase::getTextColor(const std::string& id) {
-  if (rgbColorMap_.find(id) != rgbColorMap_.end()) { return rgbColorMap_.at(id); }
+  if (rgbColorMap_.find(id) != rgbColorMap_.end()) { return rgbColorMap_[id]; }
   return {1.0, 1.0, 1.0};
 }
 

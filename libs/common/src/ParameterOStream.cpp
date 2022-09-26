@@ -14,7 +14,7 @@ void ParameterOStream::operator()(const vector<jpcc::shared_ptr<Matrix4f>>& matr
   for (size_t i = 0; i < matrixVector.size(); i++) {
     if (i != 0) { out_ << ", " << endl; }
     out_ << "\t\t[";
-    (*this)(matrixVector.at(i));
+    (*this)(matrixVector[i]);
   }
   out_ << endl
        << "\t"

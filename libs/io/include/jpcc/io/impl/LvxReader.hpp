@@ -31,8 +31,8 @@ LvxReader<PointT>::LvxReader(DatasetReaderParameter param, DatasetParameter data
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void LvxReader<PointT>::open_(const size_t datasetIndex, const size_t startFrameNumber) {
-  if (lvxs_.at(datasetIndex) && this->currentFrameNumbers_.at(datasetIndex) <= startFrameNumber) { return; }
-  lvxs_.at(datasetIndex)    = nullptr;
+  if (lvxs_[datasetIndex] && this->currentFrameNumbers_[datasetIndex] <= startFrameNumber) { return; }
+  lvxs_[datasetIndex]       = nullptr;
   const std::string lvxPath = this->datasetParam_.getFilePath(datasetIndex);
   auto*             lvx     = new LvxHandler();
 
@@ -41,22 +41,22 @@ void LvxReader<PointT>::open_(const size_t datasetIndex, const size_t startFrame
   THROW_IF_NOT(lvx->GetDeviceCount() != 0);
   THROW_IF_NOT(lvx->GetDeviceCount() < livox_ros::kMaxSourceLidar);
 
-  lvxs_.at(datasetIndex).reset(lvx);
-  this->currentFrameNumbers_.at(datasetIndex) = this->datasetParam_.getStartFrameNumbers(datasetIndex);
-  this->eof_.at(datasetIndex)                 = false;
+  lvxs_[datasetIndex].reset(lvx);
+  this->currentFrameNumbers_[datasetIndex] = this->datasetParam_.getStartFrameNumbers(datasetIndex);
+  this->eof_[datasetIndex]                 = false;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 bool LvxReader<PointT>::isOpen_(const size_t datasetIndex) const {
-  return static_cast<bool>(lvxs_.at(datasetIndex));
+  return static_cast<bool>(lvxs_[datasetIndex]);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 bool LvxReader<PointT>::isEof_(const size_t datasetIndex) const {
   return DatasetStreamReader<PointT>::isEof_(datasetIndex) ||
-         lvxs_.at(datasetIndex)->GetFileState() == livox_ros::kLvxFileAtEnd;
+         lvxs_[datasetIndex]->GetFileState() == livox_ros::kLvxFileAtEnd;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -65,8 +65,8 @@ void LvxReader<PointT>::load_(const size_t datasetIndex,
                               const size_t startFrameNumber,
                               const size_t groupOfFramesSize) {
   assert(groupOfFramesSize > 0);
-  LvxHandler*                    lvx         = lvxs_.at(datasetIndex).get();
-  std::vector<FramePtr<PointT>>& frameBuffer = this->frameBuffers_.at(datasetIndex);
+  LvxHandler*                    lvx         = lvxs_[datasetIndex].get();
+  std::vector<FramePtr<PointT>>& frameBuffer = this->frameBuffers_[datasetIndex];
 
   std::vector<int64_t> lastTimestamps(lvx->GetDeviceCount());
 
@@ -101,14 +101,14 @@ void LvxReader<PointT>::load_(const size_t datasetIndex,
       }
     }
     // emplace_back points only, improve performance
-    // frameBuffer.at(index)->emplace_back(x, y, z);
+    // frameBuffer[index]->emplace_back(x, y, z);
     PointT point(x, y, z);
     if constexpr (pcl::traits::has_intensity_v<PointT>) { point.intensity = reflectivity / 255.0; }
-    frameBuffer.at(index)->points.push_back(point);
-    lastTimestamps.at(deviceIndex) = timestamp;
+    frameBuffer[index]->points.push_back(point);
+    lastTimestamps[deviceIndex] = timestamp;
   });
   assert(ret == 0 || ret == livox_ros::kLvxFileAtEnd);
-  if (ret == livox_ros::kLvxFileAtEnd) { this->eof_.at(datasetIndex) = true; }
+  if (ret == livox_ros::kLvxFileAtEnd) { this->eof_[datasetIndex] = true; }
 
   if (ret == livox_ros::kLvxFileAtEnd) {
     for (const FramePtr<PointT>& frame : frameBuffer) {

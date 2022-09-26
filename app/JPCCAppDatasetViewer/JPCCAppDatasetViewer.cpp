@@ -66,18 +66,18 @@ void main_(const AppParameter& parameter, Stopwatch& clock) {
           reader->load(3, startFrameNumber, groupOfFramesSize, staticFrames, parameter.parallel);
 #endif
           for (size_t i = 0; i < staticAddedFrames.size(); i++) {
-            if (staticRemovedFrames.at(i)) {
-              for (const PointT& pointToRemove : staticRemovedFrames.at(i)->points) {
+            if (staticRemovedFrames[i]) {
+              for (const PointT& pointToRemove : staticRemovedFrames[i]->points) {
                 staticOctree->deletePointFromCloud(pointToRemove, staticFrame);
               }
             }
-            if (staticAddedFrames.at(i)) {
-              for (const PointT& pointToAdd : staticAddedFrames.at(i)->points) {
+            if (staticAddedFrames[i]) {
+              for (const PointT& pointToAdd : staticAddedFrames[i]->points) {
                 staticOctree->addPointToCloud(pointToAdd, staticFrame);
               }
             }
 
-            assert(staticFrame->size() == staticFrames.at(i)->size());
+            assert(staticFrame->size() == staticFrames[i]->size());
 
             auto tmpFrame = jpcc::make_shared<Frame<PointT>>();
             pcl::copyPointCloud(*staticFrame, *tmpFrame);

@@ -37,7 +37,7 @@ Condition::Condition(const string& condition) {
   ss.erase(remove_if(ss.begin(), ss.end(), [](const string& s) { return s.empty(); }), ss.end());
   assert(ss.size() == 3);
 
-  const string f = boost::to_lower_copy(ss.at(0));
+  const string f = boost::to_lower_copy(ss.front());
 
   if (f == "r") {
     this->type = R;
@@ -54,12 +54,12 @@ Condition::Condition(const string& condition) {
     boost::algorithm::split(vector, f, boost::is_any_of(",[]*p"));
     vector.erase(remove_if(vector.begin(), vector.end(), [](const string& s) { return s.empty(); }), vector.end());
     assert(vector.size() == 3 || vector.size() == 4);
-    for (int i = 0; i < vector.size(); i++) { (*this->coefficient)(i) = stof(vector.at(i)); }
+    for (int i = 0; i < vector.size(); i++) { (*this->coefficient)(i) = stof(vector[i]); }
   } else {
     BOOST_THROW_EXCEPTION(logic_error("not support type: " + f));
   }
 
-  const string& o = ss.at(1);
+  const string& o = ss[1];
   if ((o == "=") || (o == "==")) {
     this->operation = EQ;
   } else if (o == ">") {
@@ -73,7 +73,7 @@ Condition::Condition(const string& condition) {
   } else {
     BOOST_THROW_EXCEPTION(logic_error("not support type: " + o));
   }
-  this->threshold = stod(ss.at(2));
+  this->threshold = stod(ss[2]);
 }
 
 Condition::Condition(const ConditionType& type, const vector<string>& conditions) : operation(NONE), threshold() {

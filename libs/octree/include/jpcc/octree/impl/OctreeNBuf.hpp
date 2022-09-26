@@ -133,7 +133,7 @@ void OctreeNBuf<BUFFER_SIZE, LeafContainerT, BranchContainerT>::processRecursive
             if (branchNode->hasChild(b, childIndex)) {
               const auto childLeaf = dynamic_cast<LeafNode*>(branchNode->getChildPtr(b, childIndex));
 
-              bufferIndices.at(b) = childLeaf->getContainer().getPointIndex();
+              bufferIndices[b] = childLeaf->getContainer().getPointIndex();
             }
           }
 
@@ -211,7 +211,7 @@ bool OctreeNBuf<BUFFER_SIZE, LeafContainerT, BranchContainerT>::deleteBufferRecu
           if (noChild) {
             delete (childNode);
             if (bufferIndex == this->bufferIndex_) { this->branch_count_--; }
-            this->branch_counts_.at(bufferIndex)--;
+            this->branch_counts_[bufferIndex]--;
           }
           break;
         }
@@ -219,7 +219,7 @@ bool OctreeNBuf<BUFFER_SIZE, LeafContainerT, BranchContainerT>::deleteBufferRecu
           delete (childNode);
           branchNode.setChildPtr(bufferIndex, childIndex, nullptr);
           if (bufferIndex == this->bufferIndex_) { this->leaf_count_--; }
-          this->leaf_counts_.at(bufferIndex)--;
+          this->leaf_counts_[bufferIndex]--;
           break;
         }
         default: break;

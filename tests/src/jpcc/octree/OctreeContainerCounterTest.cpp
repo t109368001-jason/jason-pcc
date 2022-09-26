@@ -28,7 +28,7 @@ TEST(OctreeContainerCounterTest, getChildPattern) {
   int i = 0;
   for (auto it = octreePointCloud.leaf_breadth_begin(), end = octreePointCloud.leaf_breadth_end(); it != end;
        ++it, i++) {
-    EXPECT_EQ(it.getLeafContainer().getCount(), counts.at(i));
+    EXPECT_EQ(it.getLeafContainer().getCount(), counts[i]);
   }
 }
 

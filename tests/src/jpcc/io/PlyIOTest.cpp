@@ -17,8 +17,8 @@ TEST(PlyIOTest, save_load) {
   size_t                      ii = 1;
   for (size_t i = 0; i < frameCount; i++) {
     frames.push_back(jpcc::make_shared<Frame<pcl::PointXYZ>>());
-    frames.at(i)->header.seq = startFrameNumber + i;
-    for (size_t j = 0; j < i + 1; j++, ii++) { frames.at(i)->emplace_back(ii * 1.1, ii * 2.2, ii * 3.3); }
+    frames[i]->header.seq = startFrameNumber + i;
+    for (size_t j = 0; j < i + 1; j++, ii++) { frames[i]->emplace_back(ii * 1.1, ii * 2.2, ii * 3.3); }
   }
 
   // when
@@ -30,14 +30,14 @@ TEST(PlyIOTest, save_load) {
   EXPECT_EQ(results.size(), frameCount);
   EXPECT_EQ(results.size(), frames.size());
   for (size_t i = 0; i < frameCount; i++) {
-    const FramePtr<pcl::PointXYZ>& result = results.at(i);
-    const FramePtr<pcl::PointXYZ>& frame  = frames.at(i);
+    const FramePtr<pcl::PointXYZ>& result = results[i];
+    const FramePtr<pcl::PointXYZ>& frame  = frames[i];
     EXPECT_EQ(result->header.seq, frame->header.seq);
     EXPECT_EQ(result->size(), frame->size());
     for (size_t j = 0; j < frame->size(); j++) {
-      EXPECT_EQ(result->at(j).x, frame->at(j).x);
-      EXPECT_EQ(result->at(j).y, frame->at(j).y);
-      EXPECT_EQ(result->at(j).z, frame->at(j).z);
+      EXPECT_EQ((*result)[j].x, (*frame)[j].x);
+      EXPECT_EQ((*result)[j].y, (*frame)[j].y);
+      EXPECT_EQ((*result)[j].z, (*frame)[j].z);
     }
   }
 }

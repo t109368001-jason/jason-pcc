@@ -37,7 +37,7 @@ void JPCCConditionalRemovalParameter::getShowTexts(vector<string>& showTexts) co
     ss << prefix_ << CONDITIONS_OPT ": ";
     for (size_t i = 0; i < conditions_.size(); i++) {
       if (i != 0) { ss << (type == Condition::AND ? " && " : " || "); }
-      ss << conditions_.at(i);
+      ss << conditions_[i];
     }
     showTexts.push_back(ss.str());
   }

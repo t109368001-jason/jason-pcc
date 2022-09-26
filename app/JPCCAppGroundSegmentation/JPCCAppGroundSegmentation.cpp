@@ -50,7 +50,7 @@ void main_(const AppParameter& parameter, Stopwatch& clock) {
     preProcessor.process(frames, nullptr, parameter.parallel);
     clock.stop();
 
-    auto modelPlane = jpcc::make_shared<pcl::SampleConsensusModelPlane<PointT>>(frames.at(0), true);
+    auto modelPlane = jpcc::make_shared<pcl::SampleConsensusModelPlane<PointT>>(frames.front(), true);
     auto indices    = jpcc::make_shared<Indices>();
     pcl::RandomSampleConsensus<PointT> ransac(modelPlane);
     ransac.setDistanceThreshold(parameter.distanceThreshold);
@@ -65,7 +65,7 @@ void main_(const AppParameter& parameter, Stopwatch& clock) {
     auto framePlane = jpcc::make_shared<Frame<PointT>>();
     auto frameOther = jpcc::make_shared<Frame<PointT>>();
 
-    process::split<PointT>(frames.at(0), indices, framePlane, frameOther);
+    process::split<PointT>(frames.front(), indices, framePlane, frameOther);
 
     framesMap->insert_or_assign(cloudPlaneId, GroupOfFrame<PointT>{framePlane});
     framesMap->insert_or_assign(cloudOtherId, GroupOfFrame<PointT>{frameOther});

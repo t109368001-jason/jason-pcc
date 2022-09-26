@@ -53,9 +53,9 @@ void VoxelPointNormalAngleSTDToVoxelCount::finalCompute() {
 
       countMap.try_emplace(quantizedAzimuthSTD, array<size_t, BUFFER_SIZE * 2>{0, 0, 0, 0, 0, 0});
       countMap.try_emplace(quantizedZenithSTD, array<size_t, BUFFER_SIZE * 2>{0, 0, 0, 0, 0, 0});
-      countMap.at(quantizedAzimuthSTD).at(bufferIndex) = countMap.at(quantizedAzimuthSTD).at(bufferIndex) + 1;
-      countMap.at(quantizedZenithSTD).at(bufferIndex + BUFFER_SIZE) =
-          countMap.at(quantizedZenithSTD).at(bufferIndex + BUFFER_SIZE) + 1;
+      countMap[quantizedAzimuthSTD][bufferIndex] = countMap[quantizedAzimuthSTD][bufferIndex] + 1;
+      countMap[quantizedZenithSTD][bufferIndex + BUFFER_SIZE] =
+          countMap[quantizedZenithSTD][bufferIndex + BUFFER_SIZE] + 1;
     }
   }
 
@@ -87,8 +87,8 @@ void VoxelPointNormalAngleSTDToVoxelCount::finalCompute() {
       << ","
       << "Voxel Count (Other)" << endl;
   for (const auto& [angleSTD, countArray] : countMap) {
-    ofs << angleSTD << "," << countArray.at(0) << "," << countArray.at(1) << "," << countArray.at(2) << ","
-        << countArray.at(3) << "," << countArray.at(4) << "," << countArray.at(5) << endl;
+    ofs << angleSTD << "," << countArray[0] << "," << countArray[1] << "," << countArray[2] << "," << countArray[3]
+        << "," << countArray[4] << "," << countArray[5] << endl;
   }
 }
 

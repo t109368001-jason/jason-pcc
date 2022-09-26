@@ -55,7 +55,7 @@ void JPCCMetric::addPointsAndBytes(const std::string&                    name,
                                    const GroupOfFrame<PointT>&           frames,
                                    const std::vector<std::vector<char>>& encodedFramesBytes) {
   for (size_t i = 0; i < frames.size(); i++) {
-    this->addPointsAndBytes<PointT>(name, frames.at(i), encodedFramesBytes.at(i));
+    this->addPointsAndBytes<PointT>(name, frames[i], encodedFramesBytes[i]);
   }
 }
 
@@ -96,12 +96,12 @@ void JPCCMetric::addPSNR(const std::string&          name,
                          const bool                  parallel) {
   assert(framesA.size() == framesB.size());
   if (!parallel) {
-    for (size_t i = 0; i < framesA.size(); i++) { this->addPSNR<PointA, PointB>(name, framesA.at(i), framesB.at(i)); }
+    for (size_t i = 0; i < framesA.size(); i++) { this->addPSNR<PointA, PointB>(name, framesA[i], framesB[i]); }
   } else {
     const auto range = boost::counting_range<size_t>(0, framesA.size());
     std::for_each(std::execution::par, range.begin(), range.end(),
                   [&](const size_t& i) {  //
-                    this->addPSNR<PointA, PointB>(name, framesA.at(i), framesB.at(i));
+                    this->addPSNR<PointA, PointB>(name, framesA[i], framesB[i]);
                   });
   }
 }
@@ -128,15 +128,15 @@ void JPCCMetric::computePSNR(const FramePtr<PointA>& frameA,
   kdtree.setInputCloud(frameB);
 
   for (size_t indexA = 0; indexA < frameA->size(); indexA++) {
-    const PointA& pointA = frameA->at(indexA);
+    const PointA& pointA = (*frameA)[indexA];
     // For point 'i' in A, find its nearest neighbor in B. store it in 'j'
     int ret = kdtree.nearestKSearch(pointA, K, pointIdxKNNSearch, pointKNNSquaredDistance);
     THROW_IF_NOT(ret == K);
 
-    const PointB& pointB = frameB->at(pointIdxKNNSearch.at(0));
+    const PointB& pointB = (*frameB)[pointIdxKNNSearch.front()];
 
     // Compute point-to-point, which should be equal to sqrt( dist[0] )
-    const double distProjC2c = pointKNNSquaredDistance.at(0);
+    const double distProjC2c = pointKNNSquaredDistance.front();
 
     // Compute point-to-plane, normals in B will be used for point-to-plane
     double distProjC2p;

@@ -10,7 +10,7 @@ ChildPattern getTestChildPattern(BufferIndex bufferSelector) {
       ChildPattern("11111000"), ChildPattern("11111100"), ChildPattern("10010010"), ChildPattern("10101010"),
       ChildPattern("10101010"), ChildPattern("10101010"), ChildPattern("10101010")  //
   };
-  return childPatterns.at(bufferSelector);
+  return childPatterns[bufferSelector];
 }
 
 FramePtr<pcl::PointXYZ> getTestCloud(BufferIndex bufferSelector) {

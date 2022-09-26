@@ -71,7 +71,7 @@ void main_(const AppParameter& parameter, Stopwatch& clock) {
           preProcessor.process(frames0, nullptr, parameter.parallel);
           clock.stop();
           framesMap->insert_or_assign("0", frames0);
-          if (registration) { registration->setInputTarget(frames0.at(0)); }
+          if (registration) { registration->setInputTarget(frames0[0]); }
         }
         if (event.getKeyCode() == '1' || event.getKeyCode() == ' ') {
           cout << "1" << endl;
@@ -82,10 +82,10 @@ void main_(const AppParameter& parameter, Stopwatch& clock) {
           if (registration && framesMap->find("0") != framesMap->end()) {
             auto frame = jpcc::make_shared<Frame<PointT>>();
 
-            registration->setInputSource(frames1.at(0));
+            registration->setInputSource(frames1[0]);
             registration->align(*frame);
             cout << registration->getFinalTransformation() << endl;
-            frames1.at(0) = frame;
+            frames1[0] = frame;
           }
           framesMap->insert_or_assign("1", frames1);
         }
@@ -98,10 +98,10 @@ void main_(const AppParameter& parameter, Stopwatch& clock) {
           if (registration && framesMap->find("0") != framesMap->end()) {
             auto frame = jpcc::make_shared<Frame<PointT>>();
 
-            registration->setInputSource(frames2.at(0));
+            registration->setInputSource(frames2[0]);
             registration->align(*frame);
             cout << registration->getFinalTransformation() << endl;
-            frames2.at(0) = frame;
+            frames2[0] = frame;
           }
           framesMap->insert_or_assign("2", frames2);
         }
@@ -114,10 +114,10 @@ void main_(const AppParameter& parameter, Stopwatch& clock) {
           if (registration && framesMap->find("0") != framesMap->end()) {
             auto frame = jpcc::make_shared<Frame<PointT>>();
 
-            registration->setInputSource(frames3.at(0));
+            registration->setInputSource(frames3[0]);
             registration->align(*frame);
             cout << registration->getFinalTransformation() << endl;
-            frames3.at(0) = frame;
+            frames3[0] = frame;
           }
           framesMap->insert_or_assign("3", frames3);
         }

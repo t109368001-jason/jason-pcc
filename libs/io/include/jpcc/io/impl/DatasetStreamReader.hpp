@@ -22,8 +22,8 @@ void DatasetStreamReader<PointT>::load(const size_t          datasetIndex,
                                          this->datasetParam_.getEndFrameNumbers(datasetIndex));
   if (startFrameNumber >= endFrameNumber) { return; }
 
-  size_t&                     currentFrameNumber = this->currentFrameNumbers_.at(datasetIndex);
-  GroupOfFrame<PointT>&       frameBuffer        = frameBuffers_.at(datasetIndex);
+  size_t&                     currentFrameNumber = this->currentFrameNumbers_[datasetIndex];
+  GroupOfFrame<PointT>&       frameBuffer        = frameBuffers_[datasetIndex];
   shared_ptr<Eigen::Matrix4f> transform          = this->datasetParam_.getTransforms(datasetIndex);
 
   open_(datasetIndex, startFrameNumber);
@@ -49,8 +49,8 @@ void DatasetStreamReader<PointT>::load(const size_t          datasetIndex,
           p.z = z;
         });
       }
-      frameBuffer.front()->header.seq                  = currentFrameNumber;
-      frames.at(currentFrameNumber - startFrameNumber) = frameBuffer.front();
+      frameBuffer.front()->header.seq               = currentFrameNumber;
+      frames[currentFrameNumber - startFrameNumber] = frameBuffer.front();
       frameBuffer.erase(frameBuffer.begin());
       currentFrameNumber++;
     }
@@ -66,7 +66,7 @@ void DatasetStreamReader<PointT>::load(const size_t          datasetIndex,
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 bool DatasetStreamReader<PointT>::isEof_(const size_t datasetIndex) const {
-  return !this->isOpen() || eof_.at(datasetIndex);
+  return !this->isOpen() || eof_[datasetIndex];
 }
 
 }  // namespace jpcc::io

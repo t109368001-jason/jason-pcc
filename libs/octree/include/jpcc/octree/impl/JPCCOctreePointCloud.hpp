@@ -71,7 +71,7 @@ void JPCCOctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::de
     if (container) {
       LeafContainerT* backContainer = this->findLeafAtPoint(cloud->back());
       assert(backContainer != nullptr);
-      std::swap(cloud->at(container->getPointIndex()), cloud->at(backContainer->getPointIndex()));
+      std::swap((*cloud)[container->getPointIndex()], (*cloud)[backContainer->getPointIndex()]);
       backContainer->setPointIndex(container->getPointIndex());
 
       cloud->points.pop_back();

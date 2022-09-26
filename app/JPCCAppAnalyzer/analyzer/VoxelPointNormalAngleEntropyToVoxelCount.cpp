@@ -47,9 +47,9 @@ void VoxelPointNormalAngleEntropyToVoxelCount::finalCompute() {
 
       countMap.try_emplace(quantizedAzimuthEntropy, array<size_t, BUFFER_SIZE * 2>{0, 0, 0, 0, 0, 0});
       countMap.try_emplace(quantizedZenithEntropy, array<size_t, BUFFER_SIZE * 2>{0, 0, 0, 0, 0, 0});
-      countMap.at(quantizedAzimuthEntropy).at(bufferIndex) = countMap.at(quantizedAzimuthEntropy).at(bufferIndex) + 1;
-      countMap.at(quantizedZenithEntropy).at(bufferIndex + BUFFER_SIZE) =
-          countMap.at(quantizedZenithEntropy).at(bufferIndex + BUFFER_SIZE) + 1;
+      countMap[quantizedAzimuthEntropy][bufferIndex] = countMap[quantizedAzimuthEntropy][bufferIndex] + 1;
+      countMap[quantizedZenithEntropy][bufferIndex + BUFFER_SIZE] =
+          countMap[quantizedZenithEntropy][bufferIndex + BUFFER_SIZE] + 1;
     }
   }
 
@@ -81,8 +81,8 @@ void VoxelPointNormalAngleEntropyToVoxelCount::finalCompute() {
       << ","
       << "Voxel Count (Other)" << endl;
   for (const auto& [angleEntropy, countArray] : countMap) {
-    ofs << angleEntropy << "," << countArray.at(0) << "," << countArray.at(1) << "," << countArray.at(2) << ","
-        << countArray.at(3) << "," << countArray.at(4) << "," << countArray.at(5) << endl;
+    ofs << angleEntropy << "," << countArray[0] << "," << countArray[1] << "," << countArray[2] << "," << countArray[3]
+        << "," << countArray[4] << "," << countArray[5] << endl;
   }
 }
 
