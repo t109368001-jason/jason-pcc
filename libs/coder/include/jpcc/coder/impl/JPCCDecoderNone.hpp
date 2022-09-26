@@ -18,7 +18,7 @@ bool JPCCDecoderNone<PointT>::isConvertToPCLThreadSafe() {
 template <typename PointT>
 void JPCCDecoderNone<PointT>::decode(std::istream& is, shared_ptr<void>& reconstructFrame) {
   reconstructFrame = make_shared<Frame<PointT>>();
-  auto& _frame     = std::static_pointer_cast<Frame<PointT>>(reconstructFrame);
+  auto _frame     = std::static_pointer_cast<Frame<PointT>>(reconstructFrame);
 
   uint32_t length = 0;
   length          = (length << 8) | static_cast<unsigned>(is.get());
