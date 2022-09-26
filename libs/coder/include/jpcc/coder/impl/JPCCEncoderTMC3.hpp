@@ -30,14 +30,13 @@ bool JPCCEncoderTMC3<PointT>::isConvertFromPCLThreadSafe() {
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void JPCCEncoderTMC3<PointT>::convertFromPCL(const FramePtr<PointT>& pclFrame, shared_ptr<void>& frame) {
-  frame = make_shared<pcc::PCCPointSet3>();
+  frame       = make_shared<pcc::PCCPointSet3>();
+  auto _frame = std::static_pointer_cast<pcc::PCCPointSet3>(frame);
 
-  auto* frame_ = static_cast<pcc::PCCPointSet3*>(frame.get());
+  _frame->resize(pclFrame->size());
 
-  frame_->resize(pclFrame->size());
-
-  for (int i = 0; i < frame_->getPointCount(); i++) {
-    (*frame_)[i] = pcc::PCCPointSet3::PointType(pclFrame->at(i).x, pclFrame->at(i).y, pclFrame->at(i).z);
+  for (int i = 0; i < _frame->getPointCount(); i++) {
+    (*_frame)[i] = pcc::PCCPointSet3::PointType(pclFrame->at(i).x, pclFrame->at(i).y, pclFrame->at(i).z);
   }
 }
 
