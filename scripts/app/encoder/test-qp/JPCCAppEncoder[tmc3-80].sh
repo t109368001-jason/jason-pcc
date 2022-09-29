@@ -13,7 +13,7 @@ mkdir -p "${OUTPUT_FOLDER_PREFIX}${OUTPUT_FOLDER}"
   --jpccEncoderStatic.tmc3.positionQuantisationEnabled true \
   --jpccEncoderDynamic.tmc3.positionBaseQp 80 \
   --jpccEncoderStatic.tmc3.positionBaseQp 80 \
-  --jpccEncoderDynamic.positionQuantisationOctreeDepth 0 \
-  --jpccEncoderStatic.positionQuantisationOctreeDepth 0 \
+  --jpccEncoderDynamic.tmc3.positionQuantisationOctreeDepth 0 \
+  --jpccEncoderStatic.tmc3.positionQuantisationOctreeDepth 0 \
   --jpccMetricParameter.outputCSVFolder "${OUTPUT_FOLDER_PREFIX}${OUTPUT_FOLDER}" \
   --configs cfg/app/Encoder/ctc-raw.cfg |& tee "${OUTPUT_FOLDER_PREFIX}${OUTPUT_FOLDER}JPCCAppEncoder-$(date +%Y%m%d-%H%M%S).log"
