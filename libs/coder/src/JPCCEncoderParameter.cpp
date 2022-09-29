@@ -13,7 +13,7 @@ JPCCEncoderParameter::JPCCEncoderParameter(const string& prefix, const string& c
     Parameter(prefix, caption),
     backendType_("none"),
     backendType(CoderBackendType::NONE),
-    tmc3("tmc3", "JPCCEncoderTMC3Parameter") {
+    tmc3(prefix + ".tmc3", "JPCCEncoderTMC3Parameter") {
   opts_.add_options()                               //
       (string(prefix_ + BACKEND_TYPE_OPT).c_str(),  //
        value<string>(&backendType_)->required(),    //
