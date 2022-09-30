@@ -16,6 +16,10 @@ class AppParameter : public Parameter {
  public:
   bool                                    parallel;
   size_t                                  groupOfFramesSize;
+  std::string                             compressedDynamicStreamPath;
+  std::string                             compressedStaticStreamPath;
+  std::string                             compressedStaticAddedStreamPath;
+  std::string                             compressedStaticRemovedStreamPath;
   io::DatasetParameter                    inputDataset;
   io::DatasetReaderParameter              inputReader;
   io::DatasetParameter                    outputDataset;

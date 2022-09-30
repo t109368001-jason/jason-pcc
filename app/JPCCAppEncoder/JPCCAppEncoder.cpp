@@ -70,10 +70,10 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
   size_t       frameNumber    = parameter.inputDataset.getStartFrameNumber();
   const size_t endFrameNumber = parameter.inputDataset.getEndFrameNumber();
 
-  std::ofstream dynamicOfs("./bin/output-dynamic.bin", std::ios::binary);
-  std::ofstream staticOfs("./bin/output-static.bin", std::ios::binary);
-  std::ofstream staticAddedOfs("./bin/output-static-added.bin", std::ios::binary);
-  std::ofstream staticRemovedOfs("./bin/output-static-removed.bin", std::ios::binary);
+  std::ofstream dynamicOfs(parameter.compressedDynamicStreamPath, std::ios::binary);
+  std::ofstream staticOfs(parameter.compressedStaticStreamPath, std::ios::binary);
+  std::ofstream staticAddedOfs(parameter.compressedStaticAddedStreamPath, std::ios::binary);
+  std::ofstream staticRemovedOfs(parameter.compressedStaticRemovedStreamPath, std::ios::binary);
 
   JPCCContext<pcl::PointXYZINormal> context;
   context.segmentationType       = parameter.jpccGmmSegmentation.type;
