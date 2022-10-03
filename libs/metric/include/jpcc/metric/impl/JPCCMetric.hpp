@@ -82,6 +82,8 @@ void JPCCMetric::addPSNR(const std::string& name, const FramePtr<PointA>& frameA
             << "name=" << name << ", "
             << "frameNumberA=" << frameA->header.seq << ", "
             << "frameNumberB=" << frameB->header.seq << ", "
+            << "pointsA=" << frameA->size() << ", "
+            << "pointsB=" << frameB->size() << ", "
             << "c2cMSE=" << c2cMSE << ", "
             << "c2cPSNR=" << c2cPSNR << ", "
             << "c2pMSE=" << c2pMSE << ", "
