@@ -2,7 +2,7 @@
 set -ex
 
 OUTPUT_FOLDER_PREFIX="../../result/"
-OUTPUT_FOLDER="encoded-$(date +%Y%m%d-%H)/ZX-XS-20220707[seg-split][resolution-100]/"
+OUTPUT_FOLDER="encoded-$(date +%Y%m%d-%H)/ZX-XS-20220707[seg-split][resolution-300]/"
 
 mkdir -p "${OUTPUT_FOLDER_PREFIX}${OUTPUT_FOLDER}"
 
