@@ -8,7 +8,7 @@ mkdir -p "${OUTPUT_FOLDER_PREFIX}${OUTPUT_FOLDER}"
 
 ./bin/JPCCAppEncoder \
   --outputDataset.folder "${OUTPUT_FOLDER}" \
-  --jpccGMMSegmentationParameter.outputType dynamic-static \
+  --jpccGMMSegmentationParameter.outputType dynamic-staticAdded-staticRemoved \
   --jpccGMMSegmentationParameter.resolution 100.0 \
   --app.compressedDynamicStreamPath "${OUTPUT_FOLDER_PREFIX}${OUTPUT_FOLDER}output-dynamic.bin" \
   --app.compressedStaticStreamPath "${OUTPUT_FOLDER_PREFIX}${OUTPUT_FOLDER}output-static.bin" \
