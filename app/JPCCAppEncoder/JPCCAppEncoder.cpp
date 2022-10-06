@@ -75,7 +75,6 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
     size_t groupOfFramesSize = std::min(parameter.groupOfFramesSize, endFrameNumber - frameNumber);
     {  // clear
       context.clear();
-      context.init(groupOfFramesSize);
     }
     {  // load
       ScopeStopwatch clock = metric.start("Load", frameNumber);
@@ -176,10 +175,7 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
     }
     {  // combination
       ScopeStopwatch clock = metric.start("Combination", frameNumber);
-      combination.combine(context.getDynamicReconstructPclFrames(), context.getStaticReconstructPclFrames(),
-                          context.getStaticAddedReconstructPclFrames(), context.getStaticRemovedReconstructPclFrames(),
-                          context.getStaticReconstructPclFrames(), context.getReconstructPclFrames(),
-                          parameter.parallel);
+      combination.combine(context, parameter.parallel);
     }
     {  // compute PSNR
       for (size_t i = 0; i < context.getPclFrames().size(); i++) {

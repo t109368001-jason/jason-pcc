@@ -7,21 +7,6 @@ JPCCContext<PointT>::JPCCContext(SegmentationType segmentationType, Segmentation
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-void JPCCContext<PointT>::init(const size_t frameCount) {
-  clear();
-  resize(frameCount);
-  std::for_each(reconstructPclFrames_.begin(), reconstructPclFrames_.end(),
-                [](auto& frame) { frame = jpcc::make_shared<Frame<PointT>>(); });
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-void JPCCContext<PointT>::resize(const size_t frameCount) {
-  reconstructPclFrames_.resize(frameCount);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
 void JPCCContext<PointT>::clear() {
   pclFrames_.clear();
   dynamicPclFrames_.clear();

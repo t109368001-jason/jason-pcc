@@ -54,10 +54,6 @@ class JPCCContext : public IJPCCSegmentationContext<PointT>,
  public:
   JPCCContext(SegmentationType segmentationType, SegmentationOutputType segmentationOutputType);
 
-  void init(size_t frameCount);
-
-  void resize(size_t frameCount);
-
   void clear();
 
   [[nodiscard]] const SegmentationType       getSegmentationType() const override { return segmentationType_; };

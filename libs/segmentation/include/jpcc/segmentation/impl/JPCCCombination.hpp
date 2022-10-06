@@ -14,36 +14,19 @@ JPCCCombination<PointT>::JPCCCombination(const double resolution) {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-void JPCCCombination<PointT>::combine(const FramePtr<PointT>& dynamicFrame,
-                                      const FramePtr<PointT>& staticFrame,
-                                      const FramePtr<PointT>& staticAddedFrame,
-                                      const FramePtr<PointT>& staticRemovedFrame,
-                                      FramePtr<PointT>&       staticReconstructFrame,
-                                      FramePtr<PointT>&       reconstructFrame) {
-  FramePtr<PointT> _staticFrame = staticFrame;
-  if (!staticFrame && staticAddedFrame && staticRemovedFrame) {
-    this->combineStaticAddedRemoved(staticAddedFrame, staticRemovedFrame, staticReconstructFrame);
-    _staticFrame = staticReconstructFrame;
+void JPCCCombination<PointT>::combine(IJPCCCombinationContext<PointT>& context, bool parallel) {
+  context.getReconstructPclFrames().clear();
+  context.getReconstructPclFrames().resize(context.getDynamicReconstructPclFrames().size());
+  GroupOfFrame<PointT> _staticFrames = context.getStaticReconstructPclFrames();
+  if (context.getSegmentationOutputType() == SegmentationOutputType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED) {
+    context.getStaticReconstructPclFrames().resize(context.getDynamicReconstructPclFrames().size());
+    this->combineStaticAddedRemoved(context.getStaticAddedReconstructPclFrames(),
+                                    context.getStaticRemovedReconstructPclFrames(),
+                                    context.getStaticReconstructPclFrames());
+    _staticFrames = context.getStaticReconstructPclFrames();
   }
-
-  this->combineDynamicStatic(dynamicFrame, _staticFrame, reconstructFrame);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-void JPCCCombination<PointT>::combine(const GroupOfFrame<PointT>& dynamicFrames,
-                                      const GroupOfFrame<PointT>& staticFrames,
-                                      const GroupOfFrame<PointT>& staticAddedFrames,
-                                      const GroupOfFrame<PointT>& staticRemovedFrames,
-                                      GroupOfFrame<PointT>&       staticReconstructFrames,
-                                      GroupOfFrame<PointT>&       reconstructFrames,
-                                      bool                        parallel) {
-  GroupOfFrame<PointT> _staticFrames = staticFrames;
-  if (staticFrames.empty() && !staticAddedFrames.empty() && !staticRemovedFrames.empty()) {
-    this->combineStaticAddedRemoved(staticAddedFrames, staticRemovedFrames, staticReconstructFrames);
-    _staticFrames = staticReconstructFrames;
-  }
-  this->combineDynamicStatic(dynamicFrames, _staticFrames, reconstructFrames, parallel);
+  this->combineDynamicStatic(context.getDynamicReconstructPclFrames(), _staticFrames, context.getReconstructPclFrames(),
+                             parallel);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -81,9 +64,11 @@ template <typename PointT>
 void JPCCCombination<PointT>::combineDynamicStatic(const FramePtr<PointT>& dynamicFrame,
                                                    const FramePtr<PointT>& staticFrame,
                                                    FramePtr<PointT>&       reconstructFrame) {
+  reconstructFrame = jpcc::make_shared<Frame<PointT>>();
   if (dynamicFrame) { pcl::copyPointCloud(*dynamicFrame, *reconstructFrame); }
   if (staticFrame) { pcl::copyPointCloud(*staticFrame, *reconstructFrame); }
 }
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void JPCCCombination<PointT>::combineDynamicStatic(const GroupOfFrame<PointT>& dynamicFrames,

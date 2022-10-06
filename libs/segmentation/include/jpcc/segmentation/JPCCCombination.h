@@ -14,6 +14,9 @@ class JPCCCombination {
  public:
   JPCCCombination(double resolution);
 
+  void combine(IJPCCCombinationContext<PointT>& context, bool parallel);
+
+ protected:
   void combine(const FramePtr<PointT>& dynamicFrame,
                const FramePtr<PointT>& staticFrame,
                const FramePtr<PointT>& staticAddedFrame,
@@ -21,15 +24,6 @@ class JPCCCombination {
                FramePtr<PointT>&       staticReconstructFrame,
                FramePtr<PointT>&       reconstructFrame);
 
-  void combine(const GroupOfFrame<PointT>& dynamicFrames,
-               const GroupOfFrame<PointT>& staticFrames,
-               const GroupOfFrame<PointT>& staticAddedFrames,
-               const GroupOfFrame<PointT>& staticRemovedFrames,
-               GroupOfFrame<PointT>&       staticReconstructFrames,
-               GroupOfFrame<PointT>&       reconstructFrames,
-               bool                        parallel);
-
- protected:
   void combineStaticAddedRemoved(const FramePtr<PointT>& staticAddedFrame,
                                  const FramePtr<PointT>& staticRemovedFrame,
                                  FramePtr<PointT>&       staticReconstructFrame);
