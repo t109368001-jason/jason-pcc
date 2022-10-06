@@ -75,9 +75,8 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
   std::ofstream staticAddedOfs(parameter.compressedStaticAddedStreamPath, std::ios::binary);
   std::ofstream staticRemovedOfs(parameter.compressedStaticRemovedStreamPath, std::ios::binary);
 
-  JPCCContext<pcl::PointXYZINormal> context;
-  context.segmentationType       = parameter.jpccGmmSegmentation.type;
-  context.segmentationOutputType = parameter.jpccGmmSegmentation.outputType;
+  JPCCContext<pcl::PointXYZINormal> context(parameter.jpccGmmSegmentation.type,
+                                            parameter.jpccGmmSegmentation.outputType);
   while (frameNumber < endFrameNumber) {
     size_t groupOfFramesSize = std::min(parameter.groupOfFramesSize, endFrameNumber - frameNumber);
     {  // clear
@@ -86,87 +85,94 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
     }
     {  // load
       ScopeStopwatch clock = metric.start("Load", frameNumber);
-      reader->loadAll(frameNumber, groupOfFramesSize, context.pclFrames, parameter.parallel);
+      reader->loadAll(frameNumber, groupOfFramesSize, context.getPclFrames(), parameter.parallel);
     }
-    metric.addPoints<Point>("Raw", context.pclFrames, true);
+    metric.addPoints<Point>("Raw", context.getPclFrames(), true);
     {  // preprocess
       ScopeStopwatch clock = metric.start("PreProcess", frameNumber);
-      preProcessor.process(context.pclFrames, nullptr, parameter.parallel);
+      preProcessor.process(context.getPclFrames(), nullptr, parameter.parallel);
     }
-    metric.addPoints<Point>("PreProcessed", context.pclFrames, true);
+    metric.addPoints<Point>("PreProcessed", context.getPclFrames(), true);
     {  // compute normal
       ScopeStopwatch clock = metric.start("ComputeNormal", frameNumber);
-      normalEstimation.computeInPlaceAll(context.pclFrames, parameter.parallel);
+      normalEstimation.computeInPlaceAll(context.getPclFrames(), parameter.parallel);
     }
     {  // segmentation
       ScopeStopwatch clock = metric.start("Segmentation", frameNumber);
-      gmmSegmentation->segmentation(context.pclFrames, context.dynamicPclFrames, context.staticPclFrames,
-                                    context.staticAddedPclFrames, context.staticRemovedPclFrames, parameter.parallel);
+      gmmSegmentation->segmentation(context.getPclFrames(), context.getDynamicPclFrames(), context.getStaticPclFrames(),
+                                    context.getStaticAddedPclFrames(), context.getStaticRemovedPclFrames(),
+                                    parameter.parallel);
     }
     {  // convertFromPCL
       ScopeStopwatch clock = metric.start("ConvertFromPCL", frameNumber);
-      dynamicEncoder->convertFromPCL(context.dynamicPclFrames, context.dynamicFrames, parameter.parallel);
-      staticEncoder->convertFromPCL(context.staticPclFrames, context.staticFrames, parameter.parallel);
-      staticAddedEncoder->convertFromPCL(context.staticAddedPclFrames, context.staticAddedFrames, parameter.parallel);
-      staticRemovedEncoder->convertFromPCL(context.staticRemovedPclFrames, context.staticRemovedFrames,
+      dynamicEncoder->convertFromPCL(context.getDynamicPclFrames(), context.getDynamicFrames(), parameter.parallel);
+      staticEncoder->convertFromPCL(context.getStaticPclFrames(), context.getStaticFrames(), parameter.parallel);
+      staticAddedEncoder->convertFromPCL(context.getStaticAddedPclFrames(), context.getStaticAddedFrames(),
+                                         parameter.parallel);
+      staticRemovedEncoder->convertFromPCL(context.getStaticRemovedPclFrames(), context.getStaticRemovedFrames(),
                                            parameter.parallel);
     }
     {  // encode
       ScopeStopwatch clock = metric.start("Encode", frameNumber);
-      dynamicEncoder->encode(context.dynamicFrames, context.dynamicEncodedBytes, parameter.parallel);
-      staticEncoder->encode(context.staticFrames, context.staticEncodedBytes, parameter.parallel);
-      staticAddedEncoder->encode(context.staticAddedFrames, context.staticAddedEncodedBytes, parameter.parallel);
-      staticRemovedEncoder->encode(context.staticRemovedFrames, context.staticRemovedEncodedBytes, parameter.parallel);
+      dynamicEncoder->encode(context.getDynamicFrames(), context.getDynamicEncodedBytes(), parameter.parallel);
+      staticEncoder->encode(context.getStaticFrames(), context.getStaticEncodedBytes(), parameter.parallel);
+      staticAddedEncoder->encode(context.getStaticAddedFrames(), context.getStaticAddedEncodedBytes(),
+                                 parameter.parallel);
+      staticRemovedEncoder->encode(context.getStaticRemovedFrames(), context.getStaticRemovedEncodedBytes(),
+                                   parameter.parallel);
     }
-    metric.addPoints<Point>("Dynamic", context.dynamicPclFrames);
-    metric.addPoints<Point>("Static", context.staticPclFrames);
-    metric.addPoints<Point>("StaticAdded", context.staticAddedPclFrames);
-    metric.addPoints<Point>("StaticRemoved", context.staticRemovedPclFrames);
-    metric.addBytes("Dynamic", frameNumber, context.dynamicEncodedBytes.size());
-    metric.addBytes("Static", frameNumber, context.staticEncodedBytes.size());
-    metric.addBytes("StaticAdded", frameNumber, context.staticAddedEncodedBytes.size());
-    metric.addBytes("StaticRemoved", frameNumber, context.staticRemovedEncodedBytes.size());
+    metric.addPoints<Point>("Dynamic", context.getDynamicPclFrames());
+    metric.addPoints<Point>("Static", context.getStaticPclFrames());
+    metric.addPoints<Point>("StaticAdded", context.getStaticAddedPclFrames());
+    metric.addPoints<Point>("StaticRemoved", context.getStaticRemovedPclFrames());
+    metric.addBytes("Dynamic", frameNumber, context.getDynamicEncodedBytes().size());
+    metric.addBytes("Static", frameNumber, context.getStaticEncodedBytes().size());
+    metric.addBytes("StaticAdded", frameNumber, context.getStaticAddedEncodedBytes().size());
+    metric.addBytes("StaticRemoved", frameNumber, context.getStaticRemovedEncodedBytes().size());
 
     // TODO extract JPCCWriter
     {  // save
       ScopeStopwatch clock = metric.start("Save", frameNumber);
-      dynamicOfs.write(context.dynamicEncodedBytes.data(), (std::streamsize)context.dynamicEncodedBytes.size());
-      staticOfs.write(context.staticEncodedBytes.data(), (std::streamsize)context.staticEncodedBytes.size());
-      staticAddedOfs.write(context.staticAddedEncodedBytes.data(),
-                           (std::streamsize)context.staticAddedEncodedBytes.size());
-      staticRemovedOfs.write(context.staticRemovedEncodedBytes.data(),
-                             (std::streamsize)context.staticRemovedEncodedBytes.size());
+      dynamicOfs.write(context.getDynamicEncodedBytes().data(),
+                       (std::streamsize)context.getDynamicEncodedBytes().size());
+      staticOfs.write(context.getStaticEncodedBytes().data(), (std::streamsize)context.getStaticEncodedBytes().size());
+      staticAddedOfs.write(context.getStaticAddedEncodedBytes().data(),
+                           (std::streamsize)context.getStaticAddedEncodedBytes().size());
+      staticRemovedOfs.write(context.getStaticRemovedEncodedBytes().data(),
+                             (std::streamsize)context.getStaticRemovedEncodedBytes().size());
     }
     {  // decode
       ScopeStopwatch clock = metric.start("Decode", frameNumber);
 
-      std::istringstream dynamicIs(std::string(context.dynamicEncodedBytes.begin(), context.dynamicEncodedBytes.end()));
-      std::istringstream staticIs(std::string(context.staticEncodedBytes.begin(), context.staticEncodedBytes.end()));
+      std::istringstream dynamicIs(
+          std::string(context.getDynamicEncodedBytes().begin(), context.getDynamicEncodedBytes().end()));
+      std::istringstream staticIs(
+          std::string(context.getStaticEncodedBytes().begin(), context.getStaticEncodedBytes().end()));
       std::istringstream staticAddedReconIs(
-          std::string(context.staticAddedEncodedBytes.begin(), context.staticAddedEncodedBytes.end()));
+          std::string(context.getStaticAddedEncodedBytes().begin(), context.getStaticAddedEncodedBytes().end()));
       std::istringstream staticRemovedIs(
-          std::string(context.staticRemovedEncodedBytes.begin(), context.staticRemovedEncodedBytes.end()));
-      dynamicDecoder->decode(dynamicIs, context.dynamicReconstructFrames, parameter.parallel);
-      staticDecoder->decode(staticIs, context.staticReconstructFrames, parameter.parallel);
-      staticAddedDecoder->decode(staticAddedReconIs, context.staticAddedReconstructFrames, parameter.parallel);
-      staticRemovedDecoder->decode(staticRemovedIs, context.staticRemovedReconstructFrames, parameter.parallel);
+          std::string(context.getStaticRemovedEncodedBytes().begin(), context.getStaticRemovedEncodedBytes().end()));
+      dynamicDecoder->decode(dynamicIs, context.getDynamicReconstructFrames(), parameter.parallel);
+      staticDecoder->decode(staticIs, context.getStaticReconstructFrames(), parameter.parallel);
+      staticAddedDecoder->decode(staticAddedReconIs, context.getStaticAddedReconstructFrames(), parameter.parallel);
+      staticRemovedDecoder->decode(staticRemovedIs, context.getStaticRemovedReconstructFrames(), parameter.parallel);
     }
     {  // convertToPCL
       ScopeStopwatch clock = metric.start("ConvertToPCL", frameNumber);
-      dynamicDecoder->convertToPCL(context.dynamicReconstructFrames, context.dynamicReconstructPclFrames,
+      dynamicDecoder->convertToPCL(context.getDynamicReconstructFrames(), context.getDynamicReconstructPclFrames(),
                                    parameter.parallel);
-      staticDecoder->convertToPCL(context.staticReconstructFrames, context.staticReconstructPclFrames,
+      staticDecoder->convertToPCL(context.getStaticReconstructFrames(), context.getStaticReconstructPclFrames(),
                                   parameter.parallel);
-      staticAddedDecoder->convertToPCL(context.staticAddedReconstructFrames, context.staticAddedReconstructPclFrames,
-                                       parameter.parallel);
-      staticRemovedDecoder->convertToPCL(context.staticRemovedReconstructFrames,
-                                         context.staticRemovedReconstructPclFrames, parameter.parallel);
+      staticAddedDecoder->convertToPCL(context.getStaticAddedReconstructFrames(),
+                                       context.getStaticAddedReconstructPclFrames(), parameter.parallel);
+      staticRemovedDecoder->convertToPCL(context.getStaticRemovedReconstructFrames(),
+                                         context.getStaticRemovedReconstructPclFrames(), parameter.parallel);
     }
     {  // copy normal to Reconstruct
       ScopeStopwatch clock = metric.start("CopyNormalToReconstruct", frameNumber);
-      for (size_t i = 0; i < context.dynamicReconstructPclFrames.size(); i++) {
-        FramePtr<Point>& dynamicReconstructPclFrame = context.dynamicReconstructPclFrames[i];
-        FramePtr<Point>& dynamicPclFrame            = context.dynamicPclFrames[i];
+      for (size_t i = 0; i < context.getDynamicReconstructPclFrames().size(); i++) {
+        FramePtr<Point>& dynamicReconstructPclFrame = context.getDynamicReconstructPclFrames()[i];
+        FramePtr<Point>& dynamicPclFrame            = context.getDynamicPclFrames()[i];
         for (size_t j = 0; j < dynamicReconstructPclFrame->points.size(); j++) {
           (*dynamicReconstructPclFrame)[j].normal_x  = (*dynamicPclFrame)[j].normal_x;
           (*dynamicReconstructPclFrame)[j].normal_y  = (*dynamicPclFrame)[j].normal_y;
@@ -174,9 +180,9 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
           (*dynamicReconstructPclFrame)[j].curvature = (*dynamicPclFrame)[j].curvature;
         }
       }
-      for (size_t i = 0; i < context.staticReconstructPclFrames.size(); i++) {
-        FramePtr<Point>& staticReconstructPclFrame = context.staticReconstructPclFrames[i];
-        FramePtr<Point>& staticPclFrames           = context.staticPclFrames[i];
+      for (size_t i = 0; i < context.getStaticReconstructPclFrames().size(); i++) {
+        FramePtr<Point>& staticReconstructPclFrame = context.getStaticReconstructPclFrames()[i];
+        FramePtr<Point>& staticPclFrames           = context.getStaticPclFrames()[i];
         for (size_t j = 0; j < staticReconstructPclFrame->points.size(); j++) {
           (*staticReconstructPclFrame)[j].normal_x  = (*staticPclFrames)[j].normal_x;
           (*staticReconstructPclFrame)[j].normal_y  = (*staticPclFrames)[j].normal_y;
@@ -184,9 +190,9 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
           (*staticReconstructPclFrame)[j].curvature = (*staticPclFrames)[j].curvature;
         }
       }
-      for (size_t i = 0; i < context.staticAddedReconstructPclFrames.size(); i++) {
-        FramePtr<Point>& staticAddedReconstructPclFrame = context.staticAddedReconstructPclFrames[i];
-        FramePtr<Point>& staticAddedPclFrame            = context.staticAddedPclFrames[i];
+      for (size_t i = 0; i < context.getStaticAddedReconstructPclFrames().size(); i++) {
+        FramePtr<Point>& staticAddedReconstructPclFrame = context.getStaticAddedReconstructPclFrames()[i];
+        FramePtr<Point>& staticAddedPclFrame            = context.getStaticAddedPclFrames()[i];
         for (size_t j = 0; j < staticAddedReconstructPclFrame->points.size(); j++) {
           (*staticAddedReconstructPclFrame)[j].normal_x  = (*staticAddedPclFrame)[j].normal_x;
           (*staticAddedReconstructPclFrame)[j].normal_y  = (*staticAddedPclFrame)[j].normal_y;
@@ -194,9 +200,9 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
           (*staticAddedReconstructPclFrame)[j].curvature = (*staticAddedPclFrame)[j].curvature;
         }
       }
-      for (size_t i = 0; i < context.staticRemovedReconstructPclFrames.size(); i++) {
-        FramePtr<Point>& staticRemovedReconstructPclFrame = context.staticRemovedReconstructPclFrames[i];
-        FramePtr<Point>& staticRemovedPclFrame            = context.staticRemovedPclFrames[i];
+      for (size_t i = 0; i < context.getStaticRemovedReconstructPclFrames().size(); i++) {
+        FramePtr<Point>& staticRemovedReconstructPclFrame = context.getStaticRemovedReconstructPclFrames()[i];
+        FramePtr<Point>& staticRemovedPclFrame            = context.getStaticRemovedPclFrames()[i];
         for (size_t j = 0; j < staticRemovedReconstructPclFrame->points.size(); j++) {
           (*staticRemovedReconstructPclFrame)[j].normal_x  = (*staticRemovedPclFrame)[j].normal_x;
           (*staticRemovedReconstructPclFrame)[j].normal_y  = (*staticRemovedPclFrame)[j].normal_y;
@@ -207,17 +213,20 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
     }
     {  // combination
       ScopeStopwatch clock = metric.start("Combination", frameNumber);
-      combination.combine(context.dynamicReconstructPclFrames, context.staticReconstructPclFrames,
-                          context.staticAddedReconstructPclFrames, context.staticRemovedReconstructPclFrames,
-                          context.staticReconstructPclFrames, context.reconstructPclFrames, parameter.parallel);
+      combination.combine(context.getDynamicReconstructPclFrames(), context.getStaticReconstructPclFrames(),
+                          context.getStaticAddedReconstructPclFrames(), context.getStaticRemovedReconstructPclFrames(),
+                          context.getStaticReconstructPclFrames(), context.getReconstructPclFrames(),
+                          parameter.parallel);
     }
     {  // compute PSNR
-      for (size_t i = 0; i < context.pclFrames.size(); i++) {
-        context.reconstructPclFrames[i]->header = context.pclFrames[i]->header;
+      for (size_t i = 0; i < context.getPclFrames().size(); i++) {
+        context.getReconstructPclFrames()[i]->header = context.getPclFrames()[i]->header;
       }
       ScopeStopwatch clock = metric.start("ComputePSNR", frameNumber);
-      metric.addPSNR<Point, Point>("A2B", context.pclFrames, context.reconstructPclFrames, parameter.parallel);
-      metric.addPSNR<Point, Point>("B2A", context.reconstructPclFrames, context.pclFrames, parameter.parallel);
+      metric.addPSNR<Point, Point>("A2B", context.getPclFrames(), context.getReconstructPclFrames(),
+                                   parameter.parallel);
+      metric.addPSNR<Point, Point>("B2A", context.getReconstructPclFrames(), context.getPclFrames(),
+                                   parameter.parallel);
     }
 
     frameNumber += groupOfFramesSize;
