@@ -8,6 +8,12 @@ JPCCSegmentationNone<PointT>::JPCCSegmentationNone(const JPCCSegmentationParamet
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
+bool JPCCSegmentationNone<PointT>::isThreadSafe() {
+  return true;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT>
 bool JPCCSegmentationNone<PointT>::isBuilt() const {
   return true;
 }
@@ -18,12 +24,8 @@ void JPCCSegmentationNone<PointT>::appendTrainSamplesAndBuild(const FramePtr<Poi
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-void JPCCSegmentationNone<PointT>::segmentation(const FrameConstPtr<PointT>& frame,
-                                                const FramePtr<PointT>&      dynamicFrame,
-                                                const FramePtr<PointT>&      staticFrame,
-                                                const FramePtr<PointT>&      staticAddedFrame,
-                                                const FramePtr<PointT>&      staticRemovedFrame) {
-  pcl::copyPointCloud(*frame, *dynamicFrame);
+void JPCCSegmentationNone<PointT>::segmentation(IJPCCSegmentationContext<PointT>& context, const size_t index) {
+  pcl::copyPointCloud(*context.getPclFrames()[index], *context.getDynamicPclFrames()[index]);
 }
 
 }  // namespace jpcc::segmentation

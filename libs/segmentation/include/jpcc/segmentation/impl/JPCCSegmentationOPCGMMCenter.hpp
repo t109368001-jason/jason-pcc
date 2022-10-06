@@ -32,11 +32,17 @@ void JPCCSegmentationOPCGMMCenter<PointT, LeafContainerT>::appendTrainSamplesAnd
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename LeafContainerT>
-void JPCCSegmentationOPCGMMCenter<PointT, LeafContainerT>::segmentation(const FrameConstPtr<PointT>& frame,
-                                                                        const FramePtr<PointT>&      dynamicFrame,
-                                                                        const FramePtr<PointT>&      staticFrame,
-                                                                        const FramePtr<PointT>&      staticFrameAdded,
-                                                                        const FramePtr<PointT>& staticFrameRemoved) {
+void JPCCSegmentationOPCGMMCenter<PointT, LeafContainerT>::segmentation(IJPCCSegmentationContext<PointT>& context,
+                                                                        const size_t                      index) {
+  const FrameConstPtr<PointT> frame = !context.getPclFrames().empty() ? context.getPclFrames()[index] : nullptr;
+  const FramePtr<PointT>      dynamicFrame =
+      !context.getDynamicPclFrames().empty() ? context.getDynamicPclFrames()[index] : nullptr;
+  const FramePtr<PointT> staticFrame =
+      !context.getStaticPclFrames().empty() ? context.getStaticPclFrames()[index] : nullptr;
+  const FramePtr<PointT> staticAddedFrame =
+      !context.getStaticAddedPclFrames().empty() ? context.getStaticAddedPclFrames()[index] : nullptr;
+  const FramePtr<PointT> staticRemovedFrame =
+      !context.getStaticRemovedPclFrames().empty() ? context.getStaticRemovedPclFrames()[index] : nullptr;
   if (dynamicFrame) {
     dynamicFrame->clear();
     dynamicFrame->header = frame->header;
@@ -45,19 +51,19 @@ void JPCCSegmentationOPCGMMCenter<PointT, LeafContainerT>::segmentation(const Fr
     staticFrame->clear();
     staticFrame->header = frame->header;
   }
-  if (staticFrameAdded) {
-    staticFrameAdded->clear();
-    staticFrameAdded->header = frame->header;
+  if (staticAddedFrame) {
+    staticAddedFrame->clear();
+    staticAddedFrame->header = frame->header;
   }
-  if (staticFrameRemoved) {
-    staticFrameRemoved->clear();
-    staticFrameRemoved->header = frame->header;
+  if (staticRemovedFrame) {
+    staticRemovedFrame->clear();
+    staticRemovedFrame->header = frame->header;
   }
 
   this->addFrame(frame);
 
   OctreeKey key;
-  this->segmentationRecursive(frame, dynamicFrame, staticFrame, staticFrameAdded, staticFrameRemoved, key,
+  this->segmentationRecursive(frame, dynamicFrame, staticFrame, staticAddedFrame, staticRemovedFrame, key,
                               this->root_node_);
 
   if (dynamicFrame) {
@@ -74,19 +80,19 @@ void JPCCSegmentationOPCGMMCenter<PointT, LeafContainerT>::segmentation(const Fr
          << "frameNumber=" << staticFrame->header.seq << ", "
          << "points=" << staticFrame->size() << endl;
   }
-  if (staticFrameAdded) {
-    staticFrameAdded->width  = staticFrameAdded->size();
-    staticFrameAdded->height = 1;
+  if (staticAddedFrame) {
+    staticAddedFrame->width  = staticAddedFrame->size();
+    staticAddedFrame->height = 1;
     cout << "segmentation static added "
-         << "frameNumber=" << staticFrameAdded->header.seq << ", "
-         << "points=" << staticFrameAdded->size() << endl;
+         << "frameNumber=" << staticAddedFrame->header.seq << ", "
+         << "points=" << staticAddedFrame->size() << endl;
   }
-  if (staticFrameRemoved) {
-    staticFrameRemoved->width  = staticFrameRemoved->size();
-    staticFrameRemoved->height = 1;
+  if (staticRemovedFrame) {
+    staticRemovedFrame->width  = staticRemovedFrame->size();
+    staticRemovedFrame->height = 1;
     cout << "segmentation static removed "
-         << "frameNumber=" << staticFrameRemoved->header.seq << ", "
-         << "points=" << staticFrameRemoved->size() << endl;
+         << "frameNumber=" << staticRemovedFrame->header.seq << ", "
+         << "points=" << staticRemovedFrame->size() << endl;
   }
 }
 
@@ -164,8 +170,8 @@ void JPCCSegmentationOPCGMMCenter<PointT, LeafContainerT>::segmentationRecursive
     const FrameConstPtr<PointT>& frame,
     const FramePtr<PointT>&      dynamicFrame,
     const FramePtr<PointT>&      staticFrame,
-    const FramePtr<PointT>&      staticFrameAdded,
-    const FramePtr<PointT>&      staticFrameRemoved,
+    const FramePtr<PointT>&      staticAddedFrame,
+    const FramePtr<PointT>&      staticRemovedFrame,
     OctreeKey&                   key,
     const BranchNode*            branchNode) {
   for (unsigned char childIndex = 0; childIndex < 8; childIndex++) {
@@ -175,7 +181,7 @@ void JPCCSegmentationOPCGMMCenter<PointT, LeafContainerT>::segmentationRecursive
       OctreeNode* childNode = branchNode->getChildPtr(childIndex);
       switch (childNode->getNodeType()) {
         case pcl::octree::BRANCH_NODE: {
-          segmentationRecursive(frame, dynamicFrame, staticFrame, staticFrameAdded, staticFrameRemoved, key,
+          segmentationRecursive(frame, dynamicFrame, staticFrame, staticAddedFrame, staticRemovedFrame, key,
                                 dynamic_cast<const BranchNode*>(childNode));
           break;
         }
@@ -210,8 +216,8 @@ void JPCCSegmentationOPCGMMCenter<PointT, LeafContainerT>::segmentationRecursive
           }
 
           if (staticFrame && isStatic) { staticFrame->points.push_back(center); }
-          if (staticFrameAdded && !lastIsStatic && isStatic) { staticFrameAdded->points.push_back(center); }
-          if (staticFrameRemoved && lastIsStatic && !isStatic) { staticFrameRemoved->points.push_back(center); }
+          if (staticAddedFrame && !lastIsStatic && isStatic) { staticAddedFrame->points.push_back(center); }
+          if (staticRemovedFrame && lastIsStatic && !isStatic) { staticRemovedFrame->points.push_back(center); }
 
           leafContainer.setIsLastStatic(isStatic);
           for (size_t i = 0; i < SIZE; i++) {

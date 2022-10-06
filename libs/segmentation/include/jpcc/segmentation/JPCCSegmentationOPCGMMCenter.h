@@ -35,11 +35,7 @@ class JPCCSegmentationOPCGMMCenter : virtual public JPCCSegmentation<PointT>,
 
   void appendTrainSamplesAndBuild(const FramePtr<PointT>& frame) override;
 
-  void segmentation(const FrameConstPtr<PointT>& frame,
-                    const FramePtr<PointT>&      dynamicFrame,
-                    const FramePtr<PointT>&      staticFrame,
-                    const FramePtr<PointT>&      staticFrameAdded,
-                    const FramePtr<PointT>&      staticFrameRemoved) override;
+  void segmentation(IJPCCSegmentationContext<PointT>& context, size_t index) override;
 
   void appendTrainSamples(const FramePtr<PointT>& frame);
 
@@ -52,8 +48,8 @@ class JPCCSegmentationOPCGMMCenter : virtual public JPCCSegmentation<PointT>,
   void segmentationRecursive(const FrameConstPtr<PointT>& frame,
                              const FramePtr<PointT>&      dynamicFrame,
                              const FramePtr<PointT>&      staticFrame,
-                             const FramePtr<PointT>&      staticFrameAdded,
-                             const FramePtr<PointT>&      staticFrameRemoved,
+                             const FramePtr<PointT>&      staticAddedFrame,
+                             const FramePtr<PointT>&      staticRemovedFrame,
                              OctreeKey&                   key,
                              const BranchNode*            branchNode);
 };

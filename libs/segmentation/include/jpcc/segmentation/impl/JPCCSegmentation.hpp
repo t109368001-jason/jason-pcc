@@ -28,25 +28,34 @@ void JPCCSegmentation<PointT>::appendTrainSamplesAndBuild(const GroupOfFrame<Poi
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-void JPCCSegmentation<PointT>::segmentation(const GroupOfFrame<PointT>& frames,
-                                            const GroupOfFrame<PointT>& dynamicFrames,
-                                            const GroupOfFrame<PointT>& staticFrames,
-                                            const GroupOfFrame<PointT>& staticAddedFrames,
-                                            const GroupOfFrame<PointT>& staticRemovedFrames,
-                                            const bool                  parallel) {
+void JPCCSegmentation<PointT>::segmentation(IJPCCSegmentationContext<PointT>& context, const bool parallel) {
+  context.getDynamicPclFrames().clear();
+  context.getStaticPclFrames().clear();
+  context.getStaticAddedPclFrames().clear();
+  context.getStaticRemovedPclFrames().clear();
+  context.getDynamicPclFrames().resize(context.getPclFrames().size());
+  std::for_each(context.getDynamicPclFrames().begin(), context.getDynamicPclFrames().end(),
+                [](auto& frame) { frame = jpcc::make_shared<Frame<PointT>>(); });
+  if (context.getSegmentationOutputType() == SegmentationOutputType::DYNAMIC_STATIC) {
+    context.getStaticPclFrames().resize(context.getPclFrames().size());
+    std::for_each(context.getStaticPclFrames().begin(), context.getStaticPclFrames().end(),
+                  [](auto& frame) { frame = jpcc::make_shared<Frame<PointT>>(); });
+  }
+  if (context.getSegmentationOutputType() == SegmentationOutputType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED) {
+    context.getStaticAddedPclFrames().resize(context.getPclFrames().size());
+    context.getStaticRemovedPclFrames().resize(context.getPclFrames().size());
+    std::for_each(context.getStaticAddedPclFrames().begin(), context.getStaticAddedPclFrames().end(),
+                  [](auto& frame) { frame = jpcc::make_shared<Frame<PointT>>(); });
+    std::for_each(context.getStaticRemovedPclFrames().begin(), context.getStaticRemovedPclFrames().end(),
+                  [](auto& frame) { frame = jpcc::make_shared<Frame<PointT>>(); });
+  }
   if (!parallel || !isThreadSafe()) {
-    for (size_t i = 0; i < frames.size(); i++) {
-      this->segmentation(frames[i], dynamicFrames[i], !staticFrames.empty() ? staticFrames[i] : nullptr,
-                         !staticAddedFrames.empty() ? staticAddedFrames[i] : nullptr,
-                         !staticRemovedFrames.empty() ? staticRemovedFrames[i] : nullptr);
-    }
+    for (size_t i = 0; i < context.getPclFrames().size(); i++) { this->segmentation(context, i); }
   } else {
-    const auto range = boost::counting_range<size_t>(0, frames.size());
+    const auto range = boost::counting_range<size_t>(0, context.getPclFrames().size());
     std::for_each(std::execution::par, range.begin(), range.end(),
                   [&](const size_t& i) {  //
-                    this->segmentation(frames[i], dynamicFrames[i], !staticFrames.empty() ? staticFrames[i] : nullptr,
-                                       !staticAddedFrames.empty() ? staticAddedFrames[i] : nullptr,
-                                       !staticRemovedFrames.empty() ? staticRemovedFrames[i] : nullptr);
+                    this->segmentation(context, i);
                   });
   }
 }

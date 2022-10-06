@@ -25,18 +25,10 @@ class JPCCSegmentation {
 
   virtual void appendTrainSamplesAndBuild(const GroupOfFrame<PointT>& frames, bool parallel);
 
-  virtual void segmentation(const FrameConstPtr<PointT>& frame,
-                            const FramePtr<PointT>&      dynamicFrame,
-                            const FramePtr<PointT>&      staticFrame,
-                            const FramePtr<PointT>&      staticAddedFrame,
-                            const FramePtr<PointT>&      staticRemovedFrame) = 0;
+  virtual void segmentation(IJPCCSegmentationContext<PointT>& context, bool parallel);
 
-  virtual void segmentation(const GroupOfFrame<PointT>& frames,
-                            const GroupOfFrame<PointT>& dynamicFrames,
-                            const GroupOfFrame<PointT>& staticFrames,
-                            const GroupOfFrame<PointT>& staticAddedFrames,
-                            const GroupOfFrame<PointT>& staticRemovedFrames,
-                            bool                        parallel);
+ protected:
+  virtual void segmentation(IJPCCSegmentationContext<PointT>& context, size_t index) = 0;
 };
 
 }  // namespace jpcc::segmentation

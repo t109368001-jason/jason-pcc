@@ -60,6 +60,10 @@ class JPCCContext : public IJPCCSegmentationContext<PointT>,
 
   void clear();
 
+  [[nodiscard]] const SegmentationType       getSegmentationType() const override { return segmentationType_; };
+  [[nodiscard]] const SegmentationOutputType getSegmentationOutputType() const override {
+    return segmentationOutputType_;
+  };
   [[nodiscard]] const GroupOfFrame<PointT>& getPclFrames() const override { return pclFrames_; };
   [[nodiscard]] const GroupOfFrame<PointT>& getDynamicPclFrames() const override { return dynamicPclFrames_; };
   [[nodiscard]] const GroupOfFrame<PointT>& getStaticPclFrames() const override { return staticPclFrames_; };

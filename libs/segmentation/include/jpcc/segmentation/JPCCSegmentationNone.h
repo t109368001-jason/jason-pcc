@@ -9,15 +9,14 @@ class JPCCSegmentationNone : virtual public JPCCSegmentation<PointT> {
  public:
   JPCCSegmentationNone(const JPCCSegmentationParameter& parameter, int startFrameNumber);
 
+  bool isThreadSafe() override;
+
   bool isBuilt() const override;
 
   void appendTrainSamplesAndBuild(const FramePtr<PointT>& frame) override;
 
-  void segmentation(const FrameConstPtr<PointT>& frame,
-                    const FramePtr<PointT>&      dynamicFrame,
-                    const FramePtr<PointT>&      staticFrame,
-                    const FramePtr<PointT>&      staticAddedFrame,
-                    const FramePtr<PointT>&      staticRemovedFrame) override;
+ protected:
+  void segmentation(IJPCCSegmentationContext<PointT>& context, size_t index) override;
 };
 
 }  // namespace jpcc::segmentation

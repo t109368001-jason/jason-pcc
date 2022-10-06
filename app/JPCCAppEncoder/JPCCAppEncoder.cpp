@@ -99,9 +99,7 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
     }
     {  // segmentation
       ScopeStopwatch clock = metric.start("Segmentation", frameNumber);
-      gmmSegmentation->segmentation(context.getPclFrames(), context.getDynamicPclFrames(), context.getStaticPclFrames(),
-                                    context.getStaticAddedPclFrames(), context.getStaticRemovedPclFrames(),
-                                    parameter.parallel);
+      gmmSegmentation->segmentation(context, parameter.parallel);
     }
     {  // convertFromPCL
       ScopeStopwatch clock = metric.start("ConvertFromPCL", frameNumber);
