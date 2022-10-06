@@ -132,46 +132,7 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
     }
     {  // copy normal to Reconstruct
       ScopeStopwatch clock = metric.start("CopyNormalToReconstruct", frameNumber);
-      for (size_t i = 0; i < context.getDynamicReconstructPclFrames().size(); i++) {
-        FramePtr<Point>& dynamicReconstructPclFrame = context.getDynamicReconstructPclFrames()[i];
-        FramePtr<Point>& dynamicPclFrame            = context.getDynamicPclFrames()[i];
-        for (size_t j = 0; j < dynamicReconstructPclFrame->points.size(); j++) {
-          (*dynamicReconstructPclFrame)[j].normal_x  = (*dynamicPclFrame)[j].normal_x;
-          (*dynamicReconstructPclFrame)[j].normal_y  = (*dynamicPclFrame)[j].normal_y;
-          (*dynamicReconstructPclFrame)[j].normal_z  = (*dynamicPclFrame)[j].normal_z;
-          (*dynamicReconstructPclFrame)[j].curvature = (*dynamicPclFrame)[j].curvature;
-        }
-      }
-      for (size_t i = 0; i < context.getStaticReconstructPclFrames().size(); i++) {
-        FramePtr<Point>& staticReconstructPclFrame = context.getStaticReconstructPclFrames()[i];
-        FramePtr<Point>& staticPclFrames           = context.getStaticPclFrames()[i];
-        for (size_t j = 0; j < staticReconstructPclFrame->points.size(); j++) {
-          (*staticReconstructPclFrame)[j].normal_x  = (*staticPclFrames)[j].normal_x;
-          (*staticReconstructPclFrame)[j].normal_y  = (*staticPclFrames)[j].normal_y;
-          (*staticReconstructPclFrame)[j].normal_z  = (*staticPclFrames)[j].normal_z;
-          (*staticReconstructPclFrame)[j].curvature = (*staticPclFrames)[j].curvature;
-        }
-      }
-      for (size_t i = 0; i < context.getStaticAddedReconstructPclFrames().size(); i++) {
-        FramePtr<Point>& staticAddedReconstructPclFrame = context.getStaticAddedReconstructPclFrames()[i];
-        FramePtr<Point>& staticAddedPclFrame            = context.getStaticAddedPclFrames()[i];
-        for (size_t j = 0; j < staticAddedReconstructPclFrame->points.size(); j++) {
-          (*staticAddedReconstructPclFrame)[j].normal_x  = (*staticAddedPclFrame)[j].normal_x;
-          (*staticAddedReconstructPclFrame)[j].normal_y  = (*staticAddedPclFrame)[j].normal_y;
-          (*staticAddedReconstructPclFrame)[j].normal_z  = (*staticAddedPclFrame)[j].normal_z;
-          (*staticAddedReconstructPclFrame)[j].curvature = (*staticAddedPclFrame)[j].curvature;
-        }
-      }
-      for (size_t i = 0; i < context.getStaticRemovedReconstructPclFrames().size(); i++) {
-        FramePtr<Point>& staticRemovedReconstructPclFrame = context.getStaticRemovedReconstructPclFrames()[i];
-        FramePtr<Point>& staticRemovedPclFrame            = context.getStaticRemovedPclFrames()[i];
-        for (size_t j = 0; j < staticRemovedReconstructPclFrame->points.size(); j++) {
-          (*staticRemovedReconstructPclFrame)[j].normal_x  = (*staticRemovedPclFrame)[j].normal_x;
-          (*staticRemovedReconstructPclFrame)[j].normal_y  = (*staticRemovedPclFrame)[j].normal_y;
-          (*staticRemovedReconstructPclFrame)[j].normal_z  = (*staticRemovedPclFrame)[j].normal_z;
-          (*staticRemovedReconstructPclFrame)[j].curvature = (*staticRemovedPclFrame)[j].curvature;
-        }
-      }
+      context.copyNormalToReconstruct();
     }
     {  // combination
       ScopeStopwatch clock = metric.start("Combination", frameNumber);

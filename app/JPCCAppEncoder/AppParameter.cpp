@@ -77,6 +77,7 @@ void AppParameter::notify() {
   jpccDecoderStatic.notify();
   normalEstimation.notify();
   metricParameter.notify();
+  if (!parallel) { groupOfFramesSize = 1; }
   const filesystem::path& path = filesystem::path(outputDataset.getFilePath(0));
   if (!filesystem::exists(path.parent_path())) { filesystem::create_directories(path.parent_path()); }
 }
