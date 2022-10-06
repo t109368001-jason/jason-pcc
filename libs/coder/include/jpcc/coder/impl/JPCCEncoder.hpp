@@ -25,6 +25,8 @@ template <typename PointT>
 void JPCCEncoder<PointT>::convertFromPCL(const GroupOfFrame<PointT>&    pclFrames,
                                          std::vector<shared_ptr<void>>& frames,
                                          const bool                     parallel) {
+  frames.clear();
+  frames.resize(pclFrames.size());
   if (!parallel || !isConvertFromPCLThreadSafe()) {
     for (size_t i = 0; i < pclFrames.size(); i++) { this->convertFromPCL(pclFrames[i], frames[i]); }
   } else {

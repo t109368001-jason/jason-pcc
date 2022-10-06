@@ -35,14 +35,8 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
   JPCCCombination<Point>             combination(parameter.jpccGmmSegmentation.resolution);
   JPCCNormalEstimation<Point, Point> normalEstimation(parameter.normalEstimation);
 
-  JPCCEncoder<Point>::Ptr dynamicEncoder       = JPCCEncoderAdapter::build<Point>(parameter.jpccEncoderDynamic);
-  JPCCEncoder<Point>::Ptr staticEncoder        = JPCCEncoderAdapter::build<Point>(parameter.jpccEncoderStatic);
-  JPCCEncoder<Point>::Ptr staticAddedEncoder   = JPCCEncoderAdapter::build<Point>(parameter.jpccEncoderStatic);
-  JPCCEncoder<Point>::Ptr staticRemovedEncoder = JPCCEncoderAdapter::build<Point>(parameter.jpccEncoderStatic);
-  JPCCDecoder<Point>::Ptr dynamicDecoder       = JPCCDecoderAdapter::build<Point>(parameter.jpccDecoderDynamic);
-  JPCCDecoder<Point>::Ptr staticDecoder        = JPCCDecoderAdapter::build<Point>(parameter.jpccDecoderStatic);
-  JPCCDecoder<Point>::Ptr staticAddedDecoder   = JPCCDecoderAdapter::build<Point>(parameter.jpccDecoderStatic);
-  JPCCDecoder<Point>::Ptr staticRemovedDecoder = JPCCDecoderAdapter::build<Point>(parameter.jpccDecoderStatic);
+  JPCCEncoderAdapter<Point> encoder(parameter.jpccEncoderDynamic, parameter.jpccEncoderStatic);
+  JPCCDecoderAdapter<Point> decoder(parameter.jpccDecoderDynamic, parameter.jpccDecoderStatic);
 
   {  // build gaussian mixture model
     GroupOfFrame<Point> frames;
@@ -103,21 +97,11 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
     }
     {  // convertFromPCL
       ScopeStopwatch clock = metric.start("ConvertFromPCL", frameNumber);
-      dynamicEncoder->convertFromPCL(context.getDynamicPclFrames(), context.getDynamicFrames(), parameter.parallel);
-      staticEncoder->convertFromPCL(context.getStaticPclFrames(), context.getStaticFrames(), parameter.parallel);
-      staticAddedEncoder->convertFromPCL(context.getStaticAddedPclFrames(), context.getStaticAddedFrames(),
-                                         parameter.parallel);
-      staticRemovedEncoder->convertFromPCL(context.getStaticRemovedPclFrames(), context.getStaticRemovedFrames(),
-                                           parameter.parallel);
+      encoder.convertFromPCL(context, parameter.parallel);
     }
     {  // encode
       ScopeStopwatch clock = metric.start("Encode", frameNumber);
-      dynamicEncoder->encode(context.getDynamicFrames(), context.getDynamicEncodedBytes(), parameter.parallel);
-      staticEncoder->encode(context.getStaticFrames(), context.getStaticEncodedBytes(), parameter.parallel);
-      staticAddedEncoder->encode(context.getStaticAddedFrames(), context.getStaticAddedEncodedBytes(),
-                                 parameter.parallel);
-      staticRemovedEncoder->encode(context.getStaticRemovedFrames(), context.getStaticRemovedEncodedBytes(),
-                                   parameter.parallel);
+      encoder.encode(context, parameter.parallel);
     }
     metric.addPoints<Point>("Dynamic", context.getDynamicPclFrames());
     metric.addPoints<Point>("Static", context.getStaticPclFrames());
@@ -141,30 +125,11 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
     }
     {  // decode
       ScopeStopwatch clock = metric.start("Decode", frameNumber);
-
-      std::istringstream dynamicIs(
-          std::string(context.getDynamicEncodedBytes().begin(), context.getDynamicEncodedBytes().end()));
-      std::istringstream staticIs(
-          std::string(context.getStaticEncodedBytes().begin(), context.getStaticEncodedBytes().end()));
-      std::istringstream staticAddedReconIs(
-          std::string(context.getStaticAddedEncodedBytes().begin(), context.getStaticAddedEncodedBytes().end()));
-      std::istringstream staticRemovedIs(
-          std::string(context.getStaticRemovedEncodedBytes().begin(), context.getStaticRemovedEncodedBytes().end()));
-      dynamicDecoder->decode(dynamicIs, context.getDynamicReconstructFrames(), parameter.parallel);
-      staticDecoder->decode(staticIs, context.getStaticReconstructFrames(), parameter.parallel);
-      staticAddedDecoder->decode(staticAddedReconIs, context.getStaticAddedReconstructFrames(), parameter.parallel);
-      staticRemovedDecoder->decode(staticRemovedIs, context.getStaticRemovedReconstructFrames(), parameter.parallel);
+      decoder.decode(context, groupOfFramesSize, parameter.parallel);
     }
     {  // convertToPCL
       ScopeStopwatch clock = metric.start("ConvertToPCL", frameNumber);
-      dynamicDecoder->convertToPCL(context.getDynamicReconstructFrames(), context.getDynamicReconstructPclFrames(),
-                                   parameter.parallel);
-      staticDecoder->convertToPCL(context.getStaticReconstructFrames(), context.getStaticReconstructPclFrames(),
-                                  parameter.parallel);
-      staticAddedDecoder->convertToPCL(context.getStaticAddedReconstructFrames(),
-                                       context.getStaticAddedReconstructPclFrames(), parameter.parallel);
-      staticRemovedDecoder->convertToPCL(context.getStaticRemovedReconstructFrames(),
-                                         context.getStaticRemovedReconstructPclFrames(), parameter.parallel);
+      decoder.convertToPCL(context, parameter.parallel);
     }
     {  // copy normal to Reconstruct
       ScopeStopwatch clock = metric.start("CopyNormalToReconstruct", frameNumber);

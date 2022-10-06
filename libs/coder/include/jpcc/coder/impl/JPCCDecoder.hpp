@@ -27,6 +27,8 @@ template <typename PointT>
 void JPCCDecoder<PointT>::convertToPCL(std::vector<shared_ptr<void>>& reconstructFrames,
                                        GroupOfFrame<PointT>&          reconstructPclFrames,
                                        bool                           parallel) {
+  reconstructPclFrames.clear();
+  reconstructPclFrames.resize(reconstructFrames.size());
   if (!parallel || !isConvertToPCLThreadSafe()) {
     for (size_t i = 0; i < reconstructFrames.size(); i++) {
       this->convertToPCL(reconstructFrames[i], reconstructPclFrames[i]);

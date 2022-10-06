@@ -77,6 +77,7 @@ void JPCCDecoderTMC3<PointT>::convertToPCL(shared_ptr<void>& reconstructFrame, F
   auto reconstructFrame_ = std::static_pointer_cast<pcc::PCCPointSet3>(reconstructFrame);
   if (!reconstructFrame_) { return; }
 
+  reconstructPclFrame = jpcc::make_shared<Frame<PointT>>();
   reconstructPclFrame->resize(reconstructFrame_->getPointCount());
 
   for (int i = 0; i < reconstructPclFrame->size(); i++) {

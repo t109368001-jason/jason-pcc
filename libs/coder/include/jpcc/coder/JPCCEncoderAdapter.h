@@ -5,10 +5,20 @@
 
 namespace jpcc::coder {
 
+template <typename PointT>
 class JPCCEncoderAdapter {
+ protected:
+  typename JPCCEncoder<PointT>::Ptr dynamicEncoder_;
+  typename JPCCEncoder<PointT>::Ptr staticEncoder_;
+  typename JPCCEncoder<PointT>::Ptr staticAddedEncoder_;
+  typename JPCCEncoder<PointT>::Ptr staticRemovedEncoder_;
+
  public:
-  template <typename PointT>
-  [[nodiscard]] static typename JPCCEncoder<PointT>::Ptr build(const JPCCEncoderParameter& parameter);
+  JPCCEncoderAdapter(const JPCCEncoderParameter& dynamicParameter, const JPCCEncoderParameter& staticParameter);
+
+  void convertFromPCL(IJPCCEncoderContext<PointT>& context, bool parallel);
+
+  void encode(IJPCCEncoderContext<PointT>& context, bool parallel);
 };
 
 }  // namespace jpcc::coder
