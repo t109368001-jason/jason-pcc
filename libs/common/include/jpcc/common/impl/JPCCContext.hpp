@@ -18,34 +18,38 @@ void JPCCContext<PointT>::copyNormalToReconstruct() {
       (*dynamicReconstructPclFrame)[j].curvature = (*dynamicPclFrame)[j].curvature;
     }
   }
-  for (size_t i = 0; i < staticReconstructPclFrames_.size(); i++) {
-    FramePtr<PointT>& staticReconstructPclFrame = staticReconstructPclFrames_[i];
-    FramePtr<PointT>& staticPclFrames           = staticPclFrames_[i];
-    for (size_t j = 0; j < staticReconstructPclFrame->points.size(); j++) {
-      (*staticReconstructPclFrame)[j].normal_x  = (*staticPclFrames)[j].normal_x;
-      (*staticReconstructPclFrame)[j].normal_y  = (*staticPclFrames)[j].normal_y;
-      (*staticReconstructPclFrame)[j].normal_z  = (*staticPclFrames)[j].normal_z;
-      (*staticReconstructPclFrame)[j].curvature = (*staticPclFrames)[j].curvature;
+  if (segmentationOutputType_ == SegmentationOutputType::DYNAMIC_STATIC) {
+    for (size_t i = 0; i < staticReconstructPclFrames_.size(); i++) {
+      FramePtr<PointT>& staticReconstructPclFrame = staticReconstructPclFrames_[i];
+      FramePtr<PointT>& staticPclFrames           = staticPclFrames_[i];
+      for (size_t j = 0; j < staticReconstructPclFrame->points.size(); j++) {
+        (*staticReconstructPclFrame)[j].normal_x  = (*staticPclFrames)[j].normal_x;
+        (*staticReconstructPclFrame)[j].normal_y  = (*staticPclFrames)[j].normal_y;
+        (*staticReconstructPclFrame)[j].normal_z  = (*staticPclFrames)[j].normal_z;
+        (*staticReconstructPclFrame)[j].curvature = (*staticPclFrames)[j].curvature;
+      }
     }
   }
-  for (size_t i = 0; i < staticAddedReconstructPclFrames_.size(); i++) {
-    FramePtr<PointT>& staticAddedReconstructPclFrame = staticAddedReconstructPclFrames_[i];
-    FramePtr<PointT>& staticAddedPclFrame            = staticAddedPclFrames_[i];
-    for (size_t j = 0; j < staticAddedReconstructPclFrame->points.size(); j++) {
-      (*staticAddedReconstructPclFrame)[j].normal_x  = (*staticAddedPclFrame)[j].normal_x;
-      (*staticAddedReconstructPclFrame)[j].normal_y  = (*staticAddedPclFrame)[j].normal_y;
-      (*staticAddedReconstructPclFrame)[j].normal_z  = (*staticAddedPclFrame)[j].normal_z;
-      (*staticAddedReconstructPclFrame)[j].curvature = (*staticAddedPclFrame)[j].curvature;
+  if (segmentationOutputType_ == SegmentationOutputType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED) {
+    for (size_t i = 0; i < staticAddedReconstructPclFrames_.size(); i++) {
+      FramePtr<PointT>& staticAddedReconstructPclFrame = staticAddedReconstructPclFrames_[i];
+      FramePtr<PointT>& staticAddedPclFrame            = staticAddedPclFrames_[i];
+      for (size_t j = 0; j < staticAddedReconstructPclFrame->points.size(); j++) {
+        (*staticAddedReconstructPclFrame)[j].normal_x  = (*staticAddedPclFrame)[j].normal_x;
+        (*staticAddedReconstructPclFrame)[j].normal_y  = (*staticAddedPclFrame)[j].normal_y;
+        (*staticAddedReconstructPclFrame)[j].normal_z  = (*staticAddedPclFrame)[j].normal_z;
+        (*staticAddedReconstructPclFrame)[j].curvature = (*staticAddedPclFrame)[j].curvature;
+      }
     }
-  }
-  for (size_t i = 0; i < staticRemovedReconstructPclFrames_.size(); i++) {
-    FramePtr<PointT>& staticRemovedReconstructPclFrame = staticRemovedReconstructPclFrames_[i];
-    FramePtr<PointT>& staticRemovedPclFrame            = staticRemovedPclFrames_[i];
-    for (size_t j = 0; j < staticRemovedReconstructPclFrame->points.size(); j++) {
-      (*staticRemovedReconstructPclFrame)[j].normal_x  = (*staticRemovedPclFrame)[j].normal_x;
-      (*staticRemovedReconstructPclFrame)[j].normal_y  = (*staticRemovedPclFrame)[j].normal_y;
-      (*staticRemovedReconstructPclFrame)[j].normal_z  = (*staticRemovedPclFrame)[j].normal_z;
-      (*staticRemovedReconstructPclFrame)[j].curvature = (*staticRemovedPclFrame)[j].curvature;
+    for (size_t i = 0; i < staticRemovedReconstructPclFrames_.size(); i++) {
+      FramePtr<PointT>& staticRemovedReconstructPclFrame = staticRemovedReconstructPclFrames_[i];
+      FramePtr<PointT>& staticRemovedPclFrame            = staticRemovedPclFrames_[i];
+      for (size_t j = 0; j < staticRemovedReconstructPclFrame->points.size(); j++) {
+        (*staticRemovedReconstructPclFrame)[j].normal_x  = (*staticRemovedPclFrame)[j].normal_x;
+        (*staticRemovedReconstructPclFrame)[j].normal_y  = (*staticRemovedPclFrame)[j].normal_y;
+        (*staticRemovedReconstructPclFrame)[j].normal_z  = (*staticRemovedPclFrame)[j].normal_z;
+        (*staticRemovedReconstructPclFrame)[j].curvature = (*staticRemovedPclFrame)[j].curvature;
+      }
     }
   }
 }
