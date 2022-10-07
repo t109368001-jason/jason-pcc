@@ -34,14 +34,25 @@ template <typename PointT>
 void JPCCCombination<PointT>::combineStaticAddedRemoved(const FramePtr<PointT>& staticAddedFrame,
                                                         const FramePtr<PointT>& staticRemovedFrame,
                                                         FramePtr<PointT>&       staticReconstructFrame) {
+#if !defined(NDEBUG)
+  size_t expectedSize = staticFrame_->size();
+#endif
   if (staticRemovedFrame) {
     for (const PointT& pointToRemove : staticRemovedFrame->points) {
       staticOctree_->deletePointFromCloud(pointToRemove, staticFrame_);
+#if !defined(NDEBUG)
+      expectedSize--;
+      assert(staticFrame_->size() == expectedSize);
+#endif
     }
   }
   if (staticAddedFrame) {
     for (const PointT& pointToAdd : staticAddedFrame->points) {
       staticOctree_->addPointToCloud(pointToAdd, staticFrame_);
+#if !defined(NDEBUG)
+      expectedSize++;
+      assert(staticFrame_->size() == expectedSize);
+#endif
     }
   }
   staticReconstructFrame = jpcc::make_shared<Frame<PointT>>();

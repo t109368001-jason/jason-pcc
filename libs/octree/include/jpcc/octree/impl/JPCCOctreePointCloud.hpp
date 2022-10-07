@@ -68,17 +68,16 @@ void JPCCOctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::de
     this->genOctreeKeyforPoint(point, key);
 
     LeafContainerT* container = this->findLeaf(key);
-    if (container) {
-      LeafContainerT* backContainer = this->findLeafAtPoint(cloud->back());
-      assert(backContainer != nullptr);
-      std::swap((*cloud)[container->getPointIndex()], (*cloud)[backContainer->getPointIndex()]);
-      backContainer->setPointIndex(container->getPointIndex());
+    assert(container != nullptr);
+    LeafContainerT* backContainer = this->findLeafAtPoint(cloud->back());
+    assert(backContainer != nullptr);
+    std::swap((*cloud)[container->getPointIndex()], (*cloud)[backContainer->getPointIndex()]);
+    backContainer->setPointIndex(container->getPointIndex());
 
-      cloud->points.pop_back();
-      cloud->width  = cloud->size();
-      cloud->height = 1;
-      this->removeLeaf(key);
-    }
+    cloud->points.pop_back();
+    cloud->width  = cloud->size();
+    cloud->height = 1;
+    this->removeLeaf(key);
   }
 }
 
