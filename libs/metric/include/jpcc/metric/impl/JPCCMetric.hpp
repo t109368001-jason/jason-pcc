@@ -111,6 +111,7 @@ void JPCCMetric::addPSNR(const std::string&          name,
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void JPCCMetric::copyNormalToReconstruct(const FramePtr<PointT>& frame, const FramePtr<PointT>& reconstructFrame) {
+  if (frame->empty() || reconstructFrame->empty()) { return; }
   size_t                   K = 1;
   std::vector<int>         pointIdxKNNSearch(K);
   std::vector<float>       pointKNNSquaredDistance(K);
