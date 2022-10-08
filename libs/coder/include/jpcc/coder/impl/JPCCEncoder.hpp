@@ -46,7 +46,7 @@ void JPCCEncoder<PointT>::encode(const std::vector<shared_ptr<void>>& frames,
   if (!parallel || !isEncodeThreadSafe()) {
     for (size_t i = 0; i < frames.size(); i++) { this->encode(frames[i], encodedBytes); }
   } else {
-    std::vector<std::vector<char>> encodedFramesBytes;
+    std::vector<std::vector<char>> encodedFramesBytes(frames.size());
     const auto                     range = boost::counting_range<size_t>(0, frames.size());
     std::for_each(std::execution::par, range.begin(), range.end(),
                   [&](const size_t& i) {  //
