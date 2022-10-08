@@ -62,22 +62,30 @@ void JPCCOctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::ad
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename LeafContainerT, typename BranchContainerT, typename OctreeT>
 void JPCCOctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::deletePointFromCloud(
-    const PointT& point, PointCloudPtr cloud) {
+    const PointT& toDeletePoint, PointCloudPtr cloud) {
   if constexpr (std::is_same_v<LeafContainerT, OctreeContainerEditableIndex>) {
-    OctreeKey key;
-    this->genOctreeKeyforPoint(point, key);
+    OctreeKey toDeleteKey;
+    this->genOctreeKeyforPoint(toDeletePoint, toDeleteKey);
 
-    LeafContainerT* container = this->findLeaf(key);
-    assert(container != nullptr);
-    LeafContainerT* backContainer = this->findLeafAtPoint(cloud->back());
-    assert(backContainer != nullptr);
-    std::swap((*cloud)[container->getPointIndex()], (*cloud)[backContainer->getPointIndex()]);
-    backContainer->setPointIndex(container->getPointIndex());
+    LeafContainerT* toDeleteContainer = this->findLeaf(toDeleteKey);
+    assert(toDeleteContainer != nullptr);
+    LeafContainerT* lastContainer = this->findLeafAtPoint(cloud->back());
+    assert(lastContainer != nullptr);
+
+    PointT& toDeleteAndReplacePoint = (*cloud)[toDeleteContainer->getPointIndex()];
+    assert(toDeleteAndReplacePoint.x == toDeletePoint.x);
+    assert(toDeleteAndReplacePoint.y == toDeletePoint.y);
+    assert(toDeleteAndReplacePoint.z == toDeletePoint.z);
+    PointT& toBackupAndDeletePoint = (*cloud)[lastContainer->getPointIndex()];
+    toDeleteAndReplacePoint        = toBackupAndDeletePoint;
+    lastContainer->setPointIndex(toDeleteContainer->getPointIndex());
 
     cloud->points.pop_back();
-    cloud->width  = cloud->size();
+    cloud->width  = static_cast<std::uint32_t>(cloud->size());
     cloud->height = 1;
-    this->removeLeaf(key);
+
+    // remove container
+    this->removeLeaf(toDeleteKey);
   }
 }
 

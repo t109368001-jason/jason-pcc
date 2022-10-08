@@ -36,7 +36,7 @@ class JPCCOctreePointCloud : public OctreePointCloud<PointT, LeafContainerT, Bra
 
   void addFrame(BufferIndex bufferIndex, FrameConstPtr<PointT> frame);
 
-  void deletePointFromCloud(const PointT& point, PointCloudPtr cloud);
+  void deletePointFromCloud(const PointT& toDeletePoint, PointCloudPtr cloud);
 
  protected:
   void addPointIdx(uindex_t point_idx_arg) override;
