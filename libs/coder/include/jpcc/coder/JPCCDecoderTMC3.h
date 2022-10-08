@@ -18,10 +18,6 @@ class PCCTMC3Decoder3LambdaCallbacks : public pcc::PCCTMC3Decoder3::Callbacks {
 
 template <typename PointT>
 class JPCCDecoderTMC3 : public virtual JPCCDecoder<PointT> {
- protected:
-  pcc::PCCTMC3Decoder3 decoder_;
-  bool                 skipNext_;
-
  public:
   JPCCDecoderTMC3(JPCCDecoderParameter parameter);
 

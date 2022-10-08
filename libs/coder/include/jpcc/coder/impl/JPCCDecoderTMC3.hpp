@@ -14,8 +14,7 @@ void PCCTMC3Decoder3LambdaCallbacks::onOutputCloud(const pcc::CloudFrame& frame)
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-JPCCDecoderTMC3<PointT>::JPCCDecoderTMC3(JPCCDecoderParameter parameter) :
-    JPCCDecoder<PointT>(parameter), decoder_(this->parameter_.tmc3), skipNext_(false) {}
+JPCCDecoderTMC3<PointT>::JPCCDecoderTMC3(JPCCDecoderParameter parameter) : JPCCDecoder<PointT>(parameter) {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
@@ -27,10 +26,6 @@ bool JPCCDecoderTMC3<PointT>::isConvertToPCLThreadSafe() {
 template <typename PointT>
 void JPCCDecoderTMC3<PointT>::decode(std::istream& is, shared_ptr<void>& reconstructFrame) {
   std::function<void(const pcc::CloudFrame& frame)> onOutputCloud = [&](const pcc::CloudFrame& frame) {
-    if (this->skipNext_) {
-      this->skipNext_ = false;
-      return;
-    }
     reconstructFrame       = make_shared<pcc::PCCPointSet3>(frame.cloud);
     auto reconstructFrame_ = std::static_pointer_cast<pcc::PCCPointSet3>(reconstructFrame);
     for (size_t i = 0; i < frame.cloud.getPointCount(); i++) {  //
@@ -38,25 +33,35 @@ void JPCCDecoderTMC3<PointT>::decode(std::istream& is, shared_ptr<void>& reconst
     }
   };
 
+  pcc::DecoderParams             param = this->parameter_.tmc3;
   PCCTMC3Decoder3LambdaCallbacks callback(onOutputCloud);
+  pcc::PCCTMC3Decoder3           decoder(param);
 
+  bool               hasSps = false;
   pcc::PayloadBuffer buffer;
   while (true) {
     pcc::PayloadBuffer* bufferPtr = &buffer;
+    auto                position  = is.tellg();
     readTlv(is, &buffer);
 
     if (bufferPtr->empty()) { reconstructFrame = make_shared<pcc::PCCPointSet3>(); }
 
     // at end of file (or other error), flush decoder
-    if (!is || bufferPtr->empty()) { bufferPtr = nullptr; }
+    if (!is || bufferPtr->empty()) {
+      bufferPtr = nullptr;
+    } else if (buffer.type == pcc::PayloadType::kSequenceParameterSet) {
+      if (hasSps) {
+        bufferPtr = nullptr;
+        is.seekg(position);
+      }
+      hasSps = true;
+    }
 
-    if (decoder_.decompress(bufferPtr, &callback)) {
+    if (decoder.decompress(bufferPtr, &callback)) {
       BOOST_THROW_EXCEPTION(std::logic_error("decompress point cloud error"));
     }
 
     if (!bufferPtr) { break; }
-
-    if (reconstructFrame) { break; }
   }
 }
 
@@ -68,7 +73,7 @@ void JPCCDecoderTMC3<PointT>::decode(std::istream&                  is,
   JPCCDecoder<PointT>::decode(is, reconstructFrames, parallel);
   if (reconstructFrames.empty()) { return; }
   auto _lastReconstructFrame = std::static_pointer_cast<pcc::PCCPointSet3>(reconstructFrames.back());
-  if (_lastReconstructFrame->getPointCount() != 0) { skipNext_ = true; }
+  if (_lastReconstructFrame->getPointCount() != 0) {}
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
