@@ -109,6 +109,64 @@ void JPCCMetric::addPSNR(const std::string&          name,
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT>
+void JPCCMetric::copyNormalToReconstruct(const FramePtr<PointT>& frame, const FramePtr<PointT>& reconstructFrame) {
+  size_t                   K = 1;
+  std::vector<int>         pointIdxKNNSearch(K);
+  std::vector<float>       pointKNNSquaredDistance(K);
+  pcl::KdTreeFLANN<PointT> kdtree;
+  kdtree.setInputCloud(frame);
+  for (auto& point : reconstructFrame->points) {
+    int ret = kdtree.nearestKSearch(point, K, pointIdxKNNSearch, pointKNNSquaredDistance);
+    THROW_IF_NOT(ret == K);
+    point.normal_x  = (*frame)[pointIdxKNNSearch.front()].normal_x;
+    point.normal_y  = (*frame)[pointIdxKNNSearch.front()].normal_y;
+    point.normal_z  = (*frame)[pointIdxKNNSearch.front()].normal_z;
+    point.curvature = (*frame)[pointIdxKNNSearch.front()].curvature;
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT>
+void JPCCMetric::copyNormalToReconstruct(const GroupOfFrame<PointT>& frames,
+                                         const GroupOfFrame<PointT>& reconstructFrames,
+                                         const bool                  parallel) {
+  assert(frames.size() == reconstructFrames.size());
+  if (!parallel) {
+    for (size_t i = 0; i < frames.size(); i++) {
+      const FramePtr<PointT>& frame            = frames[i];
+      const FramePtr<PointT>& reconstructFrame = reconstructFrames[i];
+      this->copyNormalToReconstruct<PointT>(frame, reconstructFrame);
+    }
+  } else {
+    const auto range = boost::counting_range<size_t>(0, frames.size());
+    std::for_each(std::execution::par, range.begin(), range.end(),
+                  [&](const size_t& i) {  //
+                    const FramePtr<PointT>& frame            = frames[i];
+                    const FramePtr<PointT>& reconstructFrame = reconstructFrames[i];
+                    this->copyNormalToReconstruct<PointT>(frame, reconstructFrame);
+                  });
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT>
+void JPCCMetric::copyNormalToReconstruct(const JPCCContext<PointT>& context, const bool parallel) {
+  this->copyNormalToReconstruct<PointT>(context.getDynamicPclFrames(), context.getDynamicReconstructPclFrames(),
+                                        parallel);
+  if (context.getSegmentationOutputType() == SegmentationOutputType::DYNAMIC_STATIC) {
+    this->copyNormalToReconstruct<PointT>(context.getStaticPclFrames(), context.getStaticReconstructPclFrames(),
+                                          parallel);
+  }
+  if (context.getSegmentationOutputType() == SegmentationOutputType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED) {
+    this->copyNormalToReconstruct<PointT>(context.getStaticAddedPclFrames(),
+                                          context.getStaticAddedReconstructPclFrames(), parallel);
+    this->copyNormalToReconstruct<PointT>(context.getStaticRemovedPclFrames(),
+                                          context.getStaticRemovedReconstructPclFrames(), parallel);
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointA, typename PointB>
 void JPCCMetric::computePSNR(const FramePtr<PointA>& frameA,
                              const FramePtr<PointB>& frameB,

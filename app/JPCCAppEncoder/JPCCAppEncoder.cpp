@@ -2,6 +2,8 @@
 #include <iostream>
 #include <vector>
 
+#include <pcl/kdtree/kdtree_flann.h>
+
 #include <jpcc/common/JPCCContext.h>
 #include <jpcc/common/ParameterParser.h>
 #include <jpcc/coder/JPCCEncoderAdapter.h>
@@ -132,7 +134,7 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
     }
     {  // copy normal to Reconstruct
       ScopeStopwatch clock = metric.start("CopyNormalToReconstruct", frameNumber);
-      context.copyNormalToReconstruct();
+      metric.copyNormalToReconstruct(context, parameter.parallel);
     }
     {  // combination
       ScopeStopwatch clock = metric.start("Combination", frameNumber);

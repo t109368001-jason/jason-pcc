@@ -5,6 +5,7 @@
 #include <string>
 
 #include <jpcc/common/Common.h>
+#include <jpcc/common/JPCCContext.h>
 #include <jpcc/common/ScopeStopwatch.h>
 #include <jpcc/metric/JPCCMetricParameter.h>
 
@@ -59,6 +60,17 @@ class JPCCMetric {
                const GroupOfFrame<PointA>& framesA,
                const GroupOfFrame<PointB>& framesB,
                bool                        parallel);
+
+  template <typename PointT>
+  void copyNormalToReconstruct(const FramePtr<PointT>& frame, const FramePtr<PointT>& reconstructFrame);
+
+  template <typename PointT>
+  void copyNormalToReconstruct(const GroupOfFrame<PointT>& frames,
+                               const GroupOfFrame<PointT>& reconstructFrames,
+                               bool                        parallel);
+
+  template <typename PointT>
+  void copyNormalToReconstruct(const JPCCContext<PointT>& context, bool parallel);
 
   template <typename PointA, typename PointB>
   void computePSNR(const FramePtr<PointA>& frameA,

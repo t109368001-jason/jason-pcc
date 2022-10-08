@@ -54,8 +54,6 @@ class JPCCContext : public IJPCCSegmentationContext<PointT>,
  public:
   JPCCContext(SegmentationType segmentationType, SegmentationOutputType segmentationOutputType);
 
-  void copyNormalToReconstruct();
-
   void clear();
 
   [[nodiscard]] const SegmentationType       getSegmentationType() const override { return segmentationType_; };
