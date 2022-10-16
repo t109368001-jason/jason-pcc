@@ -65,10 +65,10 @@ void JPCCMetric::writeAndShow() {
     metricCSV << "Frame Number,";
     for (const auto& name : pointsNameSet_) { metricCSV << name << " (points),"; }
     for (const auto& name : bytesNameSet_) { metricCSV << name << " (bytes),"; }
-    for (const auto& name : c2cMSENameSet_) { metricCSV << name << " (mm^2),"; }
-    for (const auto& name : c2cPSNRNameSet_) { metricCSV << name << " (db),"; }
-    for (const auto& name : c2pMSENameSet_) { metricCSV << name << " (mm^2),"; }
-    for (const auto& name : c2pPSNRNameSet_) { metricCSV << name << " (db),"; }
+    for (const auto& name : c2cMSENameSet_) { metricCSV << name << " (c2c)(mm^2),"; }
+    for (const auto& name : c2cPSNRNameSet_) { metricCSV << name << " (c2c)(db),"; }
+    for (const auto& name : c2pMSENameSet_) { metricCSV << name << " (c2p)(mm^2),"; }
+    for (const auto& name : c2pPSNRNameSet_) { metricCSV << name << " (c2p)(db),"; }
     for (const auto& name : clockNameSet_) { metricCSV << name << " (s),"; }
     metricCSV << std::endl;
   }

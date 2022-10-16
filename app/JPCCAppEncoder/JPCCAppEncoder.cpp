@@ -155,10 +155,10 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
         context.getDynamicReconstructPclFrames()[i]->header = context.getPclFrames()[i]->header;
       }
       // compute PSNR (Dynamic)
-      ScopeStopwatch clock = metric.start("ComputePSNR(Dynamic)", frameNumber);
-      metric.addPSNR<Point, Point>("A2B(Dynamic)", context.getPclFrames(), context.getDynamicReconstructPclFrames(),
+      ScopeStopwatch clock = metric.start("ComputePSNR (Dynamic)", frameNumber);
+      metric.addPSNR<Point, Point>("A2B (Dynamic)", context.getPclFrames(), context.getDynamicReconstructPclFrames(),
                                    parameter.parallel);
-      metric.addPSNR<Point, Point>("B2A(Dynamic)", context.getDynamicReconstructPclFrames(), context.getPclFrames(),
+      metric.addPSNR<Point, Point>("B2A (Dynamic)", context.getDynamicReconstructPclFrames(), context.getPclFrames(),
                                    parameter.parallel);
     }
 
