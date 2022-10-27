@@ -9,13 +9,14 @@ namespace jpcc {
 template <typename PointT>
 class IJPCCCombinationContext {
  public:
-  [[nodiscard]] virtual const SegmentationType       getSegmentationType() const                  = 0;
-  [[nodiscard]] virtual const SegmentationOutputType getSegmentationOutputType() const            = 0;
-  [[nodiscard]] virtual const GroupOfFrame<PointT>&  getDynamicReconstructPclFrames() const       = 0;
-  [[nodiscard]] virtual const GroupOfFrame<PointT>&  getStaticReconstructPclFrames() const        = 0;
-  [[nodiscard]] virtual const GroupOfFrame<PointT>&  getStaticAddedReconstructPclFrames() const   = 0;
-  [[nodiscard]] virtual const GroupOfFrame<PointT>&  getStaticRemovedReconstructPclFrames() const = 0;
-  [[nodiscard]] virtual const GroupOfFrame<PointT>&  getReconstructPclFrames() const              = 0;
+  [[nodiscard]] virtual SegmentationType       getSegmentationType() const       = 0;
+  [[nodiscard]] virtual SegmentationOutputType getSegmentationOutputType() const = 0;
+
+  [[nodiscard]] virtual const GroupOfFrame<PointT>& getDynamicReconstructPclFrames() const       = 0;
+  [[nodiscard]] virtual const GroupOfFrame<PointT>& getStaticReconstructPclFrames() const        = 0;
+  [[nodiscard]] virtual const GroupOfFrame<PointT>& getStaticAddedReconstructPclFrames() const   = 0;
+  [[nodiscard]] virtual const GroupOfFrame<PointT>& getStaticRemovedReconstructPclFrames() const = 0;
+  [[nodiscard]] virtual const GroupOfFrame<PointT>& getReconstructPclFrames() const              = 0;
 
   [[nodiscard]] virtual GroupOfFrame<PointT>& getDynamicReconstructPclFrames()       = 0;
   [[nodiscard]] virtual GroupOfFrame<PointT>& getStaticReconstructPclFrames()        = 0;

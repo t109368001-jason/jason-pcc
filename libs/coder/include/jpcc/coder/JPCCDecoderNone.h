@@ -7,8 +7,6 @@ namespace jpcc::coder {
 template <typename PointT>
 class JPCCDecoderNone : public virtual JPCCDecoder<PointT> {
  public:
-  JPCCDecoderNone(const JPCCDecoderParameter& parameter);
-
   bool isConvertToPCLThreadSafe() override;
 
   void decode(std::istream& is, shared_ptr<void>& reconstructFrame) override;

@@ -14,10 +14,6 @@ void PCCTMC3Decoder3LambdaCallbacks::onOutputCloud(const pcc::CloudFrame& frame)
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-JPCCDecoderTMC3<PointT>::JPCCDecoderTMC3(JPCCDecoderParameter parameter) : JPCCDecoder<PointT>(parameter) {}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
 bool JPCCDecoderTMC3<PointT>::isConvertToPCLThreadSafe() {
   return true;
 }
@@ -33,7 +29,10 @@ void JPCCDecoderTMC3<PointT>::decode(std::istream& is, shared_ptr<void>& reconst
     }
   };
 
-  pcc::DecoderParams             param = this->parameter_.tmc3;
+  pcc::DecoderParams param  = {0};
+  param.minGeomNodeSizeLog2 = 0;
+  param.decodeMaxPoints     = 0;
+  param.outputFpBits        = -1;
   PCCTMC3Decoder3LambdaCallbacks callback(onOutputCloud);
   pcc::PCCTMC3Decoder3           decoder(param);
 

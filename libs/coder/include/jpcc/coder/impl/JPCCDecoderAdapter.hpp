@@ -5,24 +5,33 @@ namespace jpcc::coder {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-JPCCDecoderAdapter<PointT>::JPCCDecoderAdapter(const JPCCDecoderParameter& dynamicParameter,
-                                               const JPCCDecoderParameter& staticParameter) {
-  if (dynamicParameter.backendType == CoderBackendType::NONE) {
-    dynamicDecoder_ = make_shared<JPCCDecoderNone<PointT>>(dynamicParameter);
-  } else if (dynamicParameter.backendType == CoderBackendType::TMC3) {
-    dynamicDecoder_ = make_shared<JPCCDecoderTMC3<PointT>>(dynamicParameter);
+void JPCCDecoderAdapter<PointT>::setBackendType(JPCCHeader header) {
+  if (header.dynamicBackendType == CoderBackendType::NONE) {
+    dynamicDecoder_ = make_shared<JPCCDecoderNone<PointT>>();
+  } else if (header.dynamicBackendType == CoderBackendType::TMC3) {
+    dynamicDecoder_ = make_shared<JPCCDecoderTMC3<PointT>>();
   } else {
     BOOST_THROW_EXCEPTION(std::logic_error("unsupported staticPointType"));
   }
-  if (staticParameter.backendType == CoderBackendType::NONE) {
-    staticDecoder_        = make_shared<JPCCDecoderNone<PointT>>(staticParameter);
-    staticAddedDecoder_   = make_shared<JPCCDecoderNone<PointT>>(staticParameter);
-    staticRemovedDecoder_ = make_shared<JPCCDecoderNone<PointT>>(staticParameter);
-  } else if (staticParameter.backendType == CoderBackendType::TMC3) {
-    staticDecoder_        = make_shared<JPCCDecoderTMC3<PointT>>(staticParameter);
-    staticAddedDecoder_   = make_shared<JPCCDecoderTMC3<PointT>>(staticParameter);
-    staticRemovedDecoder_ = make_shared<JPCCDecoderTMC3<PointT>>(staticParameter);
-  } else {
+  if (header.segmentationOutputType == SegmentationOutputType::DYNAMIC_STATIC) {
+    if (header.staticBackendType == CoderBackendType::NONE) {
+      staticDecoder_ = make_shared<JPCCDecoderNone<PointT>>();
+    } else if (header.staticBackendType == CoderBackendType::TMC3) {
+      staticDecoder_ = make_shared<JPCCDecoderTMC3<PointT>>();
+    } else {
+      BOOST_THROW_EXCEPTION(std::logic_error("unsupported staticPointType"));
+    }
+  } else if (header.segmentationOutputType == SegmentationOutputType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED) {
+    if (header.staticBackendType == CoderBackendType::NONE) {
+      staticAddedDecoder_   = make_shared<JPCCDecoderNone<PointT>>();
+      staticRemovedDecoder_ = make_shared<JPCCDecoderNone<PointT>>();
+    } else if (header.staticBackendType == CoderBackendType::TMC3) {
+      staticAddedDecoder_   = make_shared<JPCCDecoderTMC3<PointT>>();
+      staticRemovedDecoder_ = make_shared<JPCCDecoderTMC3<PointT>>();
+    } else {
+      BOOST_THROW_EXCEPTION(std::logic_error("unsupported staticPointType"));
+    }
+  } else if (header.segmentationType != SegmentationType::NONE) {
     BOOST_THROW_EXCEPTION(std::logic_error("unsupported staticPointType"));
   }
 }
@@ -34,20 +43,24 @@ void JPCCDecoderAdapter<PointT>::decode(IJPCCDecoderContext<PointT>& context,
                                         const bool                   parallel) {
   std::istringstream dynamicIs(
       std::string(context.getDynamicEncodedBytes().begin(), context.getDynamicEncodedBytes().end()));
-  std::istringstream staticIs(
-      std::string(context.getStaticEncodedBytes().begin(), context.getStaticEncodedBytes().end()));
-  std::istringstream staticAddedReconIs(
-      std::string(context.getStaticAddedEncodedBytes().begin(), context.getStaticAddedEncodedBytes().end()));
-  std::istringstream staticRemovedIs(
-      std::string(context.getStaticRemovedEncodedBytes().begin(), context.getStaticRemovedEncodedBytes().end()));
   context.getDynamicReconstructFrames().resize(frameCount);
-  context.getStaticReconstructFrames().resize(frameCount);
-  context.getStaticAddedReconstructFrames().resize(frameCount);
-  context.getStaticRemovedReconstructFrames().resize(frameCount);
   dynamicDecoder_->decode(dynamicIs, context.getDynamicReconstructFrames(), parallel);
-  staticDecoder_->decode(staticIs, context.getStaticReconstructFrames(), parallel);
-  staticAddedDecoder_->decode(staticAddedReconIs, context.getStaticAddedReconstructFrames(), parallel);
-  staticRemovedDecoder_->decode(staticRemovedIs, context.getStaticRemovedReconstructFrames(), parallel);
+  if (staticDecoder_) {
+    std::istringstream staticIs(
+        std::string(context.getStaticEncodedBytes().begin(), context.getStaticEncodedBytes().end()));
+    context.getStaticReconstructFrames().resize(frameCount);
+    staticDecoder_->decode(staticIs, context.getStaticReconstructFrames(), parallel);
+  }
+  if (staticAddedDecoder_ && staticRemovedDecoder_) {
+    std::istringstream staticAddedReconIs(
+        std::string(context.getStaticAddedEncodedBytes().begin(), context.getStaticAddedEncodedBytes().end()));
+    std::istringstream staticRemovedIs(
+        std::string(context.getStaticRemovedEncodedBytes().begin(), context.getStaticRemovedEncodedBytes().end()));
+    context.getStaticAddedReconstructFrames().resize(frameCount);
+    context.getStaticRemovedReconstructFrames().resize(frameCount);
+    staticAddedDecoder_->decode(staticAddedReconIs, context.getStaticAddedReconstructFrames(), parallel);
+    staticRemovedDecoder_->decode(staticRemovedIs, context.getStaticRemovedReconstructFrames(), parallel);
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -55,11 +68,16 @@ template <typename PointT>
 void JPCCDecoderAdapter<PointT>::convertToPCL(IJPCCDecoderContext<PointT>& context, const bool parallel) {
   dynamicDecoder_->convertToPCL(context.getDynamicReconstructFrames(), context.getDynamicReconstructPclFrames(),
                                 parallel);
-  staticDecoder_->convertToPCL(context.getStaticReconstructFrames(), context.getStaticReconstructPclFrames(), parallel);
-  staticAddedDecoder_->convertToPCL(context.getStaticAddedReconstructFrames(),
-                                    context.getStaticAddedReconstructPclFrames(), parallel);
-  staticRemovedDecoder_->convertToPCL(context.getStaticRemovedReconstructFrames(),
-                                      context.getStaticRemovedReconstructPclFrames(), parallel);
+  if (staticDecoder_) {
+    staticDecoder_->convertToPCL(context.getStaticReconstructFrames(), context.getStaticReconstructPclFrames(),
+                                 parallel);
+  }
+  if (staticAddedDecoder_ && staticRemovedDecoder_) {
+    staticAddedDecoder_->convertToPCL(context.getStaticAddedReconstructFrames(),
+                                      context.getStaticAddedReconstructPclFrames(), parallel);
+    staticRemovedDecoder_->convertToPCL(context.getStaticRemovedReconstructFrames(),
+                                        context.getStaticRemovedReconstructPclFrames(), parallel);
+  }
 }
 
 }  // namespace jpcc::coder

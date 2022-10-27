@@ -9,7 +9,9 @@ using namespace std;
 namespace jpcc {
 
 SegmentationOutputType getSegmentationOutputType(const string& segmentationOutputType) {
-  if (segmentationOutputType == "dynamic-static") {
+  if (segmentationOutputType == "none") {
+    return SegmentationOutputType::NONE;
+  } else if (segmentationOutputType == "dynamic-static") {
     return SegmentationOutputType::DYNAMIC_STATIC;
   } else if (segmentationOutputType == "dynamic-staticAdded-staticRemoved") {
     return SegmentationOutputType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED;

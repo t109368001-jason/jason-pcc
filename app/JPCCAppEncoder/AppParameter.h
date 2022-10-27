@@ -8,7 +8,6 @@
 #include <jpcc/process/PreProcessParameter.h>
 #include <jpcc/segmentation/JPCCSegmentationParameter.h>
 #include <jpcc/coder/JPCCEncoderParameter.h>
-#include <jpcc/coder/JPCCDecoderParameter.h>
 
 namespace jpcc {
 
@@ -27,8 +26,6 @@ class AppParameter : public Parameter {
   segmentation::JPCCSegmentationParameter jpccGmmSegmentation;
   coder::JPCCEncoderParameter             jpccEncoderStatic;
   coder::JPCCEncoderParameter             jpccEncoderDynamic;
-  coder::JPCCDecoderParameter             jpccDecoderStatic;
-  coder::JPCCDecoderParameter             jpccDecoderDynamic;
   process::JPCCNormalEstimationParameter  normalEstimation;
   metric::JPCCMetricParameter             metricParameter;
 

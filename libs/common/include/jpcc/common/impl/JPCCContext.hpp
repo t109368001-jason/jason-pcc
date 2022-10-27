@@ -2,8 +2,15 @@ namespace jpcc {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-JPCCContext<PointT>::JPCCContext(SegmentationType segmentationType, SegmentationOutputType segmentationOutputType) :
-    segmentationType_(segmentationType), segmentationOutputType_(segmentationOutputType) {}
+JPCCContext<PointT>::JPCCContext(SegmentationType       segmentationType,
+                                 SegmentationOutputType segmentationOutputType,
+                                 CoderBackendType       dynamicBackendType,
+                                 CoderBackendType       staticBackendType) {
+  header_.segmentationType       = segmentationType;
+  header_.segmentationOutputType = segmentationOutputType;
+  header_.dynamicBackendType     = dynamicBackendType;
+  header_.staticBackendType      = staticBackendType;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>

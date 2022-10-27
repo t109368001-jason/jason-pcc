@@ -1,7 +1,7 @@
 #pragma once
 
+#include <jpcc/common/JPCCHeader.h>
 #include <jpcc/coder/JPCCDecoder.h>
-#include <jpcc/coder/JPCCDecoderParameter.h>
 
 namespace jpcc::coder {
 
@@ -14,7 +14,7 @@ class JPCCDecoderAdapter {
   typename JPCCDecoder<PointT>::Ptr staticRemovedDecoder_;
 
  public:
-  JPCCDecoderAdapter(const JPCCDecoderParameter& dynamicParameter, const JPCCDecoderParameter& staticParameter);
+  void setBackendType(JPCCHeader header);
 
   void decode(IJPCCDecoderContext<PointT>& context, size_t frameCount, bool parallel);
 

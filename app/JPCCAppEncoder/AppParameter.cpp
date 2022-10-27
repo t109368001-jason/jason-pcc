@@ -29,9 +29,7 @@ AppParameter::AppParameter() :
     preProcess(),
     jpccGmmSegmentation(),
     jpccEncoderDynamic("jpccEncoderDynamic", "JPCCEncoderTMC3Dynamic"),
-    jpccEncoderStatic("jpccEncoderStatic", "JPCCEncoderTMC3Static"),
-    jpccDecoderDynamic("jpccDecoderDynamic", "JPCCDecoderTMC3Dynamic"),
-    jpccDecoderStatic("jpccDecoderStatic", "JPCCDecoderTMC3Static") {
+    jpccEncoderStatic("jpccEncoderStatic", "JPCCEncoderTMC3Static") {
   opts_.add_options()                                                                                        //
       (string(prefix_ + PARALLEL_OPT).c_str(),                                                               //
        value<bool>(&parallel)->default_value(parallel),                                                      //
@@ -59,8 +57,6 @@ AppParameter::AppParameter() :
   opts_.add(jpccGmmSegmentation.getOpts());
   opts_.add(jpccEncoderDynamic.getOpts());
   opts_.add(jpccEncoderStatic.getOpts());
-  opts_.add(jpccDecoderDynamic.getOpts());
-  opts_.add(jpccDecoderStatic.getOpts());
   opts_.add(normalEstimation.getOpts());
   opts_.add(metricParameter.getOpts());
 }
@@ -73,8 +69,6 @@ void AppParameter::notify() {
   jpccGmmSegmentation.notify();
   jpccEncoderDynamic.notify();
   jpccEncoderStatic.notify();
-  jpccDecoderDynamic.notify();
-  jpccDecoderStatic.notify();
   normalEstimation.notify();
   metricParameter.notify();
   if (!parallel) { groupOfFramesSize = 1; }
@@ -98,8 +92,6 @@ ostream& operator<<(ostream& out, const AppParameter& obj) {
   out << obj.jpccGmmSegmentation;
   out << obj.jpccEncoderDynamic;
   out << obj.jpccEncoderStatic;
-  out << obj.jpccDecoderDynamic;
-  out << obj.jpccDecoderStatic;
   out << obj.normalEstimation;
   out << obj.metricParameter;
   return out;

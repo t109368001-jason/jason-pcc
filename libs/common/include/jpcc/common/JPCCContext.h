@@ -6,6 +6,7 @@
 #include <jpcc/common/IJPCCEncoderContext.h>
 #include <jpcc/common/IJPCCDecoderContext.h>
 #include <jpcc/common/IJPCCSegmentationContext.h>
+#include <jpcc/common/JPCCHeader.h>
 #include <jpcc/common/SegmentationType.h>
 #include <jpcc/common/SegmentationOutputType.h>
 
@@ -17,8 +18,7 @@ class JPCCContext : public IJPCCSegmentationContext<PointT>,
                     public IJPCCDecoderContext<PointT>,
                     public IJPCCCombinationContext<PointT> {
  protected:
-  const SegmentationType       segmentationType_;
-  const SegmentationOutputType segmentationOutputType_;
+  JPCCHeader header_;
 
   GroupOfFrame<PointT> pclFrames_;
 
@@ -52,13 +52,17 @@ class JPCCContext : public IJPCCSegmentationContext<PointT>,
   GroupOfFrame<PointT> reconstructPclFrames_;
 
  public:
-  JPCCContext(SegmentationType segmentationType, SegmentationOutputType segmentationOutputType);
+  JPCCContext(SegmentationType       segmentationType,
+              SegmentationOutputType segmentationOutputType,
+              CoderBackendType       dynamicBackendType,
+              CoderBackendType       staticBackendType);
 
   void clear();
 
-  [[nodiscard]] const SegmentationType       getSegmentationType() const override { return segmentationType_; };
-  [[nodiscard]] const SegmentationOutputType getSegmentationOutputType() const override {
-    return segmentationOutputType_;
+  [[nodiscard]] JPCCHeader             getHeader() const { return header_; };
+  [[nodiscard]] SegmentationType       getSegmentationType() const override { return header_.segmentationType; };
+  [[nodiscard]] SegmentationOutputType getSegmentationOutputType() const override {
+    return header_.segmentationOutputType;
   };
   [[nodiscard]] const GroupOfFrame<PointT>& getPclFrames() const override { return pclFrames_; };
   [[nodiscard]] const GroupOfFrame<PointT>& getDynamicPclFrames() const override { return dynamicPclFrames_; };

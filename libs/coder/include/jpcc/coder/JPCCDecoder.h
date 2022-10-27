@@ -1,7 +1,6 @@
 #pragma once
 
 #include <jpcc/common/Common.h>
-#include <jpcc/coder/JPCCDecoderParameter.h>
 
 namespace jpcc::coder {
 
@@ -10,12 +9,7 @@ class JPCCDecoder {
  public:
   using Ptr = shared_ptr<JPCCDecoder>;
 
- protected:
-  JPCCDecoderParameter parameter_;
-
  public:
-  JPCCDecoder(JPCCDecoderParameter parameter);
-
   virtual bool isDecodeThreadSafe();
 
   virtual bool isConvertToPCLThreadSafe();
