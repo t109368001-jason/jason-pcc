@@ -24,10 +24,10 @@ void JPCCContext<PointT>::clear() {
   staticFrames_.clear();
   staticAddedFrames_.clear();
   staticRemovedFrames_.clear();
-  dynamicEncodedBytes_.clear();
-  staticEncodedBytes_.clear();
-  staticAddedEncodedBytes_.clear();
-  staticRemovedEncodedBytes_.clear();
+  dynamicEncodedBytesVector_.clear();
+  staticEncodedBytesVector_.clear();
+  staticAddedEncodedBytesVector_.clear();
+  staticRemovedEncodedBytesVector_.clear();
   dynamicReconstructFrames_.clear();
   staticReconstructFrames_.clear();
   staticAddedReconstructFrames_.clear();

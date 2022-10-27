@@ -38,28 +38,23 @@ void JPCCDecoderAdapter<PointT>::setBackendType(JPCCHeader header) {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-void JPCCDecoderAdapter<PointT>::decode(IJPCCDecoderContext<PointT>& context,
+void JPCCDecoderAdapter<PointT>::decode(std::istream&                is,
+                                        IJPCCDecoderContext<PointT>& context,
                                         const size_t                 frameCount,
                                         const bool                   parallel) {
-  std::istringstream dynamicIs(
-      std::string(context.getDynamicEncodedBytes().begin(), context.getDynamicEncodedBytes().end()));
   context.getDynamicReconstructFrames().resize(frameCount);
-  dynamicDecoder_->decode(dynamicIs, context.getDynamicReconstructFrames(), parallel);
-  if (staticDecoder_) {
-    std::istringstream staticIs(
-        std::string(context.getStaticEncodedBytes().begin(), context.getStaticEncodedBytes().end()));
-    context.getStaticReconstructFrames().resize(frameCount);
-    staticDecoder_->decode(staticIs, context.getStaticReconstructFrames(), parallel);
-  }
+  if (staticDecoder_) { context.getStaticReconstructFrames().resize(frameCount); }
   if (staticAddedDecoder_ && staticRemovedDecoder_) {
-    std::istringstream staticAddedReconIs(
-        std::string(context.getStaticAddedEncodedBytes().begin(), context.getStaticAddedEncodedBytes().end()));
-    std::istringstream staticRemovedIs(
-        std::string(context.getStaticRemovedEncodedBytes().begin(), context.getStaticRemovedEncodedBytes().end()));
     context.getStaticAddedReconstructFrames().resize(frameCount);
     context.getStaticRemovedReconstructFrames().resize(frameCount);
-    staticAddedDecoder_->decode(staticAddedReconIs, context.getStaticAddedReconstructFrames(), parallel);
-    staticRemovedDecoder_->decode(staticRemovedIs, context.getStaticRemovedReconstructFrames(), parallel);
+  }
+  for (size_t i = 0; i < frameCount; i++) {
+    dynamicDecoder_->decode(is, context.getDynamicReconstructFrames()[i]);
+    if (staticDecoder_) { staticDecoder_->decode(is, context.getStaticReconstructFrames()[i]); }
+    if (staticAddedDecoder_ && staticRemovedDecoder_) {
+      staticAddedDecoder_->decode(is, context.getStaticAddedReconstructFrames()[i]);
+      staticRemovedDecoder_->decode(is, context.getStaticRemovedReconstructFrames()[i]);
+    }
   }
 }
 

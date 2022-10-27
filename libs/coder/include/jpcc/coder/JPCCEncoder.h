@@ -28,7 +28,9 @@ class JPCCEncoder {
 
   virtual void encode(const shared_ptr<void>& frame, std::vector<char>& encodedBytes) = 0;
 
-  virtual void encode(const std::vector<shared_ptr<void>>& frames, std::vector<char>& encodedBytes, bool parallel);
+  virtual void encode(const std::vector<shared_ptr<void>>& frames,
+                      std::vector<std::vector<char>>&      encodedBytesVector,
+                      bool                                 parallel);
 };
 
 }  // namespace jpcc::coder

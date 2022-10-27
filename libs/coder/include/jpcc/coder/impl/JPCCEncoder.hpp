@@ -41,22 +41,16 @@ void JPCCEncoder<PointT>::convertFromPCL(const GroupOfFrame<PointT>&    pclFrame
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void JPCCEncoder<PointT>::encode(const std::vector<shared_ptr<void>>& frames,
-                                 std::vector<char>&                   encodedBytes,
+                                 std::vector<std::vector<char>>&      encodedBytesVector,
                                  const bool                           parallel) {
   if (!parallel || !isEncodeThreadSafe()) {
-    for (size_t i = 0; i < frames.size(); i++) { this->encode(frames[i], encodedBytes); }
+    for (size_t i = 0; i < frames.size(); i++) { this->encode(frames[i], encodedBytesVector[i]); }
   } else {
-    std::vector<std::vector<char>> encodedFramesBytes(frames.size());
-    const auto                     range = boost::counting_range<size_t>(0, frames.size());
+    const auto range = boost::counting_range<size_t>(0, frames.size());
     std::for_each(std::execution::par, range.begin(), range.end(),
                   [&](const size_t& i) {  //
-                    this->encode(frames[i], encodedFramesBytes[i]);
+                    this->encode(frames[i], encodedBytesVector[i]);
                   });
-
-    for (auto& _encodedBytes : encodedFramesBytes) {
-      std::copy(std::move_iterator(_encodedBytes.begin()), std::move_iterator(_encodedBytes.end()),
-                std::back_insert_iterator(encodedBytes));
-    }
   }
 }
 

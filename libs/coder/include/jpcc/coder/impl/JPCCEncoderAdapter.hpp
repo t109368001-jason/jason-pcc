@@ -40,9 +40,14 @@ void JPCCEncoderAdapter<PointT>::convertFromPCL(IJPCCEncoderContext<PointT>& con
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void JPCCEncoderAdapter<PointT>::encode(IJPCCEncoderContext<PointT>& context, const bool parallel) {
-  dynamicEncoder_->encode(context.getDynamicFrames(), context.getDynamicEncodedBytes(), parallel);
-  staticEncoder_->encode(context.getStaticFrames(), context.getStaticEncodedBytes(), parallel);
-  staticAddedEncoder_->encode(context.getStaticAddedFrames(), context.getStaticAddedEncodedBytes(), parallel);
-  staticRemovedEncoder_->encode(context.getStaticRemovedFrames(), context.getStaticRemovedEncodedBytes(), parallel);
+  context.getDynamicEncodedBytesVector().resize(context.getDynamicFrames().size());
+  context.getStaticEncodedBytesVector().resize(context.getStaticFrames().size());
+  context.getStaticAddedEncodedBytesVector().resize(context.getStaticAddedFrames().size());
+  context.getStaticRemovedEncodedBytesVector().resize(context.getStaticRemovedFrames().size());
+  dynamicEncoder_->encode(context.getDynamicFrames(), context.getDynamicEncodedBytesVector(), parallel);
+  staticEncoder_->encode(context.getStaticFrames(), context.getStaticEncodedBytesVector(), parallel);
+  staticAddedEncoder_->encode(context.getStaticAddedFrames(), context.getStaticAddedEncodedBytesVector(), parallel);
+  staticRemovedEncoder_->encode(context.getStaticRemovedFrames(), context.getStaticRemovedEncodedBytesVector(),
+                                parallel);
 }
 }  // namespace jpcc::coder

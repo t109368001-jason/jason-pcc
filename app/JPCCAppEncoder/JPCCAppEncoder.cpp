@@ -38,6 +38,22 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
   JPCCEncoderAdapter<Point> encoder(parameter.jpccEncoderDynamic, parameter.jpccEncoderStatic);
   JPCCDecoderAdapter<Point> decoder;
 
+  JPCCContext<pcl::PointXYZINormal> context(
+      parameter.jpccGmmSegmentation.type, parameter.jpccGmmSegmentation.outputType,
+      parameter.jpccEncoderDynamic.backendType, parameter.jpccEncoderStatic.backendType);
+
+  std::ofstream ofs(parameter.compressedDynamicStreamPath, std::ios::binary);
+
+  writeJPCCHeader(context.getHeader(), ofs);
+  ofs.flush();
+  std::ifstream ifs(parameter.compressedDynamicStreamPath, std::ios::binary);
+  {
+    JPCCHeader header{};
+    readJPCCHeader(ifs, &header);
+    THROW_IF_NOT(header == context.getHeader());
+    decoder.setBackendType(header);
+  }
+
   {  // build gaussian mixture model
     GroupOfFrame<Point> frames;
     size_t              groupOfFramesSize = parameter.groupOfFramesSize;
@@ -63,27 +79,6 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
 
   size_t       frameNumber    = parameter.inputDataset.getStartFrameNumber();
   const size_t endFrameNumber = parameter.inputDataset.getEndFrameNumber();
-
-  jpcc::shared_ptr<std::ofstream> dynamicOfs;
-  jpcc::shared_ptr<std::ofstream> staticOfs;
-  jpcc::shared_ptr<std::ofstream> staticAddedOfs;
-  jpcc::shared_ptr<std::ofstream> staticRemovedOfs;
-
-  dynamicOfs = jpcc::make_shared<std::ofstream>(parameter.compressedDynamicStreamPath, std::ios::binary);
-  if (parameter.jpccGmmSegmentation.outputType == jpcc::SegmentationOutputType::DYNAMIC_STATIC) {
-    staticOfs = jpcc::make_shared<std::ofstream>(parameter.compressedStaticStreamPath, std::ios::binary);
-  }
-  if (parameter.jpccGmmSegmentation.outputType == jpcc::SegmentationOutputType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED) {
-    staticAddedOfs   = jpcc::make_shared<std::ofstream>(parameter.compressedStaticAddedStreamPath, std::ios::binary);
-    staticRemovedOfs = jpcc::make_shared<std::ofstream>(parameter.compressedStaticRemovedStreamPath, std::ios::binary);
-  }
-
-  JPCCContext<pcl::PointXYZINormal> context(
-      parameter.jpccGmmSegmentation.type, parameter.jpccGmmSegmentation.outputType,
-      parameter.jpccEncoderDynamic.backendType, parameter.jpccEncoderStatic.backendType);
-
-  writeJPCCHeader(context.getHeader(), *dynamicOfs);
-  decoder.setBackendType(context.getHeader());
   while (frameNumber < endFrameNumber) {
     size_t groupOfFramesSize = std::min(parameter.groupOfFramesSize, endFrameNumber - frameNumber);
     {  // clear
@@ -119,32 +114,36 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
     metric.addPoints<Point>("Static", context.getStaticPclFrames());
     metric.addPoints<Point>("StaticAdded", context.getStaticAddedPclFrames());
     metric.addPoints<Point>("StaticRemoved", context.getStaticRemovedPclFrames());
-    metric.addBytes("Dynamic", frameNumber, context.getDynamicEncodedBytes().size());
-    metric.addBytes("Static", frameNumber, context.getStaticEncodedBytes().size());
-    metric.addBytes("StaticAdded", frameNumber, context.getStaticAddedEncodedBytes().size());
-    metric.addBytes("StaticRemoved", frameNumber, context.getStaticRemovedEncodedBytes().size());
+    metric.addBytes("Dynamic", frameNumber, context.getDynamicEncodedBytesVector());
+    metric.addBytes("Static", frameNumber, context.getStaticEncodedBytesVector());
+    metric.addBytes("StaticAdded", frameNumber, context.getStaticAddedEncodedBytesVector());
+    metric.addBytes("StaticRemoved", frameNumber, context.getStaticRemovedEncodedBytesVector());
 
     // TODO extract JPCCWriter
     {  // save
+      ifs.close();
+      ifs.open(parameter.compressedDynamicStreamPath, std::ios::binary);
+      ifs.seekg(0, std::ios::end);
       ScopeStopwatch clock = metric.start("Save", frameNumber);
-      dynamicOfs->write(context.getDynamicEncodedBytes().data(),
-                        (std::streamsize)context.getDynamicEncodedBytes().size());
-      if (staticOfs) {
-        staticOfs->write(context.getStaticEncodedBytes().data(),
-                         (std::streamsize)context.getStaticEncodedBytes().size());
+      for (int i = 0; i < context.getDynamicEncodedBytesVector().size(); i++) {
+        ofs.write(context.getDynamicEncodedBytesVector()[i].data(),
+                  (std::streamsize)context.getDynamicEncodedBytesVector()[i].size());
+        if (context.getHeader().segmentationOutputType == jpcc::SegmentationOutputType::DYNAMIC_STATIC) {
+          ofs.write(context.getStaticEncodedBytesVector()[i].data(),
+                    (std::streamsize)context.getStaticEncodedBytesVector()[i].size());
+        } else if (context.getHeader().segmentationOutputType ==
+                   jpcc::SegmentationOutputType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED) {
+          ofs.write(context.getStaticAddedEncodedBytesVector()[i].data(),
+                    (std::streamsize)context.getStaticAddedEncodedBytesVector()[i].size());
+          ofs.write(context.getStaticRemovedEncodedBytesVector()[i].data(),
+                    (std::streamsize)context.getStaticRemovedEncodedBytesVector()[i].size());
+        }
       }
-      if (staticAddedOfs) {
-        staticAddedOfs->write(context.getStaticAddedEncodedBytes().data(),
-                              (std::streamsize)context.getStaticAddedEncodedBytes().size());
-      }
-      if (staticRemovedOfs) {
-        staticRemovedOfs->write(context.getStaticRemovedEncodedBytes().data(),
-                                (std::streamsize)context.getStaticRemovedEncodedBytes().size());
-      }
+      ofs.flush();
     }
     {  // decode
       ScopeStopwatch clock = metric.start("Decode", frameNumber);
-      decoder.decode(context, groupOfFramesSize, parameter.parallel);
+      decoder.decode(ifs, context, groupOfFramesSize, parameter.parallel);
     }
     {  // convertToPCL
       ScopeStopwatch clock = metric.start("ConvertToPCL", frameNumber);

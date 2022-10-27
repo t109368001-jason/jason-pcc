@@ -10,13 +10,9 @@ class JPCCDecoder {
   using Ptr = shared_ptr<JPCCDecoder>;
 
  public:
-  virtual bool isDecodeThreadSafe();
-
   virtual bool isConvertToPCLThreadSafe();
 
   virtual void decode(std::istream& is, shared_ptr<void>& reconstructFrame) = 0;
-
-  virtual void decode(std::istream& is, std::vector<shared_ptr<void>>& reconstructFrames, bool parallel);
 
   virtual void convertToPCL(shared_ptr<void>& reconstructFrame, FramePtr<PointT>& reconstructPclFrame) = 0;
 

@@ -16,7 +16,7 @@ class JPCCDecoderAdapter {
  public:
   void setBackendType(JPCCHeader header);
 
-  void decode(IJPCCDecoderContext<PointT>& context, size_t frameCount, bool parallel);
+  void decode(std::istream& is, IJPCCDecoderContext<PointT>& context, size_t frameCount, bool parallel);
 
   void convertToPCL(IJPCCDecoderContext<PointT>& context, bool parallel);
 };

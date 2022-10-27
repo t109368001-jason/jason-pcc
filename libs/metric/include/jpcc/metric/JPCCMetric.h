@@ -52,6 +52,10 @@ class JPCCMetric {
 
   void addBytes(const std::string& name, FrameNumber frameNumber, uint64_t bytes);
 
+  void addBytes(const std::string&                    name,
+                FrameNumber                           firstFrameNumber,
+                const std::vector<std::vector<char>>& bytesVector);
+
   template <typename PointA, typename PointB>
   void addPSNR(const std::string& name, const FramePtr<PointA>& frameA, const FramePtr<PointB>& frameB);
 

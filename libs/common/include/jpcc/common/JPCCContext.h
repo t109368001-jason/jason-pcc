@@ -33,10 +33,10 @@ class JPCCContext : public IJPCCSegmentationContext<PointT>,
   std::vector<shared_ptr<void>> staticAddedFrames_;
   std::vector<shared_ptr<void>> staticRemovedFrames_;
 
-  std::vector<char> dynamicEncodedBytes_;
-  std::vector<char> staticEncodedBytes_;
-  std::vector<char> staticAddedEncodedBytes_;
-  std::vector<char> staticRemovedEncodedBytes_;
+  std::vector<std::vector<char>> dynamicEncodedBytesVector_;
+  std::vector<std::vector<char>> staticEncodedBytesVector_;
+  std::vector<std::vector<char>> staticAddedEncodedBytesVector_;
+  std::vector<std::vector<char>> staticRemovedEncodedBytesVector_;
 
   // coder specified type
   std::vector<shared_ptr<void>> dynamicReconstructFrames_;
@@ -79,13 +79,17 @@ class JPCCContext : public IJPCCSegmentationContext<PointT>,
   [[nodiscard]] const std::vector<shared_ptr<void>>& getStaticRemovedFrames() const override {
     return staticRemovedFrames_;
   };
-  [[nodiscard]] const std::vector<char>& getDynamicEncodedBytes() const override { return dynamicEncodedBytes_; };
-  [[nodiscard]] const std::vector<char>& getStaticEncodedBytes() const override { return staticEncodedBytes_; };
-  [[nodiscard]] const std::vector<char>& getStaticAddedEncodedBytes() const override {
-    return staticAddedEncodedBytes_;
+  [[nodiscard]] const std::vector<std::vector<char>>& getDynamicEncodedBytesVector() const override {
+    return dynamicEncodedBytesVector_;
   };
-  [[nodiscard]] const std::vector<char>& getStaticRemovedEncodedBytes() const override {
-    return staticRemovedEncodedBytes_;
+  [[nodiscard]] const std::vector<std::vector<char>>& getStaticEncodedBytesVector() const override {
+    return staticEncodedBytesVector_;
+  };
+  [[nodiscard]] const std::vector<std::vector<char>>& getStaticAddedEncodedBytesVector() const override {
+    return staticAddedEncodedBytesVector_;
+  };
+  [[nodiscard]] const std::vector<std::vector<char>>& getStaticRemovedEncodedBytesVector() const override {
+    return staticRemovedEncodedBytesVector_;
   };
   [[nodiscard]] const std::vector<shared_ptr<void>>& getDynamicReconstructFrames() const override {
     return dynamicReconstructFrames_;
@@ -122,10 +126,18 @@ class JPCCContext : public IJPCCSegmentationContext<PointT>,
   [[nodiscard]] std::vector<shared_ptr<void>>& getStaticFrames() override { return staticFrames_; };
   [[nodiscard]] std::vector<shared_ptr<void>>& getStaticAddedFrames() override { return staticAddedFrames_; };
   [[nodiscard]] std::vector<shared_ptr<void>>& getStaticRemovedFrames() override { return staticRemovedFrames_; };
-  [[nodiscard]] std::vector<char>&             getDynamicEncodedBytes() override { return dynamicEncodedBytes_; };
-  [[nodiscard]] std::vector<char>&             getStaticEncodedBytes() override { return staticEncodedBytes_; };
-  [[nodiscard]] std::vector<char>& getStaticAddedEncodedBytes() override { return staticAddedEncodedBytes_; };
-  [[nodiscard]] std::vector<char>& getStaticRemovedEncodedBytes() override { return staticRemovedEncodedBytes_; };
+  [[nodiscard]] std::vector<std::vector<char>>& getDynamicEncodedBytesVector() override {
+    return dynamicEncodedBytesVector_;
+  };
+  [[nodiscard]] std::vector<std::vector<char>>& getStaticEncodedBytesVector() override {
+    return staticEncodedBytesVector_;
+  };
+  [[nodiscard]] std::vector<std::vector<char>>& getStaticAddedEncodedBytesVector() override {
+    return staticAddedEncodedBytesVector_;
+  };
+  [[nodiscard]] std::vector<std::vector<char>>& getStaticRemovedEncodedBytesVector() override {
+    return staticRemovedEncodedBytesVector_;
+  };
   [[nodiscard]] std::vector<shared_ptr<void>>& getDynamicReconstructFrames() override {
     return dynamicReconstructFrames_;
   };

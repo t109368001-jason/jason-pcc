@@ -62,10 +62,10 @@ void JPCCMetric::addPointsAndBytes(const std::string&                    name,
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointA, typename PointB>
 void JPCCMetric::addPSNR(const std::string& name, const FramePtr<PointA>& frameA, const FramePtr<PointB>& frameB) {
-  double c2cMSE  = 0;
-  double c2cPSNR = 0;
-  double c2pMSE  = 0;
-  double c2pPSNR = 0;
+  double c2cMSE  = std::numeric_limits<double>::quiet_NaN();
+  double c2cPSNR = std::numeric_limits<double>::quiet_NaN();
+  double c2pMSE  = std::numeric_limits<double>::quiet_NaN();
+  double c2pPSNR = std::numeric_limits<double>::quiet_NaN();
 
   computePSNR<PointA, PointB>(frameA, frameB, c2cMSE, c2cPSNR, c2pMSE, c2pPSNR);
 

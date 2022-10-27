@@ -23,8 +23,6 @@ class JPCCDecoderTMC3 : public virtual JPCCDecoder<PointT> {
 
   void decode(std::istream& is, shared_ptr<void>& reconstructFrame) override;
 
-  void decode(std::istream& is, std::vector<shared_ptr<void>>& reconstructFrames, bool parallel) override;
-
   void convertToPCL(shared_ptr<void>& reconstructFrame, FramePtr<PointT>& reconstructPclFrame) override;
 };
 

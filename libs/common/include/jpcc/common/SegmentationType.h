@@ -4,7 +4,7 @@
 
 namespace jpcc {
 
-enum class SegmentationType { NONE, GMM, GMM_2L };
+enum class SegmentationType { NONE = 0, GMM = 1, GMM_2L = 2 };
 
 [[nodiscard]] SegmentationType getSegmentationType(const std::string& type);
 

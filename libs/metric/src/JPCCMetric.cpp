@@ -43,6 +43,13 @@ void JPCCMetric::addBytes(const std::string& name, FrameNumber frameNumber, cons
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
+void JPCCMetric::addBytes(const std::string&                    name,
+                          FrameNumber                           firstFrameNumber,
+                          const std::vector<std::vector<char>>& bytesVector) {
+  for (size_t i = 0; i < bytesVector.size(); i++) { this->addBytes(name, firstFrameNumber + i, bytesVector[i].size()); }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
 ScopeStopwatch JPCCMetric::start(const std::string& name, const FrameNumber frameNumber) {
   frameNumberSet_.insert(frameNumber);
   clockNameSet_.insert(name);
