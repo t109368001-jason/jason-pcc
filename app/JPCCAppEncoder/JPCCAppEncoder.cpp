@@ -125,20 +125,7 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
       ifs.open(parameter.compressedDynamicStreamPath, std::ios::binary);
       ifs.seekg(0, std::ios::end);
       ScopeStopwatch clock = metric.start("Save", frameNumber);
-      for (int i = 0; i < context.getDynamicEncodedBytesVector().size(); i++) {
-        ofs.write(context.getDynamicEncodedBytesVector()[i].data(),
-                  (std::streamsize)context.getDynamicEncodedBytesVector()[i].size());
-        if (context.getHeader().segmentationOutputType == jpcc::SegmentationOutputType::DYNAMIC_STATIC) {
-          ofs.write(context.getStaticEncodedBytesVector()[i].data(),
-                    (std::streamsize)context.getStaticEncodedBytesVector()[i].size());
-        } else if (context.getHeader().segmentationOutputType ==
-                   jpcc::SegmentationOutputType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED) {
-          ofs.write(context.getStaticAddedEncodedBytesVector()[i].data(),
-                    (std::streamsize)context.getStaticAddedEncodedBytesVector()[i].size());
-          ofs.write(context.getStaticRemovedEncodedBytesVector()[i].data(),
-                    (std::streamsize)context.getStaticRemovedEncodedBytesVector()[i].size());
-        }
-      }
+      writeJPCCContext(context, ofs);
       ofs.flush();
     }
     {  // decode

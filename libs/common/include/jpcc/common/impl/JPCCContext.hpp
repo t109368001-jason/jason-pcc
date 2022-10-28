@@ -39,4 +39,22 @@ void JPCCContext<PointT>::clear() {
   reconstructPclFrames_.clear();
 }
 
+template <typename PointT>
+void writeJPCCContext(const JPCCContext<PointT>& context, std::ostream& os) {
+  for (int i = 0; i < context.getDynamicEncodedBytesVector().size(); i++) {
+    os.write(context.getDynamicEncodedBytesVector()[i].data(),
+             (std::streamsize)context.getDynamicEncodedBytesVector()[i].size());
+    if (context.getHeader().segmentationOutputType == jpcc::SegmentationOutputType::DYNAMIC_STATIC) {
+      os.write(context.getStaticEncodedBytesVector()[i].data(),
+               (std::streamsize)context.getStaticEncodedBytesVector()[i].size());
+    } else if (context.getHeader().segmentationOutputType ==
+               jpcc::SegmentationOutputType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED) {
+      os.write(context.getStaticAddedEncodedBytesVector()[i].data(),
+               (std::streamsize)context.getStaticAddedEncodedBytesVector()[i].size());
+      os.write(context.getStaticRemovedEncodedBytesVector()[i].data(),
+               (std::streamsize)context.getStaticRemovedEncodedBytesVector()[i].size());
+    }
+  }
+}
+
 }  // namespace jpcc

@@ -163,6 +163,9 @@ class JPCCContext : public IJPCCSegmentationContext<PointT>,
   [[nodiscard]] GroupOfFrame<PointT>& getReconstructPclFrames() override { return reconstructPclFrames_; };
 };
 
+template <typename PointT>
+void writeJPCCContext(const JPCCContext<PointT>& context, std::ostream& os);
+
 }  // namespace jpcc
 
 #include <jpcc/common/impl/JPCCContext.hpp>
