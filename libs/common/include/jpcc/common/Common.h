@@ -15,6 +15,8 @@
 #include <PCCChrono.h>
 #include <PCCMemory.h>
 
+#include <PCCPointSet.h>
+
 #define JPCC_NOT_USED(x)
 
 #define THROW_IF_NOT(expression)                                                 \
@@ -24,25 +26,20 @@
 
 namespace jpcc {
 
-using pcl::make_shared;
-using pcl::shared_ptr;
+using std::make_shared;
+using std::shared_ptr;
 
 using index_t    = pcl::index_t;
 using uindex_t   = pcl::uindex_t;
 using Indices    = pcl::Indices;
 using IndicesPtr = shared_ptr<Indices>;
 
-template <typename PointT>
-using Frame = pcl::PointCloud<PointT>;
-template <typename PointT>
-using FramePtr = typename Frame<PointT>::Ptr;
-template <typename PointT>
-using FrameConstPtr = typename Frame<PointT>::ConstPtr;
+using Frame         = pcc::PCCPointSet3;
+using FramePtr      = shared_ptr<Frame>;
+using FrameConstPtr = shared_ptr<const Frame>;
 
-template <typename PointT>
-using GroupOfFrame = std::vector<FramePtr<PointT>>;
-template <typename PointT>
-using GroupOfFrameMap = std::map<std::string, GroupOfFrame<PointT>>;
+using GroupOfFrame    = std::vector<FramePtr>;
+using GroupOfFrameMap = std::map<std::string, GroupOfFrame>;
 
 using Stopwatch = pcc::chrono::Stopwatch<std::chrono::steady_clock>;
 

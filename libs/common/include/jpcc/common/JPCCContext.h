@@ -12,20 +12,19 @@
 
 namespace jpcc {
 
-template <typename PointT>
-class JPCCContext : public IJPCCSegmentationContext<PointT>,
-                    public IJPCCEncoderContext<PointT>,
-                    public IJPCCDecoderContext<PointT>,
-                    public IJPCCCombinationContext<PointT> {
+class JPCCContext : public IJPCCSegmentationContext,
+                    public IJPCCEncoderContext,
+                    public IJPCCDecoderContext,
+                    public IJPCCCombinationContext {
  protected:
   JPCCHeader header_;
 
-  GroupOfFrame<PointT> pclFrames_;
+  GroupOfFrame pclFrames_;
 
-  GroupOfFrame<PointT> dynamicPclFrames_;
-  GroupOfFrame<PointT> staticPclFrames_;
-  GroupOfFrame<PointT> staticAddedPclFrames_;
-  GroupOfFrame<PointT> staticRemovedPclFrames_;
+  GroupOfFrame dynamicPclFrames_;
+  GroupOfFrame staticPclFrames_;
+  GroupOfFrame staticAddedPclFrames_;
+  GroupOfFrame staticRemovedPclFrames_;
 
   // coder specified type
   std::vector<shared_ptr<void>> dynamicFrames_;
@@ -44,12 +43,12 @@ class JPCCContext : public IJPCCSegmentationContext<PointT>,
   std::vector<shared_ptr<void>> staticAddedReconstructFrames_;
   std::vector<shared_ptr<void>> staticRemovedReconstructFrames_;
 
-  GroupOfFrame<PointT> dynamicReconstructPclFrames_;
-  GroupOfFrame<PointT> staticReconstructPclFrames_;
-  GroupOfFrame<PointT> staticAddedReconstructPclFrames_;
-  GroupOfFrame<PointT> staticRemovedReconstructPclFrames_;
+  GroupOfFrame dynamicReconstructPclFrames_;
+  GroupOfFrame staticReconstructPclFrames_;
+  GroupOfFrame staticAddedReconstructPclFrames_;
+  GroupOfFrame staticRemovedReconstructPclFrames_;
 
-  GroupOfFrame<PointT> reconstructPclFrames_;
+  GroupOfFrame reconstructPclFrames_;
 
  public:
   JPCCContext(double                 resolution,
@@ -65,13 +64,11 @@ class JPCCContext : public IJPCCSegmentationContext<PointT>,
   [[nodiscard]] SegmentationOutputType getSegmentationOutputType() const override {
     return header_.segmentationOutputType;
   };
-  [[nodiscard]] const GroupOfFrame<PointT>& getPclFrames() const override { return pclFrames_; };
-  [[nodiscard]] const GroupOfFrame<PointT>& getDynamicPclFrames() const override { return dynamicPclFrames_; };
-  [[nodiscard]] const GroupOfFrame<PointT>& getStaticPclFrames() const override { return staticPclFrames_; };
-  [[nodiscard]] const GroupOfFrame<PointT>& getStaticAddedPclFrames() const override { return staticAddedPclFrames_; };
-  [[nodiscard]] const GroupOfFrame<PointT>& getStaticRemovedPclFrames() const override {
-    return staticRemovedPclFrames_;
-  };
+  [[nodiscard]] const GroupOfFrame& getPclFrames() const override { return pclFrames_; };
+  [[nodiscard]] const GroupOfFrame& getDynamicPclFrames() const override { return dynamicPclFrames_; };
+  [[nodiscard]] const GroupOfFrame& getStaticPclFrames() const override { return staticPclFrames_; };
+  [[nodiscard]] const GroupOfFrame& getStaticAddedPclFrames() const override { return staticAddedPclFrames_; };
+  [[nodiscard]] const GroupOfFrame& getStaticRemovedPclFrames() const override { return staticRemovedPclFrames_; };
   [[nodiscard]] const std::vector<shared_ptr<void>>& getDynamicFrames() const override { return dynamicFrames_; };
   [[nodiscard]] const std::vector<shared_ptr<void>>& getStaticFrames() const override { return staticFrames_; };
   [[nodiscard]] const std::vector<shared_ptr<void>>& getStaticAddedFrames() const override {
@@ -104,25 +101,25 @@ class JPCCContext : public IJPCCSegmentationContext<PointT>,
   [[nodiscard]] const std::vector<shared_ptr<void>>& getStaticRemovedReconstructFrames() const override {
     return staticRemovedReconstructFrames_;
   };
-  [[nodiscard]] const GroupOfFrame<PointT>& getDynamicReconstructPclFrames() const override {
+  [[nodiscard]] const GroupOfFrame& getDynamicReconstructPclFrames() const override {
     return dynamicReconstructPclFrames_;
   };
-  [[nodiscard]] const GroupOfFrame<PointT>& getStaticReconstructPclFrames() const override {
+  [[nodiscard]] const GroupOfFrame& getStaticReconstructPclFrames() const override {
     return staticReconstructPclFrames_;
   };
-  [[nodiscard]] const GroupOfFrame<PointT>& getStaticAddedReconstructPclFrames() const override {
+  [[nodiscard]] const GroupOfFrame& getStaticAddedReconstructPclFrames() const override {
     return staticAddedReconstructPclFrames_;
   };
-  [[nodiscard]] const GroupOfFrame<PointT>& getStaticRemovedReconstructPclFrames() const override {
+  [[nodiscard]] const GroupOfFrame& getStaticRemovedReconstructPclFrames() const override {
     return staticRemovedReconstructPclFrames_;
   };
-  [[nodiscard]] const GroupOfFrame<PointT>& getReconstructPclFrames() const override { return reconstructPclFrames_; };
+  [[nodiscard]] const GroupOfFrame& getReconstructPclFrames() const override { return reconstructPclFrames_; };
 
-  [[nodiscard]] GroupOfFrame<PointT>&          getPclFrames() override { return pclFrames_; };
-  [[nodiscard]] GroupOfFrame<PointT>&          getDynamicPclFrames() override { return dynamicPclFrames_; };
-  [[nodiscard]] GroupOfFrame<PointT>&          getStaticPclFrames() override { return staticPclFrames_; };
-  [[nodiscard]] GroupOfFrame<PointT>&          getStaticAddedPclFrames() override { return staticAddedPclFrames_; };
-  [[nodiscard]] GroupOfFrame<PointT>&          getStaticRemovedPclFrames() override { return staticRemovedPclFrames_; };
+  [[nodiscard]] GroupOfFrame&                  getPclFrames() override { return pclFrames_; };
+  [[nodiscard]] GroupOfFrame&                  getDynamicPclFrames() override { return dynamicPclFrames_; };
+  [[nodiscard]] GroupOfFrame&                  getStaticPclFrames() override { return staticPclFrames_; };
+  [[nodiscard]] GroupOfFrame&                  getStaticAddedPclFrames() override { return staticAddedPclFrames_; };
+  [[nodiscard]] GroupOfFrame&                  getStaticRemovedPclFrames() override { return staticRemovedPclFrames_; };
   [[nodiscard]] std::vector<shared_ptr<void>>& getDynamicFrames() override { return dynamicFrames_; };
   [[nodiscard]] std::vector<shared_ptr<void>>& getStaticFrames() override { return staticFrames_; };
   [[nodiscard]] std::vector<shared_ptr<void>>& getStaticAddedFrames() override { return staticAddedFrames_; };
@@ -151,22 +148,17 @@ class JPCCContext : public IJPCCSegmentationContext<PointT>,
   [[nodiscard]] std::vector<shared_ptr<void>>& getStaticRemovedReconstructFrames() override {
     return staticRemovedReconstructFrames_;
   };
-  [[nodiscard]] GroupOfFrame<PointT>& getDynamicReconstructPclFrames() override {
-    return dynamicReconstructPclFrames_;
-  };
-  [[nodiscard]] GroupOfFrame<PointT>& getStaticReconstructPclFrames() override { return staticReconstructPclFrames_; };
-  [[nodiscard]] GroupOfFrame<PointT>& getStaticAddedReconstructPclFrames() override {
+  [[nodiscard]] GroupOfFrame& getDynamicReconstructPclFrames() override { return dynamicReconstructPclFrames_; };
+  [[nodiscard]] GroupOfFrame& getStaticReconstructPclFrames() override { return staticReconstructPclFrames_; };
+  [[nodiscard]] GroupOfFrame& getStaticAddedReconstructPclFrames() override {
     return staticAddedReconstructPclFrames_;
   };
-  [[nodiscard]] GroupOfFrame<PointT>& getStaticRemovedReconstructPclFrames() override {
+  [[nodiscard]] GroupOfFrame& getStaticRemovedReconstructPclFrames() override {
     return staticRemovedReconstructPclFrames_;
   };
-  [[nodiscard]] GroupOfFrame<PointT>& getReconstructPclFrames() override { return reconstructPclFrames_; };
+  [[nodiscard]] GroupOfFrame& getReconstructPclFrames() override { return reconstructPclFrames_; };
 };
 
-template <typename PointT>
-void writeJPCCContext(const JPCCContext<PointT>& context, std::ostream& os);
+void writeJPCCContext(const JPCCContext& context, std::ostream& os);
 
 }  // namespace jpcc
-
-#include <jpcc/common/impl/JPCCContext.hpp>

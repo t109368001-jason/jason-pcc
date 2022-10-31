@@ -1,12 +1,13 @@
+#include <jpcc/common/JPCCContext.h>
+
 namespace jpcc {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-JPCCContext<PointT>::JPCCContext(double                 resolution,
-                                 SegmentationType       segmentationType,
-                                 SegmentationOutputType segmentationOutputType,
-                                 CoderBackendType       dynamicBackendType,
-                                 CoderBackendType       staticBackendType) {
+JPCCContext::JPCCContext(double                 resolution,
+                         SegmentationType       segmentationType,
+                         SegmentationOutputType segmentationOutputType,
+                         CoderBackendType       dynamicBackendType,
+                         CoderBackendType       staticBackendType) {
   header_.resolution             = resolution;
   header_.segmentationType       = segmentationType;
   header_.segmentationOutputType = segmentationOutputType;
@@ -15,8 +16,7 @@ JPCCContext<PointT>::JPCCContext(double                 resolution,
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-void JPCCContext<PointT>::clear() {
+void JPCCContext::clear() {
   pclFrames_.clear();
   dynamicPclFrames_.clear();
   staticPclFrames_.clear();
@@ -41,8 +41,7 @@ void JPCCContext<PointT>::clear() {
   reconstructPclFrames_.clear();
 }
 
-template <typename PointT>
-void writeJPCCContext(const JPCCContext<PointT>& context, std::ostream& os) {
+void writeJPCCContext(const JPCCContext& context, std::ostream& os) {
   for (int i = 0; i < context.getDynamicEncodedBytesVector().size(); i++) {
     os.write(context.getDynamicEncodedBytesVector()[i].data(),
              (std::streamsize)context.getDynamicEncodedBytesVector()[i].size());
