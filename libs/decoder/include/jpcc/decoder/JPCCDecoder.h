@@ -2,7 +2,7 @@
 
 #include <jpcc/common/Common.h>
 
-namespace jpcc::coder {
+namespace jpcc::decoder {
 
 template <typename PointT>
 class JPCCDecoder {
@@ -21,6 +21,6 @@ class JPCCDecoder {
                             bool                           parallel);
 };
 
-}  // namespace jpcc::coder
+}  // namespace jpcc::decoder
 
-#include <jpcc/coder/impl/JPCCDecoder.hpp>
+#include <jpcc/decoder/impl/JPCCDecoder.hpp>

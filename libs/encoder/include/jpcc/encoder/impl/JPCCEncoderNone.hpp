@@ -2,7 +2,7 @@
 
 #include <io_tlv.h>
 
-namespace jpcc::coder {
+namespace jpcc::encoder {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
@@ -49,4 +49,4 @@ void JPCCEncoderNone<PointT>::encode(const shared_ptr<void>& frame, std::vector<
          (encodedBytes.size() - oldSize));
 }
 
-}  // namespace jpcc::coder
+}  // namespace jpcc::encoder

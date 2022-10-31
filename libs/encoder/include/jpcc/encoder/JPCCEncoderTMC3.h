@@ -1,9 +1,9 @@
 #pragma once
 
-#include <jpcc/coder/JPCCEncoder.h>
+#include <jpcc/encoder/JPCCEncoder.h>
 #include <PCCTMC3Encoder.h>
 
-namespace jpcc::coder {
+namespace jpcc::encoder {
 
 class PCCTMC3Encoder3LambdaCallbacks : public pcc::PCCTMC3Encoder3::Callbacks {
  protected:
@@ -33,6 +33,6 @@ class JPCCEncoderTMC3 : public virtual JPCCEncoder<PointT> {
   void encode(const shared_ptr<void>& frame, std::vector<char>& encodedBytes) override;
 };
 
-}  // namespace jpcc::coder
+}  // namespace jpcc::encoder
 
-#include <jpcc/coder/impl/JPCCEncoderTMC3.hpp>
+#include <jpcc/encoder/impl/JPCCEncoderTMC3.hpp>

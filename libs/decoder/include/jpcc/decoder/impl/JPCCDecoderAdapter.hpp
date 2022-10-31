@@ -1,7 +1,7 @@
-#include <jpcc/coder/JPCCDecoderNone.h>
-#include <jpcc/coder/JPCCDecoderTMC3.h>
+#include <jpcc/decoder/JPCCDecoderNone.h>
+#include <jpcc/decoder/JPCCDecoderTMC3.h>
 
-namespace jpcc::coder {
+namespace jpcc::decoder {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
@@ -75,4 +75,4 @@ void JPCCDecoderAdapter<PointT>::convertToPCL(IJPCCDecoderContext<PointT>& conte
   }
 }
 
-}  // namespace jpcc::coder
+}  // namespace jpcc::decoder

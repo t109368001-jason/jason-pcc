@@ -1,6 +1,6 @@
-#include <jpcc/coder/JPCCEncoderParameter.h>
+#include <jpcc/encoder/JPCCEncoderParameter.h>
 
-namespace jpcc::coder {
+namespace jpcc::encoder {
 
 using namespace std;
 using namespace po;
@@ -35,4 +35,4 @@ ostream& operator<<(ostream& out, const JPCCEncoderParameter& obj) {
   return out;
 }
 
-}  // namespace jpcc::coder
+}  // namespace jpcc::encoder

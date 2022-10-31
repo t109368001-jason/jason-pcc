@@ -2,7 +2,7 @@
 
 #include <boost/range/counting_range.hpp>
 
-namespace jpcc::coder {
+namespace jpcc::encoder {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
@@ -54,4 +54,4 @@ void JPCCEncoder<PointT>::encode(const std::vector<shared_ptr<void>>& frames,
   }
 }
 
-}  // namespace jpcc::coder
+}  // namespace jpcc::encoder

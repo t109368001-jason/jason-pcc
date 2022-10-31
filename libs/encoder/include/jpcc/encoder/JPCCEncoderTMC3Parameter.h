@@ -7,7 +7,7 @@
 
 #include <jpcc/common/Parameter.h>
 
-namespace jpcc::coder {
+namespace jpcc::encoder {
 
 #define JPCC_ENCODER_TMC3_OPT_PREFIX "jpccEncoderTMC3Parameter"
 
@@ -24,7 +24,7 @@ class JPCCEncoderTMC3Parameter : public virtual Parameter, public pcc::EncoderPa
   friend std::ostream& operator<<(std::ostream& out, const JPCCEncoderTMC3Parameter& obj);
 };
 
-}  // namespace jpcc::coder
+}  // namespace jpcc::encoder
 
 //---------------------------------------------------------------------------
 // :: Command line / config parsing helpers

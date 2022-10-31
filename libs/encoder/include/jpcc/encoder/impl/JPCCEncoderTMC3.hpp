@@ -2,7 +2,7 @@
 
 #include <io_tlv.h>
 
-namespace jpcc::coder {
+namespace jpcc::encoder {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 PCCTMC3Encoder3LambdaCallbacks::PCCTMC3Encoder3LambdaCallbacks(
@@ -81,4 +81,4 @@ void JPCCEncoderTMC3<PointT>::encode(const shared_ptr<void>& frame, std::vector<
             << "bytes=" << encodedBytes.size() << std::endl;
 }
 
-}  // namespace jpcc::coder
+}  // namespace jpcc::encoder

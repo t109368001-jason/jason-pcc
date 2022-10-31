@@ -1,8 +1,8 @@
 #pragma once
 
-#include <jpcc/coder/JPCCEncoder.h>
+#include <jpcc/encoder/JPCCEncoder.h>
 
-namespace jpcc::coder {
+namespace jpcc::encoder {
 
 template <typename PointT>
 class JPCCEncoderNone : public virtual JPCCEncoder<PointT> {
@@ -16,6 +16,6 @@ class JPCCEncoderNone : public virtual JPCCEncoder<PointT> {
   void encode(const shared_ptr<void>& frame, std::vector<char>& encodedBytes) override;
 };
 
-}  // namespace jpcc::coder
+}  // namespace jpcc::encoder
 
-#include <jpcc/coder/impl/JPCCEncoderNone.hpp>
+#include <jpcc/encoder/impl/JPCCEncoderNone.hpp>

@@ -1,9 +1,9 @@
 #pragma once
 
-#include <jpcc/coder/JPCCDecoder.h>
+#include <jpcc/decoder/JPCCDecoder.h>
 #include <PCCTMC3Decoder.h>
 
-namespace jpcc::coder {
+namespace jpcc::decoder {
 
 class PCCTMC3Decoder3LambdaCallbacks : public pcc::PCCTMC3Decoder3::Callbacks {
  protected:
@@ -26,6 +26,6 @@ class JPCCDecoderTMC3 : public virtual JPCCDecoder<PointT> {
   void convertToPCL(shared_ptr<void>& reconstructFrame, FramePtr<PointT>& reconstructPclFrame) override;
 };
 
-}  // namespace jpcc::coder
+}  // namespace jpcc::decoder
 
-#include <jpcc/coder/impl/JPCCDecoderTMC3.hpp>
+#include <jpcc/decoder/impl/JPCCDecoderTMC3.hpp>

@@ -2,7 +2,7 @@
 
 #include <io_tlv.h>
 
-namespace jpcc::coder {
+namespace jpcc::decoder {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
@@ -38,4 +38,4 @@ void JPCCDecoderNone<PointT>::convertToPCL(shared_ptr<void>& reconstructFrame, F
   reconstructPclFrame = std::static_pointer_cast<Frame<PointT>>(reconstructFrame);
 }
 
-}  // namespace jpcc::coder
+}  // namespace jpcc::decoder

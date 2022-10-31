@@ -1,8 +1,8 @@
 #pragma once
 
-#include <jpcc/coder/JPCCDecoder.h>
+#include <jpcc/decoder/JPCCDecoder.h>
 
-namespace jpcc::coder {
+namespace jpcc::decoder {
 
 template <typename PointT>
 class JPCCDecoderNone : public virtual JPCCDecoder<PointT> {
@@ -14,6 +14,6 @@ class JPCCDecoderNone : public virtual JPCCDecoder<PointT> {
   void convertToPCL(shared_ptr<void>& reconstructFrame, FramePtr<PointT>& reconstructPclFrame) override;
 };
 
-}  // namespace jpcc::coder
+}  // namespace jpcc::decoder
 
-#include <jpcc/coder/impl/JPCCDecoderNone.hpp>
+#include <jpcc/decoder/impl/JPCCDecoderNone.hpp>

@@ -1,7 +1,7 @@
-#include <jpcc/coder/JPCCEncoderNone.h>
-#include <jpcc/coder/JPCCEncoderTMC3.h>
+#include <jpcc/encoder/JPCCEncoderNone.h>
+#include <jpcc/encoder/JPCCEncoderTMC3.h>
 
-namespace jpcc::coder {
+namespace jpcc::encoder {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
@@ -50,4 +50,4 @@ void JPCCEncoderAdapter<PointT>::encode(IJPCCEncoderContext<PointT>& context, co
   staticRemovedEncoder_->encode(context.getStaticRemovedFrames(), context.getStaticRemovedEncodedBytesVector(),
                                 parallel);
 }
-}  // namespace jpcc::coder
+}  // namespace jpcc::encoder

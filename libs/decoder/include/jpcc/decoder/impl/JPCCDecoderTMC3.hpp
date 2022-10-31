@@ -2,7 +2,7 @@
 
 #include <io_tlv.h>
 
-namespace jpcc::coder {
+namespace jpcc::decoder {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 PCCTMC3Decoder3LambdaCallbacks::PCCTMC3Decoder3LambdaCallbacks(
@@ -95,4 +95,4 @@ void JPCCDecoderTMC3<PointT>::convertToPCL(shared_ptr<void>& reconstructFrame, F
             << "pclPoints=" << reconstructPclFrame->size() << std::endl;
 }
 
-}  // namespace jpcc::coder
+}  // namespace jpcc::decoder

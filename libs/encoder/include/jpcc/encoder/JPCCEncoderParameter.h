@@ -5,9 +5,9 @@
 
 #include <jpcc/common/Parameter.h>
 #include <jpcc/common/CoderBackendType.h>
-#include <jpcc/coder/JPCCEncoderTMC3Parameter.h>
+#include <jpcc/encoder/JPCCEncoderTMC3Parameter.h>
 
-namespace jpcc::coder {
+namespace jpcc::encoder {
 
 #define JPCC_ENCODER_OPT_PREFIX "jpccEncoderParameter"
 
@@ -28,4 +28,4 @@ class JPCCEncoderParameter : public virtual Parameter {
   friend std::ostream& operator<<(std::ostream& out, const JPCCEncoderParameter& obj);
 };
 
-}  // namespace jpcc::coder
+}  // namespace jpcc::encoder

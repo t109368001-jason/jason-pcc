@@ -1,6 +1,6 @@
-#include <jpcc/coder/JPCCEncoderTMC3Parameter.h>
+#include <jpcc/encoder/JPCCEncoderTMC3Parameter.h>
 
-namespace jpcc::coder {
+namespace jpcc::encoder {
 
 using namespace std;
 using namespace po;
@@ -341,7 +341,7 @@ ostream& operator<<(ostream& out, const JPCCEncoderTMC3Parameter& obj) {
   return out;
 }
 
-}  // namespace jpcc::coder
+}  // namespace jpcc::encoder
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 //---------------------------------------------------------------------------

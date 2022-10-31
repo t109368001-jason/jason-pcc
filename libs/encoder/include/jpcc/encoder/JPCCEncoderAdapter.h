@@ -1,9 +1,9 @@
 #pragma once
 
-#include <jpcc/coder/JPCCEncoder.h>
-#include <jpcc/coder/JPCCEncoderParameter.h>
+#include <jpcc/encoder/JPCCEncoder.h>
+#include <jpcc/encoder/JPCCEncoderParameter.h>
 
-namespace jpcc::coder {
+namespace jpcc::encoder {
 
 template <typename PointT>
 class JPCCEncoderAdapter {
@@ -21,6 +21,6 @@ class JPCCEncoderAdapter {
   void encode(IJPCCEncoderContext<PointT>& context, bool parallel);
 };
 
-}  // namespace jpcc::coder
+}  // namespace jpcc::encoder
 
-#include <jpcc/coder/impl/JPCCEncoderAdapter.hpp>
+#include <jpcc/encoder/impl/JPCCEncoderAdapter.hpp>
