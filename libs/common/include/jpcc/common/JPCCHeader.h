@@ -10,19 +10,14 @@
 namespace jpcc {
 
 struct JPCCHeader {
+  double                 resolution;
   SegmentationType       segmentationType;
   SegmentationOutputType segmentationOutputType;
 
   CoderBackendType dynamicBackendType;
   CoderBackendType staticBackendType;
 
-  bool operator==(const JPCCHeader& other) const {
-    if (this->segmentationType != other.segmentationType) { return false; }
-    if (this->segmentationOutputType != other.segmentationOutputType) { return false; }
-    if (this->dynamicBackendType != other.dynamicBackendType) { return false; }
-    if (this->staticBackendType != other.staticBackendType) { return false; }
-    return true;
-  }
+  bool operator==(const JPCCHeader& other) const;
 };
 
 std::ostream& writeJPCCHeader(const JPCCHeader& header, std::ostream& os);

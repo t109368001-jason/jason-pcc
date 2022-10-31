@@ -5,10 +5,10 @@ namespace jpcc::segmentation {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-JPCCCombination<PointT>::JPCCCombination(const double resolution) {
+void JPCCCombination<PointT>::set(const JPCCHeader& header) {
   staticFrame_ = jpcc::make_shared<Frame<PointT>>();
   staticOctree_ =
-      jpcc::make_shared<octree::JPCCOctreePointCloud<PointT, octree::OctreeContainerEditableIndex>>(resolution);
+      jpcc::make_shared<octree::JPCCOctreePointCloud<PointT, octree::OctreeContainerEditableIndex>>(header.resolution);
   staticOctree_->setInputCloud(staticFrame_);
 }
 

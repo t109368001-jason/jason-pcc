@@ -52,7 +52,8 @@ class JPCCContext : public IJPCCSegmentationContext<PointT>,
   GroupOfFrame<PointT> reconstructPclFrames_;
 
  public:
-  JPCCContext(SegmentationType       segmentationType,
+  JPCCContext(double                 resolution,
+              SegmentationType       segmentationType,
               SegmentationOutputType segmentationOutputType,
               CoderBackendType       dynamicBackendType,
               CoderBackendType       staticBackendType);

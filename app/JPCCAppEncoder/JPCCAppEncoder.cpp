@@ -32,15 +32,17 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
   PreProcessor<Point>          preProcessor(parameter.preProcess);
   JPCCSegmentation<Point>::Ptr gmmSegmentation = JPCCSegmentationAdapter::build<Point>(
       parameter.jpccGmmSegmentation, (int)parameter.inputDataset.getStartFrameNumber());
-  JPCCCombination<Point>             combination(parameter.jpccGmmSegmentation.resolution);
   JPCCNormalEstimation<Point, Point> normalEstimation(parameter.normalEstimation);
 
   JPCCEncoderAdapter<Point> encoder(parameter.jpccEncoderDynamic, parameter.jpccEncoderStatic);
+
   JPCCDecoderAdapter<Point> decoder;
+  JPCCCombination<Point>    combination;
 
   JPCCContext<pcl::PointXYZINormal> context(
-      parameter.jpccGmmSegmentation.type, parameter.jpccGmmSegmentation.outputType,
-      parameter.jpccEncoderDynamic.backendType, parameter.jpccEncoderStatic.backendType);
+      parameter.jpccGmmSegmentation.resolution, parameter.jpccGmmSegmentation.type,
+      parameter.jpccGmmSegmentation.outputType, parameter.jpccEncoderDynamic.backendType,
+      parameter.jpccEncoderStatic.backendType);
 
   std::ofstream ofs(parameter.compressedStreamPath, std::ios::binary);
 
@@ -51,7 +53,8 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
     JPCCHeader header{};
     readJPCCHeader(ifs, &header);
     THROW_IF_NOT(header == context.getHeader());
-    decoder.setBackendType(header);
+    decoder.set(header);
+    combination.set(header);
   }
 
   {  // build gaussian mixture model

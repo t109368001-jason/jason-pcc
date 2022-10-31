@@ -5,7 +5,7 @@ namespace jpcc::coder {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-void JPCCDecoderAdapter<PointT>::setBackendType(JPCCHeader header) {
+void JPCCDecoderAdapter<PointT>::set(JPCCHeader header) {
   if (header.dynamicBackendType == CoderBackendType::NONE) {
     dynamicDecoder_ = make_shared<JPCCDecoderNone<PointT>>();
   } else if (header.dynamicBackendType == CoderBackendType::TMC3) {

@@ -14,7 +14,7 @@ class JPCCDecoderAdapter {
   typename JPCCDecoder<PointT>::Ptr staticRemovedDecoder_;
 
  public:
-  void setBackendType(JPCCHeader header);
+  void set(JPCCHeader header);
 
   void decode(std::istream& is, IJPCCDecoderContext<PointT>& context, size_t frameCount, bool parallel);
 
