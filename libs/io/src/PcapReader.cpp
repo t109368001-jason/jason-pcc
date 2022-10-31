@@ -1,3 +1,5 @@
+#include <jpcc/io/PcapReader.h>
+
 #include <stdexcept>
 #include <utility>
 
@@ -124,9 +126,8 @@ struct DataPacket {
 #endif  // defined(__GNUC__)
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-PcapReader<PointT>::PcapReader(DatasetReaderParameter param, DatasetParameter datasetParam) :
-    DatasetStreamReader<PointT>(std::move(param), std::move(datasetParam)) {
+PcapReader::PcapReader(DatasetReaderParameter param, DatasetParameter datasetParam) :
+    DatasetStreamReader(std::move(param), std::move(datasetParam)) {
   THROW_IF_NOT(this->datasetParam_.type == Type::PCAP);
   if (this->datasetParam_.sensor == Sensor::VLP_16) {
     maxNumLasers_ = VLP16_MAX_NUM_LASERS;
@@ -173,8 +174,7 @@ PcapReader<PointT>::PcapReader(DatasetReaderParameter param, DatasetParameter da
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-void PcapReader<PointT>::open_(const size_t datasetIndex, const size_t startFrameNumber) {
+void PcapReader::open_(const size_t datasetIndex, const size_t startFrameNumber) {
   if (pcaps_[datasetIndex] && this->currentFrameNumbers_[datasetIndex] <= startFrameNumber) { return; }
   const std::string pcapPath = this->datasetParam_.getFilePath(datasetIndex);
 
@@ -182,36 +182,33 @@ void PcapReader<PointT>::open_(const size_t datasetIndex, const size_t startFram
   pcaps_[datasetIndex].reset(pcapOpen(pcapPath));
   this->currentFrameNumbers_[datasetIndex] = this->datasetParam_.getStartFrameNumbers(datasetIndex);
   this->frameBuffers_[datasetIndex].clear();
+  this->finishVectors_[datasetIndex].clear();
+  this->timestampVectors_[datasetIndex].clear();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-bool PcapReader<PointT>::isOpen_(const size_t datasetIndex) const {
-  return static_cast<bool>(pcaps_[datasetIndex]);
-}
+bool PcapReader::isOpen_(const size_t datasetIndex) const { return static_cast<bool>(pcaps_[datasetIndex]); }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-bool PcapReader<PointT>::isEof_(const size_t datasetIndex) const {
-  return DatasetStreamReader<PointT>::isEof_(datasetIndex);
-}
+bool PcapReader::isEof_(const size_t datasetIndex) const { return DatasetStreamReader::isEof_(datasetIndex); }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-void PcapReader<PointT>::load_(const size_t datasetIndex,
-                               const size_t startFrameNumber,
-                               const size_t groupOfFramesSize) {
+void PcapReader::load_(const size_t datasetIndex, const size_t startFrameNumber, const size_t groupOfFramesSize) {
   assert(groupOfFramesSize > 0);
-  void* const           pcap        = pcaps_[datasetIndex].get();
-  GroupOfFrame<PointT>& frameBuffer = this->frameBuffers_[datasetIndex];
+  void* const           pcap            = pcaps_[datasetIndex].get();
+  GroupOfFrame&         frameBuffer     = this->frameBuffers_[datasetIndex];
+  std::vector<bool>&    finishVector    = this->finishVectors_[datasetIndex];
+  std::vector<int64_t>& timestampVector = this->timestampVectors_[datasetIndex];
 
-  int ret = parseDataPacket(pcap, frameBuffer);
+  int ret = parseDataPacket(pcap, frameBuffer, finishVector, timestampVector);
   if (ret <= 0) { this->eof_[datasetIndex] = true; }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-int PcapReader<PointT>::parseDataPacket(void* const pcap, GroupOfFrame<PointT>& frameBuffer) {
+int PcapReader::parseDataPacket(void* const           pcap,
+                                GroupOfFrame&         frameBuffer,
+                                std::vector<bool>&    finishVector,
+                                std::vector<int64_t>& timestampVector) {
   // Retrieve Header and Data from PCAP
   const unsigned char* data;
   int64_t              timestampUS;
@@ -219,10 +216,7 @@ int PcapReader<PointT>::parseDataPacket(void* const pcap, GroupOfFrame<PointT>& 
   const int64_t        timestamp = timestampUS / 1000;
   if (ret != 1) {
     if (ret <= 0) {
-      for (const FramePtr<PointT>& frame : frameBuffer) {
-        frame->width  = static_cast<uint32_t>(frame->size());
-        frame->height = 1;
-      }
+      for (size_t i = 0; i < finishVector.size(); i++) { finishVector[i] = true; }
     }
     return ret;
   }
@@ -258,43 +252,46 @@ int PcapReader<PointT>::parseDataPacket(void* const pcap, GroupOfFrame<PointT>& 
       {
         if (frameBuffer.empty()) {
           // new frame
-          const auto frame    = jpcc::make_shared<Frame<PointT>>();
-          frame->header.stamp = timestamp;
+          const auto frame = jpcc::make_shared<Frame>();
           frame->reserve(this->capacity_);
           frameBuffer.push_back(frame);
+          timestampVector.push_back(timestamp);
         }
-        int64_t index = (timestamp - (int64_t)frameBuffer.front()->header.stamp) / (int64_t)this->param_.interval;
+        int64_t index = (timestamp - (int64_t)timestampVector.front()) / (int64_t)this->param_.interval;
         if (index < 0) {
           for (int i = -1; i >= index; i--) {
             // new frame
-            const auto frame    = jpcc::make_shared<Frame<PointT>>();
-            frame->header.stamp = frameBuffer.front()->header.stamp + (int64_t)(this->param_.interval * (float)i);
+            const auto frame = jpcc::make_shared<Frame>();
             frame->reserve(this->capacity_);
             frameBuffer.insert(frameBuffer.begin(), frame);
+            timestampVector.insert(timestampVector.begin(),
+                                   timestampVector.front() + (int64_t)(this->param_.interval * (float)i));
           }
           index = 0;
         } else if (index >= frameBuffer.size()) {
           for (size_t i = frameBuffer.size(); i <= index; i++) {
             // new frame
-            const auto frame    = jpcc::make_shared<Frame<PointT>>();
-            frame->header.stamp = frameBuffer.front()->header.stamp + (int64_t)(this->param_.interval * (float)i);
+            const auto frame = jpcc::make_shared<Frame>();
             frame->reserve(this->capacity_);
             frameBuffer.push_back(frame);
+            ;
+            timestampVector.push_back(timestampVector.front() + (int64_t)(this->param_.interval * (float)i));
           }
         }
-        // emplace_back points only, improve performance
-        // frameBuffer[index]->emplace_back(x, y, z);
-        PointT point(x, y, z);
-        if constexpr (pcl::traits::has_intensity_v<PointT>) { point.intensity = intensity / 255.0; }
-        frameBuffer[index]->points.push_back(point);
+
+        size_t ii       = frameBuffer[index]->getPointCount() - 1;
+        auto&  position = (*frameBuffer[index])[ii];
+        position[0]     = int32_t(x);
+        position[1]     = int32_t(y);
+        position[2]     = int32_t(z);
+        if (frameBuffer[index]->hasReflectances()) { frameBuffer[index]->getReflectance(ii) = uint16_t(intensity); }
       }
     }
   }
 
-  for (const FramePtr<PointT>& frame : frameBuffer) {
-    if ((frame->header.stamp + (int64_t)this->param_.interval) > timestamp) { break; }
-    frame->width  = static_cast<uint32_t>(frame->size());
-    frame->height = 1;
+  for (size_t i = 0; i < frameBuffer.size(); i++) {
+    if ((timestampVector[i] + (int64_t)this->param_.interval) > timestamp) { break; }
+    finishVector[i] = true;
   }
   return ret;
 }

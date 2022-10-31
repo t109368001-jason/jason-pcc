@@ -1,3 +1,5 @@
+#include <jpcc/io/Reader.h>
+
 #include <stdexcept>
 
 #include <jpcc/io/PcapReader.h>
@@ -7,15 +9,13 @@
 namespace jpcc::io {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-typename DatasetReader<PointT>::Ptr newReader(const DatasetReaderParameter& param,
-                                              const DatasetParameter&       datasetParam) {
+typename DatasetReader::Ptr newReader(const DatasetReaderParameter& param, const DatasetParameter& datasetParam) {
   if (datasetParam.type == Type::PCAP) {
-    return jpcc::make_shared<PcapReader<PointT>>(param, datasetParam);
+    return jpcc::make_shared<PcapReader>(param, datasetParam);
   } else if (datasetParam.type == Type::LVX) {
-    return jpcc::make_shared<LvxReader<PointT>>(param, datasetParam);
+    return jpcc::make_shared<LvxReader>(param, datasetParam);
   } else if (datasetParam.type >= Type::PLY && datasetParam.type < Type::PLY_END) {
-    return jpcc::make_shared<PlyReader<PointT>>(param, datasetParam);
+    return jpcc::make_shared<PlyReader>(param, datasetParam);
   } else {
     BOOST_THROW_EXCEPTION(std::logic_error("Not Implemented "));
   }

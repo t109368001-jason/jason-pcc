@@ -9,24 +9,25 @@
 
 namespace jpcc::io {
 
-template <typename PointT>
-class DatasetStreamReader : public DatasetReader<PointT> {
+class DatasetStreamReader : public DatasetReader {
  public:
   using Ptr = shared_ptr<DatasetStreamReader>;
 
  protected:
   size_t                            capacity_;
   std::vector<bool>                 eof_;
-  std::vector<GroupOfFrame<PointT>> frameBuffers_;
+  std::vector<GroupOfFrame>         frameBuffers_;
+  std::vector<std::vector<bool>>    finishVectors_;
+  std::vector<std::vector<int64_t>> timestampVectors_;
 
  public:
   DatasetStreamReader(DatasetReaderParameter param, DatasetParameter datasetParam);
 
-  void load(size_t                datasetIndex,
-            size_t                startFrameNumber,
-            size_t                groupOfFramesSize,
-            GroupOfFrame<PointT>& frames,
-            bool                  parallel) override;
+  void load(size_t        datasetIndex,
+            size_t        startFrameNumber,
+            size_t        groupOfFramesSize,
+            GroupOfFrame& frames,
+            bool          parallel) override;
 
  protected:
   void open_(size_t datasetIndex, size_t startFrameNumber) override = 0;
@@ -39,5 +40,3 @@ class DatasetStreamReader : public DatasetReader<PointT> {
 };
 
 }  // namespace jpcc::io
-
-#include <jpcc/io/impl/DatasetStreamReader.hpp>

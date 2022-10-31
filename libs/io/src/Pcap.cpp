@@ -4,9 +4,9 @@
 #include <sstream>
 #include <stdexcept>
 
-#include <pcap/pcap.h>
-
 #include <jpcc/common/Common.h>
+
+#include <pcap/pcap.h>
 
 using namespace std;
 

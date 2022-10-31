@@ -1,3 +1,5 @@
+#include <jpcc/io/LvxReader.h>
+
 #include <fstream>
 #include <stdexcept>
 #include <utility>
@@ -7,9 +9,8 @@
 namespace jpcc::io {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-LvxReader<PointT>::LvxReader(DatasetReaderParameter param, DatasetParameter datasetParam) :
-    DatasetStreamReader<PointT>(std::move(param), std::move(datasetParam)) {
+LvxReader::LvxReader(DatasetReaderParameter param, DatasetParameter datasetParam) :
+    DatasetStreamReader(std::move(param), std::move(datasetParam)) {
   THROW_IF_NOT(this->datasetParam_.type == Type::LVX);
   if (this->datasetParam_.sensor == Sensor::MID_100) {
     this->capacity_ = (size_t)((double)(100000 * 3) / this->param_.frequency * 1.05);
@@ -29,8 +30,7 @@ LvxReader<PointT>::LvxReader(DatasetReaderParameter param, DatasetParameter data
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-void LvxReader<PointT>::open_(const size_t datasetIndex, const size_t startFrameNumber) {
+void LvxReader::open_(const size_t datasetIndex, const size_t startFrameNumber) {
   if (lvxs_[datasetIndex] && this->currentFrameNumbers_[datasetIndex] <= startFrameNumber) { return; }
   lvxs_[datasetIndex]       = nullptr;
   const std::string lvxPath = this->datasetParam_.getFilePath(datasetIndex);
@@ -47,26 +47,20 @@ void LvxReader<PointT>::open_(const size_t datasetIndex, const size_t startFrame
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-bool LvxReader<PointT>::isOpen_(const size_t datasetIndex) const {
-  return static_cast<bool>(lvxs_[datasetIndex]);
+bool LvxReader::isOpen_(const size_t datasetIndex) const { return static_cast<bool>(lvxs_[datasetIndex]); }
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+bool LvxReader::isEof_(const size_t datasetIndex) const {
+  return DatasetStreamReader::isEof_(datasetIndex) || lvxs_[datasetIndex]->GetFileState() == livox_ros::kLvxFileAtEnd;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-bool LvxReader<PointT>::isEof_(const size_t datasetIndex) const {
-  return DatasetStreamReader<PointT>::isEof_(datasetIndex) ||
-         lvxs_[datasetIndex]->GetFileState() == livox_ros::kLvxFileAtEnd;
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-void LvxReader<PointT>::load_(const size_t datasetIndex,
-                              const size_t startFrameNumber,
-                              const size_t groupOfFramesSize) {
+void LvxReader::load_(const size_t datasetIndex, const size_t startFrameNumber, const size_t groupOfFramesSize) {
   assert(groupOfFramesSize > 0);
-  LvxHandler*                    lvx         = lvxs_[datasetIndex].get();
-  std::vector<FramePtr<PointT>>& frameBuffer = this->frameBuffers_[datasetIndex];
+  LvxHandler*            lvx             = lvxs_[datasetIndex].get();
+  std::vector<FramePtr>& frameBuffer     = this->frameBuffers_[datasetIndex];
+  std::vector<bool>&     finishVector    = this->finishVectors_[datasetIndex];
+  std::vector<int64_t>&  timestampVector = this->timestampVectors_[datasetIndex];
 
   std::vector<int64_t> lastTimestamps(lvx->GetDeviceCount());
 
@@ -76,51 +70,50 @@ void LvxReader<PointT>::load_(const size_t datasetIndex,
     const int64_t timestamp = timestampNS / 1000000;
     if (frameBuffer.empty()) {
       // new frame
-      const auto frame    = jpcc::make_shared<Frame<PointT>>();
-      frame->header.stamp = (int64_t)((float)timestamp / this->param_.interval * this->param_.interval);
+      const auto frame = jpcc::make_shared<Frame>();
       frame->reserve(this->capacity_);
       frameBuffer.push_back(frame);
+      timestampVector.push_back((int64_t)((float)timestamp / this->param_.interval * this->param_.interval));
     }
-    int64_t index = (timestamp - (int64_t)frameBuffer.front()->header.stamp) / (int64_t)this->param_.interval;
+    int64_t index = (timestamp - (int64_t)timestampVector.front()) / (int64_t)this->param_.interval;
     if (index < 0) {
       for (int i = -1; i >= index; i--) {
         // new frame
-        const auto frame    = jpcc::make_shared<Frame<PointT>>();
-        frame->header.stamp = frameBuffer.front()->header.stamp + (int64_t)(this->param_.interval * (float)i);
+        const auto frame = jpcc::make_shared<Frame>();
         frame->reserve(this->capacity_);
         frameBuffer.insert(frameBuffer.begin(), frame);
+        timestampVector.insert(timestampVector.begin(),
+                               timestampVector.front() + (int64_t)(this->param_.interval * (float)i));
       }
       index = 0;
     } else if (index >= frameBuffer.size()) {
       for (size_t i = frameBuffer.size(); i <= index; i++) {
         // new frame
-        const auto frame    = jpcc::make_shared<Frame<PointT>>();
-        frame->header.stamp = frameBuffer.front()->header.stamp + (int64_t)(this->param_.interval * (float)i);
+        const auto frame = jpcc::make_shared<Frame>();
         frame->reserve(this->capacity_);
         frameBuffer.push_back(frame);
+        timestampVector.push_back(timestampVector.front() + (int64_t)(this->param_.interval * (float)i));
       }
     }
-    // emplace_back points only, improve performance
-    // frameBuffer[index]->emplace_back(x, y, z);
-    PointT point(x, y, z);
-    if constexpr (pcl::traits::has_intensity_v<PointT>) { point.intensity = reflectivity / 255.0; }
-    frameBuffer[index]->points.push_back(point);
+
+    size_t ii       = frameBuffer[index]->getPointCount() - 1;
+    auto&  position = (*frameBuffer[index])[ii];
+    position[0]     = int32_t(x);
+    position[1]     = int32_t(y);
+    position[2]     = int32_t(z);
+    if (frameBuffer[index]->hasReflectances()) { frameBuffer[index]->getReflectance(ii) = uint16_t(reflectivity); }
     lastTimestamps[deviceIndex] = timestamp;
   });
   assert(ret == 0 || ret == livox_ros::kLvxFileAtEnd);
   if (ret == livox_ros::kLvxFileAtEnd) { this->eof_[datasetIndex] = true; }
 
   if (ret == livox_ros::kLvxFileAtEnd) {
-    for (const FramePtr<PointT>& frame : frameBuffer) {
-      frame->width  = static_cast<uint32_t>(frame->size());
-      frame->height = 1;
-    }
+    for (size_t i = 0; i < finishVector.size(); i++) { finishVector[i] = true; }
   } else {
     const int64_t minLastTimestamp = *min_element(lastTimestamps.begin(), lastTimestamps.end());
-    for (const FramePtr<PointT>& frame : frameBuffer) {
-      if ((frame->header.stamp + (int64_t)this->param_.interval) > minLastTimestamp) { break; }
-      frame->width  = static_cast<uint32_t>(frame->size());
-      frame->height = 1;
+    for (size_t i = 0; i < finishVector.size(); i++) {
+      if ((timestampVector[i] + (int64_t)this->param_.interval) > minLastTimestamp) { break; }
+      finishVector[i] = true;
     }
   }
 }

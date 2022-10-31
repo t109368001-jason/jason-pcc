@@ -7,7 +7,6 @@
 
 namespace jpcc::io {
 
-template <typename PointT>
 class DatasetReader : public DatasetReaderBase {
  public:
   using Ptr = shared_ptr<DatasetReader>;
@@ -15,13 +14,10 @@ class DatasetReader : public DatasetReaderBase {
  public:
   DatasetReader(DatasetReaderParameter param, DatasetParameter datasetParam);
 
-  void loadAll(size_t startFrameNumber, size_t groupOfFramesSize, GroupOfFrame<PointT>& frames, bool parallel = false);
+  void loadAll(size_t startFrameNumber, size_t groupOfFramesSize, GroupOfFrame& frames, bool parallel = false);
 
-  virtual void load(size_t                datasetIndex,
-                    size_t                startFrameNumber,
-                    size_t                groupOfFramesSize,
-                    GroupOfFrame<PointT>& frames,
-                    bool                  parallel) = 0;
+  virtual void load(
+      size_t datasetIndex, size_t startFrameNumber, size_t groupOfFramesSize, GroupOfFrame& frames, bool parallel) = 0;
 
  protected:
   void open_(size_t datasetIndex, size_t startFrameNumber) override = 0;
@@ -30,5 +26,3 @@ class DatasetReader : public DatasetReaderBase {
 };
 
 }  // namespace jpcc::io
-
-#include <jpcc/io/impl/DatasetReader.hpp>
