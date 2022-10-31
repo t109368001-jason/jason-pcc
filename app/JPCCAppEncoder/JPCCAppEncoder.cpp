@@ -11,7 +11,7 @@
 #include <jpcc/process/JPCCNormalEstimation.h>
 #include <jpcc/process/PreProcessor.h>
 #include <jpcc/segmentation/JPCCSegmentationAdapter.h>
-#include <jpcc/segmentation/JPCCCombination.h>
+#include <jpcc/combination/JPCCCombination.h>
 
 #include "AppParameter.h"
 
@@ -25,6 +25,7 @@ using namespace jpcc::metric;
 using namespace jpcc::octree;
 using namespace jpcc::process;
 using namespace jpcc::segmentation;
+using namespace jpcc::combination;
 
 using Point = pcl::PointXYZINormal;
 

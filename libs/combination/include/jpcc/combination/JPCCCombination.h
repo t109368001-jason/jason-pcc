@@ -4,7 +4,7 @@
 #include <jpcc/common/Common.h>
 #include <jpcc/octree/OctreeContainerEditableIndex.h>
 
-namespace jpcc::segmentation {
+namespace jpcc::combination {
 
 template <typename PointT>
 class JPCCCombination {
@@ -43,6 +43,6 @@ class JPCCCombination {
                             bool                        parallel);
 };
 
-}  // namespace jpcc::segmentation
+}  // namespace jpcc::combination
 
-#include <jpcc/segmentation/impl/JPCCCombination.hpp>
+#include <jpcc/combination/impl/JPCCCombination.hpp>

@@ -1,7 +1,4 @@
-
-#include "jpcc/segmentation/JPCCCombination.h"
-
-namespace jpcc::segmentation {
+namespace jpcc::combination {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
@@ -102,4 +99,4 @@ void JPCCCombination<PointT>::combineDynamicStatic(const GroupOfFrame<PointT>& d
   }
 }
 
-}  // namespace jpcc::segmentation
+}  // namespace jpcc::combination
