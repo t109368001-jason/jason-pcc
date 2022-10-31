@@ -10,19 +10,13 @@ using namespace po;
 #define APP_OPT_PREFIX "app"
 #define PARALLEL_OPT ".parallel"
 #define GROUP_OF_FRAMES_SIZE_OPT ".groupOfFramesSize"
-#define COMPRESSED_DYNAMIC_STREAM_PATH_OPT ".compressedDynamicStreamPath"
-#define COMPRESSED_STATIC_STREAM_PATH_OPT ".compressedStaticStreamPath"
-#define COMPRESSED_STATIC_ADDED_STREAM_PATH_OPT ".compressedStaticAddedStreamPath"
-#define COMPRESSED_STATIC_REMOVED_STREAM_PATH_OPT ".compressedStaticRemovedStreamPath"
+#define COMPRESSED_DYNAMIC_STREAM_PATH_OPT ".compressedStreamPath"
 
 AppParameter::AppParameter() :
     Parameter(APP_OPT_PREFIX, __FUNCTION__),
     parallel(false),
     groupOfFramesSize(32),
-    compressedDynamicStreamPath("./bin/output-dynamic.bin"),
-    compressedStaticStreamPath("./bin/output-static.bin"),
-    compressedStaticAddedStreamPath("./bin/output-staticAdded.bin"),
-    compressedStaticRemovedStreamPath("./bin/output-staticRemoved.bin"),
+    compressedStreamPath("./bin/output.bin"),
     inputDataset("dataset", "InputDatasetParameter"),
     inputReader("reader", "InputDatasetReaderParameter"),
     outputDataset("outputDataset", "OutputDatasetParameter"),
@@ -30,25 +24,16 @@ AppParameter::AppParameter() :
     jpccGmmSegmentation(),
     jpccEncoderDynamic("jpccEncoderDynamic", "JPCCEncoderTMC3Dynamic"),
     jpccEncoderStatic("jpccEncoderStatic", "JPCCEncoderTMC3Static") {
-  opts_.add_options()                                                                                        //
-      (string(prefix_ + PARALLEL_OPT).c_str(),                                                               //
-       value<bool>(&parallel)->default_value(parallel),                                                      //
-       "parallel")                                                                                           //
-      (string(prefix_ + GROUP_OF_FRAMES_SIZE_OPT).c_str(),                                                   //
-       value<size_t>(&groupOfFramesSize)->default_value(groupOfFramesSize),                                  //
-       "groupOfFramesSize")                                                                                  //
-      (string(prefix_ + COMPRESSED_DYNAMIC_STREAM_PATH_OPT).c_str(),                                         //
-       value<string>(&compressedDynamicStreamPath)->default_value(compressedDynamicStreamPath),              //
-       "compressedDynamicStreamPath")                                                                        //
-      (string(prefix_ + COMPRESSED_STATIC_STREAM_PATH_OPT).c_str(),                                          //
-       value<string>(&compressedStaticStreamPath)->default_value(compressedStaticStreamPath),                //
-       "compressedStaticStreamPath")                                                                         //
-      (string(prefix_ + COMPRESSED_STATIC_ADDED_STREAM_PATH_OPT).c_str(),                                    //
-       value<string>(&compressedStaticAddedStreamPath)->default_value(compressedStaticAddedStreamPath),      //
-       "compressedStaticAddedStreamPath")                                                                    //
-      (string(prefix_ + COMPRESSED_STATIC_REMOVED_STREAM_PATH_OPT).c_str(),                                  //
-       value<string>(&compressedStaticRemovedStreamPath)->default_value(compressedStaticRemovedStreamPath),  //
-       "compressedStaticRemovedStreamPath")                                                                  //
+  opts_.add_options()                                                              //
+      (string(prefix_ + PARALLEL_OPT).c_str(),                                     //
+       value<bool>(&parallel)->default_value(parallel),                            //
+       "parallel")                                                                 //
+      (string(prefix_ + GROUP_OF_FRAMES_SIZE_OPT).c_str(),                         //
+       value<size_t>(&groupOfFramesSize)->default_value(groupOfFramesSize),        //
+       "groupOfFramesSize")                                                        //
+      (string(prefix_ + COMPRESSED_DYNAMIC_STREAM_PATH_OPT).c_str(),               //
+       value<string>(&compressedStreamPath)->default_value(compressedStreamPath),  //
+       "compressedStreamPath")                                                     //
       ;
   opts_.add(inputDataset.getOpts());
   opts_.add(inputReader.getOpts());
@@ -77,13 +62,10 @@ void AppParameter::notify() {
 }
 
 ostream& operator<<(ostream& out, const AppParameter& obj) {
-  obj.coutParameters(out)                                                                 //
-      (PARALLEL_OPT, obj.parallel)                                                        //
-      (GROUP_OF_FRAMES_SIZE_OPT, obj.groupOfFramesSize)                                   //
-      (COMPRESSED_DYNAMIC_STREAM_PATH_OPT, obj.compressedDynamicStreamPath)               //
-      (COMPRESSED_STATIC_STREAM_PATH_OPT, obj.compressedStaticStreamPath)                 //
-      (COMPRESSED_STATIC_ADDED_STREAM_PATH_OPT, obj.compressedStaticAddedStreamPath)      //
-      (COMPRESSED_STATIC_REMOVED_STREAM_PATH_OPT, obj.compressedStaticRemovedStreamPath)  //
+  obj.coutParameters(out)                                             //
+      (PARALLEL_OPT, obj.parallel)                                    //
+      (GROUP_OF_FRAMES_SIZE_OPT, obj.groupOfFramesSize)               //
+      (COMPRESSED_DYNAMIC_STREAM_PATH_OPT, obj.compressedStreamPath)  //
       ;
   out << obj.inputDataset;
   out << obj.inputReader;

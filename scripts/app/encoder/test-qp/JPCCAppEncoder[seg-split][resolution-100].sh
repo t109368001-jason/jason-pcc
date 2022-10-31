@@ -10,9 +10,6 @@ mkdir -p "${OUTPUT_FOLDER_PREFIX}${OUTPUT_FOLDER}"
   --outputDataset.folder "${OUTPUT_FOLDER}" \
   --jpccGMMSegmentationParameter.outputType dynamic-staticAdded-staticRemoved \
   --jpccGMMSegmentationParameter.resolution 100.0 \
-  --app.compressedDynamicStreamPath "${OUTPUT_FOLDER_PREFIX}${OUTPUT_FOLDER}output-dynamic.bin" \
-  --app.compressedStaticStreamPath "${OUTPUT_FOLDER_PREFIX}${OUTPUT_FOLDER}output-static.bin" \
-  --app.compressedStaticAddedStreamPath "${OUTPUT_FOLDER_PREFIX}${OUTPUT_FOLDER}output-staticAdded.bin" \
-  --app.compressedStaticRemovedStreamPath "${OUTPUT_FOLDER_PREFIX}${OUTPUT_FOLDER}output-staticRemoved.bin" \
+  --app.compressedStreamPath "${OUTPUT_FOLDER_PREFIX}${OUTPUT_FOLDER}output.bin" \
   --jpccMetricParameter.outputCSVFolder "${OUTPUT_FOLDER_PREFIX}${OUTPUT_FOLDER}" \
   --configs cfg/app/Encoder/ctc-raw.cfg |& tee "${OUTPUT_FOLDER_PREFIX}${OUTPUT_FOLDER}JPCCAppEncoder-$(date +%Y%m%d-%H%M%S).log"
