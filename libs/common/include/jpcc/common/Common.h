@@ -15,7 +15,7 @@
 #include <PCCChrono.h>
 #include <PCCMemory.h>
 
-#include <PCCPointSet.h>
+#include <jpcc/common/JPCCPointSet3.h>
 
 #define JPCC_NOT_USED(x)
 
@@ -34,7 +34,7 @@ using uindex_t   = pcl::uindex_t;
 using Indices    = pcl::Indices;
 using IndicesPtr = shared_ptr<Indices>;
 
-using Frame         = pcc::PCCPointSet3;
+using Frame         = JPCCPointSet3;
 using FramePtr      = shared_ptr<Frame>;
 using FrameConstPtr = shared_ptr<const Frame>;
 

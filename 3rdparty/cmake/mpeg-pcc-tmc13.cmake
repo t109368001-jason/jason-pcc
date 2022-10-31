@@ -19,6 +19,7 @@ IF (NOT EXISTS "${TMC3_DIR}/PATCHED")
     FOREACH (TMC3_PATCH
             "${CMAKE_SOURCE_DIR}/3rdparty/patch/mpeg-pcc-tmc13-change-path.patch"
             "${CMAKE_SOURCE_DIR}/3rdparty/patch/mpeg-pcc-tmc13-as-library.patch"
+            "${CMAKE_SOURCE_DIR}/3rdparty/patch/mpeg-pcc-tmc13-PCCPointSet3-derivable.patch"
             )
         MESSAGE("mpeg-pcc-tmc13 patch: ${TMC3_DIR} (${TMC3_PATCH})")
         EXECUTE_PROCESS(COMMAND git apply ${TMC3_PATCH} --whitespace=nowarn WORKING_DIRECTORY ${TMC3_DIR} RESULT_VARIABLE ret)
