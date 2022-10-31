@@ -18,6 +18,8 @@ struct JPCCHeader {
   CoderBackendType staticBackendType;
 
   bool operator==(const JPCCHeader& other) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const JPCCHeader& obj);
 };
 
 std::ostream& writeJPCCHeader(const JPCCHeader& header, std::ostream& os);

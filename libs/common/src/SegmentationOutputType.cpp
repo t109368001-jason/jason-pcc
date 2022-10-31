@@ -20,4 +20,16 @@ SegmentationOutputType getSegmentationOutputType(const string& segmentationOutpu
   }
 }
 
+std::ostream& operator<<(std::ostream& out, const SegmentationOutputType& obj) {
+  switch (obj) {
+    case SegmentationOutputType::NONE: out << "NONE"; break;
+    case SegmentationOutputType::DYNAMIC_STATIC: out << "DYNAMIC_STATIC"; break;
+    case SegmentationOutputType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED:
+      out << "DYNAMIC_STATIC_ADDED_STATIC_REMOVED";
+      break;
+    default: out << "Unknown"; break;
+  }
+  return out;
+}
+
 }  // namespace jpcc

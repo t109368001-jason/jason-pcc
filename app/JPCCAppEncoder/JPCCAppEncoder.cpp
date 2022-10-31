@@ -57,6 +57,8 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
     decoder.set(header);
     combination.set(header);
   }
+  std::cout << __FUNCTION__ << "() "
+            << "header=" << context.getHeader() << std::endl;
 
   {  // build gaussian mixture model
     GroupOfFrame<Point> frames;

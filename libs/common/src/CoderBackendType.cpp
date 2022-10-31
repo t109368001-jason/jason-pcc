@@ -18,4 +18,13 @@ CoderBackendType getCoderBackendType(const std::string& coderBackendType) {
   }
 }
 
+std::ostream& operator<<(std::ostream& out, const CoderBackendType& obj) {
+  switch (obj) {
+    case CoderBackendType::NONE: out << "NONE"; break;
+    case CoderBackendType::TMC3: out << "TMC3"; break;
+    default: out << "Unknown"; break;
+  }
+  return out;
+}
+
 }  // namespace jpcc

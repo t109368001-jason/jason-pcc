@@ -13,6 +13,18 @@ bool JPCCHeader::operator==(const JPCCHeader& other) const {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
+std::ostream& operator<<(std::ostream& out, const JPCCHeader& obj) {
+  out << "JPCCHeader(";
+  out << "resolution=" << obj.resolution << ",";
+  out << "segmentationType=" << obj.segmentationType << ",";
+  out << "segmentationOutputType=" << obj.segmentationOutputType << ",";
+  out << "dynamicBackendType=" << obj.dynamicBackendType << ",";
+  out << "staticBackendType=" << obj.staticBackendType;
+  out << ")";
+  return out;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
 std::ostream& writeJPCCHeader(const JPCCHeader& header, std::ostream& os) {
   os.write(reinterpret_cast<const char*>(&header.resolution), sizeof(header.resolution));
   os.put(char(header.segmentationType));

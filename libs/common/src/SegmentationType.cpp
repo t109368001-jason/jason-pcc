@@ -20,4 +20,14 @@ SegmentationType getSegmentationType(const string& segmentationType) {
   }
 }
 
+std::ostream& operator<<(std::ostream& out, const SegmentationType& obj) {
+  switch (obj) {
+    case SegmentationType::NONE: out << "NONE"; break;
+    case SegmentationType::GMM: out << "GMM"; break;
+    case SegmentationType::GMM_2L: out << "GMM_2L"; break;
+    default: out << "Unknown"; break;
+  }
+  return out;
+}
+
 }  // namespace jpcc
