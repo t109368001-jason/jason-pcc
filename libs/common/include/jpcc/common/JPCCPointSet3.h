@@ -12,6 +12,7 @@ class JPCCPointSet3 : public pcc::PCCPointSet3 {
   std::vector<NormalType> normals;
   bool                    withNormals;
 
+ public:
   JPCCPointSet3() : pcc::PCCPointSet3() { withNormals = false; }
 
   void swap(JPCCPointSet3& other) {

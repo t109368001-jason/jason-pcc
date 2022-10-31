@@ -36,18 +36,18 @@ class JPCCMetric {
  public:
   JPCCMetric(const JPCCMetricParameter& parameter);
 
-  template <typename PointT>
-  void addPoints(const std::string& name, const FramePtr<PointT>& frame, bool addBytes = false);
+  void addPoints(size_t frameNumber, const std::string& name, const FramePtr& frame, bool addBytes = false);
 
-  template <typename PointT>
-  void addPoints(const std::string& name, const GroupOfFrame<PointT>& frames, bool addBytes = false);
+  void addPoints(size_t frameNumber, const std::string& name, const GroupOfFrame& frames, bool addBytes = false);
 
-  template <typename PointT>
-  void addPointsAndBytes(const std::string& name, const FramePtr<PointT>& frame, const std::vector<char>& encodedBytes);
+  void addPointsAndBytes(size_t                   frameNumber,
+                         const std::string&       name,
+                         const FramePtr&          frame,
+                         const std::vector<char>& encodedBytes);
 
-  template <typename PointT>
-  void addPointsAndBytes(const std::string&                    name,
-                         const GroupOfFrame<PointT>&           frames,
+  void addPointsAndBytes(size_t                                frameNumber,
+                         const std::string&                    name,
+                         const GroupOfFrame&                   frames,
                          const std::vector<std::vector<char>>& encodedFramesBytes);
 
   void addBytes(const std::string& name, FrameNumber frameNumber, uint64_t bytes);
@@ -56,33 +56,26 @@ class JPCCMetric {
                 FrameNumber                           firstFrameNumber,
                 const std::vector<std::vector<char>>& bytesVector);
 
-  template <typename PointA, typename PointB>
-  void addPSNR(const std::string& name, const FramePtr<PointA>& frameA, const FramePtr<PointB>& frameB);
+  void addPSNR(size_t frameNumber, const std::string& name, const FramePtr& frameA, const FramePtr& frameB);
 
-  template <typename PointA, typename PointB>
-  void addPSNR(const std::string&          name,
-               const GroupOfFrame<PointA>& framesA,
-               const GroupOfFrame<PointB>& framesB,
-               bool                        parallel);
+  void addPSNR(size_t              frameNumber,
+               const std::string&  name,
+               const GroupOfFrame& framesA,
+               const GroupOfFrame& framesB,
+               bool                parallel);
 
-  template <typename PointT>
-  void copyNormalToReconstruct(const FramePtr<PointT>& frame, const FramePtr<PointT>& reconstructFrame);
+  static void copyNormalToReconstruct(const FramePtr& frame, const FramePtr& reconstructFrame);
 
-  template <typename PointT>
-  void copyNormalToReconstruct(const GroupOfFrame<PointT>& frames,
-                               const GroupOfFrame<PointT>& reconstructFrames,
-                               bool                        parallel);
+  void copyNormalToReconstruct(const GroupOfFrame& frames, const GroupOfFrame& reconstructFrames, bool parallel);
 
-  template <typename PointT>
-  void copyNormalToReconstruct(const JPCCContext<PointT>& context, bool parallel);
+  void copyNormalToReconstruct(const JPCCContext& context, bool parallel);
 
-  template <typename PointA, typename PointB>
-  void computePSNR(const FramePtr<PointA>& frameA,
-                   const FramePtr<PointB>& frameB,
-                   double&                 c2cMSE,
-                   double&                 c2cPSNR,
-                   double&                 c2pMSE,
-                   double&                 c2pPSNR);
+  void computePSNR(const FramePtr& frameA,
+                   const FramePtr& frameB,
+                   double&         c2cMSE,
+                   double&         c2cPSNR,
+                   double&         c2pMSE,
+                   double&         c2pPSNR) const;
 
   ScopeStopwatch start(const std::string& name, FrameNumber frameNumber);
 
@@ -90,5 +83,3 @@ class JPCCMetric {
 };
 
 }  // namespace jpcc::metric
-
-#include <jpcc/metric/impl/JPCCMetric.hpp>

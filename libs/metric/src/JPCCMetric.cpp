@@ -1,10 +1,13 @@
 #include <jpcc/metric/JPCCMetric.h>
 
-#include <fstream>
+#include <execution>
 #include <iomanip>
 #include <iostream>
 
 #include <boost/config.hpp>
+#include <boost/range/counting_range.hpp>
+
+#include <dependencies/nanoflann/KDTreeVectorOfVectorsAdaptor.h>
 
 using namespace std;
 using namespace pcc;
@@ -31,6 +34,55 @@ JPCCMetric::JPCCMetric(const JPCCMetricParameter& parameter) :
     clockMapMap_() {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
+void JPCCMetric::addPoints(const size_t frameNumber, const std::string& name, const FramePtr& frame, bool addBytes) {
+  const auto& points = frame->getPointCount();
+  if (points == 0) { return; }
+  frameNumberSet_.insert(frameNumber);
+  pointsNameSet_.insert(name);
+  pointsMapMap_[frameNumber][name] += points;
+  std::cout << __FUNCTION__ << "() "
+            << "name=" << name << ", "
+            << "frameNumber=" << frameNumber << ", "
+            << "points=" << points << std::endl;
+  if (addBytes) { this->addBytes(name, frameNumber, points * sizeof(float) * 3); }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void JPCCMetric::addPoints(size_t frameNumber, const std::string& name, const GroupOfFrame& frames, bool addBytes) {
+  for (const auto& frame : frames) { this->addPoints(frameNumber++, name, frame, addBytes); }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void JPCCMetric::addPointsAndBytes(const size_t             frameNumber,
+                                   const std::string&       name,
+                                   const FramePtr&          frame,
+                                   const std::vector<char>& encodedBytes) {
+  if (encodedBytes.empty()) { return; }
+  const auto& points = frame->getPointCount();
+  if (points == 0) { return; }
+  frameNumberSet_.insert(frameNumber);
+  pointsNameSet_.insert(name);
+  pointsMapMap_[frameNumber][name] += points;
+  bytesNameSet_.insert(name);
+  bytesMapMap_[frameNumber][name] = encodedBytes.size();
+  std::cout << __FUNCTION__ << "() "
+            << "name=" << name << ", "
+            << "frameNumber=" << frameNumber << ", "
+            << "points=" << points << ", "
+            << "bytes=" << encodedBytes.size() << std::endl;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void JPCCMetric::addPointsAndBytes(size_t                                frameNumber,
+                                   const std::string&                    name,
+                                   const GroupOfFrame&                   frames,
+                                   const std::vector<std::vector<char>>& encodedFramesBytes) {
+  for (size_t i = 0; i < frames.size(); i++) {
+    this->addPointsAndBytes(frameNumber++, name, frames[i], encodedFramesBytes[i]);
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
 void JPCCMetric::addBytes(const std::string& name, FrameNumber frameNumber, const uint64_t bytes) {
   if (bytes == 0) { return; }
   cout << __FUNCTION__ << "() "
@@ -47,6 +99,170 @@ void JPCCMetric::addBytes(const std::string&                    name,
                           FrameNumber                           firstFrameNumber,
                           const std::vector<std::vector<char>>& bytesVector) {
   for (size_t i = 0; i < bytesVector.size(); i++) { this->addBytes(name, firstFrameNumber + i, bytesVector[i].size()); }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void JPCCMetric::addPSNR(const size_t       frameNumber,
+                         const std::string& name,
+                         const FramePtr&    frameA,
+                         const FramePtr&    frameB) {
+  double c2cMSE  = std::numeric_limits<double>::quiet_NaN();
+  double c2cPSNR = std::numeric_limits<double>::quiet_NaN();
+  double c2pMSE  = std::numeric_limits<double>::quiet_NaN();
+  double c2pPSNR = std::numeric_limits<double>::quiet_NaN();
+
+  computePSNR(frameA, frameB, c2cMSE, c2cPSNR, c2pMSE, c2pPSNR);
+
+  frameNumberSet_.insert(frameNumber);
+  c2cMSENameSet_.insert(name);
+  c2cPSNRNameSet_.insert(name);
+  c2pMSENameSet_.insert(name);
+  c2pPSNRNameSet_.insert(name);
+  c2cMSEMapMap_[frameNumber][name]  = c2cMSE;
+  c2cPSNRMapMap_[frameNumber][name] = c2cPSNR;
+  c2pMSEMapMap_[frameNumber][name]  = c2pMSE;
+  c2pPSNRMapMap_[frameNumber][name] = c2pPSNR;
+  std::cout << __FUNCTION__ << "() "
+            << "name=" << name << ", "
+            << "frameNumberA=" << frameNumber << ", "
+            << "frameNumberB=" << frameNumber << ", "
+            << "pointsA=" << frameA->getPointCount() << ", "
+            << "pointsB=" << frameB->getPointCount() << ", "
+            << "c2cMSE=" << c2cMSE << ", "
+            << "c2cPSNR=" << c2cPSNR << ", "
+            << "c2pMSE=" << c2pMSE << ", "
+            << "c2pPSNR=" << c2pPSNR << std::endl;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void JPCCMetric::addPSNR(size_t              frameNumber,
+                         const std::string&  name,
+                         const GroupOfFrame& framesA,
+                         const GroupOfFrame& framesB,
+                         const bool          parallel) {
+  assert(framesA.size() == framesB.size());
+  if (!parallel) {
+    for (size_t i = 0; i < framesA.size(); i++) { this->addPSNR(frameNumber + i, name, framesA[i], framesB[i]); }
+  } else {
+    const auto range = boost::counting_range<size_t>(0, framesA.size());
+    std::for_each(std::execution::par, range.begin(), range.end(),
+                  [&](const size_t& i) {  //
+                    this->addPSNR(frameNumber + i, name, framesA[i], framesB[i]);
+                  });
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void JPCCMetric::copyNormalToReconstruct(const FramePtr& frame, const FramePtr& reconstructFrame) {
+  if (frame->getPointCount() == 0 || reconstructFrame->getPointCount() == 0) { return; }
+  size_t                          K = 1;
+  std::vector<size_t>             pointIdxKNNSearch(K);
+  std::vector<double>             pointKNNSquaredDistance(K);
+  nanoflann::KNNResultSet<double> resultSet(K);
+  resultSet.init(&pointIdxKNNSearch[0], &pointKNNSquaredDistance[0]);
+  KDTreeVectorOfVectorsAdaptor<PCCPointSet3, double> kdtree(3, *frame, 10);
+
+  for (size_t i = 0; i < reconstructFrame->getPointCount(); i++) {
+    auto&        point       = (*reconstructFrame)[i];
+    Vec3<double> pointDouble = point;
+    auto&        normal      = reconstructFrame->getNormal(i);
+    bool         ret         = kdtree.index->findNeighbors(resultSet, &pointDouble[0], nanoflann::SearchParams(10));
+    THROW_IF_NOT(ret);
+    normal.x() = frame->getNormal(pointIdxKNNSearch.front()).x();
+    normal.y() = frame->getNormal(pointIdxKNNSearch.front()).y();
+    normal.z() = frame->getNormal(pointIdxKNNSearch.front()).z();
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void JPCCMetric::copyNormalToReconstruct(const GroupOfFrame& frames,
+                                         const GroupOfFrame& reconstructFrames,
+                                         const bool          parallel) {
+  assert(frames.size() == reconstructFrames.size());
+  if (!parallel) {
+    for (size_t i = 0; i < frames.size(); i++) {
+      const FramePtr& frame            = frames[i];
+      const FramePtr& reconstructFrame = reconstructFrames[i];
+      this->copyNormalToReconstruct(frame, reconstructFrame);
+    }
+  } else {
+    const auto range = boost::counting_range<size_t>(0, frames.size());
+    std::for_each(std::execution::par, range.begin(), range.end(),
+                  [&](const size_t& i) {  //
+                    const FramePtr& frame            = frames[i];
+                    const FramePtr& reconstructFrame = reconstructFrames[i];
+                    this->copyNormalToReconstruct(frame, reconstructFrame);
+                  });
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void JPCCMetric::copyNormalToReconstruct(const JPCCContext& context, const bool parallel) {
+  this->copyNormalToReconstruct(context.getDynamicPclFrames(), context.getDynamicReconstructPclFrames(), parallel);
+  if (context.getSegmentationOutputType() == SegmentationOutputType::DYNAMIC_STATIC) {
+    this->copyNormalToReconstruct(context.getStaticPclFrames(), context.getStaticReconstructPclFrames(), parallel);
+  }
+  if (context.getSegmentationOutputType() == SegmentationOutputType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED) {
+    this->copyNormalToReconstruct(context.getStaticAddedPclFrames(), context.getStaticAddedReconstructPclFrames(),
+                                  parallel);
+    this->copyNormalToReconstruct(context.getStaticRemovedPclFrames(), context.getStaticRemovedReconstructPclFrames(),
+                                  parallel);
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void JPCCMetric::computePSNR(const FramePtr& frameA,
+                             const FramePtr& frameB,
+                             double&         c2cMSE,
+                             double&         c2cPSNR,
+                             double&         c2pMSE,
+                             double&         c2pPSNR) const {
+  double sseC2c = 0;
+  double sseC2p = 0;
+
+  size_t                          K = 1;
+  std::vector<size_t>             pointIdxKNNSearch(K);
+  std::vector<double>             pointKNNSquaredDistance(K);
+  nanoflann::KNNResultSet<double> resultSet(K);
+  resultSet.init(&pointIdxKNNSearch[0], &pointKNNSquaredDistance[0]);
+
+  KDTreeVectorOfVectorsAdaptor<PCCPointSet3, double> kdtree(3, *frameB, 10);
+
+  for (size_t indexA = 0; indexA < frameA->getPointCount(); indexA++) {
+    auto&        pointA       = (*frameA)[indexA];
+    Vec3<double> pointADouble = pointA;
+    // For point 'i' in A, find its nearest neighbor in B. store it in 'j'
+    bool ret = kdtree.index->findNeighbors(resultSet, &pointADouble[0], nanoflann::SearchParams(10));
+    THROW_IF_NOT(ret);
+
+    const auto& pointB = (*frameB)[pointIdxKNNSearch.front()];
+
+    // Compute point-to-point, which should be equal to sqrt( dist[0] )
+    const double distProjC2c = pointKNNSquaredDistance.front();
+
+    // Compute point-to-plane, normals in B will be used for point-to-plane
+    double distProjC2p;
+    if (frameB->hasNormal()) {
+      auto& normalB = frameB->getNormal(pointIdxKNNSearch.front());
+
+      float errX  = float(pointA.x()) - float(pointB.x());
+      float errY  = float(pointA.y()) - float(pointB.y());
+      float errZ  = float(pointA.z()) - float(pointB.z());
+      distProjC2p = errX * normalB.x() + errY * normalB.y() + errZ * normalB.z();
+      distProjC2p *= distProjC2p;
+    } else {
+      distProjC2p = distProjC2c;
+    }
+
+    // mean square distance
+    sseC2c += distProjC2c;
+    sseC2p += distProjC2p;
+  }
+
+  c2cMSE  = sseC2c / float(frameA->getPointCount());
+  c2cPSNR = 10 * log10((3 * pow(parameter_.maximumValue, 2)) / c2cMSE);
+  c2pMSE  = sseC2p / float(frameA->getPointCount());
+  c2pPSNR = 10 * log10((3 * pow(parameter_.maximumValue, 2)) / c2pMSE);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
