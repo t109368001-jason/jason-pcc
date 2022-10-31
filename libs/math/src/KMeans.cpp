@@ -7,10 +7,10 @@ using namespace std;
 namespace jpcc::math {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void kmeans(const std::vector<float>&        samples,
-            int                              K,
-            std::vector<float>&              centroids,
-            std::vector<std::vector<float>>& clusters) {
+void kmeans(const std::vector<int32_t>&        samples,
+            int                                K,
+            std::vector<float>&                centroids,
+            std::vector<std::vector<int32_t>>& clusters) {
   clusters.resize(K);
 
   std::vector<float> previousCentroids;
@@ -26,9 +26,9 @@ void kmeans(const std::vector<float>&        samples,
 
     for (const auto& sample : samples) {
       size_t minIndex    = 0;
-      float  minDistance = abs(sample - centroids.front());
+      float  minDistance = abs(float(sample) - centroids.front());
       for (k = 1; k < K; k++) {
-        const float distance = abs(sample - centroids[k]);
+        const float distance = abs(float(sample) - centroids[k]);
         if (distance < minDistance) {
           minIndex    = k;
           minDistance = distance;
@@ -41,7 +41,7 @@ void kmeans(const std::vector<float>&        samples,
       if (clusters[k].empty()) {
         for (int k2 = 0; k2 < K; k2++) {
           if (clusters[k2].size() < 2) { continue; }
-          std::vector<float> uniques;
+          std::vector<int32_t> uniques;
           for (const auto& sample : clusters[k2]) {
             bool exists = false;
             for (const auto& unique : uniques) {
@@ -56,14 +56,14 @@ void kmeans(const std::vector<float>&        samples,
             }
           }
           if (uniques.size() > 1) {
-            centroids[k] = uniques.front();
+            centroids[k] = float(uniques.front());
             break;
           }
         }
         continue;
       }
-      const float sum = accumulate(clusters[k].begin(), clusters[k].end(), float{0});
-      centroids[k]    = static_cast<float>(sum / static_cast<double>(clusters[k].size()));
+      const int32_t sum = accumulate(clusters[k].begin(), clusters[k].end(), int32_t{0});
+      centroids[k]      = static_cast<float>(sum / static_cast<double>(clusters[k].size()));
     }
 
     isConverged = true;

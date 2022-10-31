@@ -5,9 +5,9 @@
 
 namespace jpcc::math {
 
-void kmeans(const std::vector<float>&        samples,
-            int                              K,
-            std::vector<float>&              centroids,
-            std::vector<std::vector<float>>& clusters);
+void kmeans(const std::vector<int32_t>&        samples,
+            int                                K,
+            std::vector<float>&                centroids,
+            std::vector<std::vector<int32_t>>& clusters);
 
 }  // namespace jpcc::math
