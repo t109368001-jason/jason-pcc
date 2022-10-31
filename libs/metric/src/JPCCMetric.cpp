@@ -155,18 +155,18 @@ void JPCCMetric::addPSNR(size_t              frameNumber,
 //////////////////////////////////////////////////////////////////////////////////////////////
 void JPCCMetric::copyNormalToReconstruct(const FramePtr& frame, const FramePtr& reconstructFrame) {
   if (frame->getPointCount() == 0 || reconstructFrame->getPointCount() == 0) { return; }
-  size_t                          K = 1;
-  std::vector<size_t>             pointIdxKNNSearch(K);
-  std::vector<double>             pointKNNSquaredDistance(K);
-  nanoflann::KNNResultSet<double> resultSet(K);
-  resultSet.init(&pointIdxKNNSearch[0], &pointKNNSquaredDistance[0]);
+  size_t                                             K = 1;
+  std::vector<size_t>                                pointIdxKNNSearch(K);
+  std::vector<double>                                pointKNNSquaredDistance(K);
+  nanoflann::KNNResultSet<double>                    resultSet(K);
   KDTreeVectorOfVectorsAdaptor<PCCPointSet3, double> kdtree(3, *frame, 10);
 
   for (size_t i = 0; i < reconstructFrame->getPointCount(); i++) {
     auto&        point       = (*reconstructFrame)[i];
     Vec3<double> pointDouble = point;
     auto&        normal      = reconstructFrame->getNormal(i);
-    bool         ret         = kdtree.index->findNeighbors(resultSet, &pointDouble[0], nanoflann::SearchParams(10));
+    resultSet.init(&pointIdxKNNSearch[0], &pointKNNSquaredDistance[0]);
+    bool ret = kdtree.index->findNeighbors(resultSet, &pointDouble[0], nanoflann::SearchParams(10));
     THROW_IF_NOT(ret);
     normal.x() = frame->getNormal(pointIdxKNNSearch.front()).x();
     normal.y() = frame->getNormal(pointIdxKNNSearch.front()).y();
@@ -224,7 +224,6 @@ void JPCCMetric::computePSNR(const FramePtr& frameA,
   std::vector<size_t>             pointIdxKNNSearch(K);
   std::vector<double>             pointKNNSquaredDistance(K);
   nanoflann::KNNResultSet<double> resultSet(K);
-  resultSet.init(&pointIdxKNNSearch[0], &pointKNNSquaredDistance[0]);
 
   KDTreeVectorOfVectorsAdaptor<PCCPointSet3, double> kdtree(3, *frameB, 10);
 
@@ -232,6 +231,7 @@ void JPCCMetric::computePSNR(const FramePtr& frameA,
     auto&        pointA       = (*frameA)[indexA];
     Vec3<double> pointADouble = pointA;
     // For point 'i' in A, find its nearest neighbor in B. store it in 'j'
+    resultSet.init(&pointIdxKNNSearch[0], &pointKNNSquaredDistance[0]);
     bool ret = kdtree.index->findNeighbors(resultSet, &pointADouble[0], nanoflann::SearchParams(10));
     THROW_IF_NOT(ret);
 
