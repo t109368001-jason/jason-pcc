@@ -83,29 +83,36 @@ Condition::Condition(const ConditionType& type, const vector<string>& conditions
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-bool Condition::predictVector3fMap(pcl::Vector3fMapConst& vector3fMap) const {
-  double val;
+bool Condition::predict(const Frame::PointType& point) const {
   switch (type) {
-    case X: val = vector3fMap(0); break;
-    case Y: val = vector3fMap(1); break;
-    case Z: val = vector3fMap(2); break;
-    case R: val = vector3fMap.norm(); break;
-    case PROD: {
-      Vector4f v(vector3fMap(0), vector3fMap(1), vector3fMap(2), 1);
-      val = coefficient->transpose() * v;
-      break;
-    }
+    case X:
+    case Y:
+    case Z:
+    case R:
+    case PROD: return predictVector3fMap(point);
+    case AND:
+      return all_of(conditions.begin(), conditions.end(),
+                    [&point](const auto& condition) { return condition.predict(point); });
+    case OR:
+      return any_of(conditions.begin(), conditions.end(),
+                    [&point](const auto& condition) { return condition.predict(point); });
     default: return false;
   }
-
-  return predictValue(val);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-bool Condition::predictVector4fMap(pcl::Vector4fMapConst& vector4fMap) const {
+bool Condition::predictVector3fMap(const Frame::PointType& point) const {
   double val;
   switch (type) {
-    case REFLECTIVITY: val = vector4fMap(3); break;
+    case X: val = point.x(); break;
+    case Y: val = point.y(); break;
+    case Z: val = point.z(); break;
+    case R: val = Vector3f{float(point.x()), float(point.y()), float(point.z())}.norm(); break;
+    case PROD: {
+      Vector4f v(float(point.x()), float(point.y()), float(point.z()), 1);
+      val = coefficient->transpose() * v;
+      break;
+    }
     default: return false;
   }
 

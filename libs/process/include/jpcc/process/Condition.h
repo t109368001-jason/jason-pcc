@@ -27,17 +27,12 @@ class Condition {
 
   Condition(const ConditionType& type, const std::vector<std::string>& conditions);
 
-  template <typename PointT>
-  [[nodiscard]] bool predict(const PointT& point) const;
+  [[nodiscard]] bool predict(const Frame::PointType& point) const;
 
  protected:
-  [[nodiscard]] bool predictVector3fMap(pcl::Vector3fMapConst& vector3fMap) const;
-
-  [[nodiscard]] bool predictVector4fMap(pcl::Vector4fMapConst& vector4fMap) const;
+  [[nodiscard]] bool predictVector3fMap(const Frame::PointType& point) const;
 
   [[nodiscard]] bool predictValue(double val) const;
 };
 
 }  // namespace jpcc::process
-
-#include <jpcc/process/impl/Condition.hpp>

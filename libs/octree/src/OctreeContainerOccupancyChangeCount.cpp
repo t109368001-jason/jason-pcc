@@ -17,7 +17,7 @@ void OctreeContainerOccupancyChangeCount::reset() {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void OctreeContainerOccupancyChangeCount::addPointIndex(const index_t& index) { current_ = true; }
+void OctreeContainerOccupancyChangeCount::addPointIndex(const Index& index) { current_ = true; }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void OctreeContainerOccupancyChangeCount::resetCurrent() { current_ = false; }

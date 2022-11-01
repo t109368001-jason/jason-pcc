@@ -15,7 +15,7 @@ class OctreeContainerCounter : virtual public pcl::octree::OctreeContainerBase {
 
   void reset() override;
 
-  void addPointIndex(const index_t& index);
+  void addPointIndex(const Index& index);
 
   [[nodiscard]] size_t getCount() const;
 };

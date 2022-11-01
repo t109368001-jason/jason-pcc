@@ -6,7 +6,7 @@ OctreeContainerCounter::OctreeContainerCounter() : OctreeContainerBase() { Octre
 
 void OctreeContainerCounter::reset() { count_ = 0; }
 
-void OctreeContainerCounter::addPointIndex(const index_t& index) { count_++; }
+void OctreeContainerCounter::addPointIndex(const Index& index) { count_++; }
 
 size_t OctreeContainerCounter::getCount() const { return count_; }
 

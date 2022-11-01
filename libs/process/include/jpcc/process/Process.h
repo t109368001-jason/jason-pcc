@@ -4,18 +4,10 @@
 
 namespace jpcc::process {
 
-template <typename PointT>
-void split(const FramePtr<PointT>& input,
-           const IndicesPtr&       indices,
-           const FramePtr<PointT>& output,
-           const FramePtr<PointT>& outputNegative);
+void split(const FramePtr& input, const Indices& indices, const FramePtr& output, const FramePtr& outputNegative);
 
-template <typename PointT>
-void quantize(const FramePtr<PointT>& frame, double resolution);
+void quantize(const FramePtr& frame, double resolution);
 
-template <typename PointT>
-void quantize(const GroupOfFrame<PointT>& frames, double resolution, bool parallel);
+void quantize(const GroupOfFrame& frames, double resolution, bool parallel);
 
 }  // namespace jpcc::process
-
-#include <jpcc/process/impl/Process.hpp>

@@ -28,23 +28,23 @@ class JPCCOctreePointCloud : public OctreePointCloud<PointT, LeafContainerT, Bra
 
   JPCCOctreePointCloud(double resolution);
 
-  void setFrame(FrameConstPtr<PointT> frame);
+  void setFrame(PclFrameConstPtr<PointT> frame);
 
-  void setFrame(BufferIndex bufferIndex, FrameConstPtr<PointT> frame);
+  void setFrame(BufferIndex bufferIndex, PclFrameConstPtr<PointT> frame);
 
-  void addFrame(FrameConstPtr<PointT> frame);
+  void addFrame(PclFrameConstPtr<PointT> frame);
 
-  void addFrame(BufferIndex bufferIndex, FrameConstPtr<PointT> frame);
+  void addFrame(BufferIndex bufferIndex, PclFrameConstPtr<PointT> frame);
 
   void deletePointFromCloud(const PointT& toDeletePoint, PointCloudPtr cloud);
 
  protected:
-  void addPointIdx(uindex_t point_idx_arg) override;
+  void addPointIdx(UIndex point_idx_arg) override;
 
   void expandLeafNode(LeafNode*     leaf_node,
                       BranchNode*   parent_branch,
                       unsigned char child_idx,
-                      uindex_t      depth_mask) override;
+                      UIndex        depth_mask) override;
 };
 
 }  // namespace jpcc::octree

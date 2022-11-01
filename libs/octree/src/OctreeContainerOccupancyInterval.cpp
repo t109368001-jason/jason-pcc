@@ -16,7 +16,7 @@ void OctreeContainerOccupancyInterval::reset() {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void OctreeContainerOccupancyInterval::addPointIndex(const index_t& index) { appendCount(); }
+void OctreeContainerOccupancyInterval::addPointIndex(const Index& index) { appendCount(); }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void OctreeContainerOccupancyInterval::appendCount() {

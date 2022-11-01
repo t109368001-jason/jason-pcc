@@ -11,7 +11,7 @@ JPCCOctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::JPCCOct
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename LeafContainerT, typename BranchContainerT, typename OctreeT>
-void JPCCOctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::setFrame(FrameConstPtr<PointT> frame) {
+void JPCCOctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::setFrame(PclFrameConstPtr<PointT> frame) {
   if constexpr (is_n_buf_octree_v<OctreeT>) {
     this->deleteBuffer(this->getBufferIndex());
     this->setInputCloud(frame);
@@ -25,7 +25,7 @@ void JPCCOctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::se
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename LeafContainerT, typename BranchContainerT, typename OctreeT>
 void JPCCOctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::setFrame(BufferIndex bufferIndex,
-                                                                                       FrameConstPtr<PointT> frame) {
+                                                                                       PclFrameConstPtr<PointT> frame) {
   if constexpr (is_n_buf_octree_v<OctreeT>) {
     this->switchBuffers(bufferIndex);
     setFrame(frame);
@@ -36,7 +36,7 @@ void JPCCOctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::se
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename LeafContainerT, typename BranchContainerT, typename OctreeT>
-void JPCCOctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::addFrame(FrameConstPtr<PointT> frame) {
+void JPCCOctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::addFrame(PclFrameConstPtr<PointT> frame) {
   if constexpr (is_n_buf_octree_v<OctreeT>) {
     this->setInputCloud(frame);
     this->addPointsFromInputCloud();
@@ -49,7 +49,7 @@ void JPCCOctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::ad
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename LeafContainerT, typename BranchContainerT, typename OctreeT>
 void JPCCOctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::addFrame(BufferIndex bufferIndex,
-                                                                                       FrameConstPtr<PointT> frame) {
+                                                                                       PclFrameConstPtr<PointT> frame) {
   if constexpr (is_n_buf_octree_v<OctreeT>) {
     this->switchBuffers(bufferIndex);
     addFrame(frame);
@@ -92,7 +92,7 @@ void JPCCOctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::de
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename LeafContainerT, typename BranchContainerT, typename OctreeT>
 void jpcc::octree::JPCCOctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::addPointIdx(
-    uindex_t point_idx_arg) {
+    UIndex point_idx_arg) {
   OctreeKey key;
 
   assert(point_idx_arg < this->input_->size());
@@ -132,7 +132,7 @@ void jpcc::octree::JPCCOctreePointCloud<PointT, LeafContainerT, BranchContainerT
 
 template <typename PointT, typename LeafContainerT, typename BranchContainerT, typename OctreeT>
 void jpcc::octree::JPCCOctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::expandLeafNode(
-    LeafNode* leaf_node, BranchNode* parent_branch, unsigned char child_idx, uindex_t depth_mask) {
+    LeafNode* leaf_node, BranchNode* parent_branch, unsigned char child_idx, UIndex depth_mask) {
   if (depth_mask) {
     // get amount of objects in leaf container
     std::size_t leaf_obj_count = (*leaf_node)->getSize();

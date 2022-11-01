@@ -17,7 +17,7 @@ class OctreeContainerOccupancyChangeCount : virtual public pcl::octree::OctreeCo
 
   void reset() override;
 
-  void addPointIndex(const index_t& index);
+  void addPointIndex(const Index& index);
 
   void resetCurrent();
 

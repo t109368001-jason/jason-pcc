@@ -1,11 +1,17 @@
 #pragma once
 
+#include <pcl/point_cloud.h>
+
 #include <PCCPointSet.h>
+
+#include <jpcc/common/Types.h>
 
 namespace jpcc {
 
 class JPCCPointSet3 : public pcc::PCCPointSet3 {
  public:
+  using Ptr        = std::shared_ptr<JPCCPointSet3>;
+  using ConstPtr   = std::shared_ptr<const JPCCPointSet3>;
   using NormalType = pcc::Vec3<double>;
 
  protected:
@@ -68,6 +74,31 @@ class JPCCPointSet3 : public pcc::PCCPointSet3 {
     pcc::PCCPointSet3::swapPoints(index1, index2);
     if (hasNormal()) { std::swap(getNormal(index1), getNormal(index2)); }
   }
+
+  void addRemoveAttributes(const JPCCPointSet3& ref) {
+    pcc::PCCPointSet3::addRemoveAttributes(ref);
+    ref.hasNormal() ? addNormal() : removeNormal();
+  }
+
+  void subset(JPCCPointSet3& frame, const Indices& indices);
+
+  template <typename PointT>
+  void toPcl(const PclFramePtr<PointT>& pclFrame) const;
+
+  template <typename PointT>
+  PclFramePtr<PointT> toPcl() const;
+
+  template <typename PointT>
+  void fromPcl(const PclFramePtr<PointT>& pclFrame);
 };
 
+using Frame         = JPCCPointSet3;
+using FramePtr      = Frame::Ptr;
+using FrameConstPtr = Frame::ConstPtr;
+
+using GroupOfFrame    = std::vector<FramePtr>;
+using GroupOfFrameMap = std::map<std::string, GroupOfFrame>;
+
 }  // namespace jpcc
+
+#include <jpcc/common/impl/JPCCPointSet3.hpp>

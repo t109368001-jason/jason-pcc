@@ -1,3 +1,5 @@
+#include <jpcc/process/Process.h>
+
 #include <execution>
 
 #define PCL_NO_PRECOMPILE
@@ -10,59 +12,56 @@
 namespace jpcc::process {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-void split(const FramePtr<PointT>& input,
-           const IndicesPtr&       indices,
-           const FramePtr<PointT>& output,
-           const FramePtr<PointT>& outputNegative) {
-  pcl::ExtractIndices<PointT> extractIndices;
-  extractIndices.setInputCloud(input);
-  extractIndices.setIndices(indices);
+void split(const FramePtr& input, const Indices& indices, const FramePtr& output, const FramePtr& outputNegative) {
+  auto indexIter = indices.begin();
+  auto _frame    = jpcc::make_shared<Frame>();
 
-  FramePtr<PointT> outputTemp;
-  if (output) {
-    extractIndices.setNegative(false);
-    if (input.get() == output.get()) {
-      outputTemp = make_shared<Frame<PointT>>();
-      extractIndices.filter(*outputTemp);
-      outputTemp->header              = input->header;
-      outputTemp->sensor_origin_      = input->sensor_origin_;
-      outputTemp->sensor_orientation_ = input->sensor_orientation_;
-    } else {
-      extractIndices.filter(*output);
-    }
+  FramePtr _input;
+  if (input == output || input == outputNegative) {
+    _input = make_shared<Frame>(*input);
+  } else {
+    _input = input;
   }
+
+  _input->subset(*output, indices);
+
   if (outputNegative) {
-    extractIndices.setNegative(true);
-    extractIndices.filter(*outputNegative);
+    Indices removedIndices;
+    for (Index i = 0; i < _input->getPointCount() && indexIter != indices.end(); i++) {
+      if (i == *indexIter) {
+        indexIter++;
+      } else {
+        removedIndices.push_back(i);
+      }
+    }
+    _input->subset(*outputNegative, removedIndices);
   }
-  if (outputTemp) { pcl::copyPointCloud(*outputTemp, *output); }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-void quantize(const FramePtr<PointT>& frame, const double resolution) {
+void quantize(const FramePtr& frame, const double resolution) {
   using OctreeT = pcl::octree::OctreeBase<pcl::octree::OctreeContainerPointIndex, pcl::octree::OctreeContainerEmpty>;
-  using OctreePointCloudT = jpcc::octree::JPCCOctreePointCloud<PointT, pcl::octree::OctreeContainerPointIndex,
+  using OctreePointCloudT = jpcc::octree::JPCCOctreePointCloud<pcl::PointXYZ, pcl::octree::OctreeContainerPointIndex,
                                                                pcl::octree::OctreeContainerEmpty, OctreeT>;
 
-  OctreePointCloudT octreePointCloud(resolution);
-  octreePointCloud.setFrame(frame);
+  PclFramePtr<pcl::PointXYZ> pclFrame = frame->toPcl<pcl::PointXYZ>();
 
-  auto indices = make_shared<Indices>();
+  OctreePointCloudT octreePointCloud(resolution);
+  octreePointCloud.setFrame(pclFrame);
+
+  Indices indices;
   for (auto it = octreePointCloud.begin(), it_a_end = octreePointCloud.end(); it != it_a_end; ++it) {
     const pcl::octree::OctreeNode* node = it.getCurrentOctreeNode();
     if (node->getNodeType() == pcl::octree::LEAF_NODE) {
-      indices->push_back(
+      indices.push_back(
           dynamic_cast<const typename OctreePointCloudT::LeafNode*>(node)->getContainer().getPointIndex());
     }
   }
-  process::split<PointT>(frame, indices, frame, nullptr);
+  process::split(frame, indices, frame, nullptr);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-void quantize(const GroupOfFrame<PointT>& frames, const double resolution, const bool parallel) {
+void quantize(const GroupOfFrame& frames, const double resolution, const bool parallel) {
   if (!parallel) {
     for (const auto& frame : frames) { quantize(frame, resolution); }
   } else {

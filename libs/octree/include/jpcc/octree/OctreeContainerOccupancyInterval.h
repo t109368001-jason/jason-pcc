@@ -16,7 +16,7 @@ class OctreeContainerOccupancyInterval : virtual public pcl::octree::OctreeConta
 
   void reset() override;
 
-  void addPointIndex(const index_t& index);
+  void addPointIndex(const Index& index);
 
   void appendCount();
 

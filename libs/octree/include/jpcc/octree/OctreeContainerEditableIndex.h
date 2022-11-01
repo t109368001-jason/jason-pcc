@@ -8,7 +8,7 @@ namespace jpcc::octree {
 
 class OctreeContainerEditableIndex : virtual public pcl::octree::OctreeContainerPointIndex {
  public:
-  void setPointIndex(index_t index);
+  void setPointIndex(Index index);
 };
 
 }  // namespace jpcc::octree

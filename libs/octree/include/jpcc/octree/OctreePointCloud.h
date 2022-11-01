@@ -164,7 +164,7 @@ class OctreePointCloud : public OctreeT {
   /** \brief Get the maximum depth of the octree.
    *  \return depth_arg: maximum depth of octree
    * */
-  inline uindex_t getTreeDepth() const { return this->octree_depth_; }
+  inline UIndex getTreeDepth() const { return this->octree_depth_; }
 
   /** \brief Add points from input point cloud to octree. */
   void addPointsFromInputCloud();
@@ -175,7 +175,7 @@ class OctreePointCloud : public OctreeT {
    * \param[in] indices_arg pointer to indices vector of the dataset (given by \a
    * setInputCloud)
    */
-  void addPointFromCloud(uindex_t point_idx_arg, IndicesPtr indices_arg);
+  void addPointFromCloud(UIndex point_idx_arg, IndicesPtr indices_arg);
 
   /** \brief Add point simultaneously to octree and input point cloud.
    *  \param[in] point_arg point to be added
@@ -222,14 +222,14 @@ class OctreePointCloud : public OctreeT {
    * \param[in] point_idx_arg point to be checked
    * \return "true" if voxel exist; "false" otherwise
    */
-  bool isVoxelOccupiedAtPoint(const index_t& point_idx_arg) const;
+  bool isVoxelOccupiedAtPoint(const Index& point_idx_arg) const;
 
   /** \brief Get a PointT vector of centers of all occupied voxels.
    * \param[out] voxel_center_list_arg results are written to this vector of PointT
    * elements
    * \return number of occupied voxels
    */
-  uindex_t getOccupiedVoxelCenters(AlignedPointTVector& voxel_center_list_arg) const;
+  UIndex getOccupiedVoxelCenters(AlignedPointTVector& voxel_center_list_arg) const;
 
   /** \brief Get a PointT vector of centers of voxels intersected by a line segment.
    * This returns a approximation of the actual intersected voxels by walking
@@ -242,10 +242,10 @@ class OctreePointCloud : public OctreeT {
    * octree_resolution x precision
    * \return number of intersected voxels
    */
-  uindex_t getApproxIntersectedVoxelCentersBySegment(const Eigen::Vector3f& origin,
-                                                     const Eigen::Vector3f& end,
-                                                     AlignedPointTVector&   voxel_center_list,
-                                                     float                  precision = 0.2);
+  UIndex getApproxIntersectedVoxelCentersBySegment(const Eigen::Vector3f& origin,
+                                                   const Eigen::Vector3f& end,
+                                                   AlignedPointTVector&   voxel_center_list,
+                                                   float                  precision = 0.2);
 
   /** \brief Delete leaf node / voxel at given point
    * \param[in] point_arg point addressing the voxel to be deleted.
@@ -255,7 +255,7 @@ class OctreePointCloud : public OctreeT {
   /** \brief Delete leaf node / voxel at given point from input cloud
    *  \param[in] point_idx_arg index of point addressing the voxel to be deleted.
    */
-  void deleteVoxelAtPoint(const index_t& point_idx_arg);
+  void deleteVoxelAtPoint(const Index& point_idx_arg);
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Bounding box methods
@@ -317,7 +317,7 @@ class OctreePointCloud : public OctreeT {
    * \param[in] tree_depth_arg depth/level in octree
    * \return squared diameter
    */
-  double getVoxelSquaredDiameter(uindex_t tree_depth_arg) const;
+  double getVoxelSquaredDiameter(UIndex tree_depth_arg) const;
 
   /** \brief Calculates the squared diameter of a voxel at leaf depth
    * \return squared diameter
@@ -328,7 +328,7 @@ class OctreePointCloud : public OctreeT {
    * \param[in] tree_depth_arg depth/level in octree
    * \return squared voxel cube side length
    */
-  double getVoxelSquaredSideLen(uindex_t tree_depth_arg) const;
+  double getVoxelSquaredSideLen(UIndex tree_depth_arg) const;
 
   /** \brief Calculates the squared voxel cube side length at leaf level
    * \return squared voxel cube side length
@@ -364,7 +364,7 @@ class OctreePointCloud : public OctreeT {
    * \param[in] point_idx_arg the index representing the point in the dataset given by
    * \a setInputCloud to be added
    */
-  virtual void addPointIdx(uindex_t point_idx_arg);
+  virtual void addPointIdx(UIndex point_idx_arg);
 
   /** \brief Add point at index from input pointcloud dataset to octree
    * \param[in] leaf_node to be expanded
@@ -375,14 +375,14 @@ class OctreePointCloud : public OctreeT {
   virtual void expandLeafNode(LeafNode*     leaf_node,
                               BranchNode*   parent_branch,
                               unsigned char child_idx,
-                              uindex_t      depth_mask);
+                              UIndex        depth_mask);
 
   /** \brief Get point at index from input pointcloud dataset
    * \param[in] index_arg index representing the point in the dataset given by \a
    * setInputCloud
    * \return PointT from input pointcloud dataset
    */
-  const PointT& getPointByIndex(uindex_t index_arg) const;
+  const PointT& getPointByIndex(UIndex index_arg) const;
 
   /** \brief Find octree leaf node at a given point
    * \param[in] point_arg query point
@@ -444,7 +444,7 @@ class OctreePointCloud : public OctreeT {
    * \param[out] key_arg write octree key to this reference \return "true" - octree keys
    * are assignable
    */
-  virtual bool genOctreeKeyForDataT(const index_t& data_arg, OctreeKey& key_arg) const;
+  virtual bool genOctreeKeyForDataT(const Index& data_arg, OctreeKey& key_arg) const;
 
   /** \brief Generate a point at center of leaf node voxel
    * \param[in] key_arg octree key addressing a leaf node.
@@ -457,7 +457,7 @@ class OctreePointCloud : public OctreeT {
    * \param[in] tree_depth_arg octree depth of query voxel
    * \param[out] point_arg write leaf node center point to this reference
    */
-  void genVoxelCenterFromOctreeKey(const OctreeKey& key_arg, uindex_t tree_depth_arg, PointT& point_arg) const;
+  void genVoxelCenterFromOctreeKey(const OctreeKey& key_arg, UIndex tree_depth_arg, PointT& point_arg) const;
 
   /** \brief Generate bounds of an octree voxel using octree key and tree depth
    * arguments
@@ -467,7 +467,7 @@ class OctreePointCloud : public OctreeT {
    * \param[out] max_pt upper bound of voxel
    */
   void genVoxelBoundsFromOctreeKey(const OctreeKey& key_arg,
-                                   uindex_t         tree_depth_arg,
+                                   UIndex           tree_depth_arg,
                                    Eigen::Vector3f& min_pt,
                                    Eigen::Vector3f& max_pt) const;
 
@@ -479,9 +479,9 @@ class OctreePointCloud : public OctreeT {
    * elements
    * \return number of voxels found
    */
-  uindex_t getOccupiedVoxelCentersRecursive(const BranchNode*    node_arg,
-                                            const OctreeKey&     key_arg,
-                                            AlignedPointTVector& voxel_center_list_arg) const;
+  UIndex getOccupiedVoxelCentersRecursive(const BranchNode*    node_arg,
+                                          const OctreeKey&     key_arg,
+                                          AlignedPointTVector& voxel_center_list_arg) const;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Globals
