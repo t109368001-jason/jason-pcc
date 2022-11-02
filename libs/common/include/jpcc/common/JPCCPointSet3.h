@@ -22,6 +22,8 @@ class JPCCPointSet3 : public pcc::PCCPointSet3 {
  public:
   JPCCPointSet3() : pcc::PCCPointSet3() { withNormals = false; }
 
+  JPCCPointSet3(const PCCPointSet3& src) : pcc::PCCPointSet3(src) { withNormals = false; }
+
   void swap(JPCCPointSet3& other) {
     using std::swap;
     pcc::PCCPointSet3::swap(other);

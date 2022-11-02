@@ -16,16 +16,11 @@ class PCCTMC3Decoder3LambdaCallbacks : public pcc::PCCTMC3Decoder3::Callbacks {
   void onOutputCloud(const pcc::CloudFrame& frame) override;
 };
 
-template <typename PointT>
-class JPCCDecoderTMC3 : public virtual JPCCDecoder<PointT> {
+class JPCCDecoderTMC3 : public virtual JPCCDecoder {
  public:
   bool isConvertToPCLThreadSafe() override;
 
-  void decode(std::istream& is, shared_ptr<void>& reconstructFrame) override;
-
-  void convertToPCL(shared_ptr<void>& reconstructFrame, FramePtr<PointT>& reconstructPclFrame) override;
+  void decode(std::istream& is, FramePtr& frame) override;
 };
 
 }  // namespace jpcc::decoder
-
-#include <jpcc/decoder/impl/JPCCDecoderTMC3.hpp>

@@ -4,16 +4,9 @@
 
 namespace jpcc::decoder {
 
-template <typename PointT>
-class JPCCDecoderNone : public virtual JPCCDecoder<PointT> {
+class JPCCDecoderNone : public virtual JPCCDecoder {
  public:
-  bool isConvertToPCLThreadSafe() override;
-
-  void decode(std::istream& is, shared_ptr<void>& reconstructFrame) override;
-
-  void convertToPCL(shared_ptr<void>& reconstructFrame, FramePtr<PointT>& reconstructPclFrame) override;
+  void decode(std::istream& is, FramePtr& frame) override;
 };
 
 }  // namespace jpcc::decoder
-
-#include <jpcc/decoder/impl/JPCCDecoderNone.hpp>

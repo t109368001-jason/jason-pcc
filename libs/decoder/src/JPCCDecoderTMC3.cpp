@@ -1,6 +1,8 @@
+#include <jpcc/decoder/JPCCDecoderTMC3.h>
+
 #include <sstream>
 
-#include <io_tlv.h>
+#include "io_tlv.h"
 
 namespace jpcc::decoder {
 
@@ -13,19 +15,11 @@ PCCTMC3Decoder3LambdaCallbacks::PCCTMC3Decoder3LambdaCallbacks(
 void PCCTMC3Decoder3LambdaCallbacks::onOutputCloud(const pcc::CloudFrame& frame) { onOutputCloud_(frame); }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-bool JPCCDecoderTMC3<PointT>::isConvertToPCLThreadSafe() {
-  return true;
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-void JPCCDecoderTMC3<PointT>::decode(std::istream& is, shared_ptr<void>& reconstructFrame) {
+void JPCCDecoderTMC3::decode(std::istream& is, FramePtr& reconstructFrame) {
   std::function<void(const pcc::CloudFrame& frame)> onOutputCloud = [&](const pcc::CloudFrame& frame) {
-    reconstructFrame       = make_shared<pcc::PCCPointSet3>(frame.cloud);
-    auto reconstructFrame_ = std::static_pointer_cast<pcc::PCCPointSet3>(reconstructFrame);
+    reconstructFrame = make_shared<Frame>(frame.cloud);
     for (size_t i = 0; i < frame.cloud.getPointCount(); i++) {  //
-      (*reconstructFrame_)[i] += frame.outputOrigin;
+      (*reconstructFrame)[i] += frame.outputOrigin;
     }
   };
 
@@ -45,7 +39,7 @@ void JPCCDecoderTMC3<PointT>::decode(std::istream& is, shared_ptr<void>& reconst
     readTlv(is, &buffer);
 
     if (!hasSps && bufferPtr->empty()) {
-      reconstructFrame = make_shared<pcc::PCCPointSet3>();
+      reconstructFrame = make_shared<Frame>();
       break;
     }
 
@@ -74,25 +68,6 @@ void JPCCDecoderTMC3<PointT>::decode(std::istream& is, shared_ptr<void>& reconst
               << "points=" << std::static_pointer_cast<pcc::PCCPointSet3>(reconstructFrame)->getPointCount()
               << std::endl;
   }
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-void JPCCDecoderTMC3<PointT>::convertToPCL(shared_ptr<void>& reconstructFrame, FramePtr<PointT>& reconstructPclFrame) {
-  auto reconstructFrame_ = std::static_pointer_cast<pcc::PCCPointSet3>(reconstructFrame);
-  if (!reconstructFrame_) { return; }
-
-  reconstructPclFrame = jpcc::make_shared<Frame<PointT>>();
-  reconstructPclFrame->resize(reconstructFrame_->getPointCount());
-
-  for (int i = 0; i < reconstructPclFrame->size(); i++) {
-    (*reconstructPclFrame)[i] =
-        PointT((*reconstructFrame_)[i].x(), (*reconstructFrame_)[i].y(), (*reconstructFrame_)[i].z());
-  }
-  assert(reconstructFrame_->getPointCount() == reconstructPclFrame->size());
-  std::cout << __FUNCTION__ << "() "
-            << "tmc3Points=" << reconstructFrame_->getPointCount() << ", "
-            << "pclPoints=" << reconstructPclFrame->size() << std::endl;
 }
 
 }  // namespace jpcc::decoder
