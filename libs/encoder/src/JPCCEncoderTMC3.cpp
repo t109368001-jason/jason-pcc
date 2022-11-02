@@ -1,6 +1,8 @@
+#include <jpcc/encoder/JPCCEncoderTMC3.h>
+
 #include <sstream>
 
-#include <io_tlv.h>
+#include "io_tlv.h"
 
 namespace jpcc::encoder {
 
@@ -17,40 +19,13 @@ void PCCTMC3Encoder3LambdaCallbacks::onOutputBuffer(const pcc::PayloadBuffer& bu
 void PCCTMC3Encoder3LambdaCallbacks::onPostRecolour(const pcc::PCCPointSet3& set3) { onPostRecolour_(set3); }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-JPCCEncoderTMC3<PointT>::JPCCEncoderTMC3(const JPCCEncoderParameter& parameter) : JPCCEncoder<PointT>(parameter) {}
+JPCCEncoderTMC3::JPCCEncoderTMC3(const JPCCEncoderParameter& parameter) : JPCCEncoder(parameter) {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-bool JPCCEncoderTMC3<PointT>::isConvertFromPCLThreadSafe() {
-  return true;
-}
+bool JPCCEncoderTMC3::isEncodeThreadSafe() { return true; }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-bool JPCCEncoderTMC3<PointT>::isEncodeThreadSafe() {
-  return true;
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-void JPCCEncoderTMC3<PointT>::convertFromPCL(const FramePtr<PointT>& pclFrame, shared_ptr<void>& frame) {
-  frame       = make_shared<pcc::PCCPointSet3>();
-  auto _frame = std::static_pointer_cast<pcc::PCCPointSet3>(frame);
-
-  _frame->resize(pclFrame->size());
-
-  for (int i = 0; i < _frame->getPointCount(); i++) {
-    (*_frame)[i] = pcc::PCCPointSet3::PointType((*pclFrame)[i].x, (*pclFrame)[i].y, (*pclFrame)[i].z);
-  }
-  std::cout << __FUNCTION__ << "() "
-            << "pclPoints=" << pclFrame->size() << ", "
-            << "tmc3Points=" << _frame->getPointCount() << std::endl;
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-void JPCCEncoderTMC3<PointT>::encode(const shared_ptr<void>& frame, std::vector<char>& encodedBytes) {
+void JPCCEncoderTMC3::encode(const FramePtr& frame, std::vector<char>& encodedBytes) {
   std::function<void(const pcc::PayloadBuffer& buffer)> onOutputBuffer =
       [&encodedBytes](const pcc::PayloadBuffer& buffer) {
         std::stringstream os;
@@ -64,8 +39,7 @@ void JPCCEncoderTMC3<PointT>::encode(const shared_ptr<void>& frame, std::vector<
       };
   std::function<void(const pcc::PCCPointSet3& set3)> onPostRecolour = [](const pcc::PCCPointSet3& set3) {};
 
-  auto _frame = std::static_pointer_cast<pcc::PCCPointSet3>(frame);
-  if (_frame->getPointCount() == 0) {
+  if (frame->getPointCount() == 0) {
     pcc::PayloadBuffer buffer;
     buffer.type = pcc::PayloadType::kSequenceParameterSet;
 
@@ -73,10 +47,10 @@ void JPCCEncoderTMC3<PointT>::encode(const shared_ptr<void>& frame, std::vector<
     return;
   }
 
-  pcc::EncoderParams             param = this->parameter_.tmc3;
+  JPCCEncoderTMC3Parameter       param = this->parameter_.tmc3;
   PCCTMC3Encoder3LambdaCallbacks callback(onOutputBuffer, onPostRecolour);
   pcc::PCCTMC3Encoder3           encoder;
-  encoder.compress(*_frame, &param, &callback, nullptr);
+  encoder.compress(*frame, &param, &callback, nullptr);
   std::cout << __FUNCTION__ << "() "
             << "bytes=" << encodedBytes.size() << std::endl;
 }

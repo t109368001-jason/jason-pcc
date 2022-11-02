@@ -1,26 +1,22 @@
 #pragma once
 
+#include <jpcc/common/IJPCCEncoderContext.h>
 #include <jpcc/encoder/JPCCEncoder.h>
 #include <jpcc/encoder/JPCCEncoderParameter.h>
 
 namespace jpcc::encoder {
 
-template <typename PointT>
 class JPCCEncoderAdapter {
  protected:
-  typename JPCCEncoder<PointT>::Ptr dynamicEncoder_;
-  typename JPCCEncoder<PointT>::Ptr staticEncoder_;
-  typename JPCCEncoder<PointT>::Ptr staticAddedEncoder_;
-  typename JPCCEncoder<PointT>::Ptr staticRemovedEncoder_;
+  typename JPCCEncoder::Ptr dynamicEncoder_;
+  typename JPCCEncoder::Ptr staticEncoder_;
+  typename JPCCEncoder::Ptr staticAddedEncoder_;
+  typename JPCCEncoder::Ptr staticRemovedEncoder_;
 
  public:
   JPCCEncoderAdapter(const JPCCEncoderParameter& dynamicParameter, const JPCCEncoderParameter& staticParameter);
 
-  void convertFromPCL(IJPCCEncoderContext<PointT>& context, bool parallel);
-
-  void encode(IJPCCEncoderContext<PointT>& context, bool parallel);
+  void encode(IJPCCEncoderContext& context, bool parallel);
 };
 
 }  // namespace jpcc::encoder
-
-#include <jpcc/encoder/impl/JPCCEncoderAdapter.hpp>
