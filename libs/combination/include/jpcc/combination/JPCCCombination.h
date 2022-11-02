@@ -2,47 +2,37 @@
 
 #include <jpcc/common/JPCCHeader.h>
 #include <jpcc/common/Common.h>
+#include <jpcc/common/IJPCCCombinationContext.h>
+#include <jpcc/octree/JPCCOctreePointCloud.h>
 #include <jpcc/octree/OctreeContainerEditableIndex.h>
 
 namespace jpcc::combination {
 
-template <typename PointT>
 class JPCCCombination {
  protected:
-  FramePtr<PointT>                                                                         staticFrame_;
-  typename octree::JPCCOctreePointCloud<PointT, octree::OctreeContainerEditableIndex>::Ptr staticOctree_;
+  PclFramePtr<pcl::PointXYZ>                                                                      staticFrame_;
+  typename octree::JPCCOctreePointCloud<pcl::PointXYZ, octree::OctreeContainerEditableIndex>::Ptr staticOctree_;
 
  public:
   void set(const JPCCHeader& header);
 
-  void combine(IJPCCCombinationContext<PointT>& context, bool parallel);
+  void combine(IJPCCCombinationContext& context, bool parallel);
 
  protected:
-  void combine(const FramePtr<PointT>& dynamicFrame,
-               const FramePtr<PointT>& staticFrame,
-               const FramePtr<PointT>& staticAddedFrame,
-               const FramePtr<PointT>& staticRemovedFrame,
-               FramePtr<PointT>&       staticReconstructFrame,
-               FramePtr<PointT>&       reconstructFrame);
+  void combineStaticAddedRemoved(const PclFramePtr<pcl::PointXYZ>& staticAddedFrame,
+                                 const PclFramePtr<pcl::PointXYZ>& staticRemovedFrame,
+                                 FramePtr&                         staticReconstructFrame);
 
-  void combineStaticAddedRemoved(const FramePtr<PointT>& staticAddedFrame,
-                                 const FramePtr<PointT>& staticRemovedFrame,
-                                 FramePtr<PointT>&       staticReconstructFrame);
+  void combineStaticAddedRemoved(const GroupOfPclFrame<pcl::PointXYZ>& staticAddedFrames,
+                                 const GroupOfPclFrame<pcl::PointXYZ>& staticRemovedFrames,
+                                 GroupOfFrame&                         staticReconstructFrames);
 
-  void combineStaticAddedRemoved(const GroupOfFrame<PointT>& staticAddedFrames,
-                                 const GroupOfFrame<PointT>& staticRemovedFrames,
-                                 GroupOfFrame<PointT>&       staticReconstructFrames);
+  void combineDynamicStatic(const FramePtr& dynamicFrame, const FramePtr& staticFrame, FramePtr& reconstructFrame);
 
-  void combineDynamicStatic(const FramePtr<PointT>& dynamicFrame,
-                            const FramePtr<PointT>& staticFrame,
-                            FramePtr<PointT>&       reconstructFrame);
-
-  void combineDynamicStatic(const GroupOfFrame<PointT>& dynamicFrames,
-                            const GroupOfFrame<PointT>& staticFrames,
-                            GroupOfFrame<PointT>&       reconstructFrames,
-                            bool                        parallel);
+  void combineDynamicStatic(const GroupOfFrame& dynamicFrames,
+                            const GroupOfFrame& staticFrames,
+                            GroupOfFrame&       reconstructFrames,
+                            bool                parallel);
 };
 
 }  // namespace jpcc::combination
-
-#include <jpcc/combination/impl/JPCCCombination.hpp>
