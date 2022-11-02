@@ -37,20 +37,28 @@ void JPCCSegmentation::segmentation(IJPCCSegmentationContext& context, const boo
   context.getStaticAddedFrames().clear();
   context.getStaticRemovedFrames().clear();
   context.getDynamicFrames().resize(context.getFrames().size());
-  std::for_each(context.getDynamicFrames().begin(), context.getDynamicFrames().end(),
-                [](auto& frame) { frame = jpcc::make_shared<Frame>(); });
+  std::for_each(context.getDynamicFrames().begin(), context.getDynamicFrames().end(), [](auto& frame) {
+    frame = jpcc::make_shared<Frame>();
+    frame->addNormal();
+  });
   if (context.getSegmentationOutputType() == SegmentationOutputType::DYNAMIC_STATIC) {
     context.getStaticFrames().resize(context.getFrames().size());
-    std::for_each(context.getStaticFrames().begin(), context.getStaticFrames().end(),
-                  [](auto& frame) { frame = jpcc::make_shared<Frame>(); });
+    std::for_each(context.getStaticFrames().begin(), context.getStaticFrames().end(), [](auto& frame) {
+      frame = jpcc::make_shared<Frame>();
+      frame->addNormal();
+    });
   }
   if (context.getSegmentationOutputType() == SegmentationOutputType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED) {
     context.getStaticAddedFrames().resize(context.getFrames().size());
     context.getStaticRemovedFrames().resize(context.getFrames().size());
-    std::for_each(context.getStaticAddedFrames().begin(), context.getStaticAddedFrames().end(),
-                  [](auto& frame) { frame = jpcc::make_shared<Frame>(); });
-    std::for_each(context.getStaticRemovedFrames().begin(), context.getStaticRemovedFrames().end(),
-                  [](auto& frame) { frame = jpcc::make_shared<Frame>(); });
+    std::for_each(context.getStaticAddedFrames().begin(), context.getStaticAddedFrames().end(), [](auto& frame) {
+      frame = jpcc::make_shared<Frame>();
+      frame->addNormal();
+    });
+    std::for_each(context.getStaticRemovedFrames().begin(), context.getStaticRemovedFrames().end(), [](auto& frame) {
+      frame = jpcc::make_shared<Frame>();
+      frame->addNormal();
+    });
   }
   if (!parallel || !isThreadSafe()) {
     for (size_t i = 0; i < context.getFrames().size(); i++) { this->segmentation(context, i); }

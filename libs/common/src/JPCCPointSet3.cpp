@@ -3,10 +3,18 @@
 namespace jpcc {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void JPCCPointSet3::addPoint(PointType point) {
+void JPCCPointSet3::addPoint(const PointType& point) {
   const size_t index = getPointCount();
   resize(index + 1);
   (*this)[index] = point;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void JPCCPointSet3::addPositionNormal(const PointType& point, const NormalType& normal) {
+  const size_t index = getPointCount();
+  resize(index + 1);
+  (*this)[index]         = point;
+  this->getNormal(index) = normal;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

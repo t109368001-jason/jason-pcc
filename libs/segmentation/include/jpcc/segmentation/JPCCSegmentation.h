@@ -10,6 +10,8 @@ class JPCCSegmentation {
  public:
   using Ptr = shared_ptr<JPCCSegmentation>;
 
+  using PointT = PointSegmentation;
+
  protected:
   const JPCCSegmentationParameter& parameter_;
   int                              startFrameNumber_;
@@ -21,7 +23,7 @@ class JPCCSegmentation {
 
   [[nodiscard]] virtual bool isBuilt() const = 0;
 
-  virtual void appendTrainSamplesAndBuild(const FramePtr& frame, const PclFramePtr<pcl::PointXYZI>& pclFrame) = 0;
+  virtual void appendTrainSamplesAndBuild(const FramePtr& frame, const PclFramePtr<PointT>& pclFrame) = 0;
 
   virtual void appendTrainSamplesAndBuild(IJPCCSegmentationContext& context, bool parallel);
 

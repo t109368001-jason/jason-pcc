@@ -12,12 +12,14 @@ namespace jpcc::segmentation {
 
 template <typename LeafContainerT>
 class JPCCSegmentationOPCGMMCenter : virtual public JPCCSegmentation,
-                                     virtual public octree::JPCCOctreePointCloud<pcl::PointXYZI, LeafContainerT> {
+                                     virtual public octree::JPCCOctreePointCloud<PointSegmentation, LeafContainerT> {
  public:
   static constexpr int SIZE = LeafContainerT::SIZE;
 
   using Ptr  = shared_ptr<JPCCSegmentationOPCGMMCenter>;
-  using Base = octree::JPCCOctreePointCloud<pcl::PointXYZI, LeafContainerT>;
+  using Base = octree::JPCCOctreePointCloud<PointSegmentation, LeafContainerT>;
+
+  using PointT = PointSegmentation;
 
   using OctreeNode = pcl::octree::OctreeNode;
   using LeafNode   = typename Base::LeafNode;
@@ -34,7 +36,7 @@ class JPCCSegmentationOPCGMMCenter : virtual public JPCCSegmentation,
 
   [[nodiscard]] bool isBuilt() const override;
 
-  void appendTrainSamplesAndBuild(const FramePtr& frame, const PclFramePtr<pcl::PointXYZI>& pclFrame) override;
+  void appendTrainSamplesAndBuild(const FramePtr& frame, const PclFramePtr<PointT>& pclFrame) override;
 
   void segmentation(IJPCCSegmentationContext& context, size_t index) override;
 

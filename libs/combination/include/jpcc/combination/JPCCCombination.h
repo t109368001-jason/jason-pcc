@@ -9,9 +9,12 @@
 namespace jpcc::combination {
 
 class JPCCCombination {
+ public:
+  using PointT = PointCombination;
+
  protected:
-  PclFramePtr<pcl::PointXYZ>                                                                      staticFrame_;
-  typename octree::JPCCOctreePointCloud<pcl::PointXYZ, octree::OctreeContainerEditableIndex>::Ptr staticOctree_;
+  PclFramePtr<PointT>                                                                      staticFrame_;
+  typename octree::JPCCOctreePointCloud<PointT, octree::OctreeContainerEditableIndex>::Ptr staticOctree_;
 
  public:
   void set(const JPCCHeader& header);
@@ -19,13 +22,13 @@ class JPCCCombination {
   void combine(IJPCCCombinationContext& context, bool parallel);
 
  protected:
-  void combineStaticAddedRemoved(const PclFramePtr<pcl::PointXYZ>& staticAddedFrame,
-                                 const PclFramePtr<pcl::PointXYZ>& staticRemovedFrame,
-                                 FramePtr&                         staticReconstructFrame);
+  void combineStaticAddedRemoved(const PclFramePtr<PointT>& staticAddedFrame,
+                                 const PclFramePtr<PointT>& staticRemovedFrame,
+                                 FramePtr&                  staticReconstructFrame);
 
-  void combineStaticAddedRemoved(const GroupOfPclFrame<pcl::PointXYZ>& staticAddedFrames,
-                                 const GroupOfPclFrame<pcl::PointXYZ>& staticRemovedFrames,
-                                 GroupOfFrame&                         staticReconstructFrames);
+  void combineStaticAddedRemoved(const GroupOfPclFrame<PointT>& staticAddedFrames,
+                                 const GroupOfPclFrame<PointT>& staticRemovedFrames,
+                                 GroupOfFrame&                  staticReconstructFrames);
 
   void combineDynamicStatic(const FramePtr& dynamicFrame, const FramePtr& staticFrame, FramePtr& reconstructFrame);
 

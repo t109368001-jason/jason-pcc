@@ -14,13 +14,6 @@ void OctreeContainerLastPoint<PointT>::reset() {
   lastPoint_.x = numeric_limits<float>::quiet_NaN();
   lastPoint_.y = numeric_limits<float>::quiet_NaN();
   lastPoint_.z = numeric_limits<float>::quiet_NaN();
-  if constexpr (pcl::traits::has_intensity_v<PointT>) { lastPoint_.intensity = numeric_limits<float>::quiet_NaN(); }
-  if constexpr (pcl::traits::has_normal_v<PointT>) {
-    lastPoint_.normal_x  = numeric_limits<float>::quiet_NaN();
-    lastPoint_.normal_y  = numeric_limits<float>::quiet_NaN();
-    lastPoint_.normal_z  = numeric_limits<float>::quiet_NaN();
-    lastPoint_.curvature = numeric_limits<float>::quiet_NaN();
-  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

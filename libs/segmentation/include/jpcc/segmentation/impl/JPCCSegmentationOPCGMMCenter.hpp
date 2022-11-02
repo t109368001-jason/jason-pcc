@@ -24,8 +24,8 @@ bool JPCCSegmentationOPCGMMCenter<LeafContainerT>::isBuilt() const {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename LeafContainerT>
-void JPCCSegmentationOPCGMMCenter<LeafContainerT>::appendTrainSamplesAndBuild(
-    const FramePtr& frame, const PclFramePtr<pcl::PointXYZI>& pclFrame) {
+void JPCCSegmentationOPCGMMCenter<LeafContainerT>::appendTrainSamplesAndBuild(const FramePtr&            frame,
+                                                                              const PclFramePtr<PointT>& pclFrame) {
   if (this->isBuilt()) { return; }
   this->addFrame(pclFrame);
   this->appendTrainSamples(frame);
@@ -35,9 +35,8 @@ void JPCCSegmentationOPCGMMCenter<LeafContainerT>::appendTrainSamplesAndBuild(
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename LeafContainerT>
 void JPCCSegmentationOPCGMMCenter<LeafContainerT>::segmentation(IJPCCSegmentationContext& context, const size_t index) {
-  const FrameConstPtr               frame = !context.getFrames().empty() ? context.getFrames()[index] : nullptr;
-  const PclFramePtr<pcl::PointXYZI> pclFrame =
-      !context.getPclFrames().empty() ? context.getPclFrames()[index] : nullptr;
+  const FrameConstPtr       frame    = !context.getFrames().empty() ? context.getFrames()[index] : nullptr;
+  const PclFramePtr<PointT> pclFrame = !context.getPclFrames().empty() ? context.getPclFrames()[index] : nullptr;
   const FramePtr dynamicFrame = !context.getDynamicFrames().empty() ? context.getDynamicFrames()[index] : nullptr;
   const FramePtr staticFrame  = !context.getStaticFrames().empty() ? context.getStaticFrames()[index] : nullptr;
   const FramePtr staticAddedFrame =
@@ -190,25 +189,31 @@ void JPCCSegmentationOPCGMMCenter<LeafContainerT>::segmentationRecursive(const F
           bool isStatic     = leafContainer.isStatic(this->parameter_.getStaticThresholdVector(),
                                                      this->parameter_.getNullStaticThresholdVector(),
                                                      this->parameter_.getOutputExistsPointOnlyVector());
-          bool isDynamic    = !isStatic && !std::isnan(leafContainer.getLastPoint().intensity);
+          bool isDynamic    = !isStatic && !std::isnan(leafContainer.getLastPoint().x);
 
-          pcl::PointXYZI& point = leafContainer.getLastPoint();
+          PointT& point = leafContainer.getLastPoint();
           if (dynamicFrame && isDynamic) {
             assert(!std::isnan(point.x));
-            dynamicFrame->addPoint(Frame::PointType{int32_t(point.x), int32_t(point.y), int32_t(point.z)});
+            dynamicFrame->addPositionNormal(Frame::PointType{int32_t(point.x), int32_t(point.y), int32_t(point.z)},
+                                            Frame::NormalType{point.normal_x, point.normal_y, point.normal_z});
           }
 
-          pcl::PointXYZI center;
+          PointT center;
           this->genLeafNodeCenterFromOctreeKey(key, center);
 
           if (staticFrame && isStatic) {
-            staticFrame->addPoint(Frame::PointType{int32_t(center.x), int32_t(center.y), int32_t(center.z)});
+            staticFrame->addPositionNormal(Frame::PointType{int32_t(center.x), int32_t(center.y), int32_t(center.z)},
+                                           Frame::NormalType{point.normal_x, point.normal_y, point.normal_z});
           }
           if (staticAddedFrame && !lastIsStatic && isStatic) {
-            staticAddedFrame->addPoint(Frame::PointType{int32_t(center.x), int32_t(center.y), int32_t(center.z)});
+            staticAddedFrame->addPositionNormal(
+                Frame::PointType{int32_t(center.x), int32_t(center.y), int32_t(center.z)},
+                Frame::NormalType{point.normal_x, point.normal_y, point.normal_z});
           }
           if (staticRemovedFrame && lastIsStatic && !isStatic) {
-            staticRemovedFrame->addPoint(Frame::PointType{int32_t(center.x), int32_t(center.y), int32_t(center.z)});
+            staticRemovedFrame->addPositionNormal(
+                Frame::PointType{int32_t(center.x), int32_t(center.y), int32_t(center.z)},
+                Frame::NormalType{point.normal_x, point.normal_y, point.normal_z});
           }
 
           leafContainer.setIsLastStatic(isStatic);

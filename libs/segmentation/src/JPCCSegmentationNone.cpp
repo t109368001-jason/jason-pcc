@@ -13,8 +13,8 @@ bool JPCCSegmentationNone::isThreadSafe() { return true; }
 bool JPCCSegmentationNone::isBuilt() const { return true; }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void JPCCSegmentationNone::appendTrainSamplesAndBuild(const FramePtr&                    frame,
-                                                      const PclFramePtr<pcl::PointXYZI>& pclFrame) {}
+void JPCCSegmentationNone::appendTrainSamplesAndBuild(const FramePtr&                       frame,
+                                                      const PclFramePtr<PointSegmentation>& pclFrame) {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void JPCCSegmentationNone::segmentation(IJPCCSegmentationContext& context, const size_t index) {

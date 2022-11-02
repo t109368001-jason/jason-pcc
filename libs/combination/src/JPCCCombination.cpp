@@ -8,9 +8,9 @@ namespace jpcc::combination {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void JPCCCombination::set(const JPCCHeader& header) {
-  staticFrame_  = jpcc::make_shared<PclFrame<pcl::PointXYZ>>();
-  staticOctree_ = jpcc::make_shared<octree::JPCCOctreePointCloud<pcl::PointXYZ, octree::OctreeContainerEditableIndex>>(
-      header.resolution);
+  staticFrame_ = jpcc::make_shared<PclFrame<PointT>>();
+  staticOctree_ =
+      jpcc::make_shared<octree::JPCCOctreePointCloud<PointT, octree::OctreeContainerEditableIndex>>(header.resolution);
   staticOctree_->setInputCloud(staticFrame_);
 }
 
@@ -31,14 +31,14 @@ void JPCCCombination::combine(IJPCCCombinationContext& context, bool parallel) {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void JPCCCombination::combineStaticAddedRemoved(const PclFramePtr<pcl::PointXYZ>& staticAddedFrame,
-                                                const PclFramePtr<pcl::PointXYZ>& staticRemovedFrame,
-                                                FramePtr&                         staticReconstructFrame) {
+void JPCCCombination::combineStaticAddedRemoved(const PclFramePtr<PointT>& staticAddedFrame,
+                                                const PclFramePtr<PointT>& staticRemovedFrame,
+                                                FramePtr&                  staticReconstructFrame) {
 #if !defined(NDEBUG)
   size_t expectedSize = staticFrame_->size();
 #endif
   if (staticRemovedFrame) {
-    for (const pcl::PointXYZ& pointToRemove : staticRemovedFrame->points) {
+    for (const PointT& pointToRemove : staticRemovedFrame->points) {
       staticOctree_->deletePointFromCloud(pointToRemove, staticFrame_);
 #if !defined(NDEBUG)
       expectedSize--;
@@ -47,7 +47,7 @@ void JPCCCombination::combineStaticAddedRemoved(const PclFramePtr<pcl::PointXYZ>
     }
   }
   if (staticAddedFrame) {
-    for (const pcl::PointXYZ& pointToAdd : staticAddedFrame->points) {
+    for (const PointT& pointToAdd : staticAddedFrame->points) {
       staticOctree_->addPointToCloud(pointToAdd, staticFrame_);
 #if !defined(NDEBUG)
       expectedSize++;
@@ -56,13 +56,13 @@ void JPCCCombination::combineStaticAddedRemoved(const PclFramePtr<pcl::PointXYZ>
     }
   }
   staticReconstructFrame = jpcc::make_shared<Frame>();
-  staticReconstructFrame->fromPcl<pcl::PointXYZ>(staticFrame_);
+  staticReconstructFrame->fromPcl<PointT>(staticFrame_);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void JPCCCombination::combineStaticAddedRemoved(const GroupOfPclFrame<pcl::PointXYZ>& staticAddedFrames,
-                                                const GroupOfPclFrame<pcl::PointXYZ>& staticRemovedFrames,
-                                                GroupOfFrame&                         staticReconstructFrames) {
+void JPCCCombination::combineStaticAddedRemoved(const GroupOfPclFrame<PointT>& staticAddedFrames,
+                                                const GroupOfPclFrame<PointT>& staticRemovedFrames,
+                                                GroupOfFrame&                  staticReconstructFrames) {
   staticReconstructFrames.resize(staticAddedFrames.size());
   for (size_t i = 0; i < staticRemovedFrames.size(); i++) {
     this->combineStaticAddedRemoved(staticAddedFrames[i], staticRemovedFrames[i], staticReconstructFrames[i]);

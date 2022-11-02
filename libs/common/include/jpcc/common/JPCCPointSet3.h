@@ -12,7 +12,7 @@ class JPCCPointSet3 : public pcc::PCCPointSet3 {
  public:
   using Ptr        = std::shared_ptr<JPCCPointSet3>;
   using ConstPtr   = std::shared_ptr<const JPCCPointSet3>;
-  using NormalType = pcc::Vec3<double>;
+  using NormalType = pcc::Vec3<float>;
 
  protected:
   Index                   frameNumber;
@@ -87,7 +87,9 @@ class JPCCPointSet3 : public pcc::PCCPointSet3 {
     ref.hasNormal() ? addNormal() : removeNormal();
   }
 
-  void addPoint(PointType point);
+  void addPoint(const PointType& point);
+
+  void addPositionNormal(const PointType& point, const NormalType& normal);
 
   void subset(JPCCPointSet3& frame, const Indices& indices);
 

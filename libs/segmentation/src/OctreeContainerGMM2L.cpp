@@ -3,7 +3,7 @@
 namespace jpcc::segmentation {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-OctreeContainerGMM2L::OctreeContainerGMM2L() : octree::OctreeContainerLastPoint<pcl::PointXYZI>() {
+OctreeContainerGMM2L::OctreeContainerGMM2L() : octree::OctreeContainerLastPoint<PointSegmentation>() {
   OctreeContainerGMM2L::reset();
 }
 
@@ -14,9 +14,9 @@ void OctreeContainerGMM2L::reset() {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void OctreeContainerGMM2L::addPoint(const pcl::PointXYZI& point) {
+void OctreeContainerGMM2L::addPoint(const PointSegmentation& point) {
   assert(point.intensity <= MAX_INTENSITY);
-  octree::OctreeContainerLastPoint<pcl::PointXYZI>::addPoint(point);
+  octree::OctreeContainerLastPoint<PointSegmentation>::addPoint(point);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -46,7 +46,7 @@ void OctreeContainerGMM2L::build(const int                  index,
 bool OctreeContainerGMM2L::isStatic(const std::vector<double>& staticThresholdVector,
                                     const std::vector<double>& nullStaticThresholdVector,
                                     const std::vector<bool>&   outputExistsPointOnlyVector) {
-  if (isnan(this->lastPoint_.intensity)) {
+  if (isnan(this->lastPoint_.x)) {
     if (!outputExistsPointOnlyVector[LONG_INDEX]) {
       if (gmmArray_[LONG_INDEX].getStaticProbability() > nullStaticThresholdVector[LONG_INDEX]) { return true; }
     }
@@ -72,7 +72,7 @@ void OctreeContainerGMM2L::updateModel(const int    index,
                                        const double alpha,
                                        const double nullAlpha,
                                        const double minimumVariance) {
-  if (std::isnan(this->lastPoint_.intensity)) {
+  if (std::isnan(this->lastPoint_.x)) {
     gmmArray_[index].updateModel(NULL_INTENSITY, nullAlpha, minimumVariance);
   } else {
     gmmArray_[index].updateModel(Intensity(this->lastPoint_.intensity), alpha, minimumVariance);

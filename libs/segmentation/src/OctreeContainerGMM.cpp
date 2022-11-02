@@ -3,7 +3,7 @@
 namespace jpcc::segmentation {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-OctreeContainerGMM::OctreeContainerGMM() : octree::OctreeContainerLastPoint<pcl::PointXYZI>(), GMM() {
+OctreeContainerGMM::OctreeContainerGMM() : octree::OctreeContainerLastPoint<PointSegmentation>(), GMM() {
   OctreeContainerGMM::reset();
 }
 
@@ -14,9 +14,9 @@ void OctreeContainerGMM::reset() {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void OctreeContainerGMM::addPoint(const pcl::PointXYZI& point) {
+void OctreeContainerGMM::addPoint(const PointSegmentation& point) {
   assert(point.intensity <= MAX_INTENSITY);
-  octree::OctreeContainerLastPoint<pcl::PointXYZI>::addPoint(point);
+  octree::OctreeContainerLastPoint<PointSegmentation>::addPoint(point);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -44,7 +44,7 @@ void OctreeContainerGMM::build(const int                  index,
 bool OctreeContainerGMM::isStatic(const std::vector<double>& staticThresholdVector,
                                   const std::vector<double>& nullStaticThresholdVector,
                                   const std::vector<bool>&   outputExistsPointOnlyVector) {
-  if (isnan(this->lastPoint_.intensity)) {
+  if (isnan(this->lastPoint_.x)) {
     if (!outputExistsPointOnlyVector.front()) {
       if (GMM::getStaticProbability() > nullStaticThresholdVector.front()) { return true; }
     }
@@ -60,7 +60,7 @@ void OctreeContainerGMM::updateModel(const int    index,
                                      const double alpha,
                                      const double nullAlpha,
                                      const double minimumVariance) {
-  if (std::isnan(this->lastPoint_.intensity)) {
+  if (std::isnan(this->lastPoint_.x)) {
     GMM::updateModel(NULL_INTENSITY, nullAlpha, minimumVariance);
   } else {
     GMM::updateModel(Intensity(this->lastPoint_.intensity), alpha, minimumVariance);
