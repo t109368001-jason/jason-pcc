@@ -60,28 +60,30 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
 
   {  // build gaussian mixture model
     GroupOfFrame frames;
-    size_t       groupOfFramesSize = parameter.groupOfFramesSize;
-    size_t       frameNumber       = parameter.dataset.getStartFrameNumber();
-    const size_t endFrameNumber    = parameter.dataset.getEndFrameNumber();
+    size_t       frameNumber    = parameter.dataset.getStartFrameNumber();
+    const size_t endFrameNumber = parameter.dataset.getEndFrameNumber();
     while (!gmmSegmentation->isBuilt() && frameNumber < endFrameNumber) {
+      size_t groupOfFramesSize = std::min(parameter.groupOfFramesSize, endFrameNumber - frameNumber);
       {  // load
         ScopeStopwatch clock = metric.start("Load", frameNumber);
-        reader->loadAll(frameNumber, parameter.groupOfFramesSize, frames, parameter.parallel);
+        reader->loadAll(frameNumber, groupOfFramesSize, frames, parameter.parallel);
       }
       {  // preprocess
         ScopeStopwatch clock = metric.start("PreProcess", frameNumber);
         preProcessor.process(frames, nullptr, parameter.parallel);
       }
+      GroupOfPclFrame<pcl::PointXYZINormal> pclFrames;
       {  // Convert to pcl (build)
         ScopeStopwatch clock = metric.start("ConvertToPcl (Build)", frameNumber);
         context.convertToPclBuild(parameter.parallel);
+        for (const auto& frame : frames) { pclFrames.push_back(frame->toPcl<pcl::PointXYZINormal>()); }
       }
       {  // build
         ScopeStopwatch clock = metric.start("Build", frameNumber);
-        gmmSegmentation->appendTrainSamplesAndBuild(context, parameter.parallel);
+        gmmSegmentation->appendTrainSamplesAndBuild(frames, pclFrames, parameter.parallel);
       }
 
-      frameNumber += parameter.groupOfFramesSize;
+      frameNumber += groupOfFramesSize;
     }
   }
 

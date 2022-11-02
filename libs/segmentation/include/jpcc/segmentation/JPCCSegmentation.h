@@ -25,7 +25,9 @@ class JPCCSegmentation {
 
   virtual void appendTrainSamplesAndBuild(const FramePtr& frame, const PclFramePtr<PointT>& pclFrame) = 0;
 
-  virtual void appendTrainSamplesAndBuild(IJPCCSegmentationContext& context, bool parallel);
+  virtual void appendTrainSamplesAndBuild(const GroupOfFrame&            frames,
+                                          const GroupOfPclFrame<PointT>& pclFrames,
+                                          bool                           parallel);
 
   virtual void segmentation(IJPCCSegmentationContext& context, bool parallel);
 
