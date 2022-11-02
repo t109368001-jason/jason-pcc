@@ -71,6 +71,7 @@ void LvxReader::load_(const size_t datasetIndex, const size_t startFrameNumber, 
     if (frameBuffer.empty()) {
       // new frame
       const auto frame = jpcc::make_shared<Frame>();
+      frame->addReflectances();
       frame->reserve(this->capacity_);
       frameBuffer.push_back(frame);
       finishVector.push_back(false);
@@ -81,6 +82,7 @@ void LvxReader::load_(const size_t datasetIndex, const size_t startFrameNumber, 
       for (int i = -1; i >= index; i--) {
         // new frame
         const auto frame = jpcc::make_shared<Frame>();
+        frame->addReflectances();
         frame->reserve(this->capacity_);
         frameBuffer.insert(frameBuffer.begin(), frame);
         finishVector.insert(finishVector.begin(), false);
@@ -92,6 +94,7 @@ void LvxReader::load_(const size_t datasetIndex, const size_t startFrameNumber, 
       for (size_t i = frameBuffer.size(); i <= index; i++) {
         // new frame
         const auto frame = jpcc::make_shared<Frame>();
+        frame->addReflectances();
         frame->reserve(this->capacity_);
         frameBuffer.push_back(frame);
         finishVector.push_back(false);
