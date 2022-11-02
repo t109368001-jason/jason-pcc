@@ -32,12 +32,12 @@ class OctreeContainerGMM2L : public IOctreeContainerGMM,
 
   void addTrainSample() override;
 
-  void build(int                       index,
-             int                       nTrain,
-             int                       K,
-             double                    alpha,
-             double                    minimumVariance,
-             const std::vector<float>& alternateCentroids) override;
+  void build(int                        index,
+             int                        nTrain,
+             int                        K,
+             double                     alpha,
+             double                     minimumVariance,
+             const std::set<Intensity>& alternateCentroids) override;
 
   [[nodiscard]] bool isStatic(const std::vector<double>& staticThresholdVector,
                               const std::vector<double>& nullStaticThresholdVector,

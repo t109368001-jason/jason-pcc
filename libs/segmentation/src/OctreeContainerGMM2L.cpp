@@ -32,12 +32,12 @@ void OctreeContainerGMM2L::addTrainSample() {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void OctreeContainerGMM2L::build(const int                 index,
-                                 const int                 nTrain,
-                                 const int                 K,
-                                 const double              alpha,
-                                 const double              minimumVariance,
-                                 const std::vector<float>& alternateCentroids) {
+void OctreeContainerGMM2L::build(const int                  index,
+                                 const int                  nTrain,
+                                 const int                  K,
+                                 const double               alpha,
+                                 const double               minimumVariance,
+                                 const std::set<Intensity>& alternateCentroids) {
   gmmArray_[index].buildN(*trainSamplesArray_[index], K, nTrain, minimumVariance, NULL_INTENSITY, alternateCentroids);
   trainSamplesArray_[index] = nullptr;
 }

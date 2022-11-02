@@ -1,5 +1,7 @@
 #pragma once
 
+#include <set>
+
 #include <jpcc/common/Common.h>
 #include <jpcc/math/Cluster.h>
 
@@ -15,12 +17,12 @@ class GMM {
  public:
   GMM() = default;
 
-  void buildN(std::vector<Intensity>&   samples,
-              int                       K,
-              int                       N,
-              double                    minimumVariance,
-              Intensity                 nullSample,
-              const std::vector<float>& alternateCentroids);
+  void buildN(std::vector<Intensity>&    samples,
+              int                        K,
+              int                        N,
+              double                     minimumVariance,
+              Intensity                  nullSample,
+              const std::set<Intensity>& alternateCentroids);
 
   [[nodiscard]] bool isBuilt() const;
 

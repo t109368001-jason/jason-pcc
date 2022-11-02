@@ -14,12 +14,12 @@ class IOctreeContainerGMM {
 
   virtual void addTrainSample() = 0;
 
-  virtual void build(int                       index,
-                     int                       nTrain,
-                     int                       K,
-                     double                    alpha,
-                     double                    minimumVariance,
-                     const std::vector<float>& alternateCentroids) = 0;
+  virtual void build(int                        index,
+                     int                        nTrain,
+                     int                        K,
+                     double                     alpha,
+                     double                     minimumVariance,
+                     const std::set<Intensity>& alternateCentroids) = 0;
 
   [[nodiscard]] virtual bool isStatic(const std::vector<double>& staticThresholdVector,
                                       const std::vector<double>& nullStaticThresholdVector,

@@ -30,12 +30,12 @@ void OctreeContainerGMM::addTrainSample() {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void OctreeContainerGMM::build(const int                 index,
-                               const int                 nTrain,
-                               const int                 K,
-                               const double              alpha,
-                               const double              minimumVariance,
-                               const std::vector<float>& alternateCentroids) {
+void OctreeContainerGMM::build(const int                  index,
+                               const int                  nTrain,
+                               const int                  K,
+                               const double               alpha,
+                               const double               minimumVariance,
+                               const std::set<Intensity>& alternateCentroids) {
   GMM::buildN(*trainSamples_, K, nTrain, minimumVariance, NULL_INTENSITY, alternateCentroids);
   trainSamples_ = nullptr;
 }

@@ -10,14 +10,13 @@ using namespace std;
 namespace jpcc::math {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void GMM::buildN(vector<Intensity>&   samples,
-                 const int            K,
-                 const int            N,
-                 const double         minimumVariance,
-                 const Intensity      nullSample,
-                 const vector<float>& alternateCentroids) {
-  int    K_ = K - 1;
-  size_t k;
+void GMM::buildN(vector<Intensity>&         samples,
+                 const int                  K,
+                 const int                  N,
+                 const double               minimumVariance,
+                 const Intensity            nullSample,
+                 const std::set<Intensity>& alternateCentroids) {
+  int K_ = K - 1;
 
   vector<float> centroids;
 
@@ -65,9 +64,9 @@ void GMM::buildN(vector<Intensity>&   samples,
       }
       if (!exists) { centroids.push_back(float(sample)); }
     }
-    for (size_t i = 0; i < alternateCentroids.size() && centroids.size() < K_; i++) {
-      centroids.push_back(alternateCentroids[i]);
-      samples.push_back(Intensity(alternateCentroids[i]));
+    for (auto it = alternateCentroids.begin(); it != alternateCentroids.end() && centroids.size() < K_; it++) {
+      centroids.push_back(float(*it));
+      samples.push_back(*it);
     }
   }
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <set>
 
 #include <jpcc/common/Common.h>
 
@@ -25,7 +26,7 @@ class JPCCSegmentationOPCGMMCenter : virtual public JPCCSegmentation,
   using OctreeKey = typename Base::OctreeKey;
 
  protected:
-  std::vector<float>     alternateCentroids_;
+  std::set<Intensity>    alternateCentroids_;
   std::array<bool, SIZE> builtVector;
 
  public:

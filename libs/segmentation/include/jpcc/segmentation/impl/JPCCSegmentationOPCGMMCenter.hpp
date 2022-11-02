@@ -10,9 +10,8 @@ JPCCSegmentationOPCGMMCenter<LeafContainerT>::JPCCSegmentationOPCGMMCenter(const
                                                                            const int startFrameNumber) :
     JPCCSegmentation(parameter, startFrameNumber), Base(parameter.resolution), builtVector() {
   static_assert(std::is_base_of_v<IOctreeContainerGMM, LeafContainerT>, "invalid template type");
-  for (int i = -1; i >= -(this->parameter_.getK()); i--) {
-    alternateCentroids_.push_back(static_cast<float>(i) / MAX_INTENSITY);
-  }
+  for (Intensity i = -1; i >= -(this->parameter_.getK()); i--) { alternateCentroids_.insert(i); }
+  THROW_IF_NOT(alternateCentroids_.size() >= this->parameter_.getK());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
