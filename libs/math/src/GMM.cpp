@@ -90,7 +90,7 @@ bool GMM::isBuilt() const { return !clusters_.empty(); }
 
   for (const auto& cluster : clusters_) {
     const double probability = cluster.getWeight() * cluster.getProbability(sample);
-    if (cluster.getMean() < 0) {
+    if (cluster.getMean() > MAX_INTENSITY) {
       totalProbability -= probability;
     } else {
       totalProbability += probability;
@@ -106,7 +106,7 @@ bool GMM::isBuilt() const { return !clusters_.empty(); }
 
   for (const auto& cluster : clusters_) {
     const double probability = cluster.getWeight() * cluster.getStaticProbability();
-    if (cluster.getMean() < 0) {
+    if (cluster.getMean() > MAX_INTENSITY) {
       totalProbability -= probability;
     } else {
       totalProbability += probability;
