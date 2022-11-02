@@ -36,26 +36,26 @@ void JPCCSegmentation::segmentation(IJPCCSegmentationContext& context, const boo
   context.getStaticFrames().clear();
   context.getStaticAddedFrames().clear();
   context.getStaticRemovedFrames().clear();
-  context.getDynamicFrames().resize(context.getPclFrames().size());
+  context.getDynamicFrames().resize(context.getFrames().size());
   std::for_each(context.getDynamicFrames().begin(), context.getDynamicFrames().end(),
                 [](auto& frame) { frame = jpcc::make_shared<Frame>(); });
   if (context.getSegmentationOutputType() == SegmentationOutputType::DYNAMIC_STATIC) {
-    context.getStaticFrames().resize(context.getPclFrames().size());
+    context.getStaticFrames().resize(context.getFrames().size());
     std::for_each(context.getStaticFrames().begin(), context.getStaticFrames().end(),
                   [](auto& frame) { frame = jpcc::make_shared<Frame>(); });
   }
   if (context.getSegmentationOutputType() == SegmentationOutputType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED) {
-    context.getStaticAddedFrames().resize(context.getPclFrames().size());
-    context.getStaticRemovedFrames().resize(context.getPclFrames().size());
+    context.getStaticAddedFrames().resize(context.getFrames().size());
+    context.getStaticRemovedFrames().resize(context.getFrames().size());
     std::for_each(context.getStaticAddedFrames().begin(), context.getStaticAddedFrames().end(),
                   [](auto& frame) { frame = jpcc::make_shared<Frame>(); });
     std::for_each(context.getStaticRemovedFrames().begin(), context.getStaticRemovedFrames().end(),
                   [](auto& frame) { frame = jpcc::make_shared<Frame>(); });
   }
   if (!parallel || !isThreadSafe()) {
-    for (size_t i = 0; i < context.getPclFrames().size(); i++) { this->segmentation(context, i); }
+    for (size_t i = 0; i < context.getFrames().size(); i++) { this->segmentation(context, i); }
   } else {
-    const auto range = boost::counting_range<size_t>(0, context.getPclFrames().size());
+    const auto range = boost::counting_range<size_t>(0, context.getFrames().size());
     std::for_each(std::execution::par, range.begin(), range.end(),
                   [&](const size_t& i) {  //
                     this->segmentation(context, i);
