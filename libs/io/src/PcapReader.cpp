@@ -168,6 +168,8 @@ PcapReader::PcapReader(DatasetReaderParameter param, DatasetParameter datasetPar
   this->currentFrameNumbers_.resize(this->datasetParam_.count());
   for (size_t i = 0; i < this->datasetParam_.count(); i++) { pcaps_.emplace_back(nullptr, &pcapClose); }
   this->frameBuffers_.resize(this->datasetParam_.count());
+  this->finishVectors_.resize(this->datasetParam_.count());
+  this->timestampVectors_.resize(this->datasetParam_.count());
 
   std::for_each(this->datasetIndices_.begin(), this->datasetIndices_.end(),
                 [this](const size_t& datasetIndex) { open_(datasetIndex, 0); });
@@ -255,6 +257,7 @@ int PcapReader::parseDataPacket(void* const           pcap,
           const auto frame = jpcc::make_shared<Frame>();
           frame->reserve(this->capacity_);
           frameBuffer.push_back(frame);
+          finishVector.push_back(false);
           timestampVector.push_back(timestamp);
         }
         int64_t index = (timestamp - (int64_t)timestampVector.front()) / (int64_t)this->param_.interval;
@@ -264,6 +267,7 @@ int PcapReader::parseDataPacket(void* const           pcap,
             const auto frame = jpcc::make_shared<Frame>();
             frame->reserve(this->capacity_);
             frameBuffer.insert(frameBuffer.begin(), frame);
+            finishVector.insert(finishVector.begin(), false);
             timestampVector.insert(timestampVector.begin(),
                                    timestampVector.front() + (int64_t)(this->param_.interval * (float)i));
           }
@@ -274,16 +278,13 @@ int PcapReader::parseDataPacket(void* const           pcap,
             const auto frame = jpcc::make_shared<Frame>();
             frame->reserve(this->capacity_);
             frameBuffer.push_back(frame);
-            ;
+            finishVector.push_back(false);
             timestampVector.push_back(timestampVector.front() + (int64_t)(this->param_.interval * (float)i));
           }
         }
 
-        size_t ii       = frameBuffer[index]->getPointCount() - 1;
-        auto&  position = (*frameBuffer[index])[ii];
-        position[0]     = int32_t(x);
-        position[1]     = int32_t(y);
-        position[2]     = int32_t(z);
+        size_t ii = frameBuffer[index]->getPointCount();
+        (*frameBuffer[index]).addPoint(Frame::PointType{int32_t(x), int32_t(y), int32_t(z)});
         if (frameBuffer[index]->hasReflectances()) { frameBuffer[index]->getReflectance(ii) = uint16_t(intensity); }
       }
     }

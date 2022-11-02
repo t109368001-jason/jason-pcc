@@ -7,7 +7,9 @@ DatasetStreamReader::DatasetStreamReader(DatasetReaderParameter param, DatasetPa
     DatasetReader(param, datasetParam),
     capacity_(0),
     eof_(this->datasetParam_.count()),
-    frameBuffers_(this->datasetParam_.count()) {
+    frameBuffers_(this->datasetParam_.count()),
+    finishVectors_(this->datasetParam_.count()),
+    timestampVectors_(this->datasetParam_.count()) {
   std::fill(eof_.begin(), eof_.end(), true);
 }
 
@@ -32,9 +34,11 @@ void DatasetStreamReader::load(const size_t  datasetIndex,
   frames.resize(groupOfFramesSize);
 
   while (!isEof_(datasetIndex) && currentFrameNumber < endFrameNumber) {
-    if (!frameBuffer.empty() && finishVector.front()) {
+    if (!finishVector.empty() && finishVector.front()) {
       if (currentFrameNumber < startFrameNumber) {
         frameBuffer.erase(frameBuffer.begin());
+        finishVector.erase(finishVector.begin());
+        timestampVector.erase(timestampVector.begin());
         currentFrameNumber++;
         continue;
       }

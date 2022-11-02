@@ -73,6 +73,7 @@ void LvxReader::load_(const size_t datasetIndex, const size_t startFrameNumber, 
       const auto frame = jpcc::make_shared<Frame>();
       frame->reserve(this->capacity_);
       frameBuffer.push_back(frame);
+      finishVector.push_back(false);
       timestampVector.push_back((int64_t)((float)timestamp / this->param_.interval * this->param_.interval));
     }
     int64_t index = (timestamp - (int64_t)timestampVector.front()) / (int64_t)this->param_.interval;
@@ -82,6 +83,7 @@ void LvxReader::load_(const size_t datasetIndex, const size_t startFrameNumber, 
         const auto frame = jpcc::make_shared<Frame>();
         frame->reserve(this->capacity_);
         frameBuffer.insert(frameBuffer.begin(), frame);
+        finishVector.insert(finishVector.begin(), false);
         timestampVector.insert(timestampVector.begin(),
                                timestampVector.front() + (int64_t)(this->param_.interval * (float)i));
       }
@@ -92,6 +94,7 @@ void LvxReader::load_(const size_t datasetIndex, const size_t startFrameNumber, 
         const auto frame = jpcc::make_shared<Frame>();
         frame->reserve(this->capacity_);
         frameBuffer.push_back(frame);
+        finishVector.push_back(false);
         timestampVector.push_back(timestampVector.front() + (int64_t)(this->param_.interval * (float)i));
       }
     }
