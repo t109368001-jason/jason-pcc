@@ -1,11 +1,11 @@
 #pragma once
 
 #include <jpcc/common/Common.h>
+#include <jpcc/common/IJPCCSegmentationContext.h>
 #include <jpcc/segmentation/JPCCSegmentationParameter.h>
 
 namespace jpcc::segmentation {
 
-template <typename PointT>
 class JPCCSegmentation {
  public:
   using Ptr = shared_ptr<JPCCSegmentation>;
@@ -21,16 +21,16 @@ class JPCCSegmentation {
 
   [[nodiscard]] virtual bool isBuilt() const = 0;
 
-  virtual void appendTrainSamplesAndBuild(const FramePtr<PointT>& frame) = 0;
+  virtual void appendTrainSamplesAndBuild(const FramePtr& frame, const PclFramePtr<pcl::PointXYZI>& pclFrame) = 0;
 
-  virtual void appendTrainSamplesAndBuild(const GroupOfFrame<PointT>& frames, bool parallel);
+  virtual void appendTrainSamplesAndBuild(const GroupOfFrame&                    frames,
+                                          const GroupOfPclFrame<pcl::PointXYZI>& pclFrames,
+                                          bool                                   parallel);
 
-  virtual void segmentation(IJPCCSegmentationContext<PointT>& context, bool parallel);
+  virtual void segmentation(IJPCCSegmentationContext& context, bool parallel);
 
  protected:
-  virtual void segmentation(IJPCCSegmentationContext<PointT>& context, size_t index) = 0;
+  virtual void segmentation(IJPCCSegmentationContext& context, size_t index) = 0;
 };
 
 }  // namespace jpcc::segmentation
-
-#include <jpcc/segmentation/impl/JPCCSegmentation.hpp>

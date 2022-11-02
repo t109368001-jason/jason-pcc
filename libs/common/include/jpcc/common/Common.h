@@ -17,7 +17,7 @@
 
 namespace jpcc {
 
-constexpr float MAX_INTENSITY  = 1.0;
-constexpr float NULL_INTENSITY = -0.5;
+constexpr Intensity MAX_INTENSITY  = 255;
+constexpr Intensity NULL_INTENSITY = -128;
 
 }  // namespace jpcc

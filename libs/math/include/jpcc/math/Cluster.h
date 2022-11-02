@@ -11,15 +11,15 @@ class Cluster {
   double variance_;
 
  public:
-  Cluster(const std::vector<int32_t>& samples, double weight, double minimumVariance);
+  Cluster(const std::vector<Intensity>& samples, double weight, double minimumVariance);
 
-  Cluster(int32_t sample, double weight, double minimumVariance);
+  Cluster(Intensity sample, double weight, double minimumVariance);
 
-  [[nodiscard]] double getProbability(int32_t sample) const;
+  [[nodiscard]] double getProbability(Intensity sample) const;
 
   [[nodiscard]] double getStaticProbability() const;
 
-  void addSample(int32_t sample, bool matched, double alpha, double minimumVariance);
+  void addSample(Intensity sample, bool matched, double alpha, double minimumVariance);
 
   void checkVariance(double minimumVariance);
 

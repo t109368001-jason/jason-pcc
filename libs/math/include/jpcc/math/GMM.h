@@ -15,22 +15,22 @@ class GMM {
  public:
   GMM() = default;
 
-  void buildN(std::vector<int32_t>&     samples,
+  void buildN(std::vector<Intensity>&   samples,
               int                       K,
               int                       N,
               double                    minimumVariance,
-              int32_t                   nullSample,
+              Intensity                 nullSample,
               const std::vector<float>& alternateCentroids);
 
   [[nodiscard]] bool isBuilt() const;
 
-  [[nodiscard]] double getProbability(int32_t sample);
+  [[nodiscard]] double getProbability(Intensity sample);
 
   [[nodiscard]] double getStaticProbability();
 
-  [[nodiscard]] size_t getOptimalModelIndex(int32_t sample) const;
+  [[nodiscard]] size_t getOptimalModelIndex(Intensity sample) const;
 
-  void updateModel(int32_t sample, double alpha, double minimumVariance);
+  void updateModel(Intensity sample, double alpha, double minimumVariance);
 
   void normalizeWeights();
 

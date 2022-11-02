@@ -7,10 +7,10 @@ using namespace std;
 namespace jpcc::math {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-Cluster::Cluster(const std::vector<int32_t>& samples, const double weight, const double minimumVariance) :
+Cluster::Cluster(const std::vector<Intensity>& samples, const double weight, const double minimumVariance) :
     weight_(weight) {
   assert(!isnan(weight_));
-  mean_ = std::accumulate(samples.begin(), samples.end(), int32_t{0});
+  mean_ = std::accumulate(samples.begin(), samples.end(), Intensity{0});
   mean_ /= static_cast<double>(samples.size());
   variance_ = 0;
   for (auto& sample : samples) { variance_ += pow(sample - mean_, 2); }
@@ -21,7 +21,7 @@ Cluster::Cluster(const std::vector<int32_t>& samples, const double weight, const
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-Cluster::Cluster(const int32_t sample, const double weight, const double minimumVariance) : weight_(weight) {
+Cluster::Cluster(const Intensity sample, const double weight, const double minimumVariance) : weight_(weight) {
   assert(!isnan(weight_));
   mean_     = sample;
   variance_ = minimumVariance;
@@ -30,7 +30,7 @@ Cluster::Cluster(const int32_t sample, const double weight, const double minimum
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-double Cluster::getProbability(const int32_t sample) const {
+double Cluster::getProbability(const Intensity sample) const {
   assert(!isnan(sample));
   double tmp         = exp((-0.5) * pow(sample - mean_, 2) / variance_);
   double probability = tmp / sqrt(2 * M_PI * variance_);
@@ -46,7 +46,7 @@ double Cluster::getStaticProbability() const {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void Cluster::addSample(const int32_t sample, const bool matched, const double alpha, const double minimumVariance) {
+void Cluster::addSample(const Intensity sample, const bool matched, const double alpha, const double minimumVariance) {
   assert(!isnan(sample));
   weight_ = (1 - alpha) * weight_ + (matched ? alpha : 0);
   assert(!isnan(weight_));

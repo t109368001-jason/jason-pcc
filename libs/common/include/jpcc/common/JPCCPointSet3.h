@@ -15,6 +15,7 @@ class JPCCPointSet3 : public pcc::PCCPointSet3 {
   using NormalType = pcc::Vec3<double>;
 
  protected:
+  Index                   frameNumber;
   std::vector<NormalType> normals;
   bool                    withNormals;
 
@@ -26,6 +27,10 @@ class JPCCPointSet3 : public pcc::PCCPointSet3 {
     pcc::PCCPointSet3::swap(other);
     swap(normals, other.normals);
   }
+
+  [[nodiscard]] Index getFrameNumber() const { return frameNumber; }
+
+  Index& getFrameNumber() { return frameNumber; }
 
   [[nodiscard]] const NormalType& getNormal(const size_t index) const {
     assert(index < normals.size() && withNormals);
@@ -79,6 +84,8 @@ class JPCCPointSet3 : public pcc::PCCPointSet3 {
     pcc::PCCPointSet3::addRemoveAttributes(ref);
     ref.hasNormal() ? addNormal() : removeNormal();
   }
+
+  void addPoint(PointType point);
 
   void subset(JPCCPointSet3& frame, const Indices& indices);
 

@@ -9,14 +9,14 @@
 
 namespace jpcc::segmentation {
 
-template <typename PointT, typename LeafContainerT>
-class JPCCSegmentationOPCGMMCenter : virtual public JPCCSegmentation<PointT>,
-                                     virtual public octree::JPCCOctreePointCloud<PointT, LeafContainerT> {
+template <typename LeafContainerT>
+class JPCCSegmentationOPCGMMCenter : virtual public JPCCSegmentation,
+                                     virtual public octree::JPCCOctreePointCloud<pcl::PointXYZI, LeafContainerT> {
  public:
   static constexpr int SIZE = LeafContainerT::SIZE;
 
   using Ptr  = shared_ptr<JPCCSegmentationOPCGMMCenter>;
-  using Base = octree::JPCCOctreePointCloud<PointT, LeafContainerT>;
+  using Base = octree::JPCCOctreePointCloud<pcl::PointXYZI, LeafContainerT>;
 
   using OctreeNode = pcl::octree::OctreeNode;
   using LeafNode   = typename Base::LeafNode;
@@ -33,25 +33,25 @@ class JPCCSegmentationOPCGMMCenter : virtual public JPCCSegmentation<PointT>,
 
   [[nodiscard]] bool isBuilt() const override;
 
-  void appendTrainSamplesAndBuild(const FramePtr<PointT>& frame) override;
+  void appendTrainSamplesAndBuild(const FramePtr& frame, const PclFramePtr<pcl::PointXYZI>& pclFrame) override;
 
-  void segmentation(IJPCCSegmentationContext<PointT>& context, size_t index) override;
+  void segmentation(IJPCCSegmentationContext& context, size_t index) override;
 
-  void appendTrainSamples(const FramePtr<PointT>& frame);
+  void appendTrainSamples(const FramePtr& frame);
 
-  void addTrainSampleAndResetLastPointRecursive(const FramePtr<PointT>& frame, const BranchNode* branchNode);
+  void addTrainSampleAndResetLastPointRecursive(const FramePtr& frame, const BranchNode* branchNode);
 
-  void build(const FramePtr<PointT>& frame);
+  void build(const FramePtr& frame);
 
-  void buildRecursive(const FramePtr<PointT>& frame, size_t index, const BranchNode* branchNode);
+  void buildRecursive(const FramePtr& frame, size_t index, const BranchNode* branchNode);
 
-  void segmentationRecursive(const FrameConstPtr<PointT>& frame,
-                             const FramePtr<PointT>&      dynamicFrame,
-                             const FramePtr<PointT>&      staticFrame,
-                             const FramePtr<PointT>&      staticAddedFrame,
-                             const FramePtr<PointT>&      staticRemovedFrame,
-                             OctreeKey&                   key,
-                             const BranchNode*            branchNode);
+  void segmentationRecursive(const FrameConstPtr& frame,
+                             const FramePtr&      dynamicFrame,
+                             const FramePtr&      staticFrame,
+                             const FramePtr&      staticAddedFrame,
+                             const FramePtr&      staticRemovedFrame,
+                             OctreeKey&           key,
+                             const BranchNode*    branchNode);
 };
 
 }  // namespace jpcc::segmentation

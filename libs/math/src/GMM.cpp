@@ -10,11 +10,11 @@ using namespace std;
 namespace jpcc::math {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void GMM::buildN(vector<int32_t>&     samples,
+void GMM::buildN(vector<Intensity>&   samples,
                  const int            K,
                  const int            N,
                  const double         minimumVariance,
-                 const int32_t        nullSample,
+                 const Intensity      nullSample,
                  const vector<float>& alternateCentroids) {
   int    K_ = K - 1;
   size_t k;
@@ -22,7 +22,7 @@ void GMM::buildN(vector<int32_t>&     samples,
   vector<float> centroids;
 
   // get centroids
-  vector<int32_t> uniqueSamples;
+  vector<Intensity> uniqueSamples;
   for (const auto& sample : samples) {
     bool anyEqual = false;
     for (const auto& uniqueSample : uniqueSamples) {
@@ -55,8 +55,8 @@ void GMM::buildN(vector<int32_t>&     samples,
     }
   } else {
     for (size_t i = 0; i < uniqueSamples.size() && centroids.size() < K_; i++) {
-      const int32_t sample = uniqueSamples[i];
-      bool          exists = false;
+      const Intensity sample = uniqueSamples[i];
+      bool            exists = false;
       for (float centroid : centroids) {
         if (std::abs(float(sample) - centroid) < 0.00001) {
           exists = true;
@@ -67,11 +67,11 @@ void GMM::buildN(vector<int32_t>&     samples,
     }
     for (size_t i = 0; i < alternateCentroids.size() && centroids.size() < K_; i++) {
       centroids.push_back(alternateCentroids[i]);
-      samples.push_back(int32_t(alternateCentroids[i]));
+      samples.push_back(Intensity(alternateCentroids[i]));
     }
   }
 
-  vector<vector<int32_t>> clusters(K_);
+  vector<vector<Intensity>> clusters(K_);
   kmeans(samples, K_, centroids, clusters);
 
   clusters_.emplace_back(nullSample, (1 - samples.size() / N), minimumVariance);
@@ -86,7 +86,7 @@ void GMM::buildN(vector<int32_t>&     samples,
 bool GMM::isBuilt() const { return !clusters_.empty(); }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-[[nodiscard]] double GMM::getProbability(int32_t sample) {
+[[nodiscard]] double GMM::getProbability(Intensity sample) {
   assert(!isnan(sample));
   double totalProbability = 0.0;
 
@@ -119,7 +119,7 @@ bool GMM::isBuilt() const { return !clusters_.empty(); }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-size_t GMM::getOptimalModelIndex(const int32_t sample) const {
+size_t GMM::getOptimalModelIndex(const Intensity sample) const {
   assert(!isnan(sample));
   size_t optimalIndex       = 0;
   double optimalProbability = clusters_.front().getWeight() * clusters_.front().getProbability(sample);
@@ -134,7 +134,7 @@ size_t GMM::getOptimalModelIndex(const int32_t sample) const {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void GMM::updateModel(int32_t sample, const double alpha, const double minimumVariance) {
+void GMM::updateModel(Intensity sample, const double alpha, const double minimumVariance) {
   assert(!isnan(sample));
   const size_t optimalIndex = getOptimalModelIndex(sample);
   for (size_t k = 0; k < clusters_.size(); k++) {

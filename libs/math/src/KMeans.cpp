@@ -7,10 +7,10 @@ using namespace std;
 namespace jpcc::math {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void kmeans(const std::vector<int32_t>&        samples,
-            int                                K,
-            std::vector<float>&                centroids,
-            std::vector<std::vector<int32_t>>& clusters) {
+void kmeans(const std::vector<Intensity>&        samples,
+            int                                  K,
+            std::vector<float>&                  centroids,
+            std::vector<std::vector<Intensity>>& clusters) {
   clusters.resize(K);
 
   std::vector<float> previousCentroids;
@@ -41,7 +41,7 @@ void kmeans(const std::vector<int32_t>&        samples,
       if (clusters[k].empty()) {
         for (int k2 = 0; k2 < K; k2++) {
           if (clusters[k2].size() < 2) { continue; }
-          std::vector<int32_t> uniques;
+          std::vector<Intensity> uniques;
           for (const auto& sample : clusters[k2]) {
             bool exists = false;
             for (const auto& unique : uniques) {
@@ -62,8 +62,8 @@ void kmeans(const std::vector<int32_t>&        samples,
         }
         continue;
       }
-      const int32_t sum = accumulate(clusters[k].begin(), clusters[k].end(), int32_t{0});
-      centroids[k]      = static_cast<float>(sum / static_cast<double>(clusters[k].size()));
+      const double sum = accumulate(clusters[k].begin(), clusters[k].end(), double{0.0});
+      centroids[k]     = static_cast<float>(sum / static_cast<double>(clusters[k].size()));
     }
 
     isConverged = true;

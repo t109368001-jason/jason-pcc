@@ -3,6 +3,13 @@
 namespace jpcc {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
+void JPCCPointSet3::addPoint(PointType point) {
+  const size_t index = getPointCount();
+  resize(index + 1);
+  (*this)[index] = point;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
 void JPCCPointSet3::subset(JPCCPointSet3& frame, const Indices& indices) {
   frame.resize(indices.size());
   Index indexFrame = 0;

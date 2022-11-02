@@ -11,17 +11,17 @@ class IJPCCCombinationContext {
   [[nodiscard]] virtual SegmentationType       getSegmentationType() const       = 0;
   [[nodiscard]] virtual SegmentationOutputType getSegmentationOutputType() const = 0;
 
-  [[nodiscard]] virtual const GroupOfFrame& getDynamicReconstructPclFrames() const       = 0;
-  [[nodiscard]] virtual const GroupOfFrame& getStaticReconstructPclFrames() const        = 0;
-  [[nodiscard]] virtual const GroupOfFrame& getStaticAddedReconstructPclFrames() const   = 0;
-  [[nodiscard]] virtual const GroupOfFrame& getStaticRemovedReconstructPclFrames() const = 0;
-  [[nodiscard]] virtual const GroupOfFrame& getReconstructPclFrames() const              = 0;
+  [[nodiscard]] virtual const GroupOfFrame& getDynamicReconstructFrames() const       = 0;
+  [[nodiscard]] virtual const GroupOfFrame& getStaticReconstructFrames() const        = 0;
+  [[nodiscard]] virtual const GroupOfFrame& getStaticAddedReconstructFrames() const   = 0;
+  [[nodiscard]] virtual const GroupOfFrame& getStaticRemovedReconstructFrames() const = 0;
+  [[nodiscard]] virtual const GroupOfFrame& getReconstructFrames() const              = 0;
 
-  [[nodiscard]] virtual GroupOfFrame& getDynamicReconstructPclFrames()       = 0;
-  [[nodiscard]] virtual GroupOfFrame& getStaticReconstructPclFrames()        = 0;
-  [[nodiscard]] virtual GroupOfFrame& getStaticAddedReconstructPclFrames()   = 0;
-  [[nodiscard]] virtual GroupOfFrame& getStaticRemovedReconstructPclFrames() = 0;
-  [[nodiscard]] virtual GroupOfFrame& getReconstructPclFrames()              = 0;
+  [[nodiscard]] virtual GroupOfFrame& getDynamicReconstructFrames()       = 0;
+  [[nodiscard]] virtual GroupOfFrame& getStaticReconstructFrames()        = 0;
+  [[nodiscard]] virtual GroupOfFrame& getStaticAddedReconstructFrames()   = 0;
+  [[nodiscard]] virtual GroupOfFrame& getStaticRemovedReconstructFrames() = 0;
+  [[nodiscard]] virtual GroupOfFrame& getReconstructFrames()              = 0;
 };
 
 }  // namespace jpcc

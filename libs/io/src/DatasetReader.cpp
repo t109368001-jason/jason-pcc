@@ -34,10 +34,11 @@ void DatasetReader::loadAll(const size_t  startFrameNumber,
         return a.size() < b.size();
       })->size();
   frames.resize(minSize);
-  for (size_t i = 0; i < minSize; i++) {
-    FramePtr& frame = frames[i];
-    frame           = jpcc::make_shared<Frame>();
-    size_t size     = 0;
+  for (Index i = 0; i < minSize; i++) {
+    FramePtr& frame         = frames[i];
+    frame                   = jpcc::make_shared<Frame>();
+    frame->getFrameNumber() = Index(startFrameNumber) + i;
+    size_t size             = 0;
     for (size_t datasetIndex = 0; datasetIndex < datasetParam_.count(); datasetIndex++) {
       if (i < sources[datasetIndex].size()) { size += sources[datasetIndex][i]->getPointCount(); }
     }
@@ -46,7 +47,7 @@ void DatasetReader::loadAll(const size_t  startFrameNumber,
       if (i < sources[datasetIndex].size()) { frame->append(*sources[datasetIndex][i]); }
     }
     std::cout << "reader read "
-              << "frameNumber=" << startFrameNumber + i << ", "
+              << "frameNumber=" << frame->getFrameNumber() << ", "
               << "points=" << frame->getPointCount() << std::endl;
   }
 }

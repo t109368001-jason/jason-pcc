@@ -18,10 +18,6 @@ JPCCContext::JPCCContext(double                 resolution,
 //////////////////////////////////////////////////////////////////////////////////////////////
 void JPCCContext::clear() {
   pclFrames_.clear();
-  dynamicPclFrames_.clear();
-  staticPclFrames_.clear();
-  staticAddedPclFrames_.clear();
-  staticRemovedPclFrames_.clear();
   dynamicFrames_.clear();
   staticFrames_.clear();
   staticAddedFrames_.clear();
@@ -34,11 +30,7 @@ void JPCCContext::clear() {
   staticReconstructFrames_.clear();
   staticAddedReconstructFrames_.clear();
   staticRemovedReconstructFrames_.clear();
-  dynamicReconstructPclFrames_.clear();
-  staticReconstructPclFrames_.clear();
-  staticAddedReconstructPclFrames_.clear();
-  staticRemovedReconstructPclFrames_.clear();
-  reconstructPclFrames_.clear();
+  reconstructFrames_.clear();
 }
 
 void writeJPCCContext(const JPCCContext& context, std::ostream& os) {

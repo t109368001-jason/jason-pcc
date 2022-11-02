@@ -4,8 +4,7 @@
 
 namespace jpcc::segmentation {
 
-template <typename PointT>
-class JPCCSegmentationNone : virtual public JPCCSegmentation<PointT> {
+class JPCCSegmentationNone : virtual public JPCCSegmentation {
  public:
   JPCCSegmentationNone(const JPCCSegmentationParameter& parameter, int startFrameNumber);
 
@@ -13,12 +12,10 @@ class JPCCSegmentationNone : virtual public JPCCSegmentation<PointT> {
 
   bool isBuilt() const override;
 
-  void appendTrainSamplesAndBuild(const FramePtr<PointT>& frame) override;
+  void appendTrainSamplesAndBuild(const FramePtr& frame, const PclFramePtr<pcl::PointXYZI>& pclFrame) override;
 
  protected:
-  void segmentation(IJPCCSegmentationContext<PointT>& context, size_t index) override;
+  void segmentation(IJPCCSegmentationContext& context, size_t index) override;
 };
 
 }  // namespace jpcc::segmentation
-
-#include <jpcc/segmentation/impl/JPCCSegmentationNone.hpp>

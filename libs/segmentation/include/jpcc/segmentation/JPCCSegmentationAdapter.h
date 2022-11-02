@@ -7,11 +7,8 @@ namespace jpcc::segmentation {
 
 class JPCCSegmentationAdapter {
  public:
-  template <typename PointT>
-  [[nodiscard]] static typename JPCCSegmentation<PointT>::Ptr build(const JPCCSegmentationParameter& parameter,
-                                                                    int                              startFrameNumber);
+  [[nodiscard]] static typename JPCCSegmentation::Ptr build(const JPCCSegmentationParameter& parameter,
+                                                            int                              startFrameNumber);
 };
 
 }  // namespace jpcc::segmentation
-
-#include <jpcc/segmentation/impl/JPCCSegmentationAdapter.hpp>
