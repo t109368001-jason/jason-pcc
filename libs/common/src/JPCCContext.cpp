@@ -1,5 +1,9 @@
 #include <jpcc/common/JPCCContext.h>
 
+#include <execution>
+
+#include <boost/range/counting_range.hpp>
+
 namespace jpcc {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -31,6 +35,48 @@ void JPCCContext::clear() {
   staticAddedReconstructFrames_.clear();
   staticRemovedReconstructFrames_.clear();
   reconstructFrames_.clear();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void JPCCContext::convertToPclBuild(bool parallel) {
+  pclFrames_.resize(frames_.size());
+  if (!parallel) {
+    for (size_t i = 0; i < frames_.size(); i++) { pclFrames_[i] = frames_[i]->toPcl<pcl::PointXYZI>(); }
+  } else {
+    const auto range = boost::counting_range<size_t>(0, frames_.size());
+    std::for_each(std::execution::par, range.begin(), range.end(),
+                  [&](const size_t& i) {  //
+                    pclFrames_[i] = frames_[i]->toPcl<pcl::PointXYZI>();
+                  });
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void JPCCContext::convertToPclCombination(bool parallel) {
+  staticAddedReconstructPclFrames_.resize(staticAddedReconstructFrames_.size());
+  if (!parallel) {
+    for (size_t i = 0; i < staticAddedReconstructFrames_.size(); i++) {
+      staticAddedReconstructPclFrames_[i] = staticAddedReconstructFrames_[i]->toPcl<pcl::PointXYZ>();
+    }
+  } else {
+    const auto range = boost::counting_range<size_t>(0, staticAddedReconstructFrames_.size());
+    std::for_each(std::execution::par, range.begin(), range.end(),
+                  [&](const size_t& i) {  //
+                    staticAddedReconstructPclFrames_[i] = staticAddedReconstructFrames_[i]->toPcl<pcl::PointXYZ>();
+                  });
+  }
+  staticRemovedReconstructPclFrames_.resize(staticRemovedReconstructFrames_.size());
+  if (!parallel) {
+    for (size_t i = 0; i < staticRemovedReconstructFrames_.size(); i++) {
+      staticRemovedReconstructPclFrames_[i] = staticRemovedReconstructFrames_[i]->toPcl<pcl::PointXYZ>();
+    }
+  } else {
+    const auto range = boost::counting_range<size_t>(0, staticRemovedReconstructFrames_.size());
+    std::for_each(std::execution::par, range.begin(), range.end(),
+                  [&](const size_t& i) {  //
+                    staticRemovedReconstructPclFrames_[i] = staticRemovedReconstructFrames_[i]->toPcl<pcl::PointXYZ>();
+                  });
+  }
 }
 
 void writeJPCCContext(const JPCCContext& context, std::ostream& os) {

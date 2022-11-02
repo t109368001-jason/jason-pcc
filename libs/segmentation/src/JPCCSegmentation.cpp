@@ -16,16 +16,16 @@ JPCCSegmentation::JPCCSegmentation(const JPCCSegmentationParameter& parameter, c
 bool JPCCSegmentation::isThreadSafe() { return false; }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void JPCCSegmentation::appendTrainSamplesAndBuild(const GroupOfFrame&                    frames,
-                                                  const GroupOfPclFrame<pcl::PointXYZI>& pclFrame,
-                                                  const bool                             parallel) {
+void JPCCSegmentation::appendTrainSamplesAndBuild(IJPCCSegmentationContext& context, const bool parallel) {
   if (!parallel || !isThreadSafe()) {
-    for (size_t i = 0; i < frames.size(); i++) { this->appendTrainSamplesAndBuild(frames[i], pclFrame[i]); }
+    for (size_t i = 0; i < context.getFrames().size(); i++) {
+      this->appendTrainSamplesAndBuild(context.getFrames()[i], context.getPclFrames()[i]);
+    }
   } else {
-    const auto range = boost::counting_range<size_t>(0, frames.size());
+    const auto range = boost::counting_range<size_t>(0, context.getFrames().size());
     std::for_each(std::execution::par, range.begin(), range.end(),
                   [&](const size_t& i) {  //
-                    this->appendTrainSamplesAndBuild(frames[i], pclFrame[i]);
+                    this->appendTrainSamplesAndBuild(context.getFrames()[i], context.getPclFrames()[i]);
                   });
   }
 }

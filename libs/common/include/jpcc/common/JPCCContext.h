@@ -123,6 +123,10 @@ class JPCCContext : public IJPCCSegmentationContext,
     return staticRemovedReconstructPclFrames_;
   };
   [[nodiscard]] GroupOfFrame& getReconstructFrames() override { return reconstructFrames_; };
+
+  void convertToPclBuild(bool parallel);
+
+  void convertToPclCombination(bool parallel);
 };
 
 void writeJPCCContext(const JPCCContext& context, std::ostream& os);

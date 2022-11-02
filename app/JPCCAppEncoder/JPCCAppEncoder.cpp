@@ -72,11 +72,13 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
         ScopeStopwatch clock = metric.start("PreProcess", frameNumber);
         preProcessor.process(frames, nullptr, parameter.parallel);
       }
+      {  // Convert to pcl (build)
+        ScopeStopwatch clock = metric.start("ConvertToPcl (Build)", frameNumber);
+        context.convertToPclBuild(parameter.parallel);
+      }
       {  // build
-        ScopeStopwatch                  clock = metric.start("Build", frameNumber);
-        GroupOfPclFrame<pcl::PointXYZI> pclFrames;
-        for (const auto& frame : frames) { pclFrames.push_back(frame->toPcl<pcl::PointXYZI>()); }
-        gmmSegmentation->appendTrainSamplesAndBuild(frames, pclFrames, parameter.parallel);
+        ScopeStopwatch clock = metric.start("Build", frameNumber);
+        gmmSegmentation->appendTrainSamplesAndBuild(context, parameter.parallel);
       }
 
       frameNumber += parameter.groupOfFramesSize;
@@ -134,13 +136,17 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
       ScopeStopwatch clock = metric.start("Decode", frameNumber);
       decoder.decode(ifs, context, groupOfFramesSize, parameter.parallel);
     }
-    {  // copy normal to Reconstruct
-      ScopeStopwatch clock = metric.start("CopyNormalToReconstruct", frameNumber);
-      metric.copyNormalToReconstruct(context, parameter.parallel);
+    {  // Convert to pcl (combination)
+      ScopeStopwatch clock = metric.start("ConvertToPcl (Combination)", frameNumber);
+      context.convertToPclCombination(parameter.parallel);
     }
     {  // combination
       ScopeStopwatch clock = metric.start("Combination", frameNumber);
       combination.combine(context, parameter.parallel);
+    }
+    {  // copy normal to Reconstruct
+      ScopeStopwatch clock = metric.start("CopyNormalToReconstruct", frameNumber);
+      metric.copyNormalToReconstruct(context, parameter.parallel);
     }
     {  // compute PSNR
       for (size_t i = 0; i < context.getPclFrames().size(); i++) {
