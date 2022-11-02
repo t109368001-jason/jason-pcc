@@ -153,6 +153,7 @@ void JPCCMetric::copyNormalToReconstruct(const FramePtr& frame, const FramePtr& 
   nanoflann::KNNResultSet<double>                    resultSet(K);
   KDTreeVectorOfVectorsAdaptor<PCCPointSet3, double> kdtree(3, *frame, 10);
 
+  reconstructFrame->addNormal();
   for (size_t i = 0; i < reconstructFrame->getPointCount(); i++) {
     auto&        point       = (*reconstructFrame)[i];
     Vec3<double> pointDouble = point;
