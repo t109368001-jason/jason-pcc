@@ -43,11 +43,11 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
                       parameter.jpccGmmSegmentation.outputType, parameter.jpccEncoderDynamic.backendType,
                       parameter.jpccEncoderStatic.backendType);
 
-  std::ofstream ofs(parameter.compressedStreamPath, std::ios::binary);
+  std::ofstream ofs(parameter.compressedStreamPath, std::ios::binary | std::ios::out);
 
   writeJPCCHeader(context.getHeader(), ofs);
   ofs.flush();
-  std::ifstream ifs(parameter.compressedStreamPath, std::ios::binary);
+  std::ifstream ifs(parameter.compressedStreamPath, std::ios::binary | std::ios::in);
   {
     JPCCHeader header{};
     readJPCCHeader(ifs, &header);
@@ -126,7 +126,7 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
     // TODO extract JPCCWriter
     {  // save
       ifs.close();
-      ifs.open(parameter.compressedStreamPath, std::ios::binary);
+      ifs.open(parameter.compressedStreamPath, std::ios::binary | std::ios::in);
       ifs.seekg(0, std::ios::end);
       ScopeStopwatch clock = metric.start("Save", frameNumber);
       writeJPCCContext(context, ofs);
