@@ -87,7 +87,6 @@ bool GMM::isBuilt() const { return !clusters_.empty(); }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 [[nodiscard]] double GMM::getProbability(Intensity sample) {
-  assert(!isnan(sample));
   double totalProbability = 0.0;
 
   for (const auto& cluster : clusters_) {
@@ -120,7 +119,6 @@ bool GMM::isBuilt() const { return !clusters_.empty(); }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 size_t GMM::getOptimalModelIndex(const Intensity sample) const {
-  assert(!isnan(sample));
   size_t optimalIndex       = 0;
   double optimalProbability = clusters_.front().getWeight() * clusters_.front().getProbability(sample);
   for (size_t k = 1; k < clusters_.size(); k++) {
@@ -135,7 +133,6 @@ size_t GMM::getOptimalModelIndex(const Intensity sample) const {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void GMM::updateModel(Intensity sample, const double alpha, const double minimumVariance) {
-  assert(!isnan(sample));
   const size_t optimalIndex = getOptimalModelIndex(sample);
   for (size_t k = 0; k < clusters_.size(); k++) {
     clusters_[k].addSample(sample, k == optimalIndex, alpha, minimumVariance);

@@ -41,6 +41,9 @@ class JPCCContext : public IJPCCSegmentationContext,
   GroupOfFrame staticAddedReconstructFrames_;
   GroupOfFrame staticRemovedReconstructFrames_;
 
+  GroupOfPclFrame<pcl::PointXYZ> staticAddedReconstructPclFrames_;
+  GroupOfPclFrame<pcl::PointXYZ> staticRemovedReconstructPclFrames_;
+
   GroupOfFrame reconstructFrames_;
 
  public:
@@ -83,6 +86,12 @@ class JPCCContext : public IJPCCSegmentationContext,
   [[nodiscard]] const GroupOfFrame& getStaticRemovedReconstructFrames() const override {
     return staticRemovedReconstructFrames_;
   };
+  [[nodiscard]] const GroupOfPclFrame<pcl::PointXYZ>& getStaticAddedReconstructPclFrames() const override {
+    return staticAddedReconstructPclFrames_;
+  };
+  [[nodiscard]] const GroupOfPclFrame<pcl::PointXYZ>& getStaticRemovedReconstructPclFrames() const override {
+    return staticRemovedReconstructPclFrames_;
+  };
   [[nodiscard]] const GroupOfFrame& getReconstructFrames() const override { return reconstructFrames_; };
 
   [[nodiscard]] GroupOfFrame&                    getFrames() override { return frames_; };
@@ -107,6 +116,12 @@ class JPCCContext : public IJPCCSegmentationContext,
   [[nodiscard]] GroupOfFrame& getStaticReconstructFrames() override { return staticReconstructFrames_; };
   [[nodiscard]] GroupOfFrame& getStaticAddedReconstructFrames() override { return staticAddedReconstructFrames_; };
   [[nodiscard]] GroupOfFrame& getStaticRemovedReconstructFrames() override { return staticRemovedReconstructFrames_; };
+  [[nodiscard]] GroupOfPclFrame<pcl::PointXYZ>& getStaticAddedReconstructPclFrames() override {
+    return staticAddedReconstructPclFrames_;
+  };
+  [[nodiscard]] GroupOfPclFrame<pcl::PointXYZ>& getStaticRemovedReconstructPclFrames() override {
+    return staticRemovedReconstructPclFrames_;
+  };
   [[nodiscard]] GroupOfFrame& getReconstructFrames() override { return reconstructFrames_; };
 };
 

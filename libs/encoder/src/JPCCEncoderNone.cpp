@@ -32,8 +32,9 @@ void JPCCEncoderNone::encode(const FramePtr& frame, std::vector<char>& encodedBy
 #endif
   std::string tmpString = os.str();
   for (char& i : tmpString) { encodedBytes.push_back(i); }
-  assert((_frame->size() * (sizeof(((PointT*)0)->x) + sizeof(((PointT*)0)->y) + sizeof(((PointT*)0)->z)) + 4) ==
-         (encodedBytes.size() - oldSize));
+  assert((frame->getPointCount() * (sizeof(((Frame::PointType*)0)->x()) + sizeof(((Frame::PointType*)0)->y()) +
+                                    sizeof(((Frame::PointType*)0)->z())) +
+          4) == (encodedBytes.size() - oldSize));
 }
 
 }  // namespace jpcc::encoder

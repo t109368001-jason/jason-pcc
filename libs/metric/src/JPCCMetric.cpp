@@ -34,52 +34,48 @@ JPCCMetric::JPCCMetric(const JPCCMetricParameter& parameter) :
     clockMapMap_() {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void JPCCMetric::addPoints(const size_t frameNumber, const std::string& name, const FramePtr& frame, bool addBytes) {
+void JPCCMetric::addPoints(const std::string& name, const FramePtr& frame, bool addBytes) {
   const auto& points = frame->getPointCount();
   if (points == 0) { return; }
-  frameNumberSet_.insert(frameNumber);
+  frameNumberSet_.insert(frame->getFrameNumber());
   pointsNameSet_.insert(name);
-  pointsMapMap_[frameNumber][name] += points;
+  pointsMapMap_[frame->getFrameNumber()][name] += points;
   std::cout << __FUNCTION__ << "() "
             << "name=" << name << ", "
-            << "frameNumber=" << frameNumber << ", "
+            << "frameNumber=" << frame->getFrameNumber() << ", "
             << "points=" << points << std::endl;
-  if (addBytes) { this->addBytes(name, frameNumber, points * sizeof(float) * 3); }
+  if (addBytes) { this->addBytes(name, frame->getFrameNumber(), points * sizeof(float) * 3); }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void JPCCMetric::addPoints(size_t frameNumber, const std::string& name, const GroupOfFrame& frames, bool addBytes) {
-  for (const auto& frame : frames) { this->addPoints(frameNumber++, name, frame, addBytes); }
+void JPCCMetric::addPoints(const std::string& name, const GroupOfFrame& frames, bool addBytes) {
+  for (const auto& frame : frames) { this->addPoints(name, frame, addBytes); }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void JPCCMetric::addPointsAndBytes(const size_t             frameNumber,
-                                   const std::string&       name,
+void JPCCMetric::addPointsAndBytes(const std::string&       name,
                                    const FramePtr&          frame,
                                    const std::vector<char>& encodedBytes) {
   if (encodedBytes.empty()) { return; }
   const auto& points = frame->getPointCount();
   if (points == 0) { return; }
-  frameNumberSet_.insert(frameNumber);
+  frameNumberSet_.insert(frame->getFrameNumber());
   pointsNameSet_.insert(name);
-  pointsMapMap_[frameNumber][name] += points;
+  pointsMapMap_[frame->getFrameNumber()][name] += points;
   bytesNameSet_.insert(name);
-  bytesMapMap_[frameNumber][name] = encodedBytes.size();
+  bytesMapMap_[frame->getFrameNumber()][name] = encodedBytes.size();
   std::cout << __FUNCTION__ << "() "
             << "name=" << name << ", "
-            << "frameNumber=" << frameNumber << ", "
+            << "frameNumber=" << frame->getFrameNumber() << ", "
             << "points=" << points << ", "
             << "bytes=" << encodedBytes.size() << std::endl;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void JPCCMetric::addPointsAndBytes(size_t                                frameNumber,
-                                   const std::string&                    name,
+void JPCCMetric::addPointsAndBytes(const std::string&                    name,
                                    const GroupOfFrame&                   frames,
                                    const std::vector<std::vector<char>>& encodedFramesBytes) {
-  for (size_t i = 0; i < frames.size(); i++) {
-    this->addPointsAndBytes(frameNumber++, name, frames[i], encodedFramesBytes[i]);
-  }
+  for (size_t i = 0; i < frames.size(); i++) { this->addPointsAndBytes(name, frames[i], encodedFramesBytes[i]); }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -102,10 +98,7 @@ void JPCCMetric::addBytes(const std::string&                    name,
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void JPCCMetric::addPSNR(const size_t       frameNumber,
-                         const std::string& name,
-                         const FramePtr&    frameA,
-                         const FramePtr&    frameB) {
+void JPCCMetric::addPSNR(const std::string& name, const FramePtr& frameA, const FramePtr& frameB) {
   double c2cMSE  = std::numeric_limits<double>::quiet_NaN();
   double c2cPSNR = std::numeric_limits<double>::quiet_NaN();
   double c2pMSE  = std::numeric_limits<double>::quiet_NaN();
@@ -113,19 +106,19 @@ void JPCCMetric::addPSNR(const size_t       frameNumber,
 
   computePSNR(frameA, frameB, c2cMSE, c2cPSNR, c2pMSE, c2pPSNR);
 
-  frameNumberSet_.insert(frameNumber);
+  frameNumberSet_.insert(frameA->getFrameNumber());
   c2cMSENameSet_.insert(name);
   c2cPSNRNameSet_.insert(name);
   c2pMSENameSet_.insert(name);
   c2pPSNRNameSet_.insert(name);
-  c2cMSEMapMap_[frameNumber][name]  = c2cMSE;
-  c2cPSNRMapMap_[frameNumber][name] = c2cPSNR;
-  c2pMSEMapMap_[frameNumber][name]  = c2pMSE;
-  c2pPSNRMapMap_[frameNumber][name] = c2pPSNR;
+  c2cMSEMapMap_[frameA->getFrameNumber()][name]  = c2cMSE;
+  c2cPSNRMapMap_[frameA->getFrameNumber()][name] = c2cPSNR;
+  c2pMSEMapMap_[frameA->getFrameNumber()][name]  = c2pMSE;
+  c2pPSNRMapMap_[frameA->getFrameNumber()][name] = c2pPSNR;
   std::cout << __FUNCTION__ << "() "
             << "name=" << name << ", "
-            << "frameNumberA=" << frameNumber << ", "
-            << "frameNumberB=" << frameNumber << ", "
+            << "frameNumberA=" << frameA->getFrameNumber() << ", "
+            << "frameNumberB=" << frameB->getFrameNumber() << ", "
             << "pointsA=" << frameA->getPointCount() << ", "
             << "pointsB=" << frameB->getPointCount() << ", "
             << "c2cMSE=" << c2cMSE << ", "
@@ -135,19 +128,18 @@ void JPCCMetric::addPSNR(const size_t       frameNumber,
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void JPCCMetric::addPSNR(size_t              frameNumber,
-                         const std::string&  name,
+void JPCCMetric::addPSNR(const std::string&  name,
                          const GroupOfFrame& framesA,
                          const GroupOfFrame& framesB,
                          const bool          parallel) {
   assert(framesA.size() == framesB.size());
   if (!parallel) {
-    for (size_t i = 0; i < framesA.size(); i++) { this->addPSNR(frameNumber + i, name, framesA[i], framesB[i]); }
+    for (size_t i = 0; i < framesA.size(); i++) { this->addPSNR(name, framesA[i], framesB[i]); }
   } else {
     const auto range = boost::counting_range<size_t>(0, framesA.size());
     std::for_each(std::execution::par, range.begin(), range.end(),
                   [&](const size_t& i) {  //
-                    this->addPSNR(frameNumber + i, name, framesA[i], framesB[i]);
+                    this->addPSNR(name, framesA[i], framesB[i]);
                   });
   }
 }
@@ -198,14 +190,13 @@ void JPCCMetric::copyNormalToReconstruct(const GroupOfFrame& frames,
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void JPCCMetric::copyNormalToReconstruct(const JPCCContext& context, const bool parallel) {
-  this->copyNormalToReconstruct(context.getDynamicPclFrames(), context.getDynamicReconstructPclFrames(), parallel);
+  this->copyNormalToReconstruct(context.getDynamicFrames(), context.getDynamicReconstructFrames(), parallel);
   if (context.getSegmentationOutputType() == SegmentationOutputType::DYNAMIC_STATIC) {
-    this->copyNormalToReconstruct(context.getStaticPclFrames(), context.getStaticReconstructPclFrames(), parallel);
+    this->copyNormalToReconstruct(context.getStaticFrames(), context.getStaticReconstructFrames(), parallel);
   }
   if (context.getSegmentationOutputType() == SegmentationOutputType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED) {
-    this->copyNormalToReconstruct(context.getStaticAddedPclFrames(), context.getStaticAddedReconstructPclFrames(),
-                                  parallel);
-    this->copyNormalToReconstruct(context.getStaticRemovedPclFrames(), context.getStaticRemovedReconstructPclFrames(),
+    this->copyNormalToReconstruct(context.getStaticAddedFrames(), context.getStaticAddedReconstructFrames(), parallel);
+    this->copyNormalToReconstruct(context.getStaticRemovedFrames(), context.getStaticRemovedReconstructFrames(),
                                   parallel);
   }
 }

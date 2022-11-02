@@ -1,5 +1,6 @@
 #pragma once
 
+#include <jpcc/common/IJPCCDecoderContext.h>
 #include <jpcc/common/JPCCHeader.h>
 #include <jpcc/decoder/JPCCDecoder.h>
 

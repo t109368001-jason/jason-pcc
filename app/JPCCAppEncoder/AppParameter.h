@@ -16,9 +16,8 @@ class AppParameter : public Parameter {
   bool                                    parallel;
   size_t                                  groupOfFramesSize;
   std::string                             compressedStreamPath;
-  io::DatasetParameter                    inputDataset;
-  io::DatasetReaderParameter              inputReader;
-  io::DatasetParameter                    outputDataset;
+  io::DatasetParameter                    dataset;
+  io::DatasetReaderParameter              reader;
   process::PreProcessParameter            preProcess;
   segmentation::JPCCSegmentationParameter jpccGmmSegmentation;
   encoder::JPCCEncoderParameter           jpccEncoderStatic;

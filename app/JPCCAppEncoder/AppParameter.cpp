@@ -17,9 +17,8 @@ AppParameter::AppParameter() :
     parallel(false),
     groupOfFramesSize(32),
     compressedStreamPath("./bin/output.bin"),
-    inputDataset("dataset", "InputDatasetParameter"),
-    inputReader("reader", "InputDatasetReaderParameter"),
-    outputDataset("outputDataset", "OutputDatasetParameter"),
+    dataset("dataset", "InputDatasetParameter"),
+    reader("reader", "InputDatasetReaderParameter"),
     preProcess(),
     jpccGmmSegmentation(),
     jpccEncoderDynamic("jpccEncoderDynamic", "JPCCEncoderTMC3Dynamic"),
@@ -35,9 +34,8 @@ AppParameter::AppParameter() :
        value<string>(&compressedStreamPath)->default_value(compressedStreamPath),  //
        "compressedStreamPath")                                                     //
       ;
-  opts_.add(inputDataset.getOpts());
-  opts_.add(inputReader.getOpts());
-  opts_.add(outputDataset.getOpts());
+  opts_.add(dataset.getOpts());
+  opts_.add(reader.getOpts());
   opts_.add(preProcess.getOpts());
   opts_.add(jpccGmmSegmentation.getOpts());
   opts_.add(jpccEncoderDynamic.getOpts());
@@ -47,9 +45,8 @@ AppParameter::AppParameter() :
 }
 
 void AppParameter::notify() {
-  inputDataset.notify();
-  inputReader.notify();
-  outputDataset.notify(false);
+  dataset.notify();
+  reader.notify();
   preProcess.notify();
   jpccGmmSegmentation.notify();
   jpccEncoderDynamic.notify();
@@ -57,8 +54,6 @@ void AppParameter::notify() {
   normalEstimation.notify();
   metricParameter.notify();
   if (!parallel) { groupOfFramesSize = 1; }
-  const filesystem::path& path = filesystem::path(outputDataset.getFilePath(0));
-  if (!filesystem::exists(path.parent_path())) { filesystem::create_directories(path.parent_path()); }
 }
 
 ostream& operator<<(ostream& out, const AppParameter& obj) {
@@ -67,9 +62,8 @@ ostream& operator<<(ostream& out, const AppParameter& obj) {
       (GROUP_OF_FRAMES_SIZE_OPT, obj.groupOfFramesSize)               //
       (COMPRESSED_DYNAMIC_STREAM_PATH_OPT, obj.compressedStreamPath)  //
       ;
-  out << obj.inputDataset;
-  out << obj.inputReader;
-  out << obj.outputDataset;
+  out << obj.dataset;
+  out << obj.reader;
   out << obj.preProcess;
   out << obj.jpccGmmSegmentation;
   out << obj.jpccEncoderDynamic;

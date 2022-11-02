@@ -36,17 +36,13 @@ class JPCCMetric {
  public:
   JPCCMetric(const JPCCMetricParameter& parameter);
 
-  void addPoints(size_t frameNumber, const std::string& name, const FramePtr& frame, bool addBytes = false);
+  void addPoints(const std::string& name, const FramePtr& frame, bool addBytes);
 
-  void addPoints(size_t frameNumber, const std::string& name, const GroupOfFrame& frames, bool addBytes = false);
+  void addPoints(const std::string& name, const GroupOfFrame& frames, bool addBytes);
 
-  void addPointsAndBytes(size_t                   frameNumber,
-                         const std::string&       name,
-                         const FramePtr&          frame,
-                         const std::vector<char>& encodedBytes);
+  void addPointsAndBytes(const std::string& name, const FramePtr& frame, const std::vector<char>& encodedBytes);
 
-  void addPointsAndBytes(size_t                                frameNumber,
-                         const std::string&                    name,
+  void addPointsAndBytes(const std::string&                    name,
                          const GroupOfFrame&                   frames,
                          const std::vector<std::vector<char>>& encodedFramesBytes);
 
@@ -56,13 +52,9 @@ class JPCCMetric {
                 FrameNumber                           firstFrameNumber,
                 const std::vector<std::vector<char>>& bytesVector);
 
-  void addPSNR(size_t frameNumber, const std::string& name, const FramePtr& frameA, const FramePtr& frameB);
+  void addPSNR(const std::string& name, const FramePtr& frameA, const FramePtr& frameB);
 
-  void addPSNR(size_t              frameNumber,
-               const std::string&  name,
-               const GroupOfFrame& framesA,
-               const GroupOfFrame& framesB,
-               bool                parallel);
+  void addPSNR(const std::string& name, const GroupOfFrame& framesA, const GroupOfFrame& framesB, const bool parallel);
 
   static void copyNormalToReconstruct(const FramePtr& frame, const FramePtr& reconstructFrame);
 

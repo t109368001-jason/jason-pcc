@@ -31,7 +31,6 @@ Cluster::Cluster(const Intensity sample, const double weight, const double minim
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 double Cluster::getProbability(const Intensity sample) const {
-  assert(!isnan(sample));
   double tmp         = exp((-0.5) * pow(sample - mean_, 2) / variance_);
   double probability = tmp / sqrt(2 * M_PI * variance_);
   assert(!isnan(probability));
@@ -47,7 +46,6 @@ double Cluster::getStaticProbability() const {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void Cluster::addSample(const Intensity sample, const bool matched, const double alpha, const double minimumVariance) {
-  assert(!isnan(sample));
   weight_ = (1 - alpha) * weight_ + (matched ? alpha : 0);
   assert(!isnan(weight_));
   if (matched) {

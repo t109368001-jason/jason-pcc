@@ -18,8 +18,6 @@ class PCCTMC3Decoder3LambdaCallbacks : public pcc::PCCTMC3Decoder3::Callbacks {
 
 class JPCCDecoderTMC3 : public virtual JPCCDecoder {
  public:
-  bool isConvertToPCLThreadSafe() override;
-
   void decode(std::istream& is, FramePtr& frame) override;
 };
 

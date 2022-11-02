@@ -50,8 +50,8 @@ void savePly(const GroupOfFrame& frames, const std::string& filePath, const size
     char fileName[4096];
     sprintf(fileName, filePath.c_str(), _frameNumber);
 
-    pcc::ply::write(*frame, {"x", "y", "z"}, 1.0, {0.0, 0.0, 0.0}, std::string(fileName), true);
-    assert(result != -1);
+    const bool result = pcc::ply::write(*frame, {"x", "y", "z"}, 1.0, {0.0, 0.0, 0.0}, std::string(fileName), true);
+    assert(result);
   };
 
   if (!parallel) {
