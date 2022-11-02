@@ -11,6 +11,7 @@ void JPCCPointSet3::addPoint(PointType point) {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void JPCCPointSet3::subset(JPCCPointSet3& frame, const Indices& indices) {
+  frame.addRemoveAttributes(*this);
   frame.resize(indices.size());
   Index indexFrame = 0;
   for (Index index : indices) {
