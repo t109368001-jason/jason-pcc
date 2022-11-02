@@ -13,18 +13,18 @@ template <typename PointT>
 class JPCCVisualizer : public JPCCVisualizerBase {
  public:
   using Ptr                = shared_ptr<JPCCVisualizer>;
-  using FrameQueue         = std::queue<FramePtr<PointT>>;
+  using PclFrameQueue      = std::queue<PclFramePtr<PointT>>;
   using PointCloudColor    = pcl::visualization::PointCloudColorHandler<PointT>;
   using PointCloudColorPtr = typename PointCloudColor::Ptr;
 
  protected:
-  std::map<std::string, FramePtr<PointT>> frameMap_;
-  std::map<std::string, FrameQueue>       queueMap_;
+  std::map<std::string, PclFramePtr<PointT>> frameMap_;
+  std::map<std::string, PclFrameQueue>       queueMap_;
 
  public:
   JPCCVisualizer(const VisualizerParameter& param);
 
-  void updateOrAddCloud(const FramePtr<PointT>& cloud, const PointCloudColor& color, const std::string& id);
+  void updateOrAddCloud(const PclFramePtr<PointT>& cloud, const PointCloudColor& color, const std::string& id);
 
   int updateText(int* windowSize) override;
 
@@ -38,11 +38,11 @@ class JPCCVisualizer : public JPCCVisualizerBase {
 
   void handleKeyboardEvent(const pcl::visualization::KeyboardEvent& event) override;
 
-  void enqueue(const GroupOfFrameMap<PointT>& framesMap);
+  void enqueue(const GroupOfPclFrameMap<PointT>& framesMap);
 
   void saveScreenshot();
 
-  [[nodiscard]] PointCloudColorPtr getCloudColor(const std::string& id, const FramePtr<PointT>& cloud);
+  [[nodiscard]] PointCloudColorPtr getCloudColor(const std::string& id, const PclFramePtr<PointT>& cloud);
 
   [[nodiscard]] bool isFull();
 
