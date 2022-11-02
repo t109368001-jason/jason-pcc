@@ -18,6 +18,6 @@
 namespace jpcc {
 
 constexpr Intensity MAX_INTENSITY  = 255;
-constexpr Intensity NULL_INTENSITY = -128;
+constexpr Intensity NULL_INTENSITY = 512;
 
 }  // namespace jpcc
