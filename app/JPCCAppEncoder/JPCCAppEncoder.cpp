@@ -106,6 +106,10 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
       ScopeStopwatch clock = metric.start("ComputeNormal", frameNumber);
       normalEstimation.computeInPlaceAll(context.getFrames(), parameter.parallel);
     }
+    {  // Convert to pcl (build)
+      ScopeStopwatch clock = metric.start("ConvertToPcl (Segmentation)", frameNumber);
+      context.convertToPclBuild(parameter.parallel);
+    }
     {  // segmentation
       ScopeStopwatch clock = metric.start("Segmentation", frameNumber);
       gmmSegmentation->segmentation(context, parameter.parallel);
