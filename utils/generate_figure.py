@@ -107,7 +107,7 @@ def plot_gmm(clusters, filename="gmm.png", **kwargs):
         y_total = np.zeros(shape=x.shape)
         for index, cluster in enumerate(clusters):
             y = gaussian(x, cluster["u"], cluster["s"], cluster.get("w"))
-            y_total += y if cluster["u"] >= 0 else -y
+            y_total += y if cluster["u"] <= 255 else -y
         line, = axes.plot(x, y_total, 'k', marker='', linestyle=(0, (3, 5, 1, 5)), label="total probability", alpha=0.8)
         handles.append(line)
     axes.legend(handles=handles, loc="lower right")
