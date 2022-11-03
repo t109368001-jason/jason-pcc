@@ -78,8 +78,8 @@ def plot_gmm(clusters, filename="gmm.png", **kwargs):
     if "ylim" in kwargs:
         ylim = kwargs["ylim"]
         axes.set_ylim(*ylim)
-    xlim = kwargs.get("xlim", [-1, 1])
-    x = np.arange(xlim[0], xlim[1], 0.001)
+    xlim = kwargs.get("xlim", [0, 512])
+    x = np.arange(xlim[0], xlim[1], 0.2)
     handles = []
     for index, cluster in enumerate(clusters):
         y = gaussian(x, cluster["u"], cluster["s"], cluster.get("w"))
@@ -130,20 +130,23 @@ if __name__ == '__main__':
     plot_gmm([{"u": 75, "s": 25}, {"u": 150, "s": 5}, {"u": 200, "s": 50}],
              "gmm.png",
              title=r"Gaussian Mixture Model $K=3$", xlim=[0, 255], ylim=[-0.03, 0.09])
-    plot_gmm([{"u": -0.5, "s": 0.04}, {"u": 0, "s": 0.04}, {"u": 128 / 255, "s": 0.04}],
+    plot_gmm([{"u": 384, "s": 10}, {"u": 0, "s": 10}, {"u": 128, "s": 10}],
              "gmm_without_weight.png",
              title=r"Gaussian Mixture Model $K=3$")
-    plot_gmm([{"u": -0.5, "s": 0.04, "w": 0.9}, {"u": 128 / 255, "s": 0.04, "w": 0.1}],
+    plot_gmm([{"u": 384, "s": 10, "w": 0.9}, {"u": 128, "s": 10, "w": 0.1}],
              "gmm_weight[9_1].png",
              title=r"Gaussian Mixture Model $K=2$")
-    plot_gmm([{"u": -0.5, "s": 0.04, "w": 0.9},
-              {"u": 0, "s": 0.04, "w": 0.01},
-              {"u": 128 / 255, "s": 0.04, "w": 0.09}],
+    plot_gmm([{"u": 384, "s": 10, "w": 0.9},
+              {"u": 0, "s": 10, "w": 0.01},
+              {"u": 128, "s": 10, "w": 0.09}],
              "gmm_weight[9_0.5_0.5].png",
              title=r"Gaussian Mixture Model $K=3$")
 
-    plot_gmm([{"u": 128 / 255, "s": 0.04, "w": 0.1,
+    plot_gmm([{"u": 128, "s": 10, "w": 0.1,
                "sd_multiplier_list": [0.5, 1, 2]
                }],
              "gmm_10w_sd_multiplier[0.5,1,2].png",
-             title="Probability of Background GMM Cluster", xlim=(0, 1), ylim=[-0.4, 1.2])
+             title="Probability of Background GMM Cluster", xlim=(0, 255)
+             # , ylim=[-0.4, 1.2]
+             , ylim=[-0.0015, 0.0045]
+             )
