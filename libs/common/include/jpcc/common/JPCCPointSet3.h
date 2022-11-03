@@ -71,9 +71,10 @@ class JPCCPointSet3 : public pcc::PCCPointSet3 {
   }
 
   void append(const JPCCPointSet3& src) {
-    pcc::PCCPointSet3::append(src);
+    if (!getPointCount()) addRemoveAttributes(src);
     int dstEnd = int(this->getPointCount());
-    if (hasColors() && src.hasColors())
+    pcc::PCCPointSet3::append(src);
+    if (hasNormal() && src.hasNormal())
       std::copy(src.normals.begin(), src.normals.end(), std::next(normals.begin(), dstEnd));
   }
 
