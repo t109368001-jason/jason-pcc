@@ -47,17 +47,17 @@ void JPCCPointSet3::fromPcl(const PclFramePtr<PointT>& pclFrame) {
   for (int i = 0; i < this->getPointCount(); i++) {
     (*this)[i] = pcc::PCCPointSet3::PointType((*pclFrame)[i].x, (*pclFrame)[i].y, (*pclFrame)[i].z);
     if constexpr (pcl::traits::has_color_v<PointT>) {
-      pclFrame->points[i].r = this->getColor(i).x();
-      pclFrame->points[i].g = this->getColor(i).y();
-      pclFrame->points[i].b = this->getColor(i).z();
+      this->getColor(i).x() = pclFrame->points[i].r;
+      this->getColor(i).y() = pclFrame->points[i].g;
+      this->getColor(i).z() = pclFrame->points[i].b;
     }
     if constexpr (pcl::traits::has_intensity_v<PointT>) {  //
-      pclFrame->points[i].intensity = this->getReflectance(i);
+      this->getReflectance(i) = pclFrame->points[i].intensity;
     }
     if constexpr (pcl::traits::has_normal_v<PointT>) {
-      pclFrame->points[i].normal_x = this->getNormal(i).x();
-      pclFrame->points[i].normal_y = this->getNormal(i).y();
-      pclFrame->points[i].normal_z = this->getNormal(i).z();
+      this->getNormal(i).x() = pclFrame->points[i].normal_x;
+      this->getNormal(i).y() = pclFrame->points[i].normal_y;
+      this->getNormal(i).z() = pclFrame->points[i].normal_z;
     }
   }
   assert(this->getPointCount() == pclFrame->size());
