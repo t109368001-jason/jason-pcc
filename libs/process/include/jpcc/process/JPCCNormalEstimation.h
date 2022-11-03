@@ -3,19 +3,15 @@
 #include <jpcc/common/Common.h>
 #include <jpcc/process/JPCCNormalEstimationParameter.h>
 
-#define PCL_NO_PRECOMPILE
-#include <pcl/features/normal_3d.h>
-
 namespace jpcc::process {
 
 class JPCCNormalEstimation {
  public:
-  using Ptr              = shared_ptr<JPCCNormalEstimation>;
-  using NormalEstimation = pcl::NormalEstimation<pcl::PointNormal, pcl::PointNormal>;
+  using Ptr    = shared_ptr<JPCCNormalEstimation>;
+  using PointT = pcl::PointNormal;
 
  protected:
   JPCCNormalEstimationParameter param_;
-  NormalEstimation              normalEstimation_;
 
  public:
   JPCCNormalEstimation(JPCCNormalEstimationParameter param);
@@ -24,5 +20,7 @@ class JPCCNormalEstimation {
 
   void computeInPlaceAll(GroupOfFrame& frames, bool parallel = false) const;
 };
+
+void PCCDiagonalize(const Eigen::Matrix3d& A, Eigen::Matrix3d& Q, Eigen::Matrix3d& D);
 
 }  // namespace jpcc::process
