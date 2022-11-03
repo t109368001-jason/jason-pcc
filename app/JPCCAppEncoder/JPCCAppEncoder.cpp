@@ -142,6 +142,10 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
       ScopeStopwatch clock = metric.start("Decode", frameNumber);
       decoder.decode(ifs, context, groupOfFramesSize, parameter.parallel);
     }
+    {  // copy normal to Reconstruct
+      ScopeStopwatch clock = metric.start("CopyNormalToReconstruct", frameNumber);
+      metric.copyNormalToReconstruct(context, parameter.parallel);
+    }
     {  // Convert to pcl (combination)
       ScopeStopwatch clock = metric.start("ConvertToPcl (Combination)", frameNumber);
       context.convertToPclCombination(parameter.parallel);
@@ -149,10 +153,6 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
     {  // combination
       ScopeStopwatch clock = metric.start("Combination", frameNumber);
       combination.combine(context, parameter.parallel);
-    }
-    {  // copy normal to Reconstruct
-      ScopeStopwatch clock = metric.start("CopyNormalToReconstruct", frameNumber);
-      metric.copyNormalToReconstruct(context, parameter.parallel);
     }
     {  // compute PSNR
       for (size_t i = 0; i < context.getPclFrames().size(); i++) {

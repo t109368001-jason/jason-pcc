@@ -6,7 +6,7 @@
 
 namespace jpcc {
 
-using PointCombination = pcl::PointXYZ;
+using PointCombination = pcl::PointXYZINormal;
 
 class IJPCCCombinationContext {
  public:
