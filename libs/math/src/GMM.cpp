@@ -37,10 +37,10 @@ void GMM::buildN(vector<Intensity>&         samples,
   }
   if (uniqueSamples.size() >= K_) {
     while (centroids.size() < K_) {
-      std::random_device              rd;
-      std::mt19937                    gen(rd());
-      std::uniform_int_distribution<> dis(0, std::distance(samples.begin(), samples.end()) - 1);
-      auto                            sampleIter = samples.begin();
+      std::random_device                     rd;
+      std::mt19937                           gen(rd());
+      std::uniform_int_distribution<int64_t> dis(0, std::distance(samples.begin(), samples.end()) - 1);
+      auto                                   sampleIter = samples.begin();
       std::advance(sampleIter, dis(gen));
 
       bool exists = false;

@@ -13,7 +13,7 @@ class JPCCEncoder {
   JPCCEncoderParameter parameter_;
 
  public:
-  JPCCEncoder(JPCCEncoderParameter parameter);
+  JPCCEncoder(JPCCEncoderParameter parameter);  // NOLINT(google-explicit-constructor)
 
   virtual bool isEncodeThreadSafe();
 

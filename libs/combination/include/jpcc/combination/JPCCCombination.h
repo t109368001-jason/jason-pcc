@@ -30,12 +30,14 @@ class JPCCCombination {
                                  const GroupOfPclFrame<PointT>& staticRemovedFrames,
                                  GroupOfFrame&                  staticReconstructFrames);
 
-  void combineDynamicStatic(const FramePtr& dynamicFrame, const FramePtr& staticFrame, FramePtr& reconstructFrame);
+  static void combineDynamicStatic(const FramePtr& dynamicFrame,
+                                   const FramePtr& staticFrame,
+                                   FramePtr&       reconstructFrame);
 
-  void combineDynamicStatic(const GroupOfFrame& dynamicFrames,
-                            const GroupOfFrame& staticFrames,
-                            GroupOfFrame&       reconstructFrames,
-                            bool                parallel);
+  static void combineDynamicStatic(const GroupOfFrame& dynamicFrames,
+                                   const GroupOfFrame& staticFrames,
+                                   GroupOfFrame&       reconstructFrames,
+                                   bool                parallel);
 };
 
 }  // namespace jpcc::combination

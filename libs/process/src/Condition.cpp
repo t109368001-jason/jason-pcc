@@ -14,7 +14,7 @@ using namespace Eigen;
 Condition::Condition() : type(), operation(), threshold() {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-Condition::Condition(const string& condition) {
+Condition::Condition(const string& condition) {  // NOLINT(misc-no-recursion)
   vector<string> ss;
   if (boost::icontains(condition, "&&") || boost::icontains(condition, "||")) {
     if (boost::icontains(condition, "&&") && boost::icontains(condition, "||")) {
@@ -27,7 +27,9 @@ Condition::Condition(const string& condition) {
     vector<string> cs;
     boost::algorithm::split(cs, condition, boost::is_any_of("&&"));
     cs.erase(remove_if(cs.begin(), cs.end(), [](const string& s) { return s.empty(); }), cs.end());
-    transform(cs.begin(), cs.end(), back_inserter(this->conditions), [](auto& c) { return Condition(c); });
+    transform(cs.begin(), cs.end(), back_inserter(this->conditions),  //
+              [](auto& c) { return Condition(c); }                    // NOLINT(misc-no-recursion)
+    );
     return;
   } else if (!boost::icontains(condition, " ")) {
     BOOST_THROW_EXCEPTION(
@@ -83,7 +85,7 @@ Condition::Condition(const ConditionType& type, const vector<string>& conditions
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-bool Condition::predict(const Frame::PointType& point) const {
+bool Condition::predict(const Frame::PointType& point) const {  // NOLINT(misc-no-recursion)
   switch (type) {
     case X:
     case Y:
@@ -92,10 +94,12 @@ bool Condition::predict(const Frame::PointType& point) const {
     case PROD: return predictVector3fMap(point);
     case AND:
       return all_of(conditions.begin(), conditions.end(),
-                    [&point](const auto& condition) { return condition.predict(point); });
+                    [&point](const auto& condition) { return condition.predict(point); }  // NOLINT(misc-no-recursion)
+      );
     case OR:
       return any_of(conditions.begin(), conditions.end(),
-                    [&point](const auto& condition) { return condition.predict(point); });
+                    [&point](const auto& condition) { return condition.predict(point); }  // NOLINT(misc-no-recursion)
+      );
     default: return false;
   }
 }

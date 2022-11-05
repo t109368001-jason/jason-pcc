@@ -77,7 +77,7 @@ class OctreeNBufBase {
   using LeafContainer [[maybe_unused]]   = LeafContainerT;
 
   using OctreeKey = pcl::octree::OctreeKey;
-  using uindex_t  = unsigned int;
+  using uindex_t  = pcl::uindex_t;
 
   // public for research
   // protected:

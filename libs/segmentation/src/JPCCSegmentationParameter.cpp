@@ -35,6 +35,7 @@ JPCCSegmentationParameter::JPCCSegmentationParameter(const string& prefix, const
     staticThresholdVector_(),
     nullStaticThresholdVector_(),
     type(SegmentationType::GMM_2L),
+    outputType(SegmentationOutputType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED),
     staticPointType(StaticPointType::CENTER),
     updateModelBeforeNTrain(false),
     resolution(100.0),

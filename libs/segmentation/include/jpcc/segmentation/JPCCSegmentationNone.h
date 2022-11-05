@@ -8,9 +8,9 @@ class JPCCSegmentationNone : virtual public JPCCSegmentation {
  public:
   JPCCSegmentationNone(const JPCCSegmentationParameter& parameter, int startFrameNumber);
 
-  bool isThreadSafe() override;
+  [[nodiscard]] bool isThreadSafe() override;
 
-  bool isBuilt() const override;
+  [[nodiscard]] bool isBuilt() const override;
 
   void appendTrainSamplesAndBuild(const FramePtr& frame, const PclFramePtr<PointSegmentation>& pclFrame) override;
 

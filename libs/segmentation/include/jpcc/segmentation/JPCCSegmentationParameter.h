@@ -30,8 +30,8 @@ class JPCCSegmentationParameter : public virtual Parameter {
   SegmentationOutputType outputType;
   StaticPointType        staticPointType;
   bool                   updateModelBeforeNTrain;
-  double                 resolution{};
-  double                 minimumVariance{};
+  double                 resolution;
+  double                 minimumVariance;
 
   JPCCSegmentationParameter();
 

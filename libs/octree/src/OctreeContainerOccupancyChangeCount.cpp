@@ -5,7 +5,8 @@ using namespace std;
 namespace jpcc::octree {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-OctreeContainerOccupancyChangeCount::OctreeContainerOccupancyChangeCount() : OctreeContainerBase() {
+OctreeContainerOccupancyChangeCount::OctreeContainerOccupancyChangeCount() :
+    OctreeContainerBase(), previous_(false), current_(false), count_(0) {
   OctreeContainerOccupancyChangeCount::reset();
 }
 

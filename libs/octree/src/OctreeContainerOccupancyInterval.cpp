@@ -5,7 +5,7 @@ using namespace std;
 namespace jpcc::octree {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-OctreeContainerOccupancyInterval::OctreeContainerOccupancyInterval() : OctreeContainerBase() {
+OctreeContainerOccupancyInterval::OctreeContainerOccupancyInterval() : OctreeContainerBase(), count_(0) {
   OctreeContainerOccupancyInterval::reset();
 }
 

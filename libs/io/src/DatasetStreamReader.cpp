@@ -1,10 +1,12 @@
 #include <jpcc/io/DatasetStreamReader.h>
 
+#include <utility>
+
 namespace jpcc::io {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 DatasetStreamReader::DatasetStreamReader(DatasetReaderParameter param, DatasetParameter datasetParam) :
-    DatasetReader(param, datasetParam),
+    DatasetReader(std::move(param), std::move(datasetParam)),
     capacity_(0),
     eof_(this->datasetParam_.count()),
     frameBuffers_(this->datasetParam_.count()),

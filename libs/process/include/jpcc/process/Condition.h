@@ -12,7 +12,7 @@ namespace jpcc::process {
 
 class Condition {
  public:
-  enum ConditionType { X, Y, Z, R, REFLECTIVITY, PROD, OR, AND };
+  enum ConditionType { X, Y, Z, R, PROD, OR, AND };
   enum ConditionOperation { NONE, GT, GE, LT, LE, EQ };
 
   shared_ptr<Eigen::Vector4f> coefficient;
@@ -23,7 +23,7 @@ class Condition {
 
   Condition();
 
-  Condition(const std::string& condition);
+  Condition(const std::string& condition);  // NOLINT(google-explicit-constructor)
 
   Condition(const ConditionType& type, const std::vector<std::string>& conditions);
 

@@ -11,7 +11,8 @@ JPCCContext::JPCCContext(double                 resolution,
                          SegmentationType       segmentationType,
                          SegmentationOutputType segmentationOutputType,
                          CoderBackendType       dynamicBackendType,
-                         CoderBackendType       staticBackendType) {
+                         CoderBackendType       staticBackendType) :
+    header_({0}) {
   header_.resolution             = resolution;
   header_.segmentationType       = segmentationType;
   header_.segmentationOutputType = segmentationOutputType;

@@ -19,7 +19,7 @@ class PreProcessor {
   PreProcessParameter param_;
 
  public:
-  PreProcessor(PreProcessParameter param);
+  PreProcessor(PreProcessParameter param);  // NOLINT(google-explicit-constructor)
 
   void process(GroupOfFrame& groupOfFrame, const GroupOfFrameMapPtr& removedMap = nullptr, bool parallel = false) const;
 

@@ -65,6 +65,7 @@ void PreProcessor::applyAlgorithm(const std::string& algorithm, const FramePtr& 
       pcc::Vec3<double> pointDouble = point;
       resultSet.init();
       bool ret = kdtree.index->radiusSearchCustomCallback(&pointDouble[0], resultSet, nanoflann::SearchParams(10));
+      THROW_IF_NOT(ret);
       if (indicesDists.size() >= param_.radiusOutlierRemoval.minNeighborsInRadius) {
         indices.push_back(i);
       } else {

@@ -26,7 +26,7 @@ class JPCCOctreePointCloud : public OctreePointCloud<PointT, LeafContainerT, Bra
 
   using PointCloudPtr = typename Base::PointCloudPtr;
 
-  JPCCOctreePointCloud(double resolution);
+  JPCCOctreePointCloud(double resolution);  // NOLINT(google-explicit-constructor)
 
   void setFrame(PclFrameConstPtr<PointT> frame);
 

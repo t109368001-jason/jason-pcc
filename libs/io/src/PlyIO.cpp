@@ -32,7 +32,7 @@ void loadPly(GroupOfFrame&      frames,
       auto& frame       = frames[frameNumber - startFrameNumber];
       frame             = jpcc::make_shared<Frame>();
       const bool result = pcc::ply::read(std::string(fileName), {"x", "y", "z"}, 1.0, *frame);
-      assert(result);
+      THROW_IF_NOT(result);
     }
   };
 
@@ -51,7 +51,7 @@ void savePly(const GroupOfFrame& frames, const std::string& filePath, const size
     sprintf(fileName, filePath.c_str(), _frameNumber);
 
     const bool result = pcc::ply::write(*frame, {"x", "y", "z"}, 1.0, {0.0, 0.0, 0.0}, std::string(fileName), true);
-    assert(result);
+    THROW_IF_NOT(result);
   };
 
   if (!parallel) {

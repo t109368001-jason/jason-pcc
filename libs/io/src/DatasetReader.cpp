@@ -2,12 +2,13 @@
 
 #include <algorithm>
 #include <execution>
+#include <utility>
 
 namespace jpcc::io {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 DatasetReader::DatasetReader(DatasetReaderParameter param, DatasetParameter datasetParam) :
-    DatasetReaderBase(param, datasetParam) {}
+    DatasetReaderBase(std::move(param), std::move(datasetParam)) {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void DatasetReader::loadAll(const size_t  startFrameNumber,

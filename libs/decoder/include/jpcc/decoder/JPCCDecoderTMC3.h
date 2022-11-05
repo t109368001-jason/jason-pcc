@@ -10,7 +10,8 @@ class PCCTMC3Decoder3LambdaCallbacks : public pcc::PCCTMC3Decoder3::Callbacks {
   const std::function<void(const pcc::CloudFrame& frame)>& onOutputCloud_;
 
  public:
-  PCCTMC3Decoder3LambdaCallbacks(const std::function<void(const pcc::CloudFrame& frame)>& onOutputCloud);
+  PCCTMC3Decoder3LambdaCallbacks(  // NOLINT(google-explicit-constructor)
+      const std::function<void(const pcc::CloudFrame& frame)>& onOutputCloud);
 
  protected:
   void onOutputCloud(const pcc::CloudFrame& frame) override;

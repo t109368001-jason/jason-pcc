@@ -18,10 +18,9 @@ using std::shared_ptr;
 
 using Intensity = pcc::attr_t;
 
-using Index      = pcl::index_t;
-using UIndex     = pcl::uindex_t;
-using Indices    = pcl::Indices;
-using IndicesPtr = std::shared_ptr<Indices>;
+using Index   = pcl::index_t;
+using UIndex  = pcl::uindex_t;
+using Indices = pcl::Indices;
 
 template <typename PointT>
 using PclFrame = pcl::PointCloud<PointT>;

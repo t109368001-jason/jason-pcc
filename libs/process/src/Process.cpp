@@ -2,9 +2,6 @@
 
 #include <execution>
 
-#define PCL_NO_PRECOMPILE
-#include <pcl/filters/extract_indices.h>
-
 #include <jpcc/octree/OctreeNBuf.h>
 
 #include <jpcc/octree/JPCCOctreePointCloud.h>

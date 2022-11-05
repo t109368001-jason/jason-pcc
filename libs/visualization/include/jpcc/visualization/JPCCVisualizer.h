@@ -22,7 +22,7 @@ class JPCCVisualizer : public JPCCVisualizerBase {
   std::map<std::string, PclFrameQueue>       queueMap_;
 
  public:
-  JPCCVisualizer(const VisualizerParameter& param);
+  JPCCVisualizer(const VisualizerParameter& param);  // NOLINT(google-explicit-constructor)
 
   void updateOrAddCloud(const PclFramePtr<PointT>& cloud, const PointCloudColor& color, const std::string& id);
 

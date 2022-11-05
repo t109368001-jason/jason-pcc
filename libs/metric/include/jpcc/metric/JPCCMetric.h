@@ -34,17 +34,11 @@ class JPCCMetric {
   std::map<FrameNumber, std::map<std::string, Stopwatch>> clockMapMap_;
 
  public:
-  JPCCMetric(const JPCCMetricParameter& parameter);
+  JPCCMetric(const JPCCMetricParameter& parameter);  // NOLINT(google-explicit-constructor)
 
   void addPoints(const std::string& name, const FramePtr& frame, bool addBytes);
 
   void addPoints(const std::string& name, const GroupOfFrame& frames, bool addBytes);
-
-  void addPointsAndBytes(const std::string& name, const FramePtr& frame, const std::vector<char>& encodedBytes);
-
-  void addPointsAndBytes(const std::string&                    name,
-                         const GroupOfFrame&                   frames,
-                         const std::vector<std::vector<char>>& encodedFramesBytes);
 
   void addBytes(const std::string& name, FrameNumber frameNumber, uint64_t bytes);
 
@@ -54,7 +48,7 @@ class JPCCMetric {
 
   void addPSNR(const std::string& name, const FramePtr& frameA, const FramePtr& frameB);
 
-  void addPSNR(const std::string& name, const GroupOfFrame& framesA, const GroupOfFrame& framesB, const bool parallel);
+  void addPSNR(const std::string& name, const GroupOfFrame& framesA, const GroupOfFrame& framesB, bool parallel);
 
   static void copyNormalToReconstruct(const FramePtr& frame, const FramePtr& reconstructFrame);
 

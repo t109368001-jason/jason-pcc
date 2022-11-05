@@ -21,7 +21,7 @@ class PCCTMC3Encoder3LambdaCallbacks : public pcc::PCCTMC3Encoder3::Callbacks {
 
 class JPCCEncoderTMC3 : public virtual JPCCEncoder {
  public:
-  JPCCEncoderTMC3(const JPCCEncoderParameter& parameter);
+  JPCCEncoderTMC3(const JPCCEncoderParameter& parameter);  // NOLINT(google-explicit-constructor)
 
   bool isEncodeThreadSafe() override;
 

@@ -9,7 +9,7 @@ class ScopeStopwatch {
   Stopwatch& stopWatch_;
 
  public:
-  ScopeStopwatch(Stopwatch& stopWatch);
+  ScopeStopwatch(Stopwatch& stopWatch);  // NOLINT(google-explicit-constructor)
 
   ~ScopeStopwatch();
 };

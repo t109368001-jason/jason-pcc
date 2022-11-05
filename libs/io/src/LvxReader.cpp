@@ -114,7 +114,7 @@ void LvxReader::load_(const size_t datasetIndex, const size_t startFrameNumber, 
   if (ret == livox_ros::kLvxFileAtEnd) { this->eof_[datasetIndex] = true; }
 
   if (ret == livox_ros::kLvxFileAtEnd) {
-    for (size_t i = 0; i < finishVector.size(); i++) { finishVector[i] = true; }
+    for (auto&& i : finishVector) { i = true; }
   } else {
     const int64_t minLastTimestamp = *min_element(lastTimestamps.begin(), lastTimestamps.end());
     for (size_t i = 0; i < finishVector.size(); i++) {

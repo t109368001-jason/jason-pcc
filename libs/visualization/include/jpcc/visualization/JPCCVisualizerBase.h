@@ -36,7 +36,7 @@ class JPCCVisualizerBase : public pcl::visualization::PCLVisualizer {
   std::vector<std::string>                                   parameterTexts_;
 
  public:
-  JPCCVisualizerBase(const VisualizerParameter& param);
+  JPCCVisualizerBase(const VisualizerParameter& param);  // NOLINT(google-explicit-constructor)
 
   void updateOrAddText(const std::string& text, int ypos, const std::string& id);
 

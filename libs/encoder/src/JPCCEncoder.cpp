@@ -3,11 +3,12 @@
 #include <execution>
 
 #include <boost/range/counting_range.hpp>
+#include <utility>
 
 namespace jpcc::encoder {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-JPCCEncoder::JPCCEncoder(JPCCEncoderParameter parameter) : parameter_(parameter) {}
+JPCCEncoder::JPCCEncoder(JPCCEncoderParameter parameter) : parameter_(std::move(parameter)) {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 bool JPCCEncoder::isEncodeThreadSafe() { return false; }

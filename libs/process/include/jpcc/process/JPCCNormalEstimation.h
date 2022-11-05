@@ -14,7 +14,7 @@ class JPCCNormalEstimation {
   JPCCNormalEstimationParameter param_;
 
  public:
-  JPCCNormalEstimation(JPCCNormalEstimationParameter param);
+  JPCCNormalEstimation(JPCCNormalEstimationParameter param);  // NOLINT(google-explicit-constructor)
 
   void computeInPlace(FramePtr& frame) const;
 

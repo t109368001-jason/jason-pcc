@@ -38,10 +38,7 @@ void JPCCDecoderAdapter::set(JPCCHeader header) {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void JPCCDecoderAdapter::decode(std::istream&        is,
-                                IJPCCDecoderContext& context,
-                                const size_t         frameCount,
-                                const bool           parallel) {
+void JPCCDecoderAdapter::decode(std::istream& is, IJPCCDecoderContext& context, const size_t frameCount) {
   context.getDynamicReconstructFrames().resize(frameCount);
   if (staticDecoder_) { context.getStaticReconstructFrames().resize(frameCount); }
   if (staticAddedDecoder_ && staticRemovedDecoder_) {

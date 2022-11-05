@@ -36,6 +36,8 @@ class OctreeNBuf : public virtual OctreeNBufBase<BUFFER_SIZE, LeafContainerT, Br
   friend class pcl::octree::OctreeLeafNodeDepthFirstIterator<ThisT>;
   friend class pcl::octree::OctreeLeafNodeBreadthFirstIterator<ThisT>;
 
+  using uindex_t = typename Base::uindex_t;
+
   using BufferIndices      = std::array<int, BUFFER_SIZE>;
   using Filter1            = std::function<bool(const BufferPattern& bufferPattern)>;
   using Filter3            = std::function<bool(

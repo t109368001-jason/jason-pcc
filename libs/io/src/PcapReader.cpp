@@ -218,7 +218,7 @@ int PcapReader::parseDataPacket(void* const           pcap,
   const int64_t        timestamp = timestampUS / 1000;
   if (ret != 1) {
     if (ret <= 0) {
-      for (size_t i = 0; i < finishVector.size(); i++) { finishVector[i] = true; }
+      for (auto&& i : finishVector) { i = true; }
     }
     return ret;
   }

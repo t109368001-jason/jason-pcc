@@ -7,7 +7,7 @@ using namespace Eigen;
 
 namespace jpcc {
 
-ParameterOStream::ParameterOStream(ostream& out, string prefix) : prefix_(move(prefix)), out_(out) {}
+ParameterOStream::ParameterOStream(ostream& out, string prefix) : prefix_(std::move(prefix)), out_(out) {}
 
 void ParameterOStream::operator()(const vector<jpcc::shared_ptr<Matrix4f>>& matrixVector) {
   out_ << "[" << endl;

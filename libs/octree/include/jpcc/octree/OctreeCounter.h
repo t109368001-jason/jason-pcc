@@ -38,7 +38,7 @@ class OctreeCounter
       std::conditional_t<BUFFER_SIZE == 1, std::map<size_t, size_t>, std::map<size_t, std::array<size_t, BUFFER_SIZE>>>,
       void>;
 
-  OctreeCounter(double resolution);
+  OctreeCounter(double resolution);  // NOLINT(google-explicit-constructor)
 
   [[nodiscard]] CountMap getOccupancyCountToVoxelCount();
 };

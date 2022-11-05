@@ -59,7 +59,7 @@ bool ParameterParser::parse(int argc, char* argv[]) {
   }
 }
 
-void ParameterParser::parseConfigs(const variables_map& vmArg) {
+void ParameterParser::parseConfigs(const variables_map& vmArg) {  // NOLINT(misc-no-recursion)
   vector<string> configs;
   if (vmArg.count(ParserParameter::getConfigsOpt())) {
     auto cs = vmArg[ParserParameter::getConfigsOpt()].as<vector<string>>();

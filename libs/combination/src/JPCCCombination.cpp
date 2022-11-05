@@ -26,8 +26,8 @@ void JPCCCombination::combine(IJPCCCombinationContext& context, bool parallel) {
                                     context.getStaticReconstructFrames());
     _staticFrames = context.getStaticReconstructFrames();
   }
-  this->combineDynamicStatic(context.getDynamicReconstructFrames(), _staticFrames, context.getReconstructFrames(),
-                             parallel);
+  JPCCCombination::combineDynamicStatic(context.getDynamicReconstructFrames(), _staticFrames,
+                                        context.getReconstructFrames(), parallel);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -86,15 +86,15 @@ void JPCCCombination::combineDynamicStatic(const GroupOfFrame& dynamicFrames,
   FramePtr emptyFrame;
   if (!parallel) {
     for (size_t i = 0; i < dynamicFrames.size(); i++) {
-      this->combineDynamicStatic(dynamicFrames[i], !staticFrames.empty() ? staticFrames[i] : emptyFrame,
-                                 reconstructFrames[i]);
+      JPCCCombination::combineDynamicStatic(dynamicFrames[i], !staticFrames.empty() ? staticFrames[i] : emptyFrame,
+                                            reconstructFrames[i]);
     }
   } else {
     const auto range = boost::counting_range<size_t>(0, dynamicFrames.size());
     std::for_each(std::execution::par, range.begin(), range.end(),
                   [&](const size_t& i) {  //
-                    this->combineDynamicStatic(dynamicFrames[i], !staticFrames.empty() ? staticFrames[i] : emptyFrame,
-                                               reconstructFrames[i]);
+                    JPCCCombination::combineDynamicStatic(
+                        dynamicFrames[i], !staticFrames.empty() ? staticFrames[i] : emptyFrame, reconstructFrames[i]);
                   });
   }
 }

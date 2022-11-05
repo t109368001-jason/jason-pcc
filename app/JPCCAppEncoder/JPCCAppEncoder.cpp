@@ -140,7 +140,7 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
     }
     {  // decode
       ScopeStopwatch clock = metric.start("Decode", frameNumber);
-      decoder.decode(ifs, context, groupOfFramesSize, parameter.parallel);
+      decoder.decode(ifs, context, groupOfFramesSize);
     }
     {  // copy normal to Reconstruct
       ScopeStopwatch clock = metric.start("CopyNormalToReconstruct", frameNumber);

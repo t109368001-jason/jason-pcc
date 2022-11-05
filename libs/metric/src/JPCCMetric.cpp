@@ -55,32 +55,6 @@ void JPCCMetric::addPoints(const std::string& name, const GroupOfFrame& frames, 
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void JPCCMetric::addPointsAndBytes(const std::string&       name,
-                                   const FramePtr&          frame,
-                                   const std::vector<char>& encodedBytes) {
-  if (encodedBytes.empty()) { return; }
-  const auto& points = frame->getPointCount();
-  if (points == 0) { return; }
-  frameNumberSet_.insert(frame->getFrameNumber());
-  pointsNameSet_.insert(name);
-  pointsMapMap_[frame->getFrameNumber()][name] += points;
-  bytesNameSet_.insert(name);
-  bytesMapMap_[frame->getFrameNumber()][name] = encodedBytes.size();
-  std::cout << __FUNCTION__ << "() "
-            << "name=" << name << ", "
-            << "frameNumber=" << frame->getFrameNumber() << ", "
-            << "points=" << points << ", "
-            << "bytes=" << encodedBytes.size() << std::endl;
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-void JPCCMetric::addPointsAndBytes(const std::string&                    name,
-                                   const GroupOfFrame&                   frames,
-                                   const std::vector<std::vector<char>>& encodedFramesBytes) {
-  for (size_t i = 0; i < frames.size(); i++) { this->addPointsAndBytes(name, frames[i], encodedFramesBytes[i]); }
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
 void JPCCMetric::addBytes(const std::string& name, FrameNumber frameNumber, const uint64_t bytes) {
   if (bytes == 0) { return; }
   cout << __FUNCTION__ << "() "
@@ -159,13 +133,10 @@ void JPCCMetric::copyNormalToReconstruct(const FramePtr& frame, const FramePtr& 
   for (size_t i = 0; i < reconstructFrame->getPointCount(); i++) {
     auto&        point       = (*reconstructFrame)[i];
     Vec3<double> pointDouble = point;
-    auto&        normal      = reconstructFrame->getNormal(i);
     resultSet.init(&pointIdxKNNSearch[0], &pointKNNSquaredDistance[0]);
     bool ret = kdtree.index->findNeighbors(resultSet, &pointDouble[0], nanoflann::SearchParams(10));
     THROW_IF_NOT(ret);
-    normal.x() = frame->getNormal(pointIdxKNNSearch.front()).x();
-    normal.y() = frame->getNormal(pointIdxKNNSearch.front()).y();
-    normal.z() = frame->getNormal(pointIdxKNNSearch.front()).z();
+    reconstructFrame->setNormal(i, frame->getNormal(pointIdxKNNSearch.front()));
   }
 }
 
