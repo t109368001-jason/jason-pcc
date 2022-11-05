@@ -7,6 +7,82 @@ using namespace po;
 using namespace pcc;
 
 #define BACKEND_TYPE_OPT ".backendType"
+#define SRC_UNIT_LENGTH_OPT ".srcUnitLength"
+#define SRC_UNIT_OPT ".srcUnit"
+#define CODING_SCALE_OPT ".codingScale"
+#define SEQUENCE_SCALE_OPT ".sequenceScale"
+#define POSITION_QUANTIZATION_SCALE_OPT ".positionQuantizationScale"
+#define EXTERNAL_SCALE_OPT ".externalScale"
+#define GEOMETRY_AXIS_ORDER_OPT ".geometry_axis_order"
+#define AUTO_SEQ_BBOX_OPT ".autoSeqBbox"
+#define SEQ_ORIGIN_OPT ".seqOrigin"
+#define SEQ_SIZE_WHD_OPT ".seqSizeWhd"
+#define MERGE_DUPLICATED_POINTS_OPT ".mergeDuplicatedPoints"
+#define PARTITION_METHOD_OPT ".partitionMethod"
+#define PARTITION_OCTREE_DEPTH_OPT ".partitionOctreeDepth"
+#define SLICE_MAX_POINTS_OPT ".sliceMaxPoints"
+#define SLICE_MIN_POINTS_OPT ".sliceMinPoints"
+#define TILE_SIZE_OPT ".tileSize"
+#define CABAC_BYPASS_STREAM_ENABLED_FLAG_OPT ".cabac_bypass_stream_enabled_flag"
+#define ENTROPY_CONTINUATION_ENABLED_OPT ".entropyContinuationEnabled"
+#define ENFORCE_LEVEL_LIMITS_OPT ".enforceLevelLimits"
+#define GEOM_TREE_TYPE_OPT ".geomTreeType"
+#define QTBT_ENABLED_OPT ".qtbtEnabled"
+#define MAX_NUM_QTBT_BEFORE_OT_OPT ".maxNumQtBtBeforeOt"
+#define MIN_QTBT_SIZE_LOG2_OPT ".minQtbtSizeLog2"
+#define NUM_OCTREE_ENTROPY_STREAMS_OPT ".numOctreeEntropyStreams"
+#define BITWISE_OCCUPANCY_CODING_OPT ".bitwiseOccupancyCoding"
+#define NEIGHBOUR_AVAIL_BOUNDARY_LOG2_OPT ".neighbourAvailBoundaryLog2"
+#define INFERRED_DIRECT_CODING_MODE_OPT ".inferredDirectCodingMode"
+#define JOINT_TWO_POINT_IDCM_OPT ".jointTwoPointIdcm"
+#define ADJACENT_CHILD_CONTEXTUALIZATION_OPT ".adjacentChildContextualization"
+#define INTRA_PRED_MAX_NODE_SIZE_LOG2_OPT ".intra_pred_max_node_size_log2"
+#define PLANAR_ENABLED_OPT ".planarEnabled"
+#define PLANAR_MODE_THRESHOLD0_OPT ".planarModeThreshold0"
+#define PLANAR_MODE_THRESHOLD1_OPT ".planarModeThreshold1"
+#define PLANAR_MODE_THRESHOLD2_OPT ".planarModeThreshold2"
+#define PLANAR_MODE_IDCM_USE_OPT ".planarModeIdcmUse"
+#define TRISOUP_NODE_SIZE_LOG2_OPT ".trisoupNodeSizeLog2"
+#define TRISOUP_SAMPLING_VALUE_OPT ".trisoup_sampling_value"
+#define POSITION_QUANTISATION_ENABLED_OPT ".positionQuantisationEnabled"
+#define POSITION_QUANTISATION_METHOD_OPT ".positionQuantisationMethod"
+#define POSITION_QP_MULTIPLIER_LOG2 ".positionQpMultiplierLog2"
+#define POSITION_BASE_QP_OPT ".positionBaseQp"
+#define POSITION_IDCM_QP_OPT ".positionIdcmQp"
+#define POSITION_SLICE_QP_OFFSET_OPT ".positionSliceQpOffset"
+#define POSITION_QUANTISATION_OCTREE_SIZE_LOG2_OPT ".positionQuantisationOctreeSizeLog2"
+#define POSITION_QUANTISATION_OCTREE_DEPTH_OPT ".positionQuantisationOctreeDepth"
+#define POSITION_BASE_QP_FREQ_LOG2_OPT ".positionBaseQpFreqLog2"
+#define POSITION_SLICE_QP_FREQ_LOG2_OPT ".positionSliceQpFreqLog2"
+#define ANGULAR_ENABLED_OPT ".angularEnabled"
+#define LIDAR_HEAD_POSITION_OPT ".lidarHeadPosition"
+#define NUM_LASERS_OPT ".numLasers"
+#define LASERS_THETA_OPT ".lasersTheta"
+#define LASERS_Z_OPT ".lasersZ"
+#define LASERS_NUM_PHI_PER_TURN_OPT ".lasersNumPhiPerTurn"
+#define PLANAR_BUFFER_DISABLED_OPT ".planarBufferDisabled"
+#define PRED_GEOM_AZIMUTH_QUANTIZATION_OPT ".predGeomAzimuthQuantization"
+#define POSITION_AZIMUTH_SCALE_LOG2_OPT ".positionAzimuthScaleLog2"
+#define POSITION_AZIMUTH_SPEED_OPT ".positionAzimuthSpeed"
+#define POSITION_RADIUS_INV_SCALE_LOG2_OPT ".positionRadiusInvScaleLog2"
+#define PRED_GEOM_SORT_OPT ".predGeomSort"
+#define PRED_GEOM_AZIMUTH_SORT_PRECISION_OPT ".predGeomAzimuthSortPrecision"
+#define PRED_GEOM_TREE_PTS_MAX_OPT ".predGeomTreePtsMax"
+#define POINT_COUNT_METADATA_OPT ".pointCountMetadata"
+#define ATTR_SPHERICAL_MAX_LOG2_OPT ".attrSphericalMaxLog2"
+#define RECOLOUR_SEARCH_RANGE_OPT ".recolourSearchRange"
+#define RECOLOUR_NUM_NEIGHBOURS_FWD_OPT ".recolourNumNeighboursFwd"
+#define RECOLOUR_NUM_NEIGHBOURS_BWD_OPT ".recolourNumNeighboursBwd"
+#define RECOLOUR_USE_DIST_WEIGHTED_AVG_FWD_OPT ".recolourUseDistWeightedAvgFwd"
+#define RECOLOUR_USE_DIST_WEIGHTED_AVG_BWD_OPT ".recolourUseDistWeightedAvgBwd"
+#define RECOLOUR_SKIP_AVG_IF_IDENTICAL_SOURCE_POINT_PRESENT_FWD_OPT ".recolourSkipAvgIfIdenticalSourcePointPresentFwd"
+#define RECOLOUR_SKIP_AVG_IF_IDENTICAL_SOURCE_POINT_PRESENT_BWD_OPT ".recolourSkipAvgIfIdenticalSourcePointPresentBwd"
+#define RECOLOUR_DIST_OFFSET_FWD_OPT ".recolourDistOffsetFwd"
+#define RECOLOUR_DIST_OFFSET_BWD_OPT ".recolourDistOffsetBwd"
+#define RECOLOUR_MAX_GEOMETRY_DIST2_FWD_OPT ".recolourMaxGeometryDist2Fwd"
+#define RECOLOUR_MAX_GEOMETRY_DIST2_BWD_OPT ".recolourMaxGeometryDist2Bwd"
+#define RECOLOUR_MAX_ATTRIBUTE_DIST2_FWD_OPT ".recolourMaxAttributeDist2Fwd"
+#define RECOLOUR_MAX_ATTRIBUTE_DIST2_BWD_OPT ".recolourMaxAttributeDist2Bwd"
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 JPCCEncoderTMC3Parameter::JPCCEncoderTMC3Parameter() :
@@ -16,239 +92,241 @@ JPCCEncoderTMC3Parameter::JPCCEncoderTMC3Parameter() :
 JPCCEncoderTMC3Parameter::JPCCEncoderTMC3Parameter(const string& prefix, const string& caption) :
     Parameter(prefix, caption), EncoderParams() {
   setDefault();
-  opts_.add_options()                                                                                //
-      (string(prefix_ + ".srcUnitLength").c_str(), value<double>(&this->srcUnitLength),              //
-       "Length of source point cloud x,y,z unit vectors in srcUnits")                                //
-      (string(prefix_ + ".srcUnit").c_str(), value<ScaleUnit>(&this->sps.seq_geom_scale_unit_flag),  //
+  opts_.add_options()                                                                                  //
+      (string(prefix_ + SRC_UNIT_LENGTH_OPT).c_str(), value<double>(&this->srcUnitLength),             //
+       "Length of source point cloud x,y,z unit vectors in srcUnits")                                  //
+      (string(prefix_ + SRC_UNIT_OPT).c_str(), value<ScaleUnit>(&this->sps.seq_geom_scale_unit_flag),  //
        " 0: dimensionless\n"
-       " 1: metres")                                                                    //
-      (string(prefix_ + ".codingScale").c_str(), value<double>(&this->codedGeomScale),  //
-       "Scale used to represent coded geometry. Relative to inputScale")                //
-      (string(prefix_ + ".sequenceScale").c_str(), value<double>(&this->seqGeomScale),  //
-       "Scale used to obtain sequence coordinate system. Relative to inputScale")       //
+       " 1: metres")                                                                      //
+      (string(prefix_ + CODING_SCALE_OPT).c_str(), value<double>(&this->codedGeomScale),  //
+       "Scale used to represent coded geometry. Relative to inputScale")                  //
+      (string(prefix_ + SEQUENCE_SCALE_OPT).c_str(), value<double>(&this->seqGeomScale),  //
+       "Scale used to obtain sequence coordinate system. Relative to inputScale")         //
       // Alias for compatibility with old name.
-      (string(prefix_ + ".positionQuantizationScale").c_str(),                     //
-       value<double>(&this->seqGeomScale),                                         //
-       "(deprecated)")                                                             //
-      (string(prefix_ + ".externalScale").c_str(),                                 //
-       value<double>(&this->extGeomScale),                                         //
-       "Scale used to define external coordinate system.\n"                        //
-       "Meaningless when srcUnit = metres\n"                                       //
-       "  0: Use srcUnitLength\n"                                                  //
-       " >0: Relative to inputScale")                                              //
-      (string(prefix_ + ".geometry_axis_order").c_str(),                           //
-       value<AxisOrder>(&this->sps.geometry_axis_order),                           //
-       "Sets the geometry axis coding order:\n"                                    //
-       "  0: (zyx)\n  1: (xyz)\n  2: (xzy)\n"                                      //
-       "  3: (yzx)\n  4: (zyx)\n  5: (zxy)\n"                                      //
-       "  6: (yxz)\n  7: (xyz)")                                                   //
-      (string(prefix_ + ".autoSeqBbox").c_str(), value<bool>(&this->autoSeqBbox),  //
-       "Calculate seqOrigin and seqSizeWhd automatically.")                        //
+      (string(prefix_ + POSITION_QUANTIZATION_SCALE_OPT).c_str(),                     //
+       value<double>(&this->seqGeomScale),                                            //
+       "(deprecated)")                                                                //
+      (string(prefix_ + EXTERNAL_SCALE_OPT).c_str(),                                  //
+       value<double>(&this->extGeomScale),                                            //
+       "Scale used to define external coordinate system.\n"                           //
+       "Meaningless when srcUnit = metres\n"                                          //
+       "  0: Use srcUnitLength\n"                                                     //
+       " >0: Relative to inputScale")                                                 //
+      (string(prefix_ + GEOMETRY_AXIS_ORDER_OPT).c_str(),                             //
+       value<AxisOrder>(&this->sps.geometry_axis_order),                              //
+       "Sets the geometry axis coding order:\n"                                       //
+       "  0: (zyx)\n  1: (xyz)\n  2: (xzy)\n"                                         //
+       "  3: (yzx)\n  4: (zyx)\n  5: (zxy)\n"                                         //
+       "  6: (yxz)\n  7: (xyz)")                                                      //
+      (string(prefix_ + AUTO_SEQ_BBOX_OPT).c_str(), value<bool>(&this->autoSeqBbox),  //
+       "Calculate seqOrigin and seqSizeWhd automatically.")                           //
       // NB: the underlying variable is in STV order.
       //     Conversion happens during argument sanitization.
-      (string(prefix_ + ".seqOrigin").c_str(), value<Vec3<int>>(&this->sps.seqBoundingBoxOrigin),           //
+      (string(prefix_ + SEQ_ORIGIN_OPT).c_str(), value<Vec3<int>>(&this->sps.seqBoundingBoxOrigin),         //
        "Origin (x,y,z) of the sequence bounding box (in input coordinate system). Requires autoSeqBbox=0")  //
       // NB: the underlying variable is in STV order.
       //     Conversion happens during argument sanitization.
-      (string(prefix_ + ".seqSizeWhd").c_str(), value<Vec3<int>>(&this->sps.seqBoundingBoxSize),  //
-       "Size of the sequence bounding box (in input coordinate system). Requires autoSeqBbox=0")  //
-      (string(prefix_ + ".mergeDuplicatedPoints").c_str(),                                        //
-       value<bool>(&this->gps.geom_unique_points_flag),                                           //
-       "Enables removal of duplicated points")                                                    //
-      (string(prefix_ + ".partitionMethod").c_str(),                                              //
-       value<PartitionMethod>(&this->partition.method),                                           //
-       "Method used to partition input point cloud into slices/tiles:\n"                          //
-       "  0: none\n"                                                                              //
-       "  2: n Uniform-geometry partition bins along the longest edge\n"                          //
-       "  3: Uniform geometry partition at n octree depth\n"                                      //
-       "  4: Uniform square partition\n"                                                          //
-       "  5: n-point spans of input")                                                             //
-      (string(prefix_ + ".partitionOctreeDepth").c_str(),                                         //
-       value<int>(&this->partition.octreeDepth),                                                  //
-       "Depth of octree partition for partitionMethod=4")                                         //
-      (string(prefix_ + ".sliceMaxPoints").c_str(), value<int>(&this->partition.sliceMaxPoints),  //
-       "Maximum number of points per slice")                                                      //
-      (string(prefix_ + ".sliceMinPoints").c_str(), value<int>(&this->partition.sliceMinPoints),  //
-       "Minimum number of points per slice (soft limit)")                                         //
-      (string(prefix_ + ".tileSize").c_str(), value<int>(&this->partition.tileSize),              //
-       "Partition input into cubic tiles of given size")                                          //
-      (string(prefix_ + ".cabac_bypass_stream_enabled_flag").c_str(),                             //
-       value<bool>(&this->sps.cabac_bypass_stream_enabled_flag),                                  //
-       "Controls coding method for ep(bypass) bins")                                              //
-      (string(prefix_ + ".entropyContinuationEnabled").c_str(),                                   //
-       value<bool>(&this->sps.entropy_continuation_enabled_flag),                                 //
-       "Propagate context state between slices")                                                  //
-      (string(prefix_ + ".enforceLevelLimits").c_str(), value<bool>(&this->enforceLevelLimits),   //
-       "Abort if level limits exceeded")                                                          //
-      (string(prefix_ + ".geomTreeType").c_str(), value<bool>(&this->gps.predgeom_enabled_flag),  //
-       "Selects the tree coding method:\n"                                                        //
-       "  0: octree\n"                                                                            //
-       "  1: predictive")                                                                         //
-      (string(prefix_ + ".qtbtEnabled").c_str(), value<bool>(&this->gps.qtbt_enabled_flag),       //
-       "Enables non-cubic geometry bounding box")                                                 //
-      (string(prefix_ + ".maxNumQtBtBeforeOt").c_str(),                                           //
-       value<int>(&this->geom.qtbt.maxNumQtBtBeforeOt),                                           //
-       "Max number of qtbt partitions before ot")                                                 //
-      (string(prefix_ + ".minQtbtSizeLog2").c_str(),                                              //
-       value<int>(&this->geom.qtbt.minQtbtSizeLog2),                                              //
-       "Minimum size of qtbt partitions")                                                         //
-      (string(prefix_ + ".numOctreeEntropyStreams").c_str(),                                      //
-                                                              // NB: this is adjusted by minus 1 after the arguments
-                                                              // are parsed
+      (string(prefix_ + SEQ_SIZE_WHD_OPT).c_str(), value<Vec3<int>>(&this->sps.seqBoundingBoxSize),  //
+       "Size of the sequence bounding box (in input coordinate system). Requires autoSeqBbox=0")     //
+      (string(prefix_ + MERGE_DUPLICATED_POINTS_OPT).c_str(),                                        //
+       value<bool>(&this->gps.geom_unique_points_flag),                                              //
+       "Enables removal of duplicated points")                                                       //
+      (string(prefix_ + PARTITION_METHOD_OPT).c_str(),                                               //
+       value<PartitionMethod>(&this->partition.method),                                              //
+       "Method used to partition input point cloud into slices/tiles:\n"                             //
+       "  0: none\n"                                                                                 //
+       "  2: n Uniform-geometry partition bins along the longest edge\n"                             //
+       "  3: Uniform geometry partition at n octree depth\n"                                         //
+       "  4: Uniform square partition\n"                                                             //
+       "  5: n-point spans of input")                                                                //
+      (string(prefix_ + PARTITION_OCTREE_DEPTH_OPT).c_str(),                                         //
+       value<int>(&this->partition.octreeDepth),                                                     //
+       "Depth of octree partition for partitionMethod=4")                                            //
+      (string(prefix_ + SLICE_MAX_POINTS_OPT).c_str(), value<int>(&this->partition.sliceMaxPoints),  //
+       "Maximum number of points per slice")                                                         //
+      (string(prefix_ + SLICE_MIN_POINTS_OPT).c_str(), value<int>(&this->partition.sliceMinPoints),  //
+       "Minimum number of points per slice (soft limit)")                                            //
+      (string(prefix_ + TILE_SIZE_OPT).c_str(), value<int>(&this->partition.tileSize),               //
+       "Partition input into cubic tiles of given size")                                             //
+      (string(prefix_ + CABAC_BYPASS_STREAM_ENABLED_FLAG_OPT).c_str(),                               //
+       value<bool>(&this->sps.cabac_bypass_stream_enabled_flag),                                     //
+       "Controls coding method for ep(bypass) bins")                                                 //
+      (string(prefix_ + ENTROPY_CONTINUATION_ENABLED_OPT).c_str(),                                   //
+       value<bool>(&this->sps.entropy_continuation_enabled_flag),                                    //
+       "Propagate context state between slices")                                                     //
+      (string(prefix_ + ENFORCE_LEVEL_LIMITS_OPT).c_str(), value<bool>(&this->enforceLevelLimits),   //
+       "Abort if level limits exceeded")                                                             //
+      (string(prefix_ + GEOM_TREE_TYPE_OPT).c_str(), value<bool>(&this->gps.predgeom_enabled_flag),  //
+       "Selects the tree coding method:\n"                                                           //
+       "  0: octree\n"                                                                               //
+       "  1: predictive")                                                                            //
+      (string(prefix_ + QTBT_ENABLED_OPT).c_str(), value<bool>(&this->gps.qtbt_enabled_flag),        //
+       "Enables non-cubic geometry bounding box")                                                    //
+      (string(prefix_ + MAX_NUM_QTBT_BEFORE_OT_OPT).c_str(),                                         //
+       value<int>(&this->geom.qtbt.maxNumQtBtBeforeOt),                                              //
+       "Max number of qtbt partitions before ot")                                                    //
+      (string(prefix_ + MIN_QTBT_SIZE_LOG2_OPT).c_str(),                                             //
+       value<int>(&this->geom.qtbt.minQtbtSizeLog2),                                                 //
+       "Minimum size of qtbt partitions")                                                            //
+      (string(prefix_ + NUM_OCTREE_ENTROPY_STREAMS_OPT).c_str(),                                     //
+                                                                  // NB: this is adjusted by minus 1 after the arguments
+                                                                  // are parsed
        value<int>(&this->gbh.geom_stream_cnt_minus1),              //
        "Number of entropy streams for octree coding")              //
-      (string(prefix_ + ".bitwiseOccupancyCoding").c_str(),        //
+      (string(prefix_ + BITWISE_OCCUPANCY_CODING_OPT).c_str(),     //
        value<bool>(&this->gps.bitwise_occupancy_coding_flag),      //
        "Selects between bitwise and bytewise occupancy coding:\n"  //
        "  0: bytewise\n"                                           //
        "  1: bitwise")                                             //
-      (string(prefix_ + ".neighbourAvailBoundaryLog2").c_str(),
+      (string(prefix_ + NEIGHBOUR_AVAIL_BOUNDARY_LOG2_OPT).c_str(),
        // NB: this is adjusted by minus 1 after the
        // arguments are parsed
        value<int>(&this->gps.neighbour_avail_boundary_log2_minus1),          //
        "Defines the avaliability volume for neighbour occupancy lookups:\n"  //
        "<2: Limited to sibling nodes only")                                  //
-      (string(prefix_ + ".inferredDirectCodingMode").c_str(),                //
+      (string(prefix_ + INFERRED_DIRECT_CODING_MODE_OPT).c_str(),            //
        value<int>(&this->gps.inferred_direct_coding_mode),                   //
        "Early termination of the geometry octree for isolated points:"       //
        " 0: disabled\n"                                                      //
        " 1: fully constrained\n"                                             //
        " 2: partially constrained\n"                                         //
        " 3: unconstrained (fastest)")                                        //
-      (string(prefix_ + ".jointTwoPointIdcm").c_str(),                       //
+      (string(prefix_ + JOINT_TWO_POINT_IDCM_OPT).c_str(),                   //
        value<bool>(&this->gps.joint_2pt_idcm_enabled_flag),                  //
        "Jointly code common prefix of two IDCM points")                      //
-      (string(prefix_ + ".adjacentChildContextualization").c_str(),
+      (string(prefix_ + ADJACENT_CHILD_CONTEXTUALIZATION_OPT).c_str(),
        value<bool>(&this->gps.adjacent_child_contextualization_enabled_flag),  //
        "Occupancy contextualization using neighbouring adjacent children")     //
-      (string(prefix_ + ".intra_pred_max_node_size_log2").c_str(),
+      (string(prefix_ + INTRA_PRED_MAX_NODE_SIZE_LOG2_OPT).c_str(),
        value<int>(&this->gps.intra_pred_max_node_size_log2),                                                        //
        "octree nodesizes eligible for occupancy intra prediction")                                                  //
-      (string(prefix_ + ".planarEnabled").c_str(), value<bool>(&this->gps.geom_planar_mode_enabled_flag),           //
+      (string(prefix_ + PLANAR_ENABLED_OPT).c_str(), value<bool>(&this->gps.geom_planar_mode_enabled_flag),         //
        "Use planar mode for geometry coding")                                                                       //
-      (string(prefix_ + ".planarModeThreshold0").c_str(), value<int>(&this->gps.geom_planar_threshold0),            //
+      (string(prefix_ + PLANAR_MODE_THRESHOLD0_OPT).c_str(), value<int>(&this->gps.geom_planar_threshold0),         //
        "Activation threshold (0-127) of first planar mode. Lower values imply more use of the first planar mode")   //
-      (string(prefix_ + ".planarModeThreshold1").c_str(),                                                           //
+      (string(prefix_ + PLANAR_MODE_THRESHOLD1_OPT).c_str(),                                                        //
        value<int>(&this->gps.geom_planar_threshold1),                                                               //
        "Activation threshold (0-127) of second planar mode. Lower values imply more use of the first planar mode")  //
-      (string(prefix_ + ".planarModeThreshold2").c_str(),                                                           //
+      (string(prefix_ + PLANAR_MODE_THRESHOLD2_OPT).c_str(),                                                        //
        value<int>(&this->gps.geom_planar_threshold2),                                                               //
        "Activation threshold (0-127) of third planar mode. Lower values imply more use of the third planar mode")   //
-      (string(prefix_ + ".planarModeIdcmUse").c_str(),                                                              //
-                                                        // NB: this is adjusted by minus1 after the arguments are parsed
-       value<int>(&this->gps.geom_idcm_rate_minus1),                                 //
+      (string(prefix_ + PLANAR_MODE_IDCM_USE_OPT)
+           .c_str(),                                  //
+                                                      // NB: this is adjusted by minus1 after the arguments are parsed
+       value<int>(&this->gps.geom_idcm_rate_minus1),  //
        "Degree (1/32%) of IDCM activation when planar mode is enabled\n"             //
        "  0 => never, 32 => always")                                                 //
-      (string(prefix_ + ".trisoupNodeSizeLog2").c_str(),                             //
+      (string(prefix_ + TRISOUP_NODE_SIZE_LOG2_OPT).c_str(),                         //
        value<vector<int>>(&this->trisoupNodeSizesLog2),                              //
        "Node size for surface triangulation\n"                                       //
        " <2: disabled")                                                              //
-      (string(prefix_ + ".trisoup_sampling_value").c_str(),                          //
+      (string(prefix_ + TRISOUP_SAMPLING_VALUE_OPT).c_str(),                         //
        value<int>(&this->gps.trisoup_sampling_value),                                //
        "Trisoup voxelisation sampling rate\n"                                        //
        "  0: automatic")                                                             //
-      (string(prefix_ + ".positionQuantisationEnabled").c_str(),                     //
+      (string(prefix_ + POSITION_QUANTISATION_ENABLED_OPT).c_str(),                  //
        value<bool>(&this->gps.geom_scaling_enabled_flag),                            //
        "Enable in-loop quantisation of positions")                                   //
-      (string(prefix_ + ".positionQuantisationMethod").c_str(),                      //
+      (string(prefix_ + POSITION_QUANTISATION_METHOD_OPT).c_str(),                   //
        value<OctreeEncOpts::QpMethod>(&this->geom.qpMethod),                         //
        "Method used to determine per-node QP:\n"                                     //
        "  0: uniform\n"                                                              //
        "  1: random\n"                                                               //
        "  2: by node point density")                                                 //
-      (string(prefix_ + ".positionQpMultiplierLog2").c_str(),                        //
+      (string(prefix_ + POSITION_QP_MULTIPLIER_LOG2).c_str(),                        //
        value<int>(&this->gps.geom_qp_multiplier_log2),                               //
        "Granularity of QP to step size mapping:\n"                                   //
        "  n: 2^n QPs per doubling interval, n in 0..3")                              //
-      (string(prefix_ + ".positionBaseQp").c_str(),                                  //
+      (string(prefix_ + POSITION_BASE_QP_OPT).c_str(),                               //
        value<int>(&this->gps.geom_base_qp),                                          //
        "Base QP used in position quantisation (0 = lossless)")                       //
-      (string(prefix_ + ".positionIdcmQp").c_str(), value<int>(&this->idcmQp),       //
+      (string(prefix_ + POSITION_IDCM_QP_OPT).c_str(), value<int>(&this->idcmQp),    //
        "QP used in position quantisation of IDCM nodes")                             //
-      (string(prefix_ + ".positionSliceQpOffset").c_str(),                           //
+      (string(prefix_ + POSITION_SLICE_QP_OFFSET_OPT).c_str(),                       //
        value<int>(&this->gbh.geom_slice_qp_offset),                                  //
        "Per-slice QP offset used in position quantisation")                          //
-      (string(prefix_ + ".positionQuantisationOctreeSizeLog2").c_str(),              //
+      (string(prefix_ + POSITION_QUANTISATION_OCTREE_SIZE_LOG2_OPT).c_str(),         //
        value<int>(&this->geom.qpOffsetNodeSizeLog2),                                 //
        "Octree node size used for signalling position QP offsets (-1 => disabled)")  //
-      (string(prefix_ + ".positionQuantisationOctreeDepth").c_str(),                 //
+      (string(prefix_ + POSITION_QUANTISATION_OCTREE_DEPTH_OPT).c_str(),             //
        value<int>(&this->geom.qpOffsetDepth),                                        //
        "Octree depth used for signalling position QP offsets (-1 => disabled)")      //
-      (string(prefix_ + ".positionBaseQpFreqLog2").c_str(),                          //
+      (string(prefix_ + POSITION_BASE_QP_FREQ_LOG2_OPT).c_str(),                     //
        value<int>(&this->gps.geom_qp_offset_intvl_log2),                             //
        "Frequency of sending QP offsets in predictive geometry coding")              //
       // NB: this will be corrected to be relative to base value later
-      (string(prefix_ + ".positionSliceQpFreqLog2").c_str(), value<int>(&this->gbh.geom_qp_offset_intvl_log2_delta),  //
-       "Frequency of sending QP offsets in predictive geometry coding")                                               //
-      (string(prefix_ + ".angularEnabled").c_str(), value<bool>(&this->gps.geom_angular_mode_enabled_flag),           //
-       "Controls angular contextualisation of occupancy")                                                             //
+      (string(prefix_ + POSITION_SLICE_QP_FREQ_LOG2_OPT).c_str(),
+       value<int>(&this->gbh.geom_qp_offset_intvl_log2_delta),                                                 //
+       "Frequency of sending QP offsets in predictive geometry coding")                                        //
+      (string(prefix_ + ANGULAR_ENABLED_OPT).c_str(), value<bool>(&this->gps.geom_angular_mode_enabled_flag),  //
+       "Controls angular contextualisation of occupancy")                                                      //
       // NB: the underlying variable is in STV order.
       //     Conversion happens during argument sanitization.
-      (string(prefix_ + ".lidarHeadPosition").c_str(), value<Vec3<int>>(&this->gps.gpsAngularOrigin),          //
-       "laser head position (x,y,z) in angular mode")                                                          //
-      (string(prefix_ + ".numLasers").c_str(), value<int>(&this->numLasers),                                   //
-       "Number of lasers in angular mode")                                                                     //
-      (string(prefix_ + ".lasersTheta").c_str(), value<vector<double>>(&this->lasersTheta),                    //
-       "Vertical laser angle in angular mode")                                                                 //
-      (string(prefix_ + ".lasersZ").c_str(), value<vector<double>>(&this->lasersZ),                            //
-       "Vertical laser offset in angular mode")                                                                //
-      (string(prefix_ + ".lasersNumPhiPerTurn").c_str(), value<vector<int>>(&this->gps.angularNumPhiPerTurn),  //
-       "Number of sampling poisitions in a complete laser turn in angular mode")                               //
-      (string(prefix_ + ".planarBufferDisabled").c_str(),                                                      //
-       value<bool>(&this->gps.planar_buffer_disabled_flag),                                                    //
-       "Disable planar buffer (when angular mode is enabled)")                                                 //
-      (string(prefix_ + ".predGeomAzimuthQuantization").c_str(),                                               //
-       value<bool>(&this->gps.azimuth_scaling_enabled_flag),                                                   //
-       "Quantize azimuth according to radius in predictive geometry coding")                                   //
-      (string(prefix_ + ".positionAzimuthScaleLog2").c_str(),                                                  //
-       value<int>(&this->gps.geom_angular_azimuth_scale_log2_minus11),                                         //
-       "Additional bits to represent azimuth angle in predictive geometry coding")                             //
+      (string(prefix_ + LIDAR_HEAD_POSITION_OPT).c_str(), value<Vec3<int>>(&this->gps.gpsAngularOrigin),            //
+       "laser head position (x,y,z) in angular mode")                                                               //
+      (string(prefix_ + NUM_LASERS_OPT).c_str(), value<int>(&this->numLasers),                                      //
+       "Number of lasers in angular mode")                                                                          //
+      (string(prefix_ + LASERS_THETA_OPT).c_str(), value<vector<double>>(&this->lasersTheta),                       //
+       "Vertical laser angle in angular mode")                                                                      //
+      (string(prefix_ + LASERS_Z_OPT).c_str(), value<vector<double>>(&this->lasersZ),                               //
+       "Vertical laser offset in angular mode")                                                                     //
+      (string(prefix_ + LASERS_NUM_PHI_PER_TURN_OPT).c_str(), value<vector<int>>(&this->gps.angularNumPhiPerTurn),  //
+       "Number of sampling poisitions in a complete laser turn in angular mode")                                    //
+      (string(prefix_ + PLANAR_BUFFER_DISABLED_OPT).c_str(),                                                        //
+       value<bool>(&this->gps.planar_buffer_disabled_flag),                                                         //
+       "Disable planar buffer (when angular mode is enabled)")                                                      //
+      (string(prefix_ + PRED_GEOM_AZIMUTH_QUANTIZATION_OPT).c_str(),                                                //
+       value<bool>(&this->gps.azimuth_scaling_enabled_flag),                                                        //
+       "Quantize azimuth according to radius in predictive geometry coding")                                        //
+      (string(prefix_ + POSITION_AZIMUTH_SCALE_LOG2_OPT).c_str(),                                                   //
+       value<int>(&this->gps.geom_angular_azimuth_scale_log2_minus11),                                              //
+       "Additional bits to represent azimuth angle in predictive geometry coding")                                  //
       // NB: this will be corrected to be minus 1 later
-      (string(prefix_ + ".positionAzimuthSpeed").c_str(),                                                        //
-       value<int>(&this->gps.geom_angular_azimuth_speed_minus1),                                                 //
-       "Scale factor applied to azimuth angle in predictive geometry coding")                                    //
-      (string(prefix_ + ".positionRadiusInvScaleLog2").c_str(),                                                  //
-       value<int>(&this->gps.geom_angular_radius_inv_scale_log2),                                                //
-       "Inverse scale factor applied to radius in predictive geometry coding")                                   //
-      (string(prefix_ + ".predGeomSort").c_str(), value<PredGeomEncOpts::SortMode>(&this->predGeom.sortMode),    //
-       "Predictive geometry tree construction order")                                                            //
-      (string(prefix_ + ".predGeomAzimuthSortPrecision").c_str(),                                                //
-       value<float>(&this->predGeom.azimuthSortRecipBinWidth),                                                   //
-       "Reciprocal precision used in azimuthal sorting for tree construction")                                   //
-      (string(prefix_ + ".predGeomTreePtsMax").c_str(), value<int>(&this->predGeom.maxPtsPerTree),               //
-       "Maximum number of points per predictive geometry tree")                                                  //
-      (string(prefix_ + ".pointCountMetadata").c_str(),                                                          //
-       value<bool>(&this->gps.octree_point_count_list_present_flag),                                             //
-       "Add octree layer point count metadata")                                                                  //
-      (string(prefix_ + ".attrSphericalMaxLog2").c_str(), value<int>(&this->attrSphericalMaxLog2),               //
-       "Override spherical coordinate normalisation factor")                                                     //
-      (string(prefix_ + ".recolourSearchRange").c_str(), value<int>(&this->recolour.searchRange), "")            //
-      (string(prefix_ + ".recolourNumNeighboursFwd").c_str(), value<int>(&this->recolour.numNeighboursFwd), "")  //
-      (string(prefix_ + ".recolourNumNeighboursBwd").c_str(), value<int>(&this->recolour.numNeighboursBwd), "")  //
-      (string(prefix_ + ".recolourUseDistWeightedAvgFwd").c_str(),                                               //
-       value<bool>(&this->recolour.useDistWeightedAvgFwd),                                                       //
-       "")                                                                                                       //
-      (string(prefix_ + ".recolourUseDistWeightedAvgBwd").c_str(),                                               //
-       value<bool>(&this->recolour.useDistWeightedAvgBwd),                                                       //
-       "")                                                                                                       //
-      (string(prefix_ + ".recolourSkipAvgIfIdenticalSourcePointPresentFwd").c_str(),                             //
-       value<bool>(&this->recolour.skipAvgIfIdenticalSourcePointPresentFwd), "")                                 //
-      (string(prefix_ + ".recolourSkipAvgIfIdenticalSourcePointPresentBwd").c_str(),                             //
-       value<bool>(&this->recolour.skipAvgIfIdenticalSourcePointPresentBwd), "")                                 //
-      (string(prefix_ + ".recolourDistOffsetFwd").c_str(), value<double>(&this->recolour.distOffsetFwd), "")     //
-      (string(prefix_ + ".recolourDistOffsetBwd").c_str(), value<double>(&this->recolour.distOffsetBwd), "")     //
-      (string(prefix_ + ".recolourMaxGeometryDist2Fwd").c_str(),                                                 //
-       value<double>(&this->recolour.maxGeometryDist2Fwd),                                                       //
-       "")                                                                                                       //
-      (string(prefix_ + ".recolourMaxGeometryDist2Bwd").c_str(),                                                 //
-       value<double>(&this->recolour.maxGeometryDist2Bwd),                                                       //
-       "")                                                                                                       //
-      (string(prefix_ + ".recolourMaxAttributeDist2Fwd").c_str(),                                                //
-       value<double>(&this->recolour.maxAttributeDist2Fwd),                                                      //
-       "")                                                                                                       //
-      (string(prefix_ + ".recolourMaxAttributeDist2Bwd").c_str(),                                                //
-       value<double>(&this->recolour.maxAttributeDist2Bwd),                                                      //
-       "")                                                                                                       //
+      (string(prefix_ + POSITION_AZIMUTH_SPEED_OPT).c_str(),                                                         //
+       value<int>(&this->gps.geom_angular_azimuth_speed_minus1),                                                     //
+       "Scale factor applied to azimuth angle in predictive geometry coding")                                        //
+      (string(prefix_ + POSITION_RADIUS_INV_SCALE_LOG2_OPT).c_str(),                                                 //
+       value<int>(&this->gps.geom_angular_radius_inv_scale_log2),                                                    //
+       "Inverse scale factor applied to radius in predictive geometry coding")                                       //
+      (string(prefix_ + PRED_GEOM_SORT_OPT).c_str(), value<PredGeomEncOpts::SortMode>(&this->predGeom.sortMode),     //
+       "Predictive geometry tree construction order")                                                                //
+      (string(prefix_ + PRED_GEOM_AZIMUTH_SORT_PRECISION_OPT).c_str(),                                               //
+       value<float>(&this->predGeom.azimuthSortRecipBinWidth),                                                       //
+       "Reciprocal precision used in azimuthal sorting for tree construction")                                       //
+      (string(prefix_ + PRED_GEOM_TREE_PTS_MAX_OPT).c_str(), value<int>(&this->predGeom.maxPtsPerTree),              //
+       "Maximum number of points per predictive geometry tree")                                                      //
+      (string(prefix_ + POINT_COUNT_METADATA_OPT).c_str(),                                                           //
+       value<bool>(&this->gps.octree_point_count_list_present_flag),                                                 //
+       "Add octree layer point count metadata")                                                                      //
+      (string(prefix_ + ATTR_SPHERICAL_MAX_LOG2_OPT).c_str(), value<int>(&this->attrSphericalMaxLog2),               //
+       "Override spherical coordinate normalisation factor")                                                         //
+      (string(prefix_ + RECOLOUR_SEARCH_RANGE_OPT).c_str(), value<int>(&this->recolour.searchRange), "")             //
+      (string(prefix_ + RECOLOUR_NUM_NEIGHBOURS_FWD_OPT).c_str(), value<int>(&this->recolour.numNeighboursFwd), "")  //
+      (string(prefix_ + RECOLOUR_NUM_NEIGHBOURS_BWD_OPT).c_str(), value<int>(&this->recolour.numNeighboursBwd), "")  //
+      (string(prefix_ + RECOLOUR_USE_DIST_WEIGHTED_AVG_FWD_OPT).c_str(),                                             //
+       value<bool>(&this->recolour.useDistWeightedAvgFwd),                                                           //
+       "")                                                                                                           //
+      (string(prefix_ + RECOLOUR_USE_DIST_WEIGHTED_AVG_BWD_OPT).c_str(),                                             //
+       value<bool>(&this->recolour.useDistWeightedAvgBwd),                                                           //
+       "")                                                                                                           //
+      (string(prefix_ + RECOLOUR_SKIP_AVG_IF_IDENTICAL_SOURCE_POINT_PRESENT_FWD_OPT).c_str(),                        //
+       value<bool>(&this->recolour.skipAvgIfIdenticalSourcePointPresentFwd), "")                                     //
+      (string(prefix_ + RECOLOUR_SKIP_AVG_IF_IDENTICAL_SOURCE_POINT_PRESENT_BWD_OPT).c_str(),                        //
+       value<bool>(&this->recolour.skipAvgIfIdenticalSourcePointPresentBwd), "")                                     //
+      (string(prefix_ + RECOLOUR_DIST_OFFSET_FWD_OPT).c_str(), value<double>(&this->recolour.distOffsetFwd), "")     //
+      (string(prefix_ + RECOLOUR_DIST_OFFSET_BWD_OPT).c_str(), value<double>(&this->recolour.distOffsetBwd), "")     //
+      (string(prefix_ + RECOLOUR_MAX_GEOMETRY_DIST2_FWD_OPT).c_str(),                                                //
+       value<double>(&this->recolour.maxGeometryDist2Fwd),                                                           //
+       "")                                                                                                           //
+      (string(prefix_ + RECOLOUR_MAX_GEOMETRY_DIST2_BWD_OPT).c_str(),                                                //
+       value<double>(&this->recolour.maxGeometryDist2Bwd),                                                           //
+       "")                                                                                                           //
+      (string(prefix_ + RECOLOUR_MAX_ATTRIBUTE_DIST2_FWD_OPT).c_str(),                                               //
+       value<double>(&this->recolour.maxAttributeDist2Fwd),                                                          //
+       "")                                                                                                           //
+      (string(prefix_ + RECOLOUR_MAX_ATTRIBUTE_DIST2_BWD_OPT).c_str(),                                               //
+       value<double>(&this->recolour.maxAttributeDist2Bwd),                                                          //
+       "")                                                                                                           //
       ;
 }
 
@@ -336,7 +414,85 @@ void JPCCEncoderTMC3Parameter::notify() {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 ostream& operator<<(ostream& out, const JPCCEncoderTMC3Parameter& obj) {
-  obj.coutParameters(out)  //
+  obj.coutParameters(out)                                                                            //
+      (SRC_UNIT_LENGTH_OPT, obj.srcUnitLength)                                                       //
+      (SRC_UNIT_OPT, obj.sps.seq_geom_scale_unit_flag)                                               //
+      (CODING_SCALE_OPT, obj.codedGeomScale)                                                         //
+      (SEQUENCE_SCALE_OPT, obj.seqGeomScale)                                                         //
+      (POSITION_QUANTIZATION_SCALE_OPT, obj.seqGeomScale)                                            //
+      (EXTERNAL_SCALE_OPT, obj.extGeomScale)                                                         //
+      (GEOMETRY_AXIS_ORDER_OPT, obj.sps.geometry_axis_order)                                         //
+      (AUTO_SEQ_BBOX_OPT, obj.autoSeqBbox)                                                           //
+      (SEQ_ORIGIN_OPT, obj.sps.seqBoundingBoxOrigin)                                                 //
+      (SEQ_SIZE_WHD_OPT, obj.sps.seqBoundingBoxSize)                                                 //
+      (MERGE_DUPLICATED_POINTS_OPT, obj.gps.geom_unique_points_flag)                                 //
+      (PARTITION_METHOD_OPT, obj.partition.method)                                                   //
+      (PARTITION_OCTREE_DEPTH_OPT, obj.partition.octreeDepth)                                        //
+      (SLICE_MAX_POINTS_OPT, obj.partition.sliceMaxPoints)                                           //
+      (SLICE_MIN_POINTS_OPT, obj.partition.sliceMinPoints)                                           //
+      (TILE_SIZE_OPT, obj.partition.tileSize)                                                        //
+      (CABAC_BYPASS_STREAM_ENABLED_FLAG_OPT, obj.sps.cabac_bypass_stream_enabled_flag)               //
+      (ENTROPY_CONTINUATION_ENABLED_OPT, obj.sps.entropy_continuation_enabled_flag)                  //
+      (ENFORCE_LEVEL_LIMITS_OPT, obj.enforceLevelLimits)                                             //
+      (GEOM_TREE_TYPE_OPT, obj.gps.predgeom_enabled_flag)                                            //
+      (QTBT_ENABLED_OPT, obj.gps.qtbt_enabled_flag)                                                  //
+      (MAX_NUM_QTBT_BEFORE_OT_OPT, obj.geom.qtbt.maxNumQtBtBeforeOt)                                 //
+      (MIN_QTBT_SIZE_LOG2_OPT, obj.geom.qtbt.minQtbtSizeLog2)                                        //
+      (NUM_OCTREE_ENTROPY_STREAMS_OPT, obj.gbh.geom_stream_cnt_minus1)                               //
+      (BITWISE_OCCUPANCY_CODING_OPT, obj.gps.bitwise_occupancy_coding_flag)                          //
+      (NEIGHBOUR_AVAIL_BOUNDARY_LOG2_OPT, obj.gps.neighbour_avail_boundary_log2_minus1)              //
+      (INFERRED_DIRECT_CODING_MODE_OPT, obj.gps.inferred_direct_coding_mode)                         //
+      (JOINT_TWO_POINT_IDCM_OPT, obj.gps.joint_2pt_idcm_enabled_flag)                                //
+      (ADJACENT_CHILD_CONTEXTUALIZATION_OPT, obj.gps.adjacent_child_contextualization_enabled_flag)  //
+      (INTRA_PRED_MAX_NODE_SIZE_LOG2_OPT, obj.gps.intra_pred_max_node_size_log2)                     //
+      (PLANAR_ENABLED_OPT, obj.gps.geom_planar_mode_enabled_flag)                                    //
+      (PLANAR_MODE_THRESHOLD0_OPT, obj.gps.geom_planar_threshold0)                                   //
+      (PLANAR_MODE_THRESHOLD1_OPT, obj.gps.geom_planar_threshold1)                                   //
+      (PLANAR_MODE_THRESHOLD2_OPT, obj.gps.geom_planar_threshold2)                                   //
+      (PLANAR_MODE_IDCM_USE_OPT, obj.gps.geom_idcm_rate_minus1)                                      //
+      (TRISOUP_NODE_SIZE_LOG2_OPT, obj.trisoupNodeSizesLog2)                                         //
+      (TRISOUP_SAMPLING_VALUE_OPT, obj.gps.trisoup_sampling_value)                                   //
+      (POSITION_QUANTISATION_ENABLED_OPT, obj.gps.geom_scaling_enabled_flag)                         //
+      (POSITION_QUANTISATION_METHOD_OPT, obj.geom.qpMethod)                                          //
+      (POSITION_QP_MULTIPLIER_LOG2, obj.gps.geom_qp_multiplier_log2)                                 //
+      (POSITION_BASE_QP_OPT, obj.gps.geom_base_qp)                                                   //
+      (POSITION_IDCM_QP_OPT, obj.idcmQp)                                                             //
+      (POSITION_SLICE_QP_OFFSET_OPT, obj.gbh.geom_slice_qp_offset)                                   //
+      (POSITION_QUANTISATION_OCTREE_SIZE_LOG2_OPT, obj.geom.qpOffsetNodeSizeLog2)                    //
+      (POSITION_QUANTISATION_OCTREE_DEPTH_OPT, obj.geom.qpOffsetDepth)                               //
+      (POSITION_BASE_QP_FREQ_LOG2_OPT, obj.gps.geom_qp_offset_intvl_log2)                            //
+      (POSITION_SLICE_QP_FREQ_LOG2_OPT, obj.gbh.geom_qp_offset_intvl_log2_delta)                     //
+      (ANGULAR_ENABLED_OPT, obj.gps.geom_angular_mode_enabled_flag)                                  //
+      (LIDAR_HEAD_POSITION_OPT, obj.gps.gpsAngularOrigin)                                            //
+      (NUM_LASERS_OPT, obj.numLasers)                                                                //
+      (LASERS_THETA_OPT, obj.lasersTheta)                                                            //
+      (LASERS_Z_OPT, obj.lasersZ)                                                                    //
+      (LASERS_NUM_PHI_PER_TURN_OPT, obj.gps.angularNumPhiPerTurn)                                    //
+      (PLANAR_BUFFER_DISABLED_OPT, obj.gps.planar_buffer_disabled_flag)                              //
+      (PRED_GEOM_AZIMUTH_QUANTIZATION_OPT, obj.gps.azimuth_scaling_enabled_flag)                     //
+      (POSITION_AZIMUTH_SCALE_LOG2_OPT, obj.gps.geom_angular_azimuth_scale_log2_minus11)             //
+      (POSITION_AZIMUTH_SPEED_OPT, obj.gps.geom_angular_azimuth_speed_minus1)                        //
+      (POSITION_RADIUS_INV_SCALE_LOG2_OPT, obj.gps.geom_angular_radius_inv_scale_log2)               //
+      (PRED_GEOM_SORT_OPT, obj.predGeom.sortMode)                                                    //
+      (PRED_GEOM_AZIMUTH_SORT_PRECISION_OPT, obj.predGeom.azimuthSortRecipBinWidth)                  //
+      (PRED_GEOM_TREE_PTS_MAX_OPT, obj.predGeom.maxPtsPerTree)                                       //
+      (POINT_COUNT_METADATA_OPT, obj.gps.octree_point_count_list_present_flag)                       //
+      (ATTR_SPHERICAL_MAX_LOG2_OPT, obj.attrSphericalMaxLog2)                                        //
+      (RECOLOUR_SEARCH_RANGE_OPT, obj.recolour.searchRange)                                          //
+      (RECOLOUR_NUM_NEIGHBOURS_FWD_OPT, obj.recolour.numNeighboursFwd)                               //
+      (RECOLOUR_NUM_NEIGHBOURS_BWD_OPT, obj.recolour.numNeighboursBwd)                               //
+      (RECOLOUR_USE_DIST_WEIGHTED_AVG_FWD_OPT, obj.recolour.useDistWeightedAvgFwd)                   //
+      (RECOLOUR_USE_DIST_WEIGHTED_AVG_BWD_OPT, obj.recolour.useDistWeightedAvgBwd)                   //
+      (RECOLOUR_SKIP_AVG_IF_IDENTICAL_SOURCE_POINT_PRESENT_FWD_OPT,
+       obj.recolour.skipAvgIfIdenticalSourcePointPresentFwd)  //
+      (RECOLOUR_SKIP_AVG_IF_IDENTICAL_SOURCE_POINT_PRESENT_BWD_OPT,
+       obj.recolour.skipAvgIfIdenticalSourcePointPresentBwd)                     //
+      (RECOLOUR_DIST_OFFSET_FWD_OPT, obj.recolour.distOffsetFwd)                 //
+      (RECOLOUR_DIST_OFFSET_BWD_OPT, obj.recolour.distOffsetBwd)                 //
+      (RECOLOUR_MAX_GEOMETRY_DIST2_FWD_OPT, obj.recolour.maxGeometryDist2Fwd)    //
+      (RECOLOUR_MAX_GEOMETRY_DIST2_BWD_OPT, obj.recolour.maxGeometryDist2Bwd)    //
+      (RECOLOUR_MAX_ATTRIBUTE_DIST2_FWD_OPT, obj.recolour.maxAttributeDist2Fwd)  //
+      (RECOLOUR_MAX_ATTRIBUTE_DIST2_BWD_OPT, obj.recolour.maxAttributeDist2Bwd)  //
       ;
   return out;
 }
