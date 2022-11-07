@@ -9,6 +9,8 @@
 
 namespace jpcc {
 
+using PointAnalyzer = pcl::PointXYZINormal;
+
 class Analyzer {
  public:
   using Ptr = shared_ptr<Analyzer>;
@@ -38,13 +40,13 @@ class Analyzer {
 
   void saveCloud();
 
-  virtual void compute(FrameConstPtr<pcl::PointXYZINormal> background,
-                       FrameConstPtr<pcl::PointXYZINormal> dynamic,
-                       FrameConstPtr<pcl::PointXYZINormal> other) = 0;
+  virtual void compute(PclFrameConstPtr<PointAnalyzer> background,
+                       PclFrameConstPtr<PointAnalyzer> dynamic,
+                       PclFrameConstPtr<PointAnalyzer> other) = 0;
 
   virtual void finalCompute() = 0;
 
-  virtual void getCloud(FramePtr<pcl::PointXYZINormal>& cloud) = 0;
+  virtual void getCloud(PclFramePtr<PointAnalyzer>& cloud) = 0;
 
   virtual void reset();
 };

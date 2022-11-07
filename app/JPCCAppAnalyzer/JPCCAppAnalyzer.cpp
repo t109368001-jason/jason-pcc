@@ -6,7 +6,6 @@
 #include <jpcc/common/Common.h>
 #include <jpcc/common/ParameterParser.h>
 #include <jpcc/io/Reader.h>
-#include <jpcc/process/JPCCConditionalRemoval.h>
 #include <jpcc/process/JPCCNormalEstimation.h>
 #include <jpcc/process/PreProcessor.h>
 #include <jpcc/process/Process.h>
@@ -35,49 +34,43 @@ using namespace jpcc::process;
 using namespace jpcc::octree;
 using namespace jpcc::visualization;
 
-using PointT = pcl::PointXYZINormal;
-
 void previewOnly(const AppParameter& parameter) {
-  typename JPCCVisualizer<PointT>::Ptr viewer =
-      jpcc::make_shared<JPCCVisualizer<PointT>>(parameter.visualizerParameter);
+  typename JPCCVisualizer<PointAnalyzer>::Ptr viewer =
+      jpcc::make_shared<JPCCVisualizer<PointAnalyzer>>(parameter.visualizerParameter);
   viewer->addParameter(parameter);
 
-  const typename DatasetReader<PointT>::Ptr          reader = newReader<PointT>(parameter.reader, parameter.dataset);
-  typename PreProcessor<PointT>::Ptr                 preProcessor;
-  typename JPCCNormalEstimation<PointT, PointT>::Ptr normalEstimation;
+  const typename DatasetReader::Ptr  reader = newReader(parameter.reader, parameter.dataset);
+  typename PreProcessor::Ptr         preProcessor;
+  typename JPCCNormalEstimation::Ptr normalEstimation;
 
   if (!parameter.dataset.preProcessed) {
-    preProcessor     = jpcc::make_shared<PreProcessor<PointT>>(parameter.preProcess);
-    normalEstimation = jpcc::make_shared<JPCCNormalEstimation<PointT, PointT>>(parameter.normalEstimation);
+    preProcessor     = jpcc::make_shared<PreProcessor>(parameter.preProcess);
+    normalEstimation = jpcc::make_shared<JPCCNormalEstimation>(parameter.normalEstimation);
   }
 
-  auto backgroundFilter = jpcc::make_shared<JPCCConditionalRemoval<PointT>>(parameter.background);
-  auto dynamicFilter    = jpcc::make_shared<JPCCConditionalRemoval<PointT>>(parameter.dynamic);
-
-  GroupOfFrame<PointT> frames;
-  auto                 background = jpcc::make_shared<Frame<PointT>>();
-  auto                 dynamic    = jpcc::make_shared<Frame<PointT>>();
+  GroupOfFrame frames;
+  auto         background = jpcc::make_shared<Frame>();
+  auto         dynamic    = jpcc::make_shared<Frame>();
   reader->loadAll(parameter.dataset.getStartFrameNumber(), 1, frames, parameter.parallel);
   if (!parameter.dataset.preProcessed) {
     preProcessor->process(frames, nullptr, parameter.parallel);
     normalEstimation->computeInPlaceAll(frames, parameter.parallel);
   }
   {
-    auto indices = jpcc::make_shared<Indices>();
-    backgroundFilter->setInputCloud(frames[0]);
-    backgroundFilter->filter(*indices);
-    split<PointT>(frames[0], indices, background, frames[0]);
+    Indices indices;
+    conditionalRemoval(*frames[0], parameter.background.condition, indices);
+    split(frames[0], indices, background, frames[0]);
   }
   {
-    auto indices = jpcc::make_shared<Indices>();
-    dynamicFilter->setInputCloud(frames[0]);
-    dynamicFilter->filter(*indices);
-    split<PointT>(frames[0], indices, dynamic, frames[0]);
+    Indices indices;
+    conditionalRemoval(*frames[0], parameter.dynamic.condition, indices);
+    split(frames[0], indices, dynamic, frames[0]);
   }
+
   viewer->enqueue({
-      {"cloud", frames},                                 //
-      {"background", GroupOfFrame<PointT>{background}},  //
-      {"dynamic", GroupOfFrame<PointT>{dynamic}},        //
+      {"cloud", GroupOfPclFrame<PointAnalyzer>{frames[0]->toPcl<PointAnalyzer>()}},        //
+      {"background", GroupOfPclFrame<PointAnalyzer>{background->toPcl<PointAnalyzer>()}},  //
+      {"dynamic", GroupOfPclFrame<PointAnalyzer>{dynamic->toPcl<PointAnalyzer>()}},        //
   });
   viewer->nextFrame();
   viewer->spin();
@@ -86,47 +79,44 @@ void previewOnly(const AppParameter& parameter) {
 void analyze(const AppParameter& parameter, Stopwatch& clock, const Analyzer::Ptr& analyzer) {
   cout << analyzer->getFilepath() << " start" << endl;
 
-  const typename DatasetReader<PointT>::Ptr          reader = newReader<PointT>(parameter.reader, parameter.dataset);
-  typename PreProcessor<PointT>::Ptr                 preProcessor;
-  typename JPCCNormalEstimation<PointT, PointT>::Ptr normalEstimation;
+  const typename DatasetReader::Ptr  reader = newReader(parameter.reader, parameter.dataset);
+  typename PreProcessor::Ptr         preProcessor;
+  typename JPCCNormalEstimation::Ptr normalEstimation;
 
   if (!parameter.dataset.preProcessed) {
-    preProcessor     = jpcc::make_shared<PreProcessor<PointT>>(parameter.preProcess);
-    normalEstimation = jpcc::make_shared<JPCCNormalEstimation<PointT, PointT>>(parameter.normalEstimation);
+    preProcessor     = jpcc::make_shared<PreProcessor>(parameter.preProcess);
+    normalEstimation = jpcc::make_shared<JPCCNormalEstimation>(parameter.normalEstimation);
   }
-
-  auto backgroundFilter = jpcc::make_shared<JPCCConditionalRemoval<PointT>>(parameter.background);
-  auto dynamicFilter    = jpcc::make_shared<JPCCConditionalRemoval<PointT>>(parameter.dynamic);
 
   size_t groupOfFramesSize = 32;
   size_t frameNumber       = parameter.dataset.getStartFrameNumber();
   size_t endFrameNumber    = parameter.dataset.getEndFrameNumber();
 
   while (frameNumber < endFrameNumber) {
-    GroupOfFrame<PointT> frames;
+    GroupOfFrame frames;
     reader->loadAll(frameNumber, groupOfFramesSize, frames, parameter.parallel);
     if (!parameter.dataset.preProcessed) {
       preProcessor->process(frames, nullptr, parameter.parallel);
       normalEstimation->computeInPlaceAll(frames, parameter.parallel);
     }
     for (auto& frame : frames) {
-      auto background = jpcc::make_shared<Frame<PointT>>();
-      auto dynamic    = jpcc::make_shared<Frame<PointT>>();
+      auto background = jpcc::make_shared<Frame>();
+      auto dynamic    = jpcc::make_shared<Frame>();
+
       {
-        auto indices = jpcc::make_shared<Indices>();
-        backgroundFilter->setInputCloud(frame);
-        backgroundFilter->filter(*indices);
-        split<PointT>(frame, indices, background, frame);
+        Indices indices;
+        conditionalRemoval(*frame, parameter.background.condition, indices);
+        split(frame, indices, background, frame);
       }
       {
-        auto indices = jpcc::make_shared<Indices>();
-        dynamicFilter->setInputCloud(frame);
-        dynamicFilter->filter(*indices);
-        split<PointT>(frame, indices, dynamic, frame);
+        Indices indices;
+        conditionalRemoval(*frame, parameter.dynamic.condition, indices);
+        split(frame, indices, dynamic, frame);
       }
 
       clock.start();
-      analyzer->compute(background, dynamic, frame);
+      analyzer->compute(background->toPcl<PointAnalyzer>(), dynamic->toPcl<PointAnalyzer>(),
+                        frame->toPcl<PointAnalyzer>());
       clock.stop();
     }
     frameNumber += groupOfFramesSize;

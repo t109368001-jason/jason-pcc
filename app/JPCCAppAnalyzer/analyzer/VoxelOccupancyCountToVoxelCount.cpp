@@ -17,20 +17,30 @@ VoxelOccupancyCountToVoxelCount::VoxelOccupancyCountToVoxelCount(const float&  f
     VoxelPointCountToVoxelCount(frequency, resolution, outputDir, "VoxelOccupancyCountToVoxelCount") {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void VoxelOccupancyCountToVoxelCount::compute(FrameConstPtr<pcl::PointXYZINormal> background,
-                                              FrameConstPtr<pcl::PointXYZINormal> dynamic,
-                                              FrameConstPtr<pcl::PointXYZINormal> other) {
-  auto quantizedBackground = jpcc::make_shared<Frame<pcl::PointXYZINormal>>();
-  auto quantizedDynamic    = jpcc::make_shared<Frame<pcl::PointXYZINormal>>();
-  auto quantizedOther      = jpcc::make_shared<Frame<pcl::PointXYZINormal>>();
+void VoxelOccupancyCountToVoxelCount::compute(PclFrameConstPtr<PointAnalyzer> background,
+                                              PclFrameConstPtr<PointAnalyzer> dynamic,
+                                              PclFrameConstPtr<PointAnalyzer> other) {
+  auto quantizedBackground = jpcc::make_shared<PclFrame<PointAnalyzer>>();
+  auto quantizedDynamic    = jpcc::make_shared<PclFrame<PointAnalyzer>>();
+  auto quantizedOther      = jpcc::make_shared<PclFrame<PointAnalyzer>>();
 
   pcl::copyPointCloud(*background, *quantizedBackground);
   pcl::copyPointCloud(*dynamic, *quantizedDynamic);
   pcl::copyPointCloud(*other, *quantizedOther);
 
-  process::quantize<pcl::PointXYZINormal>(quantizedBackground, resolution_);
-  process::quantize<pcl::PointXYZINormal>(quantizedDynamic, resolution_);
-  process::quantize<pcl::PointXYZINormal>(quantizedOther, resolution_);
+  auto _quantizedBackground = make_shared<Frame>();
+  auto _quantizedDynamic    = make_shared<Frame>();
+  auto _quantizedOther      = make_shared<Frame>();
+  _quantizedBackground->fromPcl<PointAnalyzer>(quantizedBackground);
+  _quantizedDynamic->fromPcl<PointAnalyzer>(quantizedDynamic);
+  _quantizedOther->fromPcl<PointAnalyzer>(quantizedOther);
+  process::quantize(_quantizedBackground, resolution_);
+  process::quantize(_quantizedDynamic, resolution_);
+  process::quantize(_quantizedOther, resolution_);
+
+  quantizedBackground = _quantizedBackground->toPcl<PointAnalyzer>();
+  quantizedDynamic    = _quantizedDynamic->toPcl<PointAnalyzer>();
+  quantizedOther      = _quantizedOther->toPcl<PointAnalyzer>();
 
   VoxelPointCountToVoxelCount::compute(quantizedBackground, quantizedDynamic, quantizedOther);
 }
@@ -52,11 +62,11 @@ void VoxelOccupancyCountToVoxelCount::finalCompute() {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void VoxelOccupancyCountToVoxelCount::getCloud(FramePtr<pcl::PointXYZINormal>& cloud) {
+void VoxelOccupancyCountToVoxelCount::getCloud(PclFramePtr<PointAnalyzer>& cloud) {
   double min_x_, min_y_, min_z_, max_x_, max_y_, max_z_;
   octree_.getBoundingBox(min_x_, min_y_, min_z_, max_x_, max_y_, max_z_);
 
-  cloud = jpcc::make_shared<Frame<pcl::PointXYZINormal>>();
+  cloud = jpcc::make_shared<PclFrame<PointAnalyzer>>();
   for (BufferIndex bufferIndex = 0; bufferIndex < BUFFER_SIZE; bufferIndex++) {
     octree_.switchBuffers(bufferIndex);
     for (auto it = octree_.leaf_depth_begin(), end = octree_.leaf_depth_end(); it != end; ++it) {

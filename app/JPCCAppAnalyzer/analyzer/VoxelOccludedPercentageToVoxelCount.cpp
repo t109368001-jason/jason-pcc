@@ -24,18 +24,18 @@ VoxelOccludedPercentageToVoxelCount::VoxelOccludedPercentageToVoxelCount(const f
     octree_(resolution) {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void VoxelOccludedPercentageToVoxelCount::compute(FrameConstPtr<pcl::PointXYZINormal> background,
-                                                  FrameConstPtr<pcl::PointXYZINormal> dynamic,
-                                                  FrameConstPtr<pcl::PointXYZINormal> other) {
+void VoxelOccludedPercentageToVoxelCount::compute(PclFrameConstPtr<PointAnalyzer> background,
+                                                  PclFrameConstPtr<PointAnalyzer> dynamic,
+                                                  PclFrameConstPtr<PointAnalyzer> other) {
   octree_.addFrame(0, background);
   octree_.addFrame(1, dynamic);
   octree_.addFrame(2, other);
   for (BufferIndex bufferIndex = 0; bufferIndex < BUFFER_SIZE; bufferIndex++) {
     octree_.switchBuffers(bufferIndex);
     for (auto it = octree_.leaf_depth_begin(), end = octree_.leaf_depth_end(); it != end; ++it) {
-      OctreeContainerOccludedCount<pcl::PointXYZINormal>& leafNode = it.getLeafContainer();
-      Eigen::Vector3f                                     min_pt;
-      Eigen::Vector3f                                     max_pt;
+      OctreeContainerOccludedCount<PointAnalyzer>& leafNode = it.getLeafContainer();
+      Eigen::Vector3f                              min_pt;
+      Eigen::Vector3f                              max_pt;
       octree_.getVoxelBounds(it, min_pt, max_pt);
       leafNode.compute(min_pt, max_pt, quantCount_);
     }
@@ -48,7 +48,7 @@ void VoxelOccludedPercentageToVoxelCount::finalCompute() {
   for (BufferIndex bufferIndex = 0; bufferIndex < BUFFER_SIZE; bufferIndex++) {
     octree_.switchBuffers(bufferIndex);
     for (auto it = octree_.leaf_depth_begin(), end = octree_.leaf_depth_end(); it != end; ++it) {
-      OctreeContainerOccludedCount<pcl::PointXYZINormal>& leafNode = it.getLeafContainer();
+      OctreeContainerOccludedCount<PointAnalyzer>& leafNode = it.getLeafContainer();
 
       int percentage = (int)leafNode.getMinimumOccludedPercentage(quantCount_);
 
@@ -71,11 +71,11 @@ void VoxelOccludedPercentageToVoxelCount::finalCompute() {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void VoxelOccludedPercentageToVoxelCount::getCloud(FramePtr<pcl::PointXYZINormal>& cloud) {
+void VoxelOccludedPercentageToVoxelCount::getCloud(PclFramePtr<PointAnalyzer>& cloud) {
   double min_x_, min_y_, min_z_, max_x_, max_y_, max_z_;
   octree_.getBoundingBox(min_x_, min_y_, min_z_, max_x_, max_y_, max_z_);
 
-  cloud = jpcc::make_shared<Frame<pcl::PointXYZINormal>>();
+  cloud = jpcc::make_shared<PclFrame<PointAnalyzer>>();
   for (BufferIndex bufferIndex = 0; bufferIndex < BUFFER_SIZE; bufferIndex++) {
     octree_.switchBuffers(bufferIndex);
     for (auto it = octree_.leaf_depth_begin(), end = octree_.leaf_depth_end(); it != end; ++it) {
@@ -86,7 +86,7 @@ void VoxelOccludedPercentageToVoxelCount::getCloud(FramePtr<pcl::PointXYZINormal
       auto z =
           static_cast<float>((static_cast<double>(it.getCurrentOctreeKey().z) + 0.5f) * this->resolution_ + min_z_);
 
-      OctreeContainerOccludedCount<pcl::PointXYZINormal>& leafNode = it.getLeafContainer();
+      OctreeContainerOccludedCount<PointAnalyzer>& leafNode = it.getLeafContainer();
 
       int percentage = (int)leafNode.getMinimumOccludedPercentage(quantCount_);
 
