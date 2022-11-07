@@ -206,12 +206,8 @@ void JPCCMetric::computePSNR(const FramePtr& frameA,
     // Compute point-to-plane, normals in B will be used for point-to-plane
     double distProjC2p;
     if (frameB->hasNormal()) {
-      auto& normalB = frameB->getNormal(pointIdxKNNSearch.front());
-
-      float errX  = float(pointA.x()) - float(pointB.x());
-      float errY  = float(pointA.y()) - float(pointB.y());
-      float errZ  = float(pointA.z()) - float(pointB.z());
-      distProjC2p = errX * normalB.x() + errY * normalB.y() + errZ * normalB.z();
+      PointType err = pointA - pointB;
+      distProjC2p   = err * frameB->getNormal(pointIdxKNNSearch.front());
       distProjC2p *= distProjC2p;
     } else {
       distProjC2p = distProjC2c;
