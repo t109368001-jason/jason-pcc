@@ -31,4 +31,8 @@ class PreProcessor {
   void applyAlgorithm(const std::string& algorithm, const FramePtr& frame, const FramePtr& removed = nullptr) const;
 };
 
+void conditionalRemoval(Frame& frame, const Condition& condition, Indices& indices);
+
+void conditionalRemoval(Frame& frame, const Condition& condition, Indices& indices, Indices& removedIndices);
+
 }  // namespace jpcc::process

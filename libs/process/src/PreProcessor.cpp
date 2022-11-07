@@ -73,13 +73,10 @@ void PreProcessor::applyAlgorithm(const std::string& algorithm, const FramePtr& 
       }
     }
   } else if (algorithm == JPCC_CONDITIONAL_REMOVAL_OPT_PREFIX) {
-    for (Index i = 0; i < frame->getPointCount(); i++) {
-      bool predict = param_.jpccConditionalRemovalParameter.condition.predict((*frame)[i]);
-      if (predict) {
-        indices.push_back(i);
-      } else {
-        removedIndices.push_back(i);
-      }
+    if (!removed) {
+      conditionalRemoval(*frame, param_.jpccConditionalRemovalParameter.condition, indices);
+    } else {
+      conditionalRemoval(*frame, param_.jpccConditionalRemovalParameter.condition, indices, removedIndices);
     }
   } else {
     BOOST_THROW_EXCEPTION(std::logic_error("not support algorithm: " + algorithm));
@@ -87,6 +84,26 @@ void PreProcessor::applyAlgorithm(const std::string& algorithm, const FramePtr& 
   auto _frame = jpcc::make_shared<Frame>();
   frame->subset(*_frame, indices);
   if (removed) { frame->subset(*removed, removedIndices); }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void conditionalRemoval(Frame& frame, const Condition& condition, Indices& indices) {
+  for (Index i = 0; i < frame.getPointCount(); i++) {
+    bool predict = condition.predict((frame)[i]);
+    if (predict) { indices.push_back(i); }
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void conditionalRemoval(Frame& frame, const Condition& condition, Indices& indices, Indices& removedIndices) {
+  for (Index i = 0; i < frame.getPointCount(); i++) {
+    bool predict = condition.predict((frame)[i]);
+    if (predict) {
+      indices.push_back(i);
+    } else {
+      removedIndices.push_back(i);
+    }
+  }
 }
 
 }  // namespace jpcc::process
