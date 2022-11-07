@@ -13,6 +13,6 @@ void loadPly(GroupOfFrame&      frames,
              size_t             endFrameNumber,
              bool               parallel = false);
 
-void savePly(const GroupOfFrame& frames, const std::string& filePath, size_t frameNumber, bool parallel = false);
+void savePly(const GroupOfFrame& frames, const std::string& filePath, const bool parallel);
 
 }  // namespace jpcc::io

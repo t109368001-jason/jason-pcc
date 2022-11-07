@@ -29,9 +29,10 @@ void loadPly(GroupOfFrame&      frames,
     char fileName[4096];
     sprintf(fileName, filePath.c_str(), frameNumber);
     if (exists(fileName)) {
-      auto& frame       = frames[frameNumber - startFrameNumber];
-      frame             = jpcc::make_shared<Frame>();
-      const bool result = pcc::ply::read(std::string(fileName), {"x", "y", "z"}, 1.0, *frame);
+      auto& frame             = frames[frameNumber - startFrameNumber];
+      frame                   = jpcc::make_shared<Frame>();
+      frame->getFrameNumber() = Index(frameNumber);
+      const bool result       = pcc::ply::read(std::string(fileName), {"x", "y", "z"}, 1.0, *frame);
       THROW_IF_NOT(result);
     }
   };
@@ -44,23 +45,23 @@ void loadPly(GroupOfFrame&      frames,
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void savePly(const GroupOfFrame& frames, const std::string& filePath, const size_t frameNumber, const bool parallel) {
-  auto func = [&](const FramePtr& frame, const size_t _frameNumber) {
+void savePly(const GroupOfFrame& frames, const std::string& filePath, const bool parallel) {
+  auto func = [&](const FramePtr& frame) {
     if (!frame || frame->getPointCount() == 0) { return; }
     char fileName[4096];
-    sprintf(fileName, filePath.c_str(), _frameNumber);
+    sprintf(fileName, filePath.c_str(), frame->getFrameNumber());
 
     const bool result = pcc::ply::write(*frame, {"x", "y", "z"}, 1.0, {0.0, 0.0, 0.0}, std::string(fileName), true);
     THROW_IF_NOT(result);
   };
 
   if (!parallel) {
-    for (size_t i = frameNumber; i < frames.size(); i++) { func(frames[i], i); }
+    for (const auto& frame : frames) { func(frame); }
   } else {
     const auto range = boost::counting_range<size_t>(0, frames.size());
     std::for_each(std::execution::par, range.begin(), range.end(),
                   [&](const size_t& i) {  //
-                    func(frames[i], i);
+                    func(frames[i]);
                   });
   }
 }
