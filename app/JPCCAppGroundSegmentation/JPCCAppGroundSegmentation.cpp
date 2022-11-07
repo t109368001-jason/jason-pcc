@@ -5,6 +5,7 @@
 
 #include <jpcc/common/ParameterParser.h>
 #include <jpcc/io/Reader.h>
+#include <jpcc/process/Process.h>
 #include <jpcc/process/PreProcessor.h>
 #include <jpcc/visualization/JPCCVisualizer.h>
 
@@ -38,39 +39,39 @@ void main_(const AppParameter& parameter, Stopwatch& clock) {
     viewer->setColor(cloudPlaneId, 1.0, 0.0, 1.0);
   }
 
-  const auto framesMap = jpcc::make_shared<GroupOfFrameMap<PointT>>();
+  GroupOfPclFrameMap<PointT> framesMap;
 
   {
-    const DatasetReader<PointT>::Ptr reader = newReader<PointT>(parameter.reader, parameter.dataset);
-    PreProcessor<PointT>             preProcessor(parameter.preProcess);
+    const DatasetReader::Ptr reader = newReader(parameter.reader, parameter.dataset);
+    PreProcessor             preProcessor(parameter.preProcess);
 
-    GroupOfFrame<PointT> frames;
+    GroupOfFrame frames;
     clock.start();
     reader->loadAll(parameter.dataset.getStartFrameNumber(), 1, frames, parameter.parallel);
     preProcessor.process(frames, nullptr, parameter.parallel);
     clock.stop();
 
-    auto modelPlane = jpcc::make_shared<pcl::SampleConsensusModelPlane<PointT>>(frames.front(), true);
-    auto indices    = jpcc::make_shared<Indices>();
+    auto modelPlane = jpcc::make_shared<pcl::SampleConsensusModelPlane<PointT>>(frames.front()->toPcl<PointT>(), true);
+    Indices                            indices;
     pcl::RandomSampleConsensus<PointT> ransac(modelPlane);
     ransac.setDistanceThreshold(parameter.distanceThreshold);
     ransac.computeModel();
-    ransac.getInliers(*indices);
+    ransac.getInliers(indices);
 
     cout << "RANSAC iteration=" << ransac.iterations_ << endl;
     cout << "RANSAC coefficients=" << endl << ransac.model_coefficients_ << endl << endl;
 
     if (!viewer) { return; }
 
-    auto framePlane = jpcc::make_shared<Frame<PointT>>();
-    auto frameOther = jpcc::make_shared<Frame<PointT>>();
+    auto framePlane = jpcc::make_shared<Frame>();
+    auto frameOther = jpcc::make_shared<Frame>();
 
-    process::split<PointT>(frames.front(), indices, framePlane, frameOther);
+    process::split(frames.front(), indices, framePlane, frameOther);
 
-    framesMap->insert_or_assign(cloudPlaneId, GroupOfFrame<PointT>{framePlane});
-    framesMap->insert_or_assign(cloudOtherId, GroupOfFrame<PointT>{frameOther});
+    framesMap.insert_or_assign(cloudPlaneId, GroupOfPclFrame<PointT>{framePlane->toPcl<PointT>()});
+    framesMap.insert_or_assign(cloudOtherId, GroupOfPclFrame<PointT>{frameOther->toPcl<PointT>()});
   }
-  viewer->enqueue(*framesMap);
+  viewer->enqueue(framesMap);
   viewer->nextFrame();
 
   while (!viewer->wasStopped()) {
