@@ -29,6 +29,7 @@ void JPCCPointSet3::subset(JPCCPointSet3& frame, const Indices& indices) {
     if (hasFrameIndex()) { frame.getFrameIndex(indexFrame) = this->getFrameIndex(index); }
     if (hasLaserAngles()) { frame.getLaserAngle(indexFrame) = this->getLaserAngle(index); }
     if (hasNormal()) { frame.getNormal(indexFrame) = this->getNormal(index); }
+    indexFrame++;
   }
 }
 
