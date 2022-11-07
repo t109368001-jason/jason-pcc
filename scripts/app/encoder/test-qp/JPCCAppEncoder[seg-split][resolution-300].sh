@@ -7,7 +7,6 @@ OUTPUT_FOLDER="encoded-$(date +%Y%m%d-%H)/ZX-XS-20220707[seg-split][resolution-3
 mkdir -p "${OUTPUT_FOLDER_PREFIX}${OUTPUT_FOLDER}"
 
 ./bin/JPCCAppEncoder \
-  --outputDataset.folder "${OUTPUT_FOLDER}" \
   --jpccGMMSegmentationParameter.outputType dynamic-staticAdded-staticRemoved \
   --jpccGMMSegmentationParameter.resolution 300.0 \
   --app.compressedStreamPath "${OUTPUT_FOLDER_PREFIX}${OUTPUT_FOLDER}output.bin" \

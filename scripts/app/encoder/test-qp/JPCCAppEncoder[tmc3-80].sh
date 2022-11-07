@@ -7,7 +7,6 @@ OUTPUT_FOLDER="encoded-$(date +%Y%m%d-%H)/ZX-XS-20220707[tmc3-80]/"
 mkdir -p "${OUTPUT_FOLDER_PREFIX}${OUTPUT_FOLDER}"
 
 ./bin/JPCCAppEncoder \
-  --outputDataset.folder "${OUTPUT_FOLDER}" \
   --jpccGMMSegmentationParameter.type none \
   --jpccEncoderDynamic.tmc3.positionQuantisationEnabled true \
   --jpccEncoderStatic.tmc3.positionQuantisationEnabled true \
