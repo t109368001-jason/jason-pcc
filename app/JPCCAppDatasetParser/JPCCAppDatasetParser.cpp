@@ -19,27 +19,29 @@ using namespace jpcc::process;
 
 template <typename PointT>
 void parse(const AppParameter& parameter, Stopwatch& clock) {
-  const typename DatasetReader<PointT>::Ptr reader = newReader<PointT>(parameter.inputReader, parameter.inputDataset);
-  PreProcessor<PointT>                      preProcessor(parameter.preProcess);
+  const typename DatasetReader::Ptr reader = newReader(parameter.inputReader, parameter.inputDataset);
+  PreProcessor                      preProcessor(parameter.preProcess);
 
-  GroupOfFrame<PointT> frames;
-  size_t               groupOfFramesSize = 32;
-  size_t               frameNumber       = parameter.inputDataset.getStartFrameNumber();
-  const size_t         endFrameNumber    = parameter.inputDataset.getEndFrameNumber();
+  GroupOfFrame frames;
+  size_t       frameNumber    = parameter.inputDataset.getStartFrameNumber();
+  const size_t endFrameNumber = parameter.inputDataset.getEndFrameNumber();
   while (frameNumber < endFrameNumber) {
-    size_t groupOfFramesSize_ = endFrameNumber - frameNumber;
-    if (groupOfFramesSize_ < groupOfFramesSize) { groupOfFramesSize = groupOfFramesSize_; }
-
+    size_t groupOfFramesSize = std::min(parameter.groupOfFramesSize, endFrameNumber - frameNumber);
     clock.start();
     reader->loadAll(frameNumber, groupOfFramesSize, frames, parameter.parallel);
+    if constexpr (!pcl::traits::has_intensity_v<PointT>) {
+      for (const auto& frame : frames) { frame->removeReflectances(); }
+    }
     preProcessor.process(frames, nullptr, parameter.parallel);
     if constexpr (pcl::traits::has_normal_v<PointT>) {
-      auto normalEstimation = jpcc::make_shared<JPCCNormalEstimation<PointT, PointT>>(parameter.jpccNormalEstimation);
+      auto normalEstimation = jpcc::make_shared<JPCCNormalEstimation>(parameter.jpccNormalEstimation);
       normalEstimation->computeInPlaceAll(frames, parameter.parallel);
+    } else {
+      for (const auto& frame : frames) { frame->removeNormal(); }
     }
     clock.stop();
 
-    savePly<PointT>(frames, parameter.outputDataset.getFilePath(), parameter.parallel);
+    savePly(frames, parameter.outputDataset.getFilePath(), 0);
 
     frameNumber += groupOfFramesSize;
   }
