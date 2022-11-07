@@ -57,9 +57,9 @@ void DatasetStreamReader::load(const size_t  datasetIndex,
           const auto z = static_cast<float>(tf(2, 0) * float(position.x()) + tf(2, 1) * float(position.y()) +
                                             tf(2, 2) * float(position.z()) + tf(2, 3));
 
-          position.x() = int32_t(x);
-          position.y() = int32_t(y);
-          position.z() = int32_t(z);
+          position.x() = PointValueType(x);
+          position.y() = PointValueType(y);
+          position.z() = PointValueType(z);
         }
       }
       frames[currentFrameNumber - startFrameNumber] = frameBuffer.front();

@@ -21,10 +21,10 @@ void JPCCEncoderNone::encode(const FramePtr& frame, std::vector<char>& encodedBy
   os.put(char(length >> 0));
 
   for (size_t i = 0; i < frame->getPointCount(); i++) {
-    Frame::PointType& point = (*frame)[i];
-    os.write(reinterpret_cast<char*>(&point.x()), sizeof(((Frame::PointType*)nullptr)->x()));
-    os.write(reinterpret_cast<char*>(&point.y()), sizeof(((Frame::PointType*)nullptr)->y()));
-    os.write(reinterpret_cast<char*>(&point.z()), sizeof(((Frame::PointType*)nullptr)->z()));
+    PointType& point = (*frame)[i];
+    os.write(reinterpret_cast<char*>(&point.x()), sizeof(PointValueType));
+    os.write(reinterpret_cast<char*>(&point.y()), sizeof(PointValueType));
+    os.write(reinterpret_cast<char*>(&point.z()), sizeof(PointValueType));
   }
 
 #if !defined(NDEBUG)
@@ -32,9 +32,7 @@ void JPCCEncoderNone::encode(const FramePtr& frame, std::vector<char>& encodedBy
 #endif
   std::string tmpString = os.str();
   for (char& i : tmpString) { encodedBytes.push_back(i); }
-  assert((frame->getPointCount() * (sizeof(((Frame::PointType*)0)->x()) + sizeof(((Frame::PointType*)0)->y()) +
-                                    sizeof(((Frame::PointType*)0)->z())) +
-          4) == (encodedBytes.size() - oldSize));
+  assert((frame->getPointCount() * (sizeof(PointValueType) * 3) + 4) == (encodedBytes.size() - oldSize));
 }
 
 }  // namespace jpcc::encoder

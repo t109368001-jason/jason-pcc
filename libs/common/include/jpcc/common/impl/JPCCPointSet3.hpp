@@ -45,7 +45,7 @@ void JPCCPointSet3::fromPcl(const PclFramePtr<PointT>& pclFrame) {
   if constexpr (pcl::traits::has_intensity_v<PointT>) { this->addReflectances(); }
   if constexpr (pcl::traits::has_normal_v<PointT>) { this->addNormal(); }
   for (int i = 0; i < this->getPointCount(); i++) {
-    (*this)[i] = pcc::PCCPointSet3::PointType((*pclFrame)[i].x, (*pclFrame)[i].y, (*pclFrame)[i].z);
+    (*this)[i] = PointType((*pclFrame)[i].x, (*pclFrame)[i].y, (*pclFrame)[i].z);
     if constexpr (pcl::traits::has_color_v<PointT>) {
       this->getColor(i).x() = pclFrame->points[i].r;
       this->getColor(i).y() = pclFrame->points[i].g;

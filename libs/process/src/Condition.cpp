@@ -85,7 +85,7 @@ Condition::Condition(const ConditionType& type, const vector<string>& conditions
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-bool Condition::predict(const Frame::PointType& point) const {  // NOLINT(misc-no-recursion)
+bool Condition::predict(const PointType& point) const {  // NOLINT(misc-no-recursion)
   switch (type) {
     case X:
     case Y:
@@ -105,7 +105,7 @@ bool Condition::predict(const Frame::PointType& point) const {  // NOLINT(misc-n
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-bool Condition::predictVector3fMap(const Frame::PointType& point) const {
+bool Condition::predictVector3fMap(const PointType& point) const {
   double val;
   switch (type) {
     case X: val = point.x(); break;

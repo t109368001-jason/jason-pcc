@@ -287,7 +287,7 @@ int PcapReader::parseDataPacket(void* const           pcap,
         }
 
         size_t ii = frameBuffer[index]->getPointCount();
-        (*frameBuffer[index]).addPoint(Frame::PointType{int32_t(x), int32_t(y), int32_t(z)});
+        (*frameBuffer[index]).addPoint(PointType{PointValueType(x), PointValueType(y), PointValueType(z)});
         if (frameBuffer[index]->hasReflectances()) { frameBuffer[index]->getReflectance(ii) = uint16_t(intensity); }
       }
     }

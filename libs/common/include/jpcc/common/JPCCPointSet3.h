@@ -8,11 +8,14 @@
 
 namespace jpcc {
 
+using PointValueType = decltype(((pcc::point_t*)nullptr)->x());
+using PointType      = pcc::PCCPointSet3::PointType;
+using NormalType     = pcc::Vec3<float>;
+
 class JPCCPointSet3 : public pcc::PCCPointSet3 {
  public:
-  using Ptr        = std::shared_ptr<JPCCPointSet3>;
-  using ConstPtr   = std::shared_ptr<const JPCCPointSet3>;
-  using NormalType = pcc::Vec3<float>;
+  using Ptr      = std::shared_ptr<JPCCPointSet3>;
+  using ConstPtr = std::shared_ptr<const JPCCPointSet3>;
 
  protected:
   Index                   frameNumber;

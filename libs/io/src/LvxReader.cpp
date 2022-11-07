@@ -104,9 +104,9 @@ void LvxReader::load_(const size_t datasetIndex, const size_t startFrameNumber, 
 
     size_t ii       = frameBuffer[index]->getPointCount() - 1;
     auto&  position = (*frameBuffer[index])[ii];
-    position[0]     = int32_t(x);
-    position[1]     = int32_t(y);
-    position[2]     = int32_t(z);
+    position[0]     = PointValueType(x);
+    position[1]     = PointValueType(y);
+    position[2]     = PointValueType(z);
     if (frameBuffer[index]->hasReflectances()) { frameBuffer[index]->getReflectance(ii) = uint16_t(reflectivity); }
     lastTimestamps[deviceIndex] = timestamp;
   });

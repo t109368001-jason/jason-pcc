@@ -194,26 +194,28 @@ void JPCCSegmentationOPCGMMCenter<LeafContainerT>::segmentationRecursive(const F
           PointT& point = leafContainer.getLastPoint();
           if (dynamicFrame && isDynamic) {
             assert(!std::isnan(point.x));
-            dynamicFrame->addPositionNormal(Frame::PointType{int32_t(point.x), int32_t(point.y), int32_t(point.z)},
-                                            Frame::NormalType{point.normal_x, point.normal_y, point.normal_z});
+            dynamicFrame->addPositionNormal(
+                PointType{PointValueType(point.x), PointValueType(point.y), PointValueType(point.z)},
+                NormalType{point.normal_x, point.normal_y, point.normal_z});
           }
 
           PointT center;
           this->genLeafNodeCenterFromOctreeKey(key, center);
 
           if (staticFrame && isStatic) {
-            staticFrame->addPositionNormal(Frame::PointType{int32_t(center.x), int32_t(center.y), int32_t(center.z)},
-                                           Frame::NormalType{point.normal_x, point.normal_y, point.normal_z});
+            staticFrame->addPositionNormal(
+                PointType{PointValueType(center.x), PointValueType(center.y), PointValueType(center.z)},
+                NormalType{point.normal_x, point.normal_y, point.normal_z});
           }
           if (staticAddedFrame && !lastIsStatic && isStatic) {
             staticAddedFrame->addPositionNormal(
-                Frame::PointType{int32_t(center.x), int32_t(center.y), int32_t(center.z)},
-                Frame::NormalType{point.normal_x, point.normal_y, point.normal_z});
+                PointType{PointValueType(center.x), PointValueType(center.y), PointValueType(center.z)},
+                NormalType{point.normal_x, point.normal_y, point.normal_z});
           }
           if (staticRemovedFrame && lastIsStatic && !isStatic) {
             staticRemovedFrame->addPositionNormal(
-                Frame::PointType{int32_t(center.x), int32_t(center.y), int32_t(center.z)},
-                Frame::NormalType{point.normal_x, point.normal_y, point.normal_z});
+                PointType{PointValueType(center.x), PointValueType(center.y), PointValueType(center.z)},
+                NormalType{point.normal_x, point.normal_y, point.normal_z});
           }
 
           leafContainer.setIsLastStatic(isStatic);

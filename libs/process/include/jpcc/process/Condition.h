@@ -27,10 +27,10 @@ class Condition {
 
   Condition(const ConditionType& type, const std::vector<std::string>& conditions);
 
-  [[nodiscard]] bool predict(const Frame::PointType& point) const;
+  [[nodiscard]] bool predict(const PointType& point) const;
 
  protected:
-  [[nodiscard]] bool predictVector3fMap(const Frame::PointType& point) const;
+  [[nodiscard]] bool predictVector3fMap(const PointType& point) const;
 
   [[nodiscard]] bool predictValue(double val) const;
 };

@@ -44,9 +44,7 @@ void JPCCMetric::addPoints(const std::string& name, const FramePtr& frame, bool 
             << "name=" << name << ", "
             << "frameNumber=" << frame->getFrameNumber() << ", "
             << "points=" << points << std::endl;
-  if (addBytes) {
-    this->addBytes(name, frame->getFrameNumber(), points * sizeof(((Frame::PointType*)nullptr)->x()) * 3);
-  }
+  if (addBytes) { this->addBytes(name, frame->getFrameNumber(), points * sizeof(PointValueType) * 3); }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
