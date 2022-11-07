@@ -31,6 +31,11 @@ class PreProcessor {
   void applyAlgorithm(const std::string& algorithm, const FramePtr& frame, const FramePtr& removed = nullptr) const;
 };
 
+void radiusOutlierRemoval(Frame& frame, float radius, int minNeighborsInRadius, Indices& indices);
+
+void radiusOutlierRemoval(
+    Frame& frame, float radius, int minNeighborsInRadius, Indices& indices, Indices& removedIndices);
+
 void conditionalRemoval(Frame& frame, const Condition& condition, Indices& indices);
 
 void conditionalRemoval(Frame& frame, const Condition& condition, Indices& indices, Indices& removedIndices);

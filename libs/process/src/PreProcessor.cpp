@@ -55,22 +55,12 @@ void PreProcessor::applyAlgorithm(const std::string& algorithm, const FramePtr& 
   indices.reserve(frame->getPointCount());
   removedIndices.reserve(frame->getPointCount());
   if (algorithm == RADIUS_OUTLIER_REMOVAL_OPT_PREFIX) {
-    std::vector<std::pair<Index, double> >    indicesDists;
-    nanoflann::RadiusResultSet<double, Index> resultSet(param_.radiusOutlierRemoval.radius, indicesDists);
-
-    KDTreeVectorOfVectorsAdaptor<Frame, double> kdtree(3, *frame, 10);
-
-    for (Index i = 0; i < frame->getPointCount(); i++) {
-      auto&             point       = (*frame)[i];
-      pcc::Vec3<double> pointDouble = point;
-      resultSet.init();
-      bool ret = kdtree.index->radiusSearchCustomCallback(&pointDouble[0], resultSet, nanoflann::SearchParams(10));
-      THROW_IF_NOT(ret);
-      if (indicesDists.size() >= param_.radiusOutlierRemoval.minNeighborsInRadius) {
-        indices.push_back(i);
-      } else {
-        removedIndices.push_back(i);
-      }
+    if (!removed) {
+      radiusOutlierRemoval(*frame, param_.radiusOutlierRemoval.radius, param_.radiusOutlierRemoval.minNeighborsInRadius,
+                           indices);
+    } else {
+      radiusOutlierRemoval(*frame, param_.radiusOutlierRemoval.radius, param_.radiusOutlierRemoval.minNeighborsInRadius,
+                           indices, removedIndices);
     }
   } else if (algorithm == JPCC_CONDITIONAL_REMOVAL_OPT_PREFIX) {
     if (!removed) {
@@ -84,6 +74,44 @@ void PreProcessor::applyAlgorithm(const std::string& algorithm, const FramePtr& 
   auto _frame = jpcc::make_shared<Frame>();
   frame->subset(*_frame, indices);
   if (removed) { frame->subset(*removed, removedIndices); }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void radiusOutlierRemoval(Frame& frame, const float radius, const int minNeighborsInRadius, Indices& indices) {
+  std::vector<std::pair<Index, double> >    indicesDists;
+  nanoflann::RadiusResultSet<double, Index> resultSet(radius, indicesDists);
+
+  KDTreeVectorOfVectorsAdaptor<Frame, double> kdtree(3, frame, 10);
+
+  for (Index i = 0; i < frame.getPointCount(); i++) {
+    auto&             point       = frame[i];
+    pcc::Vec3<double> pointDouble = point;
+    resultSet.init();
+    bool ret = kdtree.index->radiusSearchCustomCallback(&pointDouble[0], resultSet, nanoflann::SearchParams(10));
+    THROW_IF_NOT(ret);
+    if (indicesDists.size() >= minNeighborsInRadius) { indices.push_back(i); }
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void radiusOutlierRemoval(
+    Frame& frame, const float radius, const int minNeighborsInRadius, Indices& indices, Indices& removedIndices) {
+  std::vector<std::pair<Index, double> >    indicesDists;
+  nanoflann::RadiusResultSet<double, Index> resultSet(radius, indicesDists);
+
+  KDTreeVectorOfVectorsAdaptor<Frame, double> kdtree(3, frame, 10);
+
+  for (Index i = 0; i < frame.getPointCount(); i++) {
+    pcc::Vec3<double> pointDouble = frame[i];
+    resultSet.init();
+    bool ret = kdtree.index->radiusSearchCustomCallback(&pointDouble[0], resultSet, nanoflann::SearchParams(10));
+    THROW_IF_NOT(ret);
+    if (indicesDists.size() >= minNeighborsInRadius) {
+      indices.push_back(i);
+    } else {
+      removedIndices.push_back(i);
+    }
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
