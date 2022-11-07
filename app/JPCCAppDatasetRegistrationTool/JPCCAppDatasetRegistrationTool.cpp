@@ -34,8 +34,8 @@ void main_(const AppParameter& parameter, Stopwatch& clock) {
   viewer->setColor("2", 0.0, 1.0, 0.0);
   viewer->setColor("3", 0.0, 0.0, 1.0);
 
-  const DatasetReader<PointT>::Ptr reader = newReader<PointT>(parameter.reader, parameter.dataset);
-  PreProcessor<PointT>             preProcessor(parameter.preProcess);
+  const DatasetReader::Ptr reader = newReader(parameter.reader, parameter.dataset);
+  PreProcessor             preProcessor(parameter.preProcess);
 
   pcl::Registration<PointT, PointT>::Ptr registration;
 
@@ -49,83 +49,56 @@ void main_(const AppParameter& parameter, Stopwatch& clock) {
     registration = ndt;
   }
 
-  GroupOfFrame<PointT> frames0;
-  GroupOfFrame<PointT> frames1;
-  GroupOfFrame<PointT> frames2;
-  GroupOfFrame<PointT> frames3;
-  const auto           framesMap = jpcc::make_shared<GroupOfFrameMap<PointT>>();
-
-  size_t startFrameNumber0 = parameter.dataset.getStartFrameNumber();
-  size_t startFrameNumber1 = parameter.dataset.getStartFrameNumber();
-  size_t startFrameNumber2 = parameter.dataset.getStartFrameNumber();
-  size_t startFrameNumber3 = parameter.dataset.getStartFrameNumber();
+  GroupOfPclFrameMap<PointT>    pclFramesMap = {{"0", GroupOfPclFrame<PointT>{make_shared<PclFrame<PointT>>()}},
+                                                {"1", GroupOfPclFrame<PointT>{make_shared<PclFrame<PointT>>()}},
+                                                {"2", GroupOfPclFrame<PointT>{make_shared<PclFrame<PointT>>()}},
+                                                {"3", GroupOfPclFrame<PointT>{make_shared<PclFrame<PointT>>()}}};
+  std::map<std::string, size_t> startFrameNumberMap{{"0", parameter.dataset.getStartFrameNumber()},
+                                                    {"1", parameter.dataset.getStartFrameNumber()},
+                                                    {"2", parameter.dataset.getStartFrameNumber()},
+                                                    {"3", parameter.dataset.getStartFrameNumber()}};
 
   viewer->registerKeyboardEvent(
       [&](const pcl::visualization::KeyboardEvent& event) {
         if (!event.keyUp()) { return false; }
         if (event.getKeyCode() != ' ' && (event.getKeyCode() < '0' || event.getKeyCode() > '3')) { return false; }
-        if (event.getKeyCode() == '0' || event.getKeyCode() == ' ') {
-          cout << "0" << endl;
+        auto handleKey = [&](const uint8_t& keyCode) {
+          std::string id(1, (char)keyCode);
+          auto&       pclFrames        = pclFramesMap[id];
+          auto&       startFrameNumber = startFrameNumberMap[id];
+          cout << id << endl;
           clock.start();
-          reader->load(0, startFrameNumber0++, 1, frames0, parameter.parallel);
-          preProcessor.process(frames0, nullptr, parameter.parallel);
+          GroupOfFrame frames;
+          reader->load(keyCode - '0', startFrameNumber++, 1, frames, parameter.parallel);
+          preProcessor.process(frames, nullptr, parameter.parallel);
+          frames[0]->toPcl<PointT>(pclFrames[0]);
           clock.stop();
-          framesMap->insert_or_assign("0", frames0);
-          if (registration) { registration->setInputTarget(frames0[0]); }
-        }
-        if (event.getKeyCode() == '1' || event.getKeyCode() == ' ') {
-          cout << "1" << endl;
-          clock.start();
-          reader->load(1, startFrameNumber1++, 1, frames1, parameter.parallel);
-          preProcessor.process(frames1, nullptr, parameter.parallel);
-          clock.stop();
-          if (registration && framesMap->find("0") != framesMap->end()) {
-            auto frame = jpcc::make_shared<Frame<PointT>>();
+          if (registration) {
+            if (event.getKeyCode() == '0') {
+              registration->setInputTarget(pclFrames[0]);
+            } else {
+              auto frame = jpcc::make_shared<PclFrame<PointT>>();
 
-            registration->setInputSource(frames1[0]);
-            registration->align(*frame);
-            cout << registration->getFinalTransformation() << endl;
-            frames1[0] = frame;
+              registration->setInputSource(pclFrames[0]);
+              registration->align(*frame);
+              cout << registration->getFinalTransformation() << endl;
+              pclFrames[0] = frame;
+            }
           }
-          framesMap->insert_or_assign("1", frames1);
+        };
+        if (event.getKeyCode() >= '0' && event.getKeyCode() <= '3') {
+          handleKey(event.getKeyCode());
+        } else if (event.getKeyCode() == ' ') {
+          handleKey('0');
+          handleKey('1');
+          handleKey('2');
+          handleKey('3');
         }
-        if (event.getKeyCode() == '2' || event.getKeyCode() == ' ') {
-          cout << "2" << endl;
-          clock.start();
-          reader->load(2, startFrameNumber2++, 1, frames2, parameter.parallel);
-          preProcessor.process(frames2, nullptr, parameter.parallel);
-          clock.stop();
-          if (registration && framesMap->find("0") != framesMap->end()) {
-            auto frame = jpcc::make_shared<Frame<PointT>>();
-
-            registration->setInputSource(frames2[0]);
-            registration->align(*frame);
-            cout << registration->getFinalTransformation() << endl;
-            frames2[0] = frame;
-          }
-          framesMap->insert_or_assign("2", frames2);
-        }
-        if (event.getKeyCode() == '3' || event.getKeyCode() == ' ') {
-          cout << "3" << endl;
-          clock.start();
-          reader->load(3, startFrameNumber3++, 1, frames3, parameter.parallel);
-          preProcessor.process(frames3, nullptr, parameter.parallel);
-          clock.stop();
-          if (registration && framesMap->find("0") != framesMap->end()) {
-            auto frame = jpcc::make_shared<Frame<PointT>>();
-
-            registration->setInputSource(frames3[0]);
-            registration->align(*frame);
-            cout << registration->getFinalTransformation() << endl;
-            frames3[0] = frame;
-          }
-          framesMap->insert_or_assign("3", frames3);
-        }
-        cout << startFrameNumber0 << ", "  //
-             << startFrameNumber1 << ", "  //
-             << startFrameNumber2 << ", "  //
-             << startFrameNumber3 << endl;
-        viewer->enqueue(*framesMap);
+        cout << startFrameNumberMap["0"] << ", "  //
+             << startFrameNumberMap["1"] << ", "  //
+             << startFrameNumberMap["2"] << ", "  //
+             << startFrameNumberMap["3"] << endl;
+        viewer->enqueue(pclFramesMap);
         viewer->nextFrame();
         return true;
       },
