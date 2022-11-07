@@ -8,7 +8,7 @@
 
 namespace jpcc {
 
-using PointValueType = decltype(((pcc::point_t*)nullptr)->x());
+using PointValueType = int32_t;
 using PointType      = pcc::PCCPointSet3::PointType;
 using NormalType     = pcc::Vec3<float>;
 
