@@ -158,6 +158,18 @@ void JPCCVisualizer<PointT>::handleKeyboardEvent(const pcl::visualization::Keybo
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
+void JPCCVisualizer<PointT>::enqueue(const GroupOfFrameMap& framesMap) {
+  GroupOfPclFrameMap<PointT> pclFramesMap;
+  for (const auto& [id, frames] : framesMap) {
+    GroupOfPclFrame<PointT> pclFrames;
+    for (auto& frame : frames) { pclFrames.push_back(frame->template toPcl<PointT>()); }
+    pclFramesMap.insert_or_assign(id, pclFrames);
+  }
+  this->enqueue(pclFramesMap);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT>
 void JPCCVisualizer<PointT>::enqueue(const GroupOfPclFrameMap<PointT>& framesMap) {
   std::lock_guard<std::recursive_mutex> lock(mutex_);
   for (const auto& [id, frames] : framesMap) {

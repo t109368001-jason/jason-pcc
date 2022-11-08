@@ -3,9 +3,11 @@
 #include <thread>
 #include <vector>
 
+#include <jpcc/common/JPCCContext.h>
+#include <jpcc/combination/JPCCCombination.h>
 #include <jpcc/common/ParameterParser.h>
+#include <jpcc/decoder/JPCCDecoderAdapter.h>
 #include <jpcc/io/Reader.h>
-#include <jpcc/octree/JPCCOctreePointCloud.h>
 #include <jpcc/octree/OctreeContainerEditableIndex.h>
 #include <jpcc/process/PreProcessor.h>
 #include <jpcc/visualization/JPCCVisualizer.h>
@@ -16,6 +18,8 @@ using namespace std;
 using namespace std::chrono;
 using namespace pcc;
 using namespace jpcc;
+using namespace jpcc::combination;
+using namespace jpcc::decoder;
 using namespace jpcc::io;
 using namespace jpcc::octree;
 using namespace jpcc::process;
@@ -28,68 +32,51 @@ void main_(const AppParameter& parameter, Stopwatch& clock) {
 
   atomic_bool run(true);
   string      primaryId = "cloud";
-  string      staticId  = "static";
 
   viewer->addParameter(parameter);
   viewer->setPrimaryId(primaryId);
 
-  auto datasetLoading = [&] {
-    try {
-      const DatasetReader<PointT>::Ptr reader = newReader<PointT>(parameter.reader, parameter.dataset);
-      PreProcessor<PointT>             preProcessor(parameter.preProcess);
+  auto loadEncoded = [&parameter] {
+    cout << "loadEncoded" << endl;
+    JPCCDecoderAdapter decoder;
+    JPCCCombination    combination;
 
-      FramePtr<PointT>                                                staticFrame;
-      JPCCOctreePointCloud<PointT, OctreeContainerEditableIndex>::Ptr staticOctree;
-      GroupOfFrame<PointT>                                            frames;
-      const auto   framesMap         = jpcc::make_shared<GroupOfFrameMap<PointT>>();
+    std::ifstream ifs(parameter.compressedStreamPath, std::ios::binary | std::ios::in);
+    JPCCHeader    header{0};
+    {
+      readJPCCHeader(ifs, &header);
+      decoder.set(header);
+      combination.set(header);
+    }
+    JPCCContext context(header);
+    {  // decode
+      decoder.decode(ifs, context, parameter.groupOfFramesSize);
+    }
+    {  // Convert to pcl (combination)
+      context.convertToPclCombination(parameter.parallel);
+    }
+    {  // combination
+      combination.combine(context, parameter.parallel);
+    }
+  };
+
+  auto loadDataset = [&] {
+    cout << "loadDataset" << endl;
+    try {
+      const DatasetReader::Ptr reader = newReader(parameter.reader, parameter.dataset);
+      PreProcessor             preProcessor(parameter.preProcess);
+
+      GroupOfFrame frames;
+      const auto   framesMap         = jpcc::make_shared<GroupOfFrameMap>();
       const size_t groupOfFramesSize = parameter.groupOfFramesSize;
       size_t       startFrameNumber  = parameter.dataset.getStartFrameNumber();
       const size_t endFrameNumber    = parameter.dataset.getEndFrameNumber();
 
-      if (parameter.dataset.type == Type::PLY_SEG) {
-        staticFrame = jpcc::make_shared<Frame<PointT>>();
-        staticOctree =
-            jpcc::make_shared<JPCCOctreePointCloud<PointT, OctreeContainerEditableIndex>>(parameter.dataset.resolution);
-        staticOctree->setInputCloud(staticFrame);
-      }
-
       while (run && startFrameNumber < endFrameNumber) {
         clock.start();
-        if (parameter.dataset.type == Type::PLY_SEG) {
-          GroupOfFrame<PointT> staticFrames;
-          GroupOfFrame<PointT> staticAddedFrames;
-          GroupOfFrame<PointT> staticRemovedFrames;
-          reader->load(0, startFrameNumber, groupOfFramesSize, frames, parameter.parallel);
-          reader->load(1, startFrameNumber, groupOfFramesSize, staticAddedFrames, parameter.parallel);
-          reader->load(2, startFrameNumber, groupOfFramesSize, staticRemovedFrames, parameter.parallel);
-#if !defined(NDEBUG)
-          reader->load(3, startFrameNumber, groupOfFramesSize, staticFrames, parameter.parallel);
-#endif
-          for (size_t i = 0; i < staticAddedFrames.size(); i++) {
-            if (staticRemovedFrames[i]) {
-              for (const PointT& pointToRemove : staticRemovedFrames[i]->points) {
-                staticOctree->deletePointFromCloud(pointToRemove, staticFrame);
-              }
-            }
-            if (staticAddedFrames[i]) {
-              for (const PointT& pointToAdd : staticAddedFrames[i]->points) {
-                staticOctree->addPointToCloud(pointToAdd, staticFrame);
-              }
-            }
-
-            assert(staticFrame->size() == staticFrames[i]->size());
-
-            auto tmpFrame = jpcc::make_shared<Frame<PointT>>();
-            pcl::copyPointCloud(*staticFrame, *tmpFrame);
-            staticFrames.push_back(tmpFrame);
-          }
-          framesMap->insert_or_assign(primaryId, frames);
-          framesMap->insert_or_assign(staticId, staticFrames);
-        } else {
-          reader->loadAll(startFrameNumber, groupOfFramesSize, frames, parameter.parallel);
-          preProcessor.process(frames, framesMap, parameter.parallel);
-          framesMap->insert_or_assign(primaryId, frames);
-        }
+        reader->loadAll(startFrameNumber, groupOfFramesSize, frames, parameter.parallel);
+        preProcessor.process(frames, framesMap, parameter.parallel);
+        framesMap->insert_or_assign(primaryId, frames);
         clock.stop();
 
         viewer->enqueue(*framesMap);
@@ -106,14 +93,18 @@ void main_(const AppParameter& parameter, Stopwatch& clock) {
     } catch (exception& e) { cerr << e.what() << endl; }
     run = false;
   };
-
-  thread datasetLoadingThread(datasetLoading);
+  shared_ptr<thread> loadThread;
+  if (parameter.compressedStreamPath.empty()) {
+    loadThread = make_shared<thread>(loadDataset);
+  } else {
+    loadThread = make_shared<thread>(loadEncoded);
+  }
   while (!viewer->wasStopped() && run) {
     viewer->spinOnce(100);
     this_thread::sleep_for(100ms);
   }
   run = false;
-  if (datasetLoadingThread.joinable()) { datasetLoadingThread.join(); }
+  if (loadThread && loadThread->joinable()) { loadThread->join(); }
 }
 
 int main(int argc, char* argv[]) {

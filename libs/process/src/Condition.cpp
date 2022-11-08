@@ -111,7 +111,7 @@ bool Condition::predictVector3fMap(const PointType& point) const {
     case X: val = point.x(); break;
     case Y: val = point.y(); break;
     case Z: val = point.z(); break;
-    case R: val = point.getNorm2<double>(); break;
+    case R: val = std::sqrt(point.getNorm2<double>()); break;
     case PROD: {
       Vector4f v(float(point.x()), float(point.y()), float(point.z()), 1);
       val = coefficient->transpose() * v;
