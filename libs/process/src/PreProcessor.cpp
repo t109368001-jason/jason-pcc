@@ -71,9 +71,9 @@ void PreProcessor::applyAlgorithm(const std::string& algorithm, const FramePtr& 
   } else {
     BOOST_THROW_EXCEPTION(std::logic_error("not support algorithm: " + algorithm));
   }
-  auto _frame = jpcc::make_shared<Frame>();
-  frame->subset(*_frame, indices);
-  if (removed) { frame->subset(*removed, removedIndices); }
+  auto _frame = jpcc::make_shared<Frame>(*frame);
+  _frame->subset(*frame, indices);
+  if (removed) { _frame->subset(*removed, removedIndices); }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
