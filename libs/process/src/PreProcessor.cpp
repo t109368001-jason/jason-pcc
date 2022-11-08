@@ -79,7 +79,7 @@ void PreProcessor::applyAlgorithm(const std::string& algorithm, const FramePtr& 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void radiusOutlierRemoval(Frame& frame, const float radius, const int minNeighborsInRadius, Indices& indices) {
   std::vector<std::pair<Index, double> >    indicesDists;
-  nanoflann::RadiusResultSet<double, Index> resultSet(radius, indicesDists);
+  nanoflann::RadiusResultSet<double, Index> resultSet(radius * radius, indicesDists);
 
   KDTreeVectorOfVectorsAdaptor<Frame, double> kdtree(3, frame, 10);
 
@@ -89,7 +89,7 @@ void radiusOutlierRemoval(Frame& frame, const float radius, const int minNeighbo
     resultSet.init();
     bool ret = kdtree.index->radiusSearchCustomCallback(&pointDouble[0], resultSet, nanoflann::SearchParams(10));
     THROW_IF_NOT(ret);
-    if (indicesDists.size() >= minNeighborsInRadius) { indices.push_back(i); }
+    if ((indicesDists.size() - 1) >= minNeighborsInRadius) { indices.push_back(i); }
   }
 }
 
@@ -97,16 +97,16 @@ void radiusOutlierRemoval(Frame& frame, const float radius, const int minNeighbo
 void radiusOutlierRemoval(
     Frame& frame, const float radius, const int minNeighborsInRadius, Indices& indices, Indices& removedIndices) {
   std::vector<std::pair<Index, double> >    indicesDists;
-  nanoflann::RadiusResultSet<double, Index> resultSet(radius, indicesDists);
+  nanoflann::RadiusResultSet<double, Index> resultSet(radius * radius, indicesDists);
 
-  KDTreeVectorOfVectorsAdaptor<Frame, double> kdtree(3, frame, 10);
+  KDTreeVectorOfVectorsAdaptor<Frame> kdtree(3, frame, 10);
 
   for (Index i = 0; i < frame.getPointCount(); i++) {
     pcc::Vec3<double> pointDouble = frame[i];
     resultSet.init();
     bool ret = kdtree.index->radiusSearchCustomCallback(&pointDouble[0], resultSet, nanoflann::SearchParams(10));
     THROW_IF_NOT(ret);
-    if (indicesDists.size() >= minNeighborsInRadius) {
+    if ((indicesDists.size() - 1) >= minNeighborsInRadius) {
       indices.push_back(i);
     } else {
       removedIndices.push_back(i);

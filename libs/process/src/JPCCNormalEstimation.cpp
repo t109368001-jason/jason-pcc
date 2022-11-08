@@ -32,7 +32,7 @@ void JPCCNormalEstimation::computeInPlace(FramePtr& frame) const {
     std::vector<size_t> indices;
     if (param_.radiusSearch > 0) {
       std::vector<std::pair<Index, double> >    indicesDists;
-      nanoflann::RadiusResultSet<double, Index> resultSet(param_.radiusSearch, indicesDists);
+      nanoflann::RadiusResultSet<double, Index> resultSet(param_.radiusSearch * param_.radiusSearch, indicesDists);
       resultSet.init();
       bool ret = kdtree.index->radiusSearchCustomCallback(&pointDouble[0], resultSet, nanoflann::SearchParams(10));
       THROW_IF_NOT(ret);
