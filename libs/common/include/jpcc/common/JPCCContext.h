@@ -53,6 +53,8 @@ class JPCCContext : public IJPCCSegmentationContext,
               CoderBackendType       dynamicBackendType,
               CoderBackendType       staticBackendType);
 
+  JPCCContext(JPCCHeader header);
+
   void clear();
 
   [[nodiscard]] JPCCHeader             getHeader() const { return header_; };

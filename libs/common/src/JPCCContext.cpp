@@ -20,6 +20,8 @@ JPCCContext::JPCCContext(double                 resolution,
   header_.staticBackendType      = staticBackendType;
 }
 
+JPCCContext::JPCCContext(JPCCHeader header) : header_(header) {}
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 void JPCCContext::clear() {
   pclFrames_.clear();
