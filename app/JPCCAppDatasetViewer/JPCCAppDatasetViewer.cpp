@@ -36,7 +36,7 @@ void main_(const AppParameter& parameter, Stopwatch& clock) {
   viewer->addParameter(parameter);
   viewer->setPrimaryId(primaryId);
 
-  auto loadEncoded = [&parameter] {
+  auto loadEncoded = [&] {
     cout << "loadEncoded" << endl;
     JPCCDecoderAdapter decoder;
     JPCCCombination    combination;
@@ -49,15 +49,24 @@ void main_(const AppParameter& parameter, Stopwatch& clock) {
       combination.set(header);
     }
     JPCCContext context(header);
-    {  // decode
-      decoder.decode(ifs, context, parameter.groupOfFramesSize);
+    while (run && !ifs.eof()) {
+      context.clear();
+      {  // decode
+        decoder.decode(ifs, context, parameter.groupOfFramesSize);
+      }
+      {  // Convert to pcl (combination)
+        context.convertToPclCombination(parameter.parallel);
+      }
+      {  // combination
+        combination.combine(context, parameter.parallel);
+      }
+
+      viewer->enqueue(GroupOfFrameMap{{primaryId, context.getReconstructFrames()}});
+
+      while (run && viewer->isFull()) { this_thread::sleep_for(100ms); }
     }
-    {  // Convert to pcl (combination)
-      context.convertToPclCombination(parameter.parallel);
-    }
-    {  // combination
-      combination.combine(context, parameter.parallel);
-    }
+    while (run && !viewer->isEmpty()) { this_thread::sleep_for(100ms); }
+    run = false;
   };
 
   auto loadDataset = [&] {
