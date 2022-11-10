@@ -58,9 +58,9 @@ void JPCCCombination::combineStaticAddedRemoved(const PclFramePtr<PointT>& stati
   staticReconstructFrame = jpcc::make_shared<Frame>();
   staticReconstructFrame->fromPcl<PointT>(staticFrame_);
   if (staticAddedFrame) {
-    staticReconstructFrame->getFrameNumber() = (Index)staticAddedFrame->header.seq;
+    staticReconstructFrame->setFrameNumber((Index)staticAddedFrame->header.seq);
   } else if (staticRemovedFrame) {
-    staticReconstructFrame->getFrameNumber() = (Index)staticRemovedFrame->header.seq;
+    staticReconstructFrame->setFrameNumber((Index)staticRemovedFrame->header.seq);
   }
 }
 
@@ -82,9 +82,9 @@ void JPCCCombination::combineDynamicStatic(const FramePtr& dynamicFrame,
   if (dynamicFrame) { reconstructFrame->append(*dynamicFrame); }
   if (staticFrame) { reconstructFrame->append(*staticFrame); }
   if (dynamicFrame) {
-    reconstructFrame->getFrameNumber() = dynamicFrame->getFrameNumber();
+    reconstructFrame->setFrameNumber(dynamicFrame->getFrameNumber());
   } else if (staticFrame) {
-    reconstructFrame->getFrameNumber() = staticFrame->getFrameNumber();
+    reconstructFrame->setFrameNumber(staticFrame->getFrameNumber());
   }
 }
 

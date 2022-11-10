@@ -156,7 +156,7 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
     }
     {  // compute PSNR
       for (size_t i = 0; i < context.getPclFrames().size(); i++) {
-        context.getReconstructFrames()[i]->getFrameNumber() = context.getFrames()[i]->getFrameNumber();
+        context.getReconstructFrames()[i]->setFrameNumber(context.getFrames()[i]->getFrameNumber());
       }
       ScopeStopwatch clock = metric.start("ComputePSNR", frameNumber);
       metric.addPSNR("A2B", context.getFrames(), context.getReconstructFrames(), parameter.parallel);
@@ -164,7 +164,7 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
     }
     if (parameter.jpccGmmSegmentation.type != jpcc::SegmentationType::NONE) {
       for (size_t i = 0; i < context.getPclFrames().size(); i++) {
-        context.getDynamicReconstructFrames()[i]->getFrameNumber() = context.getFrames()[i]->getFrameNumber();
+        context.getDynamicReconstructFrames()[i]->setFrameNumber(context.getFrames()[i]->getFrameNumber());
       }
       // compute PSNR (Dynamic)
       ScopeStopwatch clock = metric.start("ComputePSNR (Dynamic)", frameNumber);

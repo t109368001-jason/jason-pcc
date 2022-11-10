@@ -29,10 +29,10 @@ void loadPly(GroupOfFrame&      frames,
     char fileName[4096];
     sprintf(fileName, filePath.c_str(), frameNumber);
     if (exists(fileName)) {
-      auto& frame             = frames[frameNumber - startFrameNumber];
-      frame                   = jpcc::make_shared<Frame>();
-      frame->getFrameNumber() = Index(frameNumber);
-      const bool result       = pcc::ply::read(std::string(fileName), {"x", "y", "z"}, 1.0, *frame);
+      auto& frame = frames[frameNumber - startFrameNumber];
+      frame       = jpcc::make_shared<Frame>();
+      frame->setFrameNumber((Index)frameNumber);
+      const bool result = pcc::ply::read(std::string(fileName), {"x", "y", "z"}, 1.0, *frame);
       THROW_IF_NOT(result);
     }
   };

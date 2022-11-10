@@ -18,16 +18,16 @@ class JPCCPointSet3 : public pcc::PCCPointSet3 {
   using ConstPtr = std::shared_ptr<const JPCCPointSet3>;
 
  protected:
-  Index                   frameNumber;
-  std::vector<NormalType> normals;
-  bool                    withNormals;
+  Index                   frameNumber_;
+  std::vector<NormalType> normals_;
+  bool                    withNormals_;
 
  public:
-  JPCCPointSet3() : pcc::PCCPointSet3(), frameNumber(0), normals(), withNormals(false) {}
+  JPCCPointSet3() : pcc::PCCPointSet3(), frameNumber_(0), normals_(), withNormals_(false) {}
 
   JPCCPointSet3(const PCCPointSet3& src)  // NOLINT(google-explicit-constructor)
       :
-      pcc::PCCPointSet3(src), frameNumber(0), normals(), withNormals(false) {}
+      pcc::PCCPointSet3(src), frameNumber_(0), normals_(), withNormals_(false) {}
 
   JPCCPointSet3& operator=(const JPCCPointSet3& rhs) = default;
 
@@ -36,47 +36,49 @@ class JPCCPointSet3 : public pcc::PCCPointSet3 {
   void swap(JPCCPointSet3& other) {
     using std::swap;
     pcc::PCCPointSet3::swap(other);
-    swap(normals, other.normals);
+    swap(normals_, other.normals_);
   }
 
-  [[nodiscard]] Index getFrameNumber() const { return frameNumber; }
+  [[nodiscard]] Index getFrameNumber() const { return frameNumber_; }
 
-  Index& getFrameNumber() { return frameNumber; }
+  [[nodiscard]] Index& getFrameNumber() { return frameNumber_; }
+
+  void setFrameNumber(const Index frameNumber) { this->frameNumber_ = frameNumber; }
 
   [[nodiscard]] const NormalType& getNormal(const size_t index) const {
-    assert(index < normals.size() && withNormals);
-    return normals[index];
+    assert(index < normals_.size() && withNormals_);
+    return normals_[index];
   }
-  NormalType& getNormal(const size_t index) {
-    assert(index < normals.size() && withNormals);
-    return normals[index];
+  [[nodiscard]] NormalType& getNormal(const size_t index) {
+    assert(index < normals_.size() && withNormals_);
+    return normals_[index];
   }
   void setNormal(const size_t index, const NormalType& normal) {
-    assert(index < normals.size() && withNormals);
-    normals[index] = normal;
+    assert(index < normals_.size() && withNormals_);
+    normals_[index] = normal;
   }
-  [[nodiscard]] bool hasNormal() const { return withNormals; }
+  [[nodiscard]] bool hasNormal() const { return withNormals_; }
   void               addNormal() {
-    withNormals = true;
+    withNormals_ = true;
     resize(getPointCount());
   }
   void removeNormal() {
-    withNormals = false;
-    normals.resize(0);
+    withNormals_ = false;
+    normals_.resize(0);
   }
 
   void resize(const size_t size) override {
     pcc::PCCPointSet3::resize(size);
-    if (hasNormal()) { normals.resize(size); }
+    if (hasNormal()) { normals_.resize(size); }
   }
 
   void reserve(const size_t size) override {
     pcc::PCCPointSet3::reserve(size);
-    if (hasNormal()) { normals.reserve(size); }
+    if (hasNormal()) { normals_.reserve(size); }
   }
   void clear() override {
     pcc::PCCPointSet3::clear();
-    normals.clear();
+    normals_.clear();
   }
 
   void append(const JPCCPointSet3& src) {
@@ -84,7 +86,7 @@ class JPCCPointSet3 : public pcc::PCCPointSet3 {
     int dstEnd = int(this->getPointCount());
     pcc::PCCPointSet3::append(src);
     if (hasNormal() && src.hasNormal())
-      std::copy(src.normals.begin(), src.normals.end(), std::next(normals.begin(), dstEnd));
+      std::copy(src.normals_.begin(), src.normals_.end(), std::next(normals_.begin(), dstEnd));
   }
 
   void swapPoints(const size_t index1, const size_t index2) override {
@@ -107,7 +109,7 @@ class JPCCPointSet3 : public pcc::PCCPointSet3 {
   void toPcl(const PclFramePtr<PointT>& pclFrame) const;
 
   template <typename PointT>
-  PclFramePtr<PointT> toPcl() const;
+  [[nodiscard]] PclFramePtr<PointT> toPcl() const;
 
   template <typename PointT>
   void fromPcl(const PclFramePtr<PointT>& pclFrame);

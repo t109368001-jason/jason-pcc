@@ -42,7 +42,7 @@ void JPCCMetric::addPoints(const std::string& name, const FramePtr& frame, bool 
   pointsMapMap_[frame->getFrameNumber()][name] += points;
   std::cout << __FUNCTION__ << "() "
             << "name=" << name << ", "
-            << "frameNumber=" << frame->getFrameNumber() << ", "
+            << "frameNumber_=" << frame->getFrameNumber() << ", "
             << "points=" << points << std::endl;
   if (addBytes) { this->addBytes(name, frame->getFrameNumber(), points * sizeof(PointValueType) * 3); }
 }
@@ -57,7 +57,7 @@ void JPCCMetric::addBytes(const std::string& name, FrameNumber frameNumber, cons
   if (bytes == 0) { return; }
   cout << __FUNCTION__ << "() "
        << "name=" << name << ", "
-       << "frameNumber=" << frameNumber << ", "
+       << "frameNumber_=" << frameNumber << ", "
        << "bytes=" << bytes << std::endl;
   frameNumberSet_.insert(frameNumber);
   bytesNameSet_.insert(name);

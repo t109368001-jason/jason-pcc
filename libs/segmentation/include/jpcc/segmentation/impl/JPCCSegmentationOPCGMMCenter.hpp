@@ -45,19 +45,19 @@ void JPCCSegmentationOPCGMMCenter<LeafContainerT>::segmentation(IJPCCSegmentatio
       !context.getStaticRemovedFrames().empty() ? context.getStaticRemovedFrames()[index] : nullptr;
   if (dynamicFrame) {
     dynamicFrame->clear();
-    dynamicFrame->getFrameNumber() = frame->getFrameNumber();
+    dynamicFrame->setFrameNumber(frame->getFrameNumber());
   }
   if (staticFrame) {
     staticFrame->clear();
-    staticFrame->getFrameNumber() = frame->getFrameNumber();
+    staticFrame->setFrameNumber(frame->getFrameNumber());
   }
   if (staticAddedFrame) {
     staticAddedFrame->clear();
-    staticAddedFrame->getFrameNumber() = frame->getFrameNumber();
+    staticAddedFrame->setFrameNumber(frame->getFrameNumber());
   }
   if (staticRemovedFrame) {
     staticRemovedFrame->clear();
-    staticRemovedFrame->getFrameNumber() = frame->getFrameNumber();
+    staticRemovedFrame->setFrameNumber(frame->getFrameNumber());
   }
 
   this->addFrame(pclFrame);
@@ -68,22 +68,22 @@ void JPCCSegmentationOPCGMMCenter<LeafContainerT>::segmentation(IJPCCSegmentatio
 
   if (dynamicFrame) {
     cout << "segmentation dynamic "
-         << "frameNumber=" << dynamicFrame->getFrameNumber() << ", "
+         << "frameNumber_=" << dynamicFrame->getFrameNumber() << ", "
          << "points=" << dynamicFrame->getPointCount() << endl;
   }
   if (staticFrame) {
     cout << "segmentation static "
-         << "frameNumber=" << staticFrame->getFrameNumber() << ", "
+         << "frameNumber_=" << staticFrame->getFrameNumber() << ", "
          << "points=" << staticFrame->getPointCount() << endl;
   }
   if (staticAddedFrame) {
     cout << "segmentation static added "
-         << "frameNumber=" << staticAddedFrame->getFrameNumber() << ", "
+         << "frameNumber_=" << staticAddedFrame->getFrameNumber() << ", "
          << "points=" << staticAddedFrame->getPointCount() << endl;
   }
   if (staticRemovedFrame) {
     cout << "segmentation static removed "
-         << "frameNumber=" << staticRemovedFrame->getFrameNumber() << ", "
+         << "frameNumber_=" << staticRemovedFrame->getFrameNumber() << ", "
          << "points=" << staticRemovedFrame->getPointCount() << endl;
   }
 }
