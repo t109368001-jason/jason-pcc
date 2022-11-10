@@ -3,6 +3,7 @@ namespace jpcc {
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void JPCCPointSet3::toPcl(const PclFramePtr<PointT>& pclFrame) const {
+  pclFrame->header.seq = static_cast<decltype(((pcl::PCLHeader*)nullptr)->seq)>(this->getFrameNumber());
   pclFrame->resize(this->getPointCount());
 
   for (int i = 0; i < pclFrame->size(); i++) {
@@ -39,6 +40,7 @@ PclFramePtr<PointT> JPCCPointSet3::toPcl() const {
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void JPCCPointSet3::fromPcl(const PclFramePtr<PointT>& pclFrame) {
+  this->getFrameNumber() = (Index)pclFrame->header.seq;
   this->resize(pclFrame->size());
 
   if constexpr (pcl::traits::has_color_v<PointT>) { this->addColors(); }

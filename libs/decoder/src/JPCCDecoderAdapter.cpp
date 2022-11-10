@@ -45,12 +45,18 @@ void JPCCDecoderAdapter::decode(std::istream& is, IJPCCDecoderContext& context, 
     context.getStaticAddedReconstructFrames().resize(frameCount);
     context.getStaticRemovedReconstructFrames().resize(frameCount);
   }
-  for (size_t i = 0; i < frameCount; i++) {
+  for (Index i = 0; i < frameCount; i++) {
     dynamicDecoder_->decode(is, context.getDynamicReconstructFrames()[i]);
-    if (staticDecoder_) { staticDecoder_->decode(is, context.getStaticReconstructFrames()[i]); }
+    context.getDynamicReconstructFrames()[i]->getFrameNumber() = context.getStartFrameNumber() + i;
+    if (staticDecoder_) {
+      staticDecoder_->decode(is, context.getStaticReconstructFrames()[i]);
+      context.getStaticReconstructFrames()[i]->getFrameNumber() = context.getStartFrameNumber() + i;
+    }
     if (staticAddedDecoder_ && staticRemovedDecoder_) {
       staticAddedDecoder_->decode(is, context.getStaticAddedReconstructFrames()[i]);
       staticRemovedDecoder_->decode(is, context.getStaticRemovedReconstructFrames()[i]);
+      context.getStaticAddedReconstructFrames()[i]->getFrameNumber()   = context.getStartFrameNumber() + i;
+      context.getStaticRemovedReconstructFrames()[i]->getFrameNumber() = context.getStartFrameNumber() + i;
     }
   }
 }

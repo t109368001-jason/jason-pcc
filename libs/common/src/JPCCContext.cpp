@@ -12,7 +12,7 @@ JPCCContext::JPCCContext(double                 resolution,
                          SegmentationOutputType segmentationOutputType,
                          CoderBackendType       dynamicBackendType,
                          CoderBackendType       staticBackendType) :
-    header_({0}) {
+    header_({0}), startFrameNumber_(0) {
   header_.resolution             = resolution;
   header_.segmentationType       = segmentationType;
   header_.segmentationOutputType = segmentationOutputType;
@@ -20,7 +20,7 @@ JPCCContext::JPCCContext(double                 resolution,
   header_.staticBackendType      = staticBackendType;
 }
 
-JPCCContext::JPCCContext(JPCCHeader header) : header_(header) {}
+JPCCContext::JPCCContext(JPCCHeader header) : header_(header), startFrameNumber_(0) {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void JPCCContext::clear() {

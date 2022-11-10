@@ -29,6 +29,10 @@ class JPCCPointSet3 : public pcc::PCCPointSet3 {
       :
       pcc::PCCPointSet3(src), frameNumber(0), normals(), withNormals(false) {}
 
+  JPCCPointSet3& operator=(const JPCCPointSet3& rhs) = default;
+
+  ~JPCCPointSet3() = default;
+
   void swap(JPCCPointSet3& other) {
     using std::swap;
     pcc::PCCPointSet3::swap(other);

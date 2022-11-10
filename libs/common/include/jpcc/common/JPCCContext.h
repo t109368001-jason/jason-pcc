@@ -18,6 +18,7 @@ class JPCCContext : public IJPCCSegmentationContext,
                     public IJPCCCombinationContext {
  protected:
   JPCCHeader header_;
+  Index      startFrameNumber_;
 
   GroupOfFrame frames_;
 
@@ -53,7 +54,7 @@ class JPCCContext : public IJPCCSegmentationContext,
               CoderBackendType       dynamicBackendType,
               CoderBackendType       staticBackendType);
 
-  JPCCContext(JPCCHeader header);
+  JPCCContext(JPCCHeader header);  // NOLINT(google-explicit-constructor)
 
   void clear();
 
@@ -62,7 +63,8 @@ class JPCCContext : public IJPCCSegmentationContext,
   [[nodiscard]] SegmentationOutputType getSegmentationOutputType() const override {
     return header_.segmentationOutputType;
   };
-  [[nodiscard]] const GroupOfFrame&                       getFrames() const override { return frames_; };
+  [[nodiscard]] Index               getStartFrameNumber() const override { return startFrameNumber_; };
+  [[nodiscard]] const GroupOfFrame& getFrames() const override { return frames_; };
   [[nodiscard]] const GroupOfPclFrame<PointSegmentation>& getPclFrames() const override { return pclFrames_; };
   [[nodiscard]] const GroupOfFrame&                       getDynamicFrames() const override { return dynamicFrames_; };
   [[nodiscard]] const GroupOfFrame&                       getStaticFrames() const override { return staticFrames_; };
@@ -96,6 +98,7 @@ class JPCCContext : public IJPCCSegmentationContext,
   };
   [[nodiscard]] const GroupOfFrame& getReconstructFrames() const override { return reconstructFrames_; };
 
+  [[nodiscard]] Index&                              getStartFrameNumber() override { return startFrameNumber_; };
   [[nodiscard]] GroupOfFrame&                       getFrames() override { return frames_; };
   [[nodiscard]] GroupOfPclFrame<PointSegmentation>& getPclFrames() override { return pclFrames_; };
   [[nodiscard]] GroupOfFrame&                       getDynamicFrames() override { return dynamicFrames_; };

@@ -64,6 +64,7 @@ void main_(const AppParameter& parameter, Stopwatch& clock) {
       viewer->enqueue(GroupOfFrameMap{{primaryId, context.getReconstructFrames()}});
 
       while (run && viewer->isFull()) { this_thread::sleep_for(100ms); }
+      context.getStartFrameNumber() += (Index)context.getReconstructFrames().size();
     }
     while (run && !viewer->isEmpty()) { this_thread::sleep_for(100ms); }
     run = false;
