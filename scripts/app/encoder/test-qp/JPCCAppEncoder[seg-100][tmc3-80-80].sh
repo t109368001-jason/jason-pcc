@@ -2,12 +2,12 @@
 set -ex
 
 OUTPUT_FOLDER_PREFIX="../../result/"
-OUTPUT_FOLDER="encoded-$(date +%Y%m%d-%H)/ZX-XS-20220707[tmc3-80]/"
+OUTPUT_FOLDER="encoded-$(date +%Y%m%d-%H)/ZX-XS-20220707[seg-100][tmc3-80-80]/"
 
 mkdir -p "${OUTPUT_FOLDER_PREFIX}${OUTPUT_FOLDER}"
 
 ./bin/JPCCAppEncoder \
-  --jpccGMMSegmentationParameter.type none \
+  --jpccGMMSegmentationParameter.outputType dynamic-static \
   --jpccEncoderDynamic.tmc3.positionQuantisationEnabled true \
   --jpccEncoderStatic.tmc3.positionQuantisationEnabled true \
   --jpccEncoderDynamic.tmc3.positionBaseQp 80 \
