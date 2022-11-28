@@ -130,13 +130,13 @@ if __name__ == '__main__':
     plot_gmm([{"u": 75, "s": 25}, {"u": 150, "s": 5}, {"u": 200, "s": 50}],
              "gmm.png",
              title=r"Gaussian Mixture Model $K=3$", xlim=[0, 255], ylim=[-0.03, 0.09])
-    plot_gmm([{"u": 384, "s": 10}, {"u": 0, "s": 10}, {"u": 128, "s": 10}],
+    plot_gmm([{"u": 512, "s": 10}, {"u": 0, "s": 10}, {"u": 128, "s": 10}],
              "gmm_without_weight.png",
              title=r"Gaussian Mixture Model $K=3$")
-    plot_gmm([{"u": 384, "s": 10, "w": 0.9}, {"u": 128, "s": 10, "w": 0.1}],
+    plot_gmm([{"u": 512, "s": 10, "w": 0.9}, {"u": 128, "s": 10, "w": 0.1}],
              "gmm_weight[9_1].png",
              title=r"Gaussian Mixture Model $K=2$")
-    plot_gmm([{"u": 384, "s": 10, "w": 0.9},
+    plot_gmm([{"u": 512, "s": 10, "w": 0.9},
               {"u": 0, "s": 10, "w": 0.01},
               {"u": 128, "s": 10, "w": 0.09}],
              "gmm_weight[9_0.5_0.5].png",
