@@ -41,7 +41,7 @@ void parse(const AppParameter& parameter, Stopwatch& clock) {
     }
     clock.stop();
 
-    savePly(frames, parameter.outputDataset.getFilePath(), 0);
+    savePly(frames, parameter.outputDataset.getFilePath(), parameter.parallel);
 
     frameNumber += groupOfFramesSize;
   }
