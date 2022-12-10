@@ -41,16 +41,27 @@ void OctreeContainerGMM::build(const int                  index,
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-bool OctreeContainerGMM::isStatic(const std::vector<double>& staticThresholdVector,
-                                  const std::vector<double>& nullStaticThresholdVector,
-                                  const std::vector<bool>&   outputExistsPointOnlyVector) {
+bool OctreeContainerGMM::isStatic(const std::vector<double>& staticThreshold1Vector,
+                                  const std::vector<double>& staticThreshold2Vector,
+                                  const std::vector<double>& nullStaticThreshold1Vector,
+                                  const std::vector<double>& nullStaticThreshold2Vector,
+                                  const std::vector<bool>&   outputExistsPointOnlyVector,
+                                  const bool                 lastIsStatic) {
   if (isnan(this->lastPoint_.x)) {
     if (!outputExistsPointOnlyVector.front()) {
-      if (GMM::getStaticProbability() > nullStaticThresholdVector.front()) { return true; }
+      if (!lastIsStatic) {
+        if (GMM::getStaticProbability() > nullStaticThreshold1Vector.front()) { return true; }
+      } else {
+        if (GMM::getStaticProbability() > nullStaticThreshold2Vector.front()) { return true; }
+      }
     }
     return false;
   } else {
-    if (GMM::getProbability(Intensity(this->lastPoint_.intensity)) > staticThresholdVector.front()) { return true; }
+    if (!lastIsStatic) {
+      if (GMM::getProbability(Intensity(this->lastPoint_.intensity)) > staticThreshold1Vector.front()) { return true; }
+    } else {
+      if (GMM::getProbability(Intensity(this->lastPoint_.intensity)) > staticThreshold2Vector.front()) { return true; }
+    }
     return false;
   }
 }

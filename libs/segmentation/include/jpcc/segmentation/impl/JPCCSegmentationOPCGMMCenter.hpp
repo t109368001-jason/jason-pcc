@@ -186,10 +186,11 @@ void JPCCSegmentationOPCGMMCenter<LeafContainerT>::segmentationRecursive(const F
             }
           }
           bool lastIsStatic = leafContainer.isLastStatic();
-          bool isStatic     = leafContainer.isStatic(this->parameter_.getStaticThresholdVector(),
-                                                     this->parameter_.getNullStaticThresholdVector(),
-                                                     this->parameter_.getOutputExistsPointOnlyVector());
-          bool isDynamic    = !isStatic && !std::isnan(leafContainer.getLastPoint().x);
+          bool isStatic     = leafContainer.isStatic(
+              this->parameter_.getStaticThreshold1Vector(), this->parameter_.getStaticThreshold2Vector(),
+              this->parameter_.getNullStaticThreshold1Vector(), this->parameter_.getNullStaticThreshold2Vector(),
+              this->parameter_.getOutputExistsPointOnlyVector(), lastIsStatic);
+          bool isDynamic = !isStatic && !std::isnan(leafContainer.getLastPoint().x);
 
           PointT& point = leafContainer.getLastPoint();
           if (dynamicFrame && isDynamic) {

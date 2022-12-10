@@ -43,25 +43,50 @@ void OctreeContainerGMM2L::build(const int                  index,
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-bool OctreeContainerGMM2L::isStatic(const std::vector<double>& staticThresholdVector,
-                                    const std::vector<double>& nullStaticThresholdVector,
-                                    const std::vector<bool>&   outputExistsPointOnlyVector) {
+bool OctreeContainerGMM2L::isStatic(const std::vector<double>& staticThreshold1Vector,
+                                    const std::vector<double>& staticThreshold2Vector,
+                                    const std::vector<double>& nullStaticThreshold1Vector,
+                                    const std::vector<double>& nullStaticThreshold2Vector,
+                                    const std::vector<bool>&   outputExistsPointOnlyVector,
+                                    const bool                 lastIsStatic) {
   if (isnan(this->lastPoint_.x)) {
     if (!outputExistsPointOnlyVector[LONG_INDEX]) {
-      if (gmmArray_[LONG_INDEX].getStaticProbability() > nullStaticThresholdVector[LONG_INDEX]) { return true; }
+      if (!lastIsStatic) {
+        if (gmmArray_[LONG_INDEX].getStaticProbability() > nullStaticThreshold1Vector[LONG_INDEX]) { return true; }
+      } else {
+        if (gmmArray_[LONG_INDEX].getStaticProbability() > nullStaticThreshold2Vector[LONG_INDEX]) { return true; }
+      }
     }
     if (!outputExistsPointOnlyVector[SHORT_INDEX]) {
-      if (gmmArray_[SHORT_INDEX].getStaticProbability() > nullStaticThresholdVector[SHORT_INDEX]) { return true; }
+      if (!lastIsStatic) {
+        if (gmmArray_[SHORT_INDEX].getStaticProbability() > nullStaticThreshold1Vector[SHORT_INDEX]) { return true; }
+      } else {
+        if (gmmArray_[SHORT_INDEX].getStaticProbability() > nullStaticThreshold2Vector[SHORT_INDEX]) { return true; }
+      }
     }
     return false;
   } else {
-    if (gmmArray_[SHORT_INDEX].getProbability(Intensity(this->lastPoint_.intensity)) >
-        staticThresholdVector[SHORT_INDEX]) {
-      return true;
+    if (!lastIsStatic) {
+      if (gmmArray_[SHORT_INDEX].getProbability(Intensity(this->lastPoint_.intensity)) >
+          staticThreshold1Vector[SHORT_INDEX]) {
+        return true;
+      }
+    } else {
+      if (gmmArray_[SHORT_INDEX].getProbability(Intensity(this->lastPoint_.intensity)) >
+          staticThreshold2Vector[SHORT_INDEX]) {
+        return true;
+      }
     }
-    if (gmmArray_[LONG_INDEX].getProbability(Intensity(this->lastPoint_.intensity)) >
-        staticThresholdVector[LONG_INDEX]) {
-      return true;
+    if (!lastIsStatic) {
+      if (gmmArray_[LONG_INDEX].getProbability(Intensity(this->lastPoint_.intensity)) >
+          staticThreshold1Vector[LONG_INDEX]) {
+        return true;
+      }
+    } else {
+      if (gmmArray_[LONG_INDEX].getProbability(Intensity(this->lastPoint_.intensity)) >
+          staticThreshold2Vector[LONG_INDEX]) {
+        return true;
+      }
     }
     return false;
   }

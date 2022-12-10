@@ -15,8 +15,10 @@ using namespace po;
 #define ALPHA_OPT ".alpha"
 #define NULL_ALPHA_RATIO_OPT ".nullAlphaRatio"
 #define N_TRAIN_OPT ".nTrain"
-#define DYNAMIC_THRESHOLD_OPT ".staticThreshold"
-#define STATIC_THRESHOLD_OPT ".nullStaticThreshold"
+#define STATIC_THRESHOLD1_OPT ".staticThreshold1"
+#define STATIC_THRESHOLD2_OPT ".staticThreshold2"
+#define NULL_STATIC_THRESHOLD1_OPT ".nullStaticThreshold1"
+#define NULL_STATIC_THRESHOLD2_OPT ".nullStaticThreshold2"
 #define MINIMUM_VARIANCE_OPT ".minimumVariance"
 
 JPCCSegmentationParameter::JPCCSegmentationParameter() :
@@ -32,8 +34,10 @@ JPCCSegmentationParameter::JPCCSegmentationParameter(const string& prefix, const
     alphaVector_(),
     nullAlphaRatioVector_(),
     nTrainVector_(),
-    staticThresholdVector_(),
-    nullStaticThresholdVector_(),
+    staticThreshold1Vector_(),
+    staticThreshold2Vector_(),
+    nullStaticThreshold1Vector_(),
+    nullStaticThreshold2Vector_(),
     type(SegmentationType::GMM_2L),
     outputType(SegmentationOutputType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED),
     staticPointType(StaticPointType::CENTER),
@@ -71,12 +75,18 @@ JPCCSegmentationParameter::JPCCSegmentationParameter(const string& prefix, const
       (string(prefix_ + N_TRAIN_OPT).c_str(),                        //
        value<vector<int>>(&nTrainVector_)->required(),               //
        JPCC_GMM_SEGMENTATION_OPT_PREFIX " nTrain")                   //
-      (string(prefix_ + DYNAMIC_THRESHOLD_OPT).c_str(),              //
-       value<vector<double>>(&staticThresholdVector_),               //
-       JPCC_GMM_SEGMENTATION_OPT_PREFIX " staticThreshold")          //
-      (string(prefix_ + STATIC_THRESHOLD_OPT).c_str(),               //
-       value<vector<double>>(&nullStaticThresholdVector_),           //
-       JPCC_GMM_SEGMENTATION_OPT_PREFIX " nullStaticThreshold")      //
+      (string(prefix_ + STATIC_THRESHOLD1_OPT).c_str(),              //
+       value<vector<double>>(&staticThreshold1Vector_),              //
+       JPCC_GMM_SEGMENTATION_OPT_PREFIX " staticThreshold1")         //
+      (string(prefix_ + STATIC_THRESHOLD2_OPT).c_str(),              //
+       value<vector<double>>(&staticThreshold2Vector_),              //
+       JPCC_GMM_SEGMENTATION_OPT_PREFIX " staticThreshold2")         //
+      (string(prefix_ + NULL_STATIC_THRESHOLD1_OPT).c_str(),         //
+       value<vector<double>>(&nullStaticThreshold1Vector_),          //
+       JPCC_GMM_SEGMENTATION_OPT_PREFIX " nullStaticThreshold1")     //
+      (string(prefix_ + NULL_STATIC_THRESHOLD2_OPT).c_str(),         //
+       value<vector<double>>(&nullStaticThreshold2Vector_),          //
+       JPCC_GMM_SEGMENTATION_OPT_PREFIX " nullStaticThreshold2")     //
       (string(prefix_ + MINIMUM_VARIANCE_OPT).c_str(),               //
        value<double>(&minimumVariance)->required(),                  //
        JPCC_GMM_SEGMENTATION_OPT_PREFIX " minimumVariance")          //
@@ -89,9 +99,10 @@ void JPCCSegmentationParameter::getShowTexts(vector<string>& showTexts) const {
   showTexts.push_back(prefix_ + ALPHA_OPT ": " + to_string(alphaVector_.front()));
   showTexts.push_back(prefix_ + NULL_ALPHA_RATIO_OPT ": " + to_string(nullAlphaRatioVector_.front()));
   showTexts.push_back(prefix_ + N_TRAIN_OPT ": " + to_string(nTrainVector_.front()));
-  showTexts.push_back(prefix_ + DYNAMIC_THRESHOLD_OPT ": " + to_string(staticThresholdVector_.front()));
-  showTexts.push_back(prefix_ + STATIC_THRESHOLD_OPT ": " + to_string(nullStaticThresholdVector_.front()));
-  showTexts.push_back(prefix_ + STATIC_THRESHOLD_OPT ": " + to_string(nullStaticThresholdVector_.front()));
+  showTexts.push_back(prefix_ + STATIC_THRESHOLD1_OPT ": " + to_string(staticThreshold1Vector_.front()));
+  showTexts.push_back(prefix_ + STATIC_THRESHOLD2_OPT ": " + to_string(staticThreshold2Vector_.front()));
+  showTexts.push_back(prefix_ + NULL_STATIC_THRESHOLD1_OPT ": " + to_string(nullStaticThreshold1Vector_.front()));
+  showTexts.push_back(prefix_ + NULL_STATIC_THRESHOLD2_OPT ": " + to_string(nullStaticThreshold2Vector_.front()));
 }
 
 void JPCCSegmentationParameter::notify() {
@@ -104,8 +115,10 @@ void JPCCSegmentationParameter::notify() {
   assert(!alphaVector_.empty());
   assert(!nullAlphaRatioVector_.empty());
   assert(!nTrainVector_.empty());
-  assert(!staticThresholdVector_.empty());
-  assert(!nullStaticThresholdVector_.empty());
+  assert(!staticThreshold1Vector_.empty());
+  assert(!staticThreshold2Vector_.empty());
+  assert(!nullStaticThreshold1Vector_.empty());
+  assert(!nullStaticThreshold2Vector_.empty());
   for (auto& k : kVector_) { assert(k > 0); }
   for (size_t i = 0; i < alphaVector_.size(); i++) {
     assert(alphaVector_[i] > 0.0);
@@ -119,8 +132,10 @@ int    JPCCSegmentationParameter::getK() const { return kVector_.front(); }
 double JPCCSegmentationParameter::getAlpha() const { return alphaVector_.front(); }
 double JPCCSegmentationParameter::getNullAlphaRatio() const { return nullAlphaRatioVector_.front(); }
 int    JPCCSegmentationParameter::getNTrain() const { return nTrainVector_.front(); }
-double JPCCSegmentationParameter::getStaticThreshold() const { return staticThresholdVector_.front(); }
-double JPCCSegmentationParameter::getNullStaticThreshold() const { return nullStaticThresholdVector_.front(); }
+double JPCCSegmentationParameter::getStaticThreshold1() const { return staticThreshold1Vector_.front(); }
+double JPCCSegmentationParameter::getStaticThreshold2() const { return staticThreshold2Vector_.front(); }
+double JPCCSegmentationParameter::getNullStaticThreshold1() const { return nullStaticThreshold1Vector_.front(); }
+double JPCCSegmentationParameter::getNullStaticThreshold2() const { return nullStaticThreshold2Vector_.front(); }
 
 bool JPCCSegmentationParameter::getOutputExistsPointOnly(const int index) const {
   return outputExistsPointOnlyVector_[index];
@@ -129,9 +144,13 @@ int    JPCCSegmentationParameter::getK(const int index) const { return kVector_[
 double JPCCSegmentationParameter::getAlpha(const int index) const { return alphaVector_[index]; }
 double JPCCSegmentationParameter::getNullAlphaRatio(const int index) const { return nullAlphaRatioVector_[index]; }
 int    JPCCSegmentationParameter::getNTrain(const int index) const { return nTrainVector_[index]; }
-double JPCCSegmentationParameter::getStaticThreshold(const int index) const { return staticThresholdVector_[index]; }
-double JPCCSegmentationParameter::getNullStaticThreshold(const int index) const {
-  return nullStaticThresholdVector_[index];
+double JPCCSegmentationParameter::getStaticThreshold1(const int index) const { return staticThreshold1Vector_[index]; }
+double JPCCSegmentationParameter::getStaticThreshold2(const int index) const { return staticThreshold2Vector_[index]; }
+double JPCCSegmentationParameter::getNullStaticThreshold1(const int index) const {
+  return nullStaticThreshold1Vector_[index];
+}
+double JPCCSegmentationParameter::getNullStaticThreshold2(const int index) const {
+  return nullStaticThreshold2Vector_[index];
 }
 
 const std::vector<bool>& JPCCSegmentationParameter::getOutputExistsPointOnlyVector() const {
@@ -141,11 +160,17 @@ const std::vector<int>&    JPCCSegmentationParameter::getKVector() const { retur
 const std::vector<double>& JPCCSegmentationParameter::getAlphaVector() const { return alphaVector_; }
 const std::vector<double>& JPCCSegmentationParameter::getNullAlphaRatioVector() const { return nullAlphaRatioVector_; }
 const std::vector<int>&    JPCCSegmentationParameter::getNTrainVector() const { return nTrainVector_; }
-const std::vector<double>& JPCCSegmentationParameter::getStaticThresholdVector() const {
-  return staticThresholdVector_;
+const std::vector<double>& JPCCSegmentationParameter::getStaticThreshold1Vector() const {
+  return staticThreshold1Vector_;
 }
-const std::vector<double>& JPCCSegmentationParameter::getNullStaticThresholdVector() const {
-  return nullStaticThresholdVector_;
+const std::vector<double>& JPCCSegmentationParameter::getStaticThreshold2Vector() const {
+  return staticThreshold2Vector_;
+}
+const std::vector<double>& JPCCSegmentationParameter::getNullStaticThreshold1Vector() const {
+  return nullStaticThreshold1Vector_;
+}
+const std::vector<double>& JPCCSegmentationParameter::getNullStaticThreshold2Vector() const {
+  return nullStaticThreshold2Vector_;
 }
 
 ostream& operator<<(ostream& out, const JPCCSegmentationParameter& obj) {
@@ -160,8 +185,10 @@ ostream& operator<<(ostream& out, const JPCCSegmentationParameter& obj) {
       (ALPHA_OPT, obj.alphaVector_)                                     //
       (NULL_ALPHA_RATIO_OPT, obj.nullAlphaRatioVector_)                 //
       (N_TRAIN_OPT, obj.nTrainVector_)                                  //
-      (DYNAMIC_THRESHOLD_OPT, obj.staticThresholdVector_)               //
-      (STATIC_THRESHOLD_OPT, obj.nullStaticThresholdVector_)            //
+      (STATIC_THRESHOLD1_OPT, obj.staticThreshold1Vector_)              //
+      (STATIC_THRESHOLD2_OPT, obj.staticThreshold2Vector_)              //
+      (NULL_STATIC_THRESHOLD1_OPT, obj.nullStaticThreshold1Vector_)     //
+      (NULL_STATIC_THRESHOLD2_OPT, obj.nullStaticThreshold2Vector_)     //
       (MINIMUM_VARIANCE_OPT, obj.minimumVariance)                       //
       ;
   return out;
