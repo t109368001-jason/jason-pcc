@@ -118,6 +118,54 @@ def plot_gmm(clusters, filename="gmm.png", **kwargs):
     img.convert("L").save(filepath.with_stem(filepath.stem + "_gray"))
 
 
+def quiver(x, y, axes: plt.Axes, **kwargs):
+    u = np.diff(x)
+    v = np.diff(y)
+    pos_prob = x[:-1] + u / 2
+    pos_y1 = y[:-1] + v / 2
+    norm = np.sqrt(u ** 2 + v ** 2)
+    axes.quiver(pos_prob, pos_y1, u / norm, v / norm, **kwargs)
+
+
+def plot_schmitt(filename="schmitt_trigger.png"):
+    x1 = [0, 0.2, 0.4, 0.6, 0.6, 0.6, 0.8, 1]
+    x2 = [1, 0.6, 0.4, 0.4, 0.4, 0]
+    t1 = 0.6
+    t2 = 0.4
+    y1 = [-0.5, -0.5, -0.5, -0.5, 0, 0.5, 0.5, 0.5]
+    y2 = [0.5, 0.5, 0.5, 0, -0.5, -0.5]
+
+    fig, axes = plt.subplots()
+    fig: plt.Figure
+    axes: plt.Axes
+
+    axes.plot(x1, y1, color='r', marker='')
+    axes.plot(x2, y2, color='g', marker='')
+
+    quiver(x1, y1, axes, color='r', angles="xy", zorder=5, pivot="mid")
+    quiver(x2, y2, axes, color='g', angles="xy", zorder=5, pivot="mid")
+
+    # y = np.arange(-0.5, 0.5, 0.001)
+    # axes.fill_betweenx(y, 0, 1, where=y > 0, color='r', alpha=0.5)
+    # axes.fill_betweenx(y, 0, 1, where=y <= 0, color='g', alpha=0.5)
+
+    axes.axis('off')
+    axes.plot((1), (0), ls="", marker=">", ms=10, color="k",
+              transform=axes.get_yaxis_transform(), clip_on=False)
+    axes.axhline(0, color='k')
+    axes.axvline(0, color='k')
+    axes.annotate("Probability", (1, 0), **{**annotate_kwargs, "xytext": (0, -20)})
+    axes.annotate("Static", (0.25, 0.25), **annotate_kwargs)
+    axes.annotate("Dynamic", (0.25, -0.25), **annotate_kwargs)
+    axes.annotate("TH1", (t1, 0), **annotate_kwargs)
+    axes.annotate("TH2", (t2, 0), **annotate_kwargs)
+
+    filepath = folder / filename
+    fig.savefig(filepath, **savefig_kwargs)
+    img = Image.open(filepath)
+    img.convert("L").save(filepath.with_stem(filepath.stem + "_gray"))
+
+
 if __name__ == '__main__':
     print("generate_figure.py")
 
@@ -150,3 +198,5 @@ if __name__ == '__main__':
              # , ylim=[-0.4, 1.2]
              , ylim=[-0.0015, 0.0045]
              )
+
+    plot_schmitt()
