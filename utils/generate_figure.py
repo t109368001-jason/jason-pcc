@@ -5,6 +5,13 @@ import numpy as np
 from PIL import Image
 from matplotlib import pyplot as plt, cycler
 
+marker_list = [
+    'o',  # 'point'
+    'D',  # 'diamond'
+    '^',  # 'triangle_up'
+    'v'  # 'triangle_down'
+]
+
 params = {
     'font.size': 16,
     'figure.figsize': (10, 10),  # (10, 10) = 1000 x 1000 pixels
@@ -17,12 +24,7 @@ params = {
             '--',  # 'dashed',
             '-.'  # 'dashdot'
         ],
-        marker=[
-            'o',  # 'point'
-            'D',  # 'diamond'
-            '^',  # 'triangle_up'
-            'v'  # 'triangle_down'
-        ]
+        marker=marker_list
     )
 }
 pylab.rcParams.update(params)
@@ -95,11 +97,11 @@ def plot_gmm(clusters, filename="gmm.png", **kwargs):
         handles.append(line)
         axes.annotate(f"({peek_x:.4g}, {peek_y:.4g})", (peek_x, peek_y), **annotate_kwargs)
 
-        for multiplier in cluster.get("sd_multiplier_list", []):
+        for index, multiplier in enumerate(cluster.get("sd_multiplier_list", [])):
             annotate_x = cluster["u"] + cluster["s"] * multiplier
             annotate_y = gaussian(annotate_x, cluster["u"], cluster["s"], cluster.get("w"))
             scatter = axes.scatter(annotate_x, annotate_y, label=fr"$\mu + {multiplier} \sigma$",
-                                   zorder=line.zorder + 1)
+                                   zorder=line.zorder + 1, marker=marker_list[index % 3 + 1])
             handles.append(scatter)
             axes.annotate(f"({annotate_x:.4g}, {annotate_y:.4g})", (annotate_x, annotate_y), **annotate_kwargs)
 
