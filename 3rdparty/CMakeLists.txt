@@ -1,7 +1,13 @@
 
+include(cmake/nanoflann.cmake)
 include(cmake/mpeg-pcc-tmc13.cmake)
 include(cmake/mpeg-pcc-tmc2.cmake)
 
+set(NANOFLANN_BUILD_EXAMPLES OFF)
+set(NANOFLANN_BUILD_BENCHMARKS OFF)
+set(NANOFLANN_BUILD_TESTS OFF)
+
+add_subdirectory(nanoflann)
 add_subdirectory(mpeg-pcc-tmc13)
 add_subdirectory(mpeg-pcc-tmc2)
 
