@@ -39,13 +39,13 @@ void JPCCSegmentation::segmentation(IJPCCSegmentationContext& context, const boo
   context.getDynamicFrames().resize(context.getFrames().size());
   std::for_each(context.getDynamicFrames().begin(), context.getDynamicFrames().end(), [](auto& frame) {
     frame = jpcc::make_shared<Frame>();
-    frame->addNormal();
+    frame->addNormals();
   });
   if (context.getSegmentationOutputType() == SegmentationOutputType::DYNAMIC_STATIC) {
     context.getStaticFrames().resize(context.getFrames().size());
     std::for_each(context.getStaticFrames().begin(), context.getStaticFrames().end(), [](auto& frame) {
       frame = jpcc::make_shared<Frame>();
-      frame->addNormal();
+      frame->addNormals();
     });
   }
   if (context.getSegmentationOutputType() == SegmentationOutputType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED) {
@@ -53,11 +53,11 @@ void JPCCSegmentation::segmentation(IJPCCSegmentationContext& context, const boo
     context.getStaticRemovedFrames().resize(context.getFrames().size());
     std::for_each(context.getStaticAddedFrames().begin(), context.getStaticAddedFrames().end(), [](auto& frame) {
       frame = jpcc::make_shared<Frame>();
-      frame->addNormal();
+      frame->addNormals();
     });
     std::for_each(context.getStaticRemovedFrames().begin(), context.getStaticRemovedFrames().end(), [](auto& frame) {
       frame = jpcc::make_shared<Frame>();
-      frame->addNormal();
+      frame->addNormals();
     });
   }
   if (!parallel || !isThreadSafe()) {

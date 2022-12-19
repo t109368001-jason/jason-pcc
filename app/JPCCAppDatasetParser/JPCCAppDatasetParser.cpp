@@ -37,7 +37,7 @@ void parse(const AppParameter& parameter, Stopwatch& clock) {
       auto normalEstimation = jpcc::make_shared<JPCCNormalEstimation>(parameter.jpccNormalEstimation);
       normalEstimation->computeInPlaceAll(frames, parameter.parallel);
     } else {
-      for (const auto& frame : frames) { frame->removeNormal(); }
+      for (const auto& frame : frames) { frame->removeNormals(); }
     }
     clock.stop();
 

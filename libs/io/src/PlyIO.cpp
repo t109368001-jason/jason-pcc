@@ -6,10 +6,6 @@
 
 #include <boost/range/counting_range.hpp>
 
-#include <pcl/io/auto_io.h>
-
-#include <ply.h>
-
 using namespace std::filesystem;
 
 namespace jpcc::io {
@@ -32,7 +28,7 @@ void loadPly(GroupOfFrame&      frames,
       auto& frame = frames[frameNumber - startFrameNumber];
       frame       = jpcc::make_shared<Frame>();
       frame->setFrameNumber((Index)frameNumber);
-      const bool result = pcc::ply::read(std::string(fileName), {"x", "y", "z"}, 1.0, *frame);
+      const bool result = frame->read(std::string(fileName), true);
       THROW_IF_NOT(result);
     }
   };
@@ -50,8 +46,7 @@ void savePly(const GroupOfFrame& frames, const std::string& filePath, const bool
     if (!frame || frame->getPointCount() == 0) { return; }
     char fileName[4096];
     sprintf(fileName, filePath.c_str(), frame->getFrameNumber());
-
-    const bool result = pcc::ply::write(*frame, {"x", "y", "z"}, 1.0, {0.0, 0.0, 0.0}, std::string(fileName), true);
+    const bool result = frame->write(std::string(fileName), true);
     THROW_IF_NOT(result);
   };
 

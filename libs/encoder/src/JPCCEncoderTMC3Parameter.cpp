@@ -89,8 +89,10 @@ JPCCEncoderTMC3Parameter::JPCCEncoderTMC3Parameter() :
     JPCCEncoderTMC3Parameter(JPCC_ENCODER_TMC3_OPT_PREFIX, __FUNCTION__) {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-JPCCEncoderTMC3Parameter::JPCCEncoderTMC3Parameter(const string& prefix, const string& caption) :
-    Parameter(prefix, caption), EncoderParams() {
+JPCCEncoderTMC3Parameter::JPCCEncoderTMC3Parameter(  // NOLINT(cppcoreguidelines-pro-type-member-init)
+    const string& prefix,
+    const string& caption) :
+    Parameter(prefix, caption) {
   setDefault();
   opts_.add_options()                                                                                  //
       (string(prefix_ + SRC_UNIT_LENGTH_OPT).c_str(), value<double>(&this->srcUnitLength),             //
@@ -122,53 +124,53 @@ JPCCEncoderTMC3Parameter::JPCCEncoderTMC3Parameter(const string& prefix, const s
        "Calculate seqOrigin and seqSizeWhd automatically.")                           //
       // NB: the underlying variable is in STV order.
       //     Conversion happens during argument sanitization.
-      (string(prefix_ + SEQ_ORIGIN_OPT).c_str(), value<Vec3<int>>(&this->sps.seqBoundingBoxOrigin),         //
+      (string(prefix_ + SEQ_ORIGIN_OPT).c_str(), value<std::vector<int>>(&this->sps.seqBoundingBoxOrigin),  //
        "Origin (x,y,z) of the sequence bounding box (in input coordinate system). Requires autoSeqBbox=0")  //
       // NB: the underlying variable is in STV order.
       //     Conversion happens during argument sanitization.
-      (string(prefix_ + SEQ_SIZE_WHD_OPT).c_str(), value<Vec3<int>>(&this->sps.seqBoundingBoxSize),  //
-       "Size of the sequence bounding box (in input coordinate system). Requires autoSeqBbox=0")     //
-      (string(prefix_ + MERGE_DUPLICATED_POINTS_OPT).c_str(),                                        //
-       value<bool>(&this->gps.geom_unique_points_flag),                                              //
-       "Enables removal of duplicated points")                                                       //
-      (string(prefix_ + PARTITION_METHOD_OPT).c_str(),                                               //
-       value<PartitionMethod>(&this->partition.method),                                              //
-       "Method used to partition input point cloud into slices/tiles:\n"                             //
-       "  0: none\n"                                                                                 //
-       "  2: n Uniform-geometry partition bins along the longest edge\n"                             //
-       "  3: Uniform geometry partition at n octree depth\n"                                         //
-       "  4: Uniform square partition\n"                                                             //
-       "  5: n-point spans of input")                                                                //
-      (string(prefix_ + PARTITION_OCTREE_DEPTH_OPT).c_str(),                                         //
-       value<int>(&this->partition.octreeDepth),                                                     //
-       "Depth of octree partition for partitionMethod=4")                                            //
-      (string(prefix_ + SLICE_MAX_POINTS_OPT).c_str(), value<int>(&this->partition.sliceMaxPoints),  //
-       "Maximum number of points per slice")                                                         //
-      (string(prefix_ + SLICE_MIN_POINTS_OPT).c_str(), value<int>(&this->partition.sliceMinPoints),  //
-       "Minimum number of points per slice (soft limit)")                                            //
-      (string(prefix_ + TILE_SIZE_OPT).c_str(), value<int>(&this->partition.tileSize),               //
-       "Partition input into cubic tiles of given size")                                             //
-      (string(prefix_ + CABAC_BYPASS_STREAM_ENABLED_FLAG_OPT).c_str(),                               //
-       value<bool>(&this->sps.cabac_bypass_stream_enabled_flag),                                     //
-       "Controls coding method for ep(bypass) bins")                                                 //
-      (string(prefix_ + ENTROPY_CONTINUATION_ENABLED_OPT).c_str(),                                   //
-       value<bool>(&this->sps.entropy_continuation_enabled_flag),                                    //
-       "Propagate context state between slices")                                                     //
-      (string(prefix_ + ENFORCE_LEVEL_LIMITS_OPT).c_str(), value<bool>(&this->enforceLevelLimits),   //
-       "Abort if level limits exceeded")                                                             //
-      (string(prefix_ + GEOM_TREE_TYPE_OPT).c_str(), value<bool>(&this->gps.predgeom_enabled_flag),  //
-       "Selects the tree coding method:\n"                                                           //
-       "  0: octree\n"                                                                               //
-       "  1: predictive")                                                                            //
-      (string(prefix_ + QTBT_ENABLED_OPT).c_str(), value<bool>(&this->gps.qtbt_enabled_flag),        //
-       "Enables non-cubic geometry bounding box")                                                    //
-      (string(prefix_ + MAX_NUM_QTBT_BEFORE_OT_OPT).c_str(),                                         //
-       value<int>(&this->geom.qtbt.maxNumQtBtBeforeOt),                                              //
-       "Max number of qtbt partitions before ot")                                                    //
-      (string(prefix_ + MIN_QTBT_SIZE_LOG2_OPT).c_str(),                                             //
-       value<int>(&this->geom.qtbt.minQtbtSizeLog2),                                                 //
-       "Minimum size of qtbt partitions")                                                            //
-      (string(prefix_ + NUM_OCTREE_ENTROPY_STREAMS_OPT).c_str(),                                     //
+      (string(prefix_ + SEQ_SIZE_WHD_OPT).c_str(), value<std::vector<int>>(&this->sps.seqBoundingBoxSize),  //
+       "Size of the sequence bounding box (in input coordinate system). Requires autoSeqBbox=0")            //
+      (string(prefix_ + MERGE_DUPLICATED_POINTS_OPT).c_str(),                                               //
+       value<bool>(&this->gps.geom_unique_points_flag),                                                     //
+       "Enables removal of duplicated points")                                                              //
+      (string(prefix_ + PARTITION_METHOD_OPT).c_str(),                                                      //
+       value<PartitionMethod>(&this->partition.method),                                                     //
+       "Method used to partition input point cloud into slices/tiles:\n"                                    //
+       "  0: none\n"                                                                                        //
+       "  2: n Uniform-geometry partition bins along the longest edge\n"                                    //
+       "  3: Uniform geometry partition at n octree depth\n"                                                //
+       "  4: Uniform square partition\n"                                                                    //
+       "  5: n-point spans of input")                                                                       //
+      (string(prefix_ + PARTITION_OCTREE_DEPTH_OPT).c_str(),                                                //
+       value<int>(&this->partition.octreeDepth),                                                            //
+       "Depth of octree partition for partitionMethod=4")                                                   //
+      (string(prefix_ + SLICE_MAX_POINTS_OPT).c_str(), value<int>(&this->partition.sliceMaxPoints),         //
+       "Maximum number of points per slice")                                                                //
+      (string(prefix_ + SLICE_MIN_POINTS_OPT).c_str(), value<int>(&this->partition.sliceMinPoints),         //
+       "Minimum number of points per slice (soft limit)")                                                   //
+      (string(prefix_ + TILE_SIZE_OPT).c_str(), value<int>(&this->partition.tileSize),                      //
+       "Partition input into cubic tiles of given size")                                                    //
+      (string(prefix_ + CABAC_BYPASS_STREAM_ENABLED_FLAG_OPT).c_str(),                                      //
+       value<bool>(&this->sps.cabac_bypass_stream_enabled_flag),                                            //
+       "Controls coding method for ep(bypass) bins")                                                        //
+      (string(prefix_ + ENTROPY_CONTINUATION_ENABLED_OPT).c_str(),                                          //
+       value<bool>(&this->sps.entropy_continuation_enabled_flag),                                           //
+       "Propagate context state between slices")                                                            //
+      (string(prefix_ + ENFORCE_LEVEL_LIMITS_OPT).c_str(), value<bool>(&this->enforceLevelLimits),          //
+       "Abort if level limits exceeded")                                                                    //
+      (string(prefix_ + GEOM_TREE_TYPE_OPT).c_str(), value<bool>(&this->gps.predgeom_enabled_flag),         //
+       "Selects the tree coding method:\n"                                                                  //
+       "  0: octree\n"                                                                                      //
+       "  1: predictive")                                                                                   //
+      (string(prefix_ + QTBT_ENABLED_OPT).c_str(), value<bool>(&this->gps.qtbt_enabled_flag),               //
+       "Enables non-cubic geometry bounding box")                                                           //
+      (string(prefix_ + MAX_NUM_QTBT_BEFORE_OT_OPT).c_str(),                                                //
+       value<int>(&this->geom.qtbt.maxNumQtBtBeforeOt),                                                     //
+       "Max number of qtbt partitions before ot")                                                           //
+      (string(prefix_ + MIN_QTBT_SIZE_LOG2_OPT).c_str(),                                                    //
+       value<int>(&this->geom.qtbt.minQtbtSizeLog2),                                                        //
+       "Minimum size of qtbt partitions")                                                                   //
+      (string(prefix_ + NUM_OCTREE_ENTROPY_STREAMS_OPT).c_str(),                                            //
                                                                   // NB: this is adjusted by minus 1 after the arguments
                                                                   // are parsed
        value<int>(&this->gbh.geom_stream_cnt_minus1),              //
@@ -262,7 +264,7 @@ JPCCEncoderTMC3Parameter::JPCCEncoderTMC3Parameter(const string& prefix, const s
        "Controls angular contextualisation of occupancy")                                                      //
       // NB: the underlying variable is in STV order.
       //     Conversion happens during argument sanitization.
-      (string(prefix_ + LIDAR_HEAD_POSITION_OPT).c_str(), value<Vec3<int>>(&this->gps.gpsAngularOrigin),            //
+      (string(prefix_ + LIDAR_HEAD_POSITION_OPT).c_str(), value<std::vector<int>>(&this->gps.gpsAngularOrigin),     //
        "laser head position (x,y,z) in angular mode")                                                               //
       (string(prefix_ + NUM_LASERS_OPT).c_str(), value<int>(&this->numLasers),                                      //
        "Number of lasers in angular mode")                                                                          //
@@ -497,8 +499,6 @@ ostream& operator<<(ostream& out, const JPCCEncoderTMC3Parameter& obj) {
   return out;
 }
 
-}  // namespace jpcc::encoder
-
 //////////////////////////////////////////////////////////////////////////////////////////////
 //---------------------------------------------------------------------------
 // :: Command line / config parsing helpers
@@ -509,7 +509,6 @@ static std::istream& readUInt(std::istream& in, T& val) {
   val = T(tmp);
   return in;
 }
-namespace pcc {
 static std::istream& operator>>(std::istream& in, ScaleUnit& val) {
   try {
     readUInt(in, val);
@@ -525,37 +524,10 @@ static std::istream& operator>>(std::istream& in, ScaleUnit& val) {
   }
   return in;
 }
-}  // namespace pcc
-// static std::istream& operator>>(std::istream& in, OutputSystem& val) { return readUInt(in, val); }
-namespace pcc {
-static std::istream& operator>>(std::istream& in, ColourMatrix& val) { return readUInt(in, val); }
-}  // namespace pcc
-namespace pcc {
 static std::istream& operator>>(std::istream& in, AxisOrder& val) { return readUInt(in, val); }
-}  // namespace pcc
-namespace pcc {
-static std::istream& operator>>(std::istream& in, AttributeEncoding& val) { return readUInt(in, val); }
-}  // namespace pcc
-namespace pcc {
-static std::istream& operator>>(std::istream& in, LodDecimationMethod& val) { return readUInt(in, val); }
-}  // namespace pcc
-namespace pcc {
 static std::istream& operator>>(std::istream& in, PartitionMethod& val) { return readUInt(in, val); }
-}  // namespace pcc
-namespace pcc {
 static std::istream& operator>>(std::istream& in, PredGeomEncOpts::SortMode& val) { return readUInt(in, val); }
-}  // namespace pcc
-namespace pcc {
 static std::istream& operator>>(std::istream& in, OctreeEncOpts::QpMethod& val) { return readUInt(in, val); }
-}  // namespace pcc
-// static std::ostream& operator<<(std::ostream& out, const OutputSystem& val) {
-//   switch (val) {
-//     case OutputSystem::kConformance: out << "0 (Conformance)"; break;
-//     case OutputSystem::kExternal: out << "1 (External)"; break;
-//   }
-//   return out;
-// }
-namespace pcc {
 static std::ostream& operator<<(std::ostream& out, const ScaleUnit& val) {
   switch (val) {
     case ScaleUnit::kDimensionless: out << "0 (Dimensionless)"; break;
@@ -563,28 +535,6 @@ static std::ostream& operator<<(std::ostream& out, const ScaleUnit& val) {
   }
   return out;
 }
-}  // namespace pcc
-namespace pcc {
-static std::ostream& operator<<(std::ostream& out, const ColourMatrix& val) {
-  switch (val) {
-    case ColourMatrix::kIdentity: out << "0 (Identity)"; break;
-    case ColourMatrix::kBt709: out << "1 (Bt709)"; break;
-    case ColourMatrix::kUnspecified: out << "2 (Unspecified)"; break;
-    case ColourMatrix::kReserved_3: out << "3 (Reserved)"; break;
-    case ColourMatrix::kUsa47Cfr73dot682a20: out << "4 (Usa47Cfr73dot682a20)"; break;
-    case ColourMatrix::kBt601: out << "5 (Bt601)"; break;
-    case ColourMatrix::kSmpte170M: out << "6 (Smpte170M)"; break;
-    case ColourMatrix::kSmpte240M: out << "7 (Smpte240M)"; break;
-    case ColourMatrix::kYCgCo: out << "8 (kYCgCo)"; break;
-    case ColourMatrix::kBt2020Ncl: out << "9 (Bt2020Ncl)"; break;
-    case ColourMatrix::kBt2020Cl: out << "10 (Bt2020Cl)"; break;
-    case ColourMatrix::kSmpte2085: out << "11 (Smpte2085)"; break;
-    default: out << "Unknown"; break;
-  }
-  return out;
-}
-}  // namespace pcc
-namespace pcc {
 static std::ostream& operator<<(std::ostream& out, const AxisOrder& val) {
   switch (val) {
     case AxisOrder::kZYX: out << "0 (zyx)"; break;
@@ -598,29 +548,6 @@ static std::ostream& operator<<(std::ostream& out, const AxisOrder& val) {
   }
   return out;
 }
-}  // namespace pcc
-namespace pcc {
-static std::ostream& operator<<(std::ostream& out, const AttributeEncoding& val) {
-  switch (val) {
-    case AttributeEncoding::kRAHTransform: out << "0 (RAHT)"; break;
-    case AttributeEncoding::kPredictingTransform: out << "1 (Pred)"; break;
-    case AttributeEncoding::kLiftingTransform: out << "2 (Lift)"; break;
-    case AttributeEncoding::kRaw: out << "3 (Raw)"; break;
-  }
-  return out;
-}
-}  // namespace pcc
-namespace pcc {
-static std::ostream& operator<<(std::ostream& out, const LodDecimationMethod& val) {
-  switch (val) {
-    case LodDecimationMethod::kNone: out << "0 (None)"; break;
-    case LodDecimationMethod::kPeriodic: out << "1 (Periodic)"; break;
-    case LodDecimationMethod::kCentroid: out << "2 (Centroid)"; break;
-  }
-  return out;
-}
-}  // namespace pcc
-namespace pcc {
 static std::ostream& operator<<(std::ostream& out, const PartitionMethod& val) {
   switch (val) {
     case PartitionMethod::kNone: out << "0 (None)"; break;
@@ -632,8 +559,6 @@ static std::ostream& operator<<(std::ostream& out, const PartitionMethod& val) {
   }
   return out;
 }
-}  // namespace pcc
-namespace pcc {
 static std::ostream& operator<<(std::ostream& out, const PredGeomEncOpts::SortMode& val) {
   switch (val) {
     using SortMode = PredGeomEncOpts::SortMode;
@@ -646,8 +571,6 @@ static std::ostream& operator<<(std::ostream& out, const PredGeomEncOpts::SortMo
   }
   return out;
 }
-}  // namespace pcc
-namespace pcc {
 static std::ostream& operator<<(std::ostream& out, const OctreeEncOpts::QpMethod& val) {
   switch (val) {
     using Method = OctreeEncOpts::QpMethod;
@@ -658,18 +581,6 @@ static std::ostream& operator<<(std::ostream& out, const OctreeEncOpts::QpMethod
   }
   return out;
 }
-}  // namespace pcc
-// namespace df {
-// namespace program_options_lite {
-// template <typename T>
-// struct option_detail<pcc::Vec3<T>> {
-//   static constexpr bool is_container  = true;
-//   static constexpr bool is_fixed_size = true;
-//   typedef T*            output_iterator;
-//
-//   static void            clear(pcc::Vec3<T>& container){};
-//   static output_iterator make_output_iterator(Vec3<T>& container) { return &container[0]; }
-// };
-// }  // namespace program_options_lite
-// }  // namespace df
 //---------------------------------------------------------------------------
+
+}  // namespace jpcc::encoder

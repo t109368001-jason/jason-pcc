@@ -22,9 +22,9 @@ void JPCCEncoderNone::encode(const FramePtr& frame, std::vector<char>& encodedBy
 
   for (size_t i = 0; i < frame->getPointCount(); i++) {
     PointType& point = (*frame)[i];
-    os.write(reinterpret_cast<char*>(&point.x()), sizeof(PointValueType));
-    os.write(reinterpret_cast<char*>(&point.y()), sizeof(PointValueType));
-    os.write(reinterpret_cast<char*>(&point.z()), sizeof(PointValueType));
+    os.write(reinterpret_cast<char*>(&point[0]), sizeof(PointValueType));
+    os.write(reinterpret_cast<char*>(&point[1]), sizeof(PointValueType));
+    os.write(reinterpret_cast<char*>(&point[2]), sizeof(PointValueType));
   }
 
 #if !defined(NDEBUG)

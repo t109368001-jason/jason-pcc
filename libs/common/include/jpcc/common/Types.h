@@ -5,18 +5,17 @@
 #include <memory>
 
 #include <pcl/point_types.h>
+#include <pcl/point_cloud.h>
 
 #include <PCCChrono.h>
 #include <PCCMemory.h>
-
-#include <PCCPointSet.h>
 
 namespace jpcc {
 
 using std::make_shared;
 using std::shared_ptr;
 
-using Intensity = pcc::attr_t;
+using Intensity = uint16_t;
 
 using Index   = pcl::index_t;
 using UIndex  = pcl::uindex_t;

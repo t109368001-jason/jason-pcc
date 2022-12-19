@@ -5,7 +5,7 @@
 
 #include <Eigen/Dense>
 
-#include <dependencies/nanoflann/KDTreeVectorOfVectorsAdaptor.h>
+#include <KDTreeVectorOfVectorsAdaptor.h>
 
 namespace jpcc::process {
 
@@ -16,7 +16,7 @@ JPCCNormalEstimation::JPCCNormalEstimation(JPCCNormalEstimationParameter param) 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void JPCCNormalEstimation::computeInPlace(FramePtr& frame) const {
-  frame->addNormal();
+  frame->addNormals();
 
   KDTreeVectorOfVectorsAdaptor<Frame, double> kdtree(3, *frame, 10);
 
@@ -27,9 +27,9 @@ void JPCCNormalEstimation::computeInPlace(FramePtr& frame) const {
   Eigen::Matrix3d Q;
   Eigen::Matrix3d D;
   for (size_t index = 0; index < frame->getPointCount(); index++) {
-    auto&               point       = (*frame)[index];
-    pcc::Vec3<double>   pointDouble = point;
-    std::vector<size_t> indices;
+    auto&                 point       = (*frame)[index];
+    std::array<double, 3> pointDouble = {(double)point[0], (double)point[1], (double)point[2]};
+    std::vector<size_t>   indices;
     if (param_.radiusSearch > 0) {
       std::vector<std::pair<Index, double> >    indicesDists;
       nanoflann::RadiusResultSet<double, Index> resultSet(param_.radiusSearch * param_.radiusSearch, indicesDists);
@@ -53,14 +53,14 @@ void JPCCNormalEstimation::computeInPlace(FramePtr& frame) const {
     {
       for (auto neighborIndex : indices) {
         auto& neighborPoint = (*frame)[neighborIndex];
-        bary += Eigen::Vector3d(neighborPoint.x(), neighborPoint.y(), neighborPoint.z());
+        bary += Eigen::Vector3d(neighborPoint[0], neighborPoint[1], neighborPoint[2]);
       }
       bary /= double(indices.size());
       covMat = Eigen::Matrix3d::Zero();
       Eigen::Vector3d pt;
       for (unsigned long long neighborIndex : indices) {
         auto& neighborPoint = (*frame)[neighborIndex];
-        pt                  = Eigen::Vector3d(neighborPoint.x(), neighborPoint.y(), neighborPoint.z()) - bary;
+        pt                  = Eigen::Vector3d(neighborPoint[0], neighborPoint[1], neighborPoint[2]) - bary;
         covMat(0, 0) += pt[0] * pt[0];
         covMat(1, 1) += pt[1] * pt[1];
         covMat(2, 2) += pt[2] * pt[2];
@@ -118,9 +118,9 @@ void JPCCNormalEstimation::computeInPlace(FramePtr& frame) const {
       }
     }
 
-    frame->getNormal(index).x() = float(normal[0]);
-    frame->getNormal(index).y() = float(normal[1]);
-    frame->getNormal(index).z() = float(normal[2]);
+    frame->getNormal(index)[0] = float(normal[0]);
+    frame->getNormal(index)[1] = float(normal[1]);
+    frame->getNormal(index)[2] = float(normal[2]);
   }
 }
 

@@ -108,12 +108,12 @@ bool Condition::predict(const PointType& point) const {  // NOLINT(misc-no-recur
 bool Condition::predictVector3fMap(const PointType& point) const {
   double val;
   switch (type) {
-    case X: val = point.x(); break;
-    case Y: val = point.y(); break;
-    case Z: val = point.z(); break;
-    case R: val = std::sqrt(point.getNorm2<double>()); break;
+    case X: val = point[0]; break;
+    case Y: val = point[1]; break;
+    case Z: val = point[2]; break;
+    case R: val = std::sqrt(point[0] * point[0] + point[1] * point[1] + point[2] * point[2]); break;
     case PROD: {
-      Vector4f v(float(point.x()), float(point.y()), float(point.z()), 1);
+      Vector4f v(float(point[0]), float(point[1]), float(point[2]), 1);
       val = coefficient->transpose() * v;
       break;
     }

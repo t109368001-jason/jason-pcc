@@ -2,9 +2,22 @@
 
 #include <sstream>
 
-#include "io_tlv.h"
+#include <io_tlv.h>
+#include <PCCTMC3Decoder.h>
 
 namespace jpcc::decoder {
+
+class PCCTMC3Decoder3LambdaCallbacks : public pcc::PCCTMC3Decoder3::Callbacks {
+ protected:
+  const std::function<void(const pcc::CloudFrame& frame)>& onOutputCloud_;
+
+ public:
+  PCCTMC3Decoder3LambdaCallbacks(  // NOLINT(google-explicit-constructor)
+      const std::function<void(const pcc::CloudFrame& frame)>& onOutputCloud);
+
+ protected:
+  void onOutputCloud(const pcc::CloudFrame& frame) override;
+};
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 PCCTMC3Decoder3LambdaCallbacks::PCCTMC3Decoder3LambdaCallbacks(
@@ -17,9 +30,11 @@ void PCCTMC3Decoder3LambdaCallbacks::onOutputCloud(const pcc::CloudFrame& frame)
 //////////////////////////////////////////////////////////////////////////////////////////////
 void JPCCDecoderTMC3::decode(std::istream& is, FramePtr& reconstructFrame) {
   std::function<void(const pcc::CloudFrame& frame)> onOutputCloud = [&](const pcc::CloudFrame& frame) {
-    reconstructFrame = make_shared<Frame>(frame.cloud);
+    reconstructFrame = make_shared<Frame>();
     for (size_t i = 0; i < frame.cloud.getPointCount(); i++) {  //
-      (*reconstructFrame)[i] += frame.outputOrigin;
+      auto point = frame.cloud[i];
+      point += frame.outputOrigin;
+      (*reconstructFrame)[i] = PointType{point.x(), point.y(), point.z()};
     }
   };
 
@@ -65,8 +80,7 @@ void JPCCDecoderTMC3::decode(std::istream& is, FramePtr& reconstructFrame) {
   if (reconstructFrame) {
     std::cout << __FUNCTION__ << "() "
               << "bytes=" << is.tellg() - startPosition << ", "
-              << "points=" << std::static_pointer_cast<pcc::PCCPointSet3>(reconstructFrame)->getPointCount()
-              << std::endl;
+              << "points=" << reconstructFrame->getPointCount() << std::endl;
   }
 }
 

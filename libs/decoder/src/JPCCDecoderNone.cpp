@@ -19,9 +19,9 @@ void JPCCDecoderNone::decode(std::istream& is, FramePtr& frame) {
   frame->resize(length);
   for (size_t i = 0; i < frame->getPointCount(); i++) {
     PointType& point = (*frame)[i];
-    is.read(reinterpret_cast<char*>(&point.x()), sizeof(PointValueType));
-    is.read(reinterpret_cast<char*>(&point.y()), sizeof(PointValueType));
-    is.read(reinterpret_cast<char*>(&point.z()), sizeof(PointValueType));
+    is.read(reinterpret_cast<char*>(&point[0]), sizeof(PointValueType));
+    is.read(reinterpret_cast<char*>(&point[1]), sizeof(PointValueType));
+    is.read(reinterpret_cast<char*>(&point[2]), sizeof(PointValueType));
   }
 }
 

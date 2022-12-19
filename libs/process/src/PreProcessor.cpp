@@ -6,7 +6,7 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/range/counting_range.hpp>
 
-#include <dependencies/nanoflann/KDTreeVectorOfVectorsAdaptor.h>
+#include <KDTreeVectorOfVectorsAdaptor.h>
 
 #include "jpcc/process/Process.h"
 
@@ -84,8 +84,8 @@ void radiusOutlierRemoval(Frame& frame, const float radius, const int minNeighbo
   KDTreeVectorOfVectorsAdaptor<Frame, double> kdtree(3, frame, 10);
 
   for (Index i = 0; i < frame.getPointCount(); i++) {
-    auto&             point       = frame[i];
-    pcc::Vec3<double> pointDouble = point;
+    auto&                 point       = frame[i];
+    std::array<double, 3> pointDouble = {(double)point[0], (double)point[1], (double)point[2]};
     resultSet.init();
     bool ret = kdtree.index->radiusSearchCustomCallback(&pointDouble[0], resultSet, nanoflann::SearchParams(10));
     THROW_IF_NOT(ret);
@@ -102,7 +102,7 @@ void radiusOutlierRemoval(
   KDTreeVectorOfVectorsAdaptor<Frame> kdtree(3, frame, 10);
 
   for (Index i = 0; i < frame.getPointCount(); i++) {
-    pcc::Vec3<double> pointDouble = frame[i];
+    std::array<double, 3> pointDouble = {(double)frame[i][0], (double)frame[i][1], (double)frame[i][2]};
     resultSet.init();
     bool ret = kdtree.index->radiusSearchCustomCallback(&pointDouble[0], resultSet, nanoflann::SearchParams(10));
     THROW_IF_NOT(ret);
