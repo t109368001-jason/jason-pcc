@@ -15,7 +15,15 @@ class JPCCEncoder {
  public:
   JPCCEncoder(JPCCEncoderParameter parameter);  // NOLINT(google-explicit-constructor)
 
+  virtual bool isConvertToCoderTypeThreadSafe();
+
   virtual bool isEncodeThreadSafe();
+
+  virtual void convertToCoderType(const FramePtr& frame, std::shared_ptr<void>& coderFrame) = 0;
+
+  virtual void convertToCoderType(const GroupOfFrame&                 frames,
+                                  std::vector<std::shared_ptr<void>>& coderFrames,
+                                  bool                                parallel);
 
   virtual void encode(const FramePtr& frame, std::vector<char>& encodedBytes) = 0;
 

@@ -10,6 +10,17 @@ namespace jpcc::encoder {
 JPCCEncoderNone::JPCCEncoderNone(const JPCCEncoderParameter& parameter) : JPCCEncoder(parameter) {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
+bool JPCCEncoderNone::isConvertToCoderTypeThreadSafe() { return true; }
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+bool JPCCEncoderNone::isEncodeThreadSafe() { return true; }
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void JPCCEncoderNone::convertToCoderType(const FramePtr& frame, shared_ptr<void>& coderFrame) {
+  coderFrame = std::static_pointer_cast<void>(frame);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
 void JPCCEncoderNone::encode(const FramePtr& frame, std::vector<char>& encodedBytes) {
   std::stringstream os;
 

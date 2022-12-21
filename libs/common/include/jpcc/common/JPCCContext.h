@@ -25,11 +25,16 @@ class JPCCContext : public IJPCCSegmentationContext,
   // for segmentation
   GroupOfPclFrame<PointSegmentation> pclFrames_;
 
-  // coder specified type
   GroupOfFrame dynamicFrames_;
   GroupOfFrame staticFrames_;
   GroupOfFrame staticAddedFrames_;
   GroupOfFrame staticRemovedFrames_;
+
+  // coder specified type
+  std::vector<std::shared_ptr<void>> coderDynamicFrames_;
+  std::vector<std::shared_ptr<void>> coderStaticFrames_;
+  std::vector<std::shared_ptr<void>> coderStaticAddedFrames_;
+  std::vector<std::shared_ptr<void>> coderStaticRemovedFrames_;
 
   std::vector<std::vector<char>> dynamicEncodedBytesVector_;
   std::vector<std::vector<char>> staticEncodedBytesVector_;
@@ -37,6 +42,11 @@ class JPCCContext : public IJPCCSegmentationContext,
   std::vector<std::vector<char>> staticRemovedEncodedBytesVector_;
 
   // coder specified type
+  std::vector<std::shared_ptr<void>> coderDynamicReconstructFrames_;
+  std::vector<std::shared_ptr<void>> coderStaticReconstructFrames_;
+  std::vector<std::shared_ptr<void>> coderStaticAddedReconstructFrames_;
+  std::vector<std::shared_ptr<void>> coderStaticRemovedReconstructFrames_;
+
   GroupOfFrame dynamicReconstructFrames_;
   GroupOfFrame staticReconstructFrames_;
   GroupOfFrame staticAddedReconstructFrames_;
@@ -66,10 +76,23 @@ class JPCCContext : public IJPCCSegmentationContext,
   [[nodiscard]] Index               getStartFrameNumber() const override { return startFrameNumber_; };
   [[nodiscard]] const GroupOfFrame& getFrames() const override { return frames_; };
   [[nodiscard]] const GroupOfPclFrame<PointSegmentation>& getPclFrames() const override { return pclFrames_; };
-  [[nodiscard]] const GroupOfFrame&                       getDynamicFrames() const override { return dynamicFrames_; };
-  [[nodiscard]] const GroupOfFrame&                       getStaticFrames() const override { return staticFrames_; };
+
+  [[nodiscard]] const GroupOfFrame& getDynamicFrames() const override { return dynamicFrames_; };
+  [[nodiscard]] const GroupOfFrame& getStaticFrames() const override { return staticFrames_; };
   [[nodiscard]] const GroupOfFrame& getStaticAddedFrames() const override { return staticAddedFrames_; };
   [[nodiscard]] const GroupOfFrame& getStaticRemovedFrames() const override { return staticRemovedFrames_; };
+  [[nodiscard]] const std::vector<std::shared_ptr<void>>& getCoderDynamicFrames() const override {
+    return coderDynamicFrames_;
+  }
+  [[nodiscard]] const std::vector<std::shared_ptr<void>>& getCoderStaticFrames() const override {
+    return coderStaticFrames_;
+  }
+  [[nodiscard]] const std::vector<std::shared_ptr<void>>& getCoderStaticAddedFrames() const override {
+    return coderStaticAddedFrames_;
+  }
+  [[nodiscard]] const std::vector<std::shared_ptr<void>>& getCoderStaticRemovedFrames() const override {
+    return coderStaticRemovedFrames_;
+  }
   [[nodiscard]] const std::vector<std::vector<char>>& getDynamicEncodedBytesVector() const override {
     return dynamicEncodedBytesVector_;
   };
@@ -82,6 +105,18 @@ class JPCCContext : public IJPCCSegmentationContext,
   [[nodiscard]] const std::vector<std::vector<char>>& getStaticRemovedEncodedBytesVector() const override {
     return staticRemovedEncodedBytesVector_;
   };
+  [[nodiscard]] const std::vector<std::shared_ptr<void>>& getCoderDynamicReconstructFrames() const override {
+    return coderDynamicReconstructFrames_;
+  }
+  [[nodiscard]] const std::vector<std::shared_ptr<void>>& getCoderStaticReconstructFrames() const override {
+    return coderStaticReconstructFrames_;
+  }
+  [[nodiscard]] const std::vector<std::shared_ptr<void>>& getCoderStaticAddedReconstructFrames() const override {
+    return coderStaticAddedReconstructFrames_;
+  }
+  [[nodiscard]] const std::vector<std::shared_ptr<void>>& getCoderStaticRemovedReconstructFrames() const override {
+    return coderStaticRemovedReconstructFrames_;
+  }
   [[nodiscard]] const GroupOfFrame& getDynamicReconstructFrames() const override { return dynamicReconstructFrames_; };
   [[nodiscard]] const GroupOfFrame& getStaticReconstructFrames() const override { return staticReconstructFrames_; };
   [[nodiscard]] const GroupOfFrame& getStaticAddedReconstructFrames() const override {
@@ -105,7 +140,15 @@ class JPCCContext : public IJPCCSegmentationContext,
   [[nodiscard]] GroupOfFrame&                       getStaticFrames() override { return staticFrames_; };
   [[nodiscard]] GroupOfFrame&                       getStaticAddedFrames() override { return staticAddedFrames_; };
   [[nodiscard]] GroupOfFrame&                       getStaticRemovedFrames() override { return staticRemovedFrames_; };
-  [[nodiscard]] std::vector<std::vector<char>>&     getDynamicEncodedBytesVector() override {
+  [[nodiscard]] std::vector<std::shared_ptr<void>>& getCoderDynamicFrames() override { return coderDynamicFrames_; }
+  [[nodiscard]] std::vector<std::shared_ptr<void>>& getCoderStaticFrames() override { return coderStaticFrames_; }
+  [[nodiscard]] std::vector<std::shared_ptr<void>>& getCoderStaticAddedFrames() override {
+    return coderStaticAddedFrames_;
+  }
+  [[nodiscard]] std::vector<std::shared_ptr<void>>& getCoderStaticRemovedFrames() override {
+    return coderStaticRemovedFrames_;
+  }
+  [[nodiscard]] std::vector<std::vector<char>>& getDynamicEncodedBytesVector() override {
     return dynamicEncodedBytesVector_;
   };
   [[nodiscard]] std::vector<std::vector<char>>& getStaticEncodedBytesVector() override {
@@ -117,6 +160,18 @@ class JPCCContext : public IJPCCSegmentationContext,
   [[nodiscard]] std::vector<std::vector<char>>& getStaticRemovedEncodedBytesVector() override {
     return staticRemovedEncodedBytesVector_;
   };
+  [[nodiscard]] std::vector<std::shared_ptr<void>>& getCoderDynamicReconstructFrames() override {
+    return coderDynamicReconstructFrames_;
+  }
+  [[nodiscard]] std::vector<std::shared_ptr<void>>& getCoderStaticReconstructFrames() override {
+    return coderStaticReconstructFrames_;
+  }
+  [[nodiscard]] std::vector<std::shared_ptr<void>>& getCoderStaticAddedReconstructFrames() override {
+    return coderStaticAddedReconstructFrames_;
+  }
+  [[nodiscard]] std::vector<std::shared_ptr<void>>& getCoderStaticRemovedReconstructFrames() override {
+    return coderStaticRemovedReconstructFrames_;
+  }
   [[nodiscard]] GroupOfFrame& getDynamicReconstructFrames() override { return dynamicReconstructFrames_; };
   [[nodiscard]] GroupOfFrame& getStaticReconstructFrames() override { return staticReconstructFrames_; };
   [[nodiscard]] GroupOfFrame& getStaticAddedReconstructFrames() override { return staticAddedReconstructFrames_; };
