@@ -28,13 +28,15 @@ PCCTMC3Decoder3LambdaCallbacks::PCCTMC3Decoder3LambdaCallbacks(
 void PCCTMC3Decoder3LambdaCallbacks::onOutputCloud(const pcc::CloudFrame& frame) { onOutputCloud_(frame); }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void JPCCDecoderTMC3::decode(std::istream& is, FramePtr& reconstructFrame) {
+bool JPCCDecoderTMC3::isConvertFromCoderTypeThreadSafe() { return true; }
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void JPCCDecoderTMC3::decode(std::istream& is, std::shared_ptr<void>& coderReconstructFrame) {
   std::function<void(const pcc::CloudFrame& frame)> onOutputCloud = [&](const pcc::CloudFrame& frame) {
-    reconstructFrame = make_shared<Frame>();
-    for (size_t i = 0; i < frame.cloud.getPointCount(); i++) {  //
-      auto point = frame.cloud[i];
-      point += frame.outputOrigin;
-      (*reconstructFrame)[i] = PointType{point.x(), point.y(), point.z()};
+    auto _frame           = std::make_shared<pcc::PCCPointSet3>(frame.cloud);
+    coderReconstructFrame = _frame;
+    for (size_t i = 0; i < _frame->getPointCount(); i++) {  //
+      (*_frame)[i] += frame.outputOrigin;
     }
   };
 
@@ -54,7 +56,7 @@ void JPCCDecoderTMC3::decode(std::istream& is, FramePtr& reconstructFrame) {
     readTlv(is, &buffer);
 
     if (!hasSps && bufferPtr->empty()) {
-      reconstructFrame = make_shared<Frame>();
+      coderReconstructFrame = make_shared<pcc::PCCPointSet3>();
       break;
     }
 
@@ -75,12 +77,24 @@ void JPCCDecoderTMC3::decode(std::istream& is, FramePtr& reconstructFrame) {
 
     if (!bufferPtr) { break; }
 
-    if (reconstructFrame) { break; }
+    if (coderReconstructFrame) { break; }
   }
-  if (reconstructFrame) {
+  if (coderReconstructFrame) {
     std::cout << __FUNCTION__ << "() "
               << "bytes=" << is.tellg() - startPosition << ", "
-              << "points=" << reconstructFrame->getPointCount() << std::endl;
+              << "points=" << std::static_pointer_cast<pcc::PCCPointSet3>(coderReconstructFrame)->getPointCount()
+              << std::endl;
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void JPCCDecoderTMC3::convertFromCoderType(const std::shared_ptr<void>& coderFrame, FramePtr& frame) {
+  auto _coderFrame = std::static_pointer_cast<pcc::PCCPointSet3>(coderFrame);
+  frame            = make_shared<Frame>();
+  frame->resize(_coderFrame->getPointCount());
+  for (size_t i = 0; i < _coderFrame->getPointCount(); i++) {  //
+    auto point  = (*_coderFrame)[i];
+    (*frame)[i] = PointType{point.x(), point.y(), point.z()};
   }
 }
 

@@ -9,7 +9,15 @@ class JPCCDecoder {
   using Ptr = shared_ptr<JPCCDecoder>;
 
  public:
-  virtual void decode(std::istream& is, FramePtr& reconstructFrame) = 0;
+  virtual bool isConvertFromCoderTypeThreadSafe();
+
+  virtual void decode(std::istream& is, std::shared_ptr<void>& coderReconstructFrame) = 0;
+
+  virtual void convertFromCoderType(const std::shared_ptr<void>& coderFrame, FramePtr& frame) = 0;
+
+  virtual void convertFromCoderType(const std::vector<std::shared_ptr<void>>& coderFrames,
+                                    GroupOfFrame&                             frames,
+                                    bool                                      parallel);
 };
 
 }  // namespace jpcc::decoder

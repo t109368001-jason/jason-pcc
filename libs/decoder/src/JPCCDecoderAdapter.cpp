@@ -46,18 +46,42 @@ void JPCCDecoderAdapter::decode(std::istream& is, IJPCCDecoderContext& context, 
     context.getStaticRemovedReconstructFrames().resize(frameCount);
   }
   for (Index i = 0; i < frameCount; i++) {
-    dynamicDecoder_->decode(is, context.getDynamicReconstructFrames()[i]);
+    dynamicDecoder_->decode(is, context.getCoderDynamicReconstructFrames()[i]);
     context.getDynamicReconstructFrames()[i]->setFrameNumber(context.getStartFrameNumber() + i);
     if (staticDecoder_) {
-      staticDecoder_->decode(is, context.getStaticReconstructFrames()[i]);
+      staticDecoder_->decode(is, context.getCoderStaticReconstructFrames()[i]);
       context.getStaticReconstructFrames()[i]->setFrameNumber(context.getStartFrameNumber() + i);
     }
     if (staticAddedDecoder_ && staticRemovedDecoder_) {
-      staticAddedDecoder_->decode(is, context.getStaticAddedReconstructFrames()[i]);
-      staticRemovedDecoder_->decode(is, context.getStaticRemovedReconstructFrames()[i]);
+      staticAddedDecoder_->decode(is, context.getCoderStaticAddedReconstructFrames()[i]);
+      staticRemovedDecoder_->decode(is, context.getCoderStaticRemovedReconstructFrames()[i]);
       context.getStaticAddedReconstructFrames()[i]->setFrameNumber(context.getStartFrameNumber() + i);
       context.getStaticRemovedReconstructFrames()[i]->setFrameNumber(context.getStartFrameNumber() + i);
     }
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void JPCCDecoderAdapter::convertFromCoderType(IJPCCDecoderContext& context, const bool parallel) {
+  context.getDynamicReconstructFrames().resize(context.getCoderDynamicReconstructFrames().size());
+  context.getStaticReconstructFrames().resize(context.getCoderStaticReconstructFrames().size());
+  context.getStaticAddedReconstructFrames().resize(context.getCoderStaticAddedReconstructFrames().size());
+  context.getStaticRemovedReconstructFrames().resize(context.getCoderStaticRemovedReconstructFrames().size());
+  if (dynamicDecoder_) {
+    dynamicDecoder_->convertFromCoderType(context.getCoderDynamicReconstructFrames(),
+                                          context.getDynamicReconstructFrames(), parallel);
+  }
+  if (staticDecoder_) {
+    staticDecoder_->convertFromCoderType(context.getCoderStaticReconstructFrames(),
+                                         context.getStaticReconstructFrames(), parallel);
+  }
+  if (staticAddedDecoder_) {
+    staticAddedDecoder_->convertFromCoderType(context.getCoderStaticAddedReconstructFrames(),
+                                              context.getStaticAddedReconstructFrames(), parallel);
+  }
+  if (staticRemovedDecoder_) {
+    staticRemovedDecoder_->convertFromCoderType(context.getCoderStaticRemovedReconstructFrames(),
+                                                context.getStaticRemovedReconstructFrames(), parallel);
   }
 }
 

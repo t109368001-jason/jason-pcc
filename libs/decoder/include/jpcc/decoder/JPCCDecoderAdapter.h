@@ -17,6 +17,8 @@ class JPCCDecoderAdapter {
   void set(JPCCHeader header);
 
   void decode(std::istream& is, IJPCCDecoderContext& context, size_t frameCount);
+
+  void convertFromCoderType(IJPCCDecoderContext& context, bool parallel);
 };
 
 }  // namespace jpcc::decoder
