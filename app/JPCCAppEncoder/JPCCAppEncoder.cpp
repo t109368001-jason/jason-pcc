@@ -117,6 +117,10 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
       ScopeStopwatch clock = metric.start("Segmentation", frameNumber);
       gmmSegmentation->segmentation(context, parameter.parallel);
     }
+    {  // convertToCoderType
+      ScopeStopwatch clock = metric.start("ConvertToCoderType", frameNumber);
+      encoder.convertToCoderType(context, parameter.parallel);
+    }
     {  // encode
       ScopeStopwatch clock = metric.start("Encode", frameNumber);
       encoder.encode(context, parameter.parallel);

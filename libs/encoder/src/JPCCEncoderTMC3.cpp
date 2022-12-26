@@ -41,10 +41,25 @@ void PCCTMC3Encoder3LambdaCallbacks::onPostRecolour(const PCCPointSet3& set3) { 
 JPCCEncoderTMC3::JPCCEncoderTMC3(const JPCCEncoderParameter& parameter) : JPCCEncoder(parameter) {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
+bool JPCCEncoderTMC3::isConvertToCoderTypeThreadSafe() { return true; }
+
+//////////////////////////////////////////////////////////////////////////////////////////////
 bool JPCCEncoderTMC3::isEncodeThreadSafe() { return true; }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void JPCCEncoderTMC3::encode(const FramePtr& frame, std::vector<char>& encodedBytes) {
+void JPCCEncoderTMC3::convertToCoderType(const FramePtr& frame, CoderFramePtr& coderFrame) {
+  coderFrame       = std::make_shared<pcc::PCCPointSet3>();
+  auto _coderFrame = std::static_pointer_cast<pcc::PCCPointSet3>(coderFrame);
+  _coderFrame->resize(frame->getPointCount());
+  for (size_t i = 0; i < _coderFrame->getPointCount(); i++) {
+    (*_coderFrame)[i].x() = (*frame)[i][0];
+    (*_coderFrame)[i].y() = (*frame)[i][1];
+    (*_coderFrame)[i].z() = (*frame)[i][2];
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void JPCCEncoderTMC3::encode(const CoderFramePtr& coderFrame, std::vector<char>& encodedBytes) {
   std::function<void(const PayloadBuffer& buffer)> onOutputBuffer = [&encodedBytes](const PayloadBuffer& buffer) {
     std::stringstream os;
     writeTlv(buffer, os);
@@ -57,7 +72,8 @@ void JPCCEncoderTMC3::encode(const FramePtr& frame, std::vector<char>& encodedBy
   };
   std::function<void(const PCCPointSet3& set3)> onPostRecolour = [](const PCCPointSet3& set3) {};
 
-  if (frame->getPointCount() == 0) {
+  auto _coderFrame = std::static_pointer_cast<pcc::PCCPointSet3>(coderFrame);
+  if (_coderFrame->getPointCount() == 0) {
     PayloadBuffer buffer;
     buffer.type = PayloadType::kSequenceParameterSet;
 
@@ -68,15 +84,8 @@ void JPCCEncoderTMC3::encode(const FramePtr& frame, std::vector<char>& encodedBy
   pcc::EncoderParams             param = toPCC(this->parameter_.tmc3);
   PCCTMC3Encoder3LambdaCallbacks callback(onOutputBuffer, onPostRecolour);
   PCCTMC3Encoder3                encoder;
-  PCCPointSet3                   _frame;
-  _frame.resize(frame->getPointCount());
-  for (size_t i = 0; i < _frame.getPointCount(); i++) {
-    _frame[i].x() = (*frame)[i][0];
-    _frame[i].y() = (*frame)[i][1];
-    _frame[i].z() = (*frame)[i][2];
-  }
 
-  encoder.compress(_frame, &param, &callback, nullptr);
+  encoder.compress(*_coderFrame, &param, &callback, nullptr);
   std::cout << __FUNCTION__ << "() "
             << "bytes=" << encodedBytes.size() << std::endl;
 }

@@ -12,9 +12,9 @@ class JPCCEncoderNone : public virtual JPCCEncoder {
 
   bool isEncodeThreadSafe() override;
 
-  void convertToCoderType(const FramePtr& frame, shared_ptr<void>& coderFrame) override;
+  void convertToCoderType(const FramePtr& frame, CoderFramePtr& coderFrame) override;
 
-  void encode(const FramePtr& frame, std::vector<char>& encodedBytes) override;
+  void encode(const CoderFramePtr& coderFrame, std::vector<char>& encodedBytes) override;
 };
 
 }  // namespace jpcc::encoder

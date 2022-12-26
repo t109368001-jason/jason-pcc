@@ -16,23 +16,24 @@ bool JPCCEncoderNone::isConvertToCoderTypeThreadSafe() { return true; }
 bool JPCCEncoderNone::isEncodeThreadSafe() { return true; }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void JPCCEncoderNone::convertToCoderType(const FramePtr& frame, shared_ptr<void>& coderFrame) {
-  coderFrame = std::static_pointer_cast<void>(frame);
+void JPCCEncoderNone::convertToCoderType(const FramePtr& frame, CoderFramePtr& coderFrame) {
+  coderFrame = std::static_pointer_cast<CoderFrame>(frame);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void JPCCEncoderNone::encode(const FramePtr& frame, std::vector<char>& encodedBytes) {
+void JPCCEncoderNone::encode(const CoderFramePtr& coderFrame, std::vector<char>& encodedBytes) {
+  auto              _coderFrame = std::static_pointer_cast<Frame>(coderFrame);
   std::stringstream os;
 
-  const auto length = uint32_t(frame->getPointCount());
+  const auto length = uint32_t(_coderFrame->getPointCount());
 
   os.put(char(length >> 24));
   os.put(char(length >> 16));
   os.put(char(length >> 8));
   os.put(char(length >> 0));
 
-  for (size_t i = 0; i < frame->getPointCount(); i++) {
-    PointType& point = (*frame)[i];
+  for (size_t i = 0; i < _coderFrame->getPointCount(); i++) {
+    PointType& point = (*_coderFrame)[i];
     os.write(reinterpret_cast<char*>(&point[0]), sizeof(PointValueType));
     os.write(reinterpret_cast<char*>(&point[1]), sizeof(PointValueType));
     os.write(reinterpret_cast<char*>(&point[2]), sizeof(PointValueType));
@@ -43,7 +44,7 @@ void JPCCEncoderNone::encode(const FramePtr& frame, std::vector<char>& encodedBy
 #endif
   std::string tmpString = os.str();
   for (char& i : tmpString) { encodedBytes.push_back(i); }
-  assert((frame->getPointCount() * (sizeof(PointValueType) * 3) + 4) == (encodedBytes.size() - oldSize));
+  assert((coderFrame->getPointCount() * (sizeof(PointValueType) * 3) + 4) == (encodedBytes.size() - oldSize));
 }
 
 }  // namespace jpcc::encoder

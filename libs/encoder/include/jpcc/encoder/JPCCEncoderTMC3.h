@@ -8,9 +8,13 @@ class JPCCEncoderTMC3 : public virtual JPCCEncoder {
  public:
   JPCCEncoderTMC3(const JPCCEncoderParameter& parameter);  // NOLINT(google-explicit-constructor)
 
+  bool isConvertToCoderTypeThreadSafe() override;
+
   bool isEncodeThreadSafe() override;
 
-  void encode(const FramePtr& frame, std::vector<char>& encodedBytes) override;
+  void convertToCoderType(const FramePtr& frame, CoderFramePtr& coderFrame) override;
+
+  void encode(const CoderFramePtr& coderFrame, std::vector<char>& encodedBytes) override;
 };
 
 }  // namespace jpcc::encoder
