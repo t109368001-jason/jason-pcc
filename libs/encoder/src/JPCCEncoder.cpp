@@ -20,7 +20,7 @@ bool JPCCEncoder::isEncodeThreadSafe() { return false; }
 void JPCCEncoder::convertToCoderType(const GroupOfFrame&                 frames,
                                      std::vector<std::shared_ptr<void>>& coderFrames,
                                      const bool                          parallel) {
-  if (!parallel || !isEncodeThreadSafe()) {
+  if (!parallel || !isConvertToCoderTypeThreadSafe()) {
     for (size_t i = 0; i < frames.size(); i++) { this->convertToCoderType(frames[i], coderFrames[i]); }
   } else {
     const auto range = boost::counting_range<size_t>(0, frames.size());
