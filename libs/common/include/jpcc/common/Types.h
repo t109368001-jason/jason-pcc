@@ -7,8 +7,8 @@
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 
-#include <PCCChrono.h>
-#include <PCCMemory.h>
+#include "JPCCChrono.h"
+#include "JPCCMemory.h"
 
 namespace jpcc {
 
@@ -33,6 +33,6 @@ using GroupOfPclFrame = std::vector<PclFramePtr<PointT>>;
 template <typename PointT>
 using GroupOfPclFrameMap = std::map<std::string, GroupOfPclFrame<PointT>>;
 
-using Stopwatch = pcc::chrono::Stopwatch<std::chrono::steady_clock>;
+using Stopwatch = jpcc::chrono::Stopwatch<std::chrono::steady_clock>;
 
 }  // namespace jpcc

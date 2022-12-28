@@ -4,7 +4,6 @@ namespace jpcc::encoder {
 
 using namespace std;
 using namespace po;
-using namespace pcc;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 JPCCEncoderTMC2Parameter::JPCCEncoderTMC2Parameter() :

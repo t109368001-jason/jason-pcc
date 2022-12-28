@@ -11,7 +11,6 @@
 #include <KDTreeVectorOfVectorsAdaptor.h>
 
 using namespace std;
-using namespace pcc;
 
 namespace jpcc::metric {
 

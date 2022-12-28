@@ -1,18 +1,18 @@
-#include <PCCMemory.h>
+#include <jpcc/common/JPCCMemory.h>
 
 #include <cstdlib>
 #include <cstdio>
 #include <cstring>
 
-namespace pcc {
+namespace jpcc {
 
 // ********************************************************************* //
 // ******************** Note: this value is in KB! ********************* //
 // ********************************************************************* //
 
 #if defined(WIN32)
-#include <windows.h>
-#include <psapi.h>
+#include <Windows.h>
+#include <Psapi.h>
 int getUsedMemory() {
   PROCESS_MEMORY_COUNTERS pmc;
   GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc));
@@ -83,4 +83,4 @@ uint64_t getPeakMemory() {
 }
 #endif
 
-}  // namespace pcc
+}  // namespace jpcc

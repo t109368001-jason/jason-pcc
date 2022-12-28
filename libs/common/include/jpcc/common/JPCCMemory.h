@@ -36,7 +36,7 @@
 // #include "PCCCommon.h"
 #include <cstdint>
 
-namespace pcc {
+namespace jpcc {
 
 // ********************************************************************* //
 // ******************** Note: this value is in KB! ********************* //
@@ -54,4 +54,4 @@ int      getUsedMemory();
 uint64_t getPeakMemory();
 #endif
 
-};  // namespace pcc
+};  // namespace jpcc

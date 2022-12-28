@@ -4,7 +4,6 @@ namespace jpcc::encoder {
 
 using namespace std;
 using namespace po;
-using namespace pcc;
 
 #define BACKEND_TYPE_OPT ".backendType"
 #define SRC_UNIT_LENGTH_OPT ".srcUnitLength"
