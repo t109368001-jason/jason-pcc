@@ -341,8 +341,8 @@ void JPCCEncoderTMC3Parameter::setDefault() {
   extGeomScale                                      = 1.;
   sps.geometry_axis_order                           = AxisOrder::kXYZ;
   autoSeqBbox                                       = true;
-  sps.seqBoundingBoxOrigin                          = {0};
-  sps.seqBoundingBoxSize                            = {0};
+  sps.seqBoundingBoxOrigin                          = {0, 0, 0};
+  sps.seqBoundingBoxSize                            = {0, 0, 0};
   gps.geom_unique_points_flag                       = true;
   partition.method                                  = PartitionMethod::kUniformSquare;
   partition.octreeDepth                             = 1;
@@ -368,7 +368,7 @@ void JPCCEncoderTMC3Parameter::setDefault() {
   gps.geom_planar_threshold1                        = 99;
   gps.geom_planar_threshold2                        = 113;
   gps.geom_idcm_rate_minus1                         = 0;
-  trisoupNodeSizesLog2                              = {0};
+  trisoupNodeSizesLog2                              = {0, 0, 0};
   gps.trisoup_sampling_value                        = 0;
   gps.geom_scaling_enabled_flag                     = false;
   geom.qpMethod                                     = OctreeEncOpts::QpMethod::kUniform;
