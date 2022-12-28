@@ -39,24 +39,18 @@ void JPCCDecoderAdapter::set(JPCCHeader header) {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void JPCCDecoderAdapter::decode(std::istream& is, IJPCCDecoderContext& context, const size_t frameCount) {
-  context.getDynamicReconstructFrames().resize(frameCount);
+  context.getCoderDynamicReconstructFrames().resize(frameCount);
   if (staticDecoder_) { context.getStaticReconstructFrames().resize(frameCount); }
   if (staticAddedDecoder_ && staticRemovedDecoder_) {
-    context.getStaticAddedReconstructFrames().resize(frameCount);
-    context.getStaticRemovedReconstructFrames().resize(frameCount);
+    context.getCoderStaticAddedReconstructFrames().resize(frameCount);
+    context.getCoderStaticRemovedReconstructFrames().resize(frameCount);
   }
   for (Index i = 0; i < frameCount; i++) {
     dynamicDecoder_->decode(is, context.getCoderDynamicReconstructFrames()[i]);
-    context.getDynamicReconstructFrames()[i]->setFrameNumber(context.getStartFrameNumber() + i);
-    if (staticDecoder_) {
-      staticDecoder_->decode(is, context.getCoderStaticReconstructFrames()[i]);
-      context.getStaticReconstructFrames()[i]->setFrameNumber(context.getStartFrameNumber() + i);
-    }
+    if (staticDecoder_) { staticDecoder_->decode(is, context.getCoderStaticReconstructFrames()[i]); }
     if (staticAddedDecoder_ && staticRemovedDecoder_) {
       staticAddedDecoder_->decode(is, context.getCoderStaticAddedReconstructFrames()[i]);
       staticRemovedDecoder_->decode(is, context.getCoderStaticRemovedReconstructFrames()[i]);
-      context.getStaticAddedReconstructFrames()[i]->setFrameNumber(context.getStartFrameNumber() + i);
-      context.getStaticRemovedReconstructFrames()[i]->setFrameNumber(context.getStartFrameNumber() + i);
     }
   }
 }
@@ -82,6 +76,18 @@ void JPCCDecoderAdapter::convertFromCoderType(IJPCCDecoderContext& context, cons
   if (staticRemovedDecoder_) {
     staticRemovedDecoder_->convertFromCoderType(context.getCoderStaticRemovedReconstructFrames(),
                                                 context.getStaticRemovedReconstructFrames(), parallel);
+  }
+  for (Index i = 0; i < context.getDynamicReconstructFrames().size(); i++) {
+    context.getDynamicReconstructFrames()[i]->setFrameNumber(context.getStartFrameNumber() + i);
+  }
+  for (Index i = 0; i < context.getStaticReconstructFrames().size(); i++) {
+    context.getStaticReconstructFrames()[i]->setFrameNumber(context.getStartFrameNumber() + i);
+  }
+  for (Index i = 0; i < context.getStaticAddedReconstructFrames().size(); i++) {
+    context.getStaticAddedReconstructFrames()[i]->setFrameNumber(context.getStartFrameNumber() + i);
+  }
+  for (Index i = 0; i < context.getStaticRemovedReconstructFrames().size(); i++) {
+    context.getStaticRemovedReconstructFrames()[i]->setFrameNumber(context.getStartFrameNumber() + i);
   }
 }
 
