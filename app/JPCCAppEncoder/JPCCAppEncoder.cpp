@@ -147,6 +147,10 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
       ScopeStopwatch clock = metric.start("Decode", frameNumber);
       decoder.decode(ifs, context, groupOfFramesSize);
     }
+    {  // convertFromCoderType
+      ScopeStopwatch clock = metric.start("ConvertFromCoderType", frameNumber);
+      decoder.convertFromCoderType(context, parameter.parallel);
+    }
     {  // copy normal to Reconstruct
       ScopeStopwatch clock = metric.start("CopyNormalToReconstruct", frameNumber);
       metric.copyNormalToReconstruct(context, parameter.parallel);
