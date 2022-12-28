@@ -7,5 +7,5 @@ target_link_libraries(
 
 target_link_libraries(
         ${LIBRARY_NAME} PRIVATE
-        PccLibCommon PccLibDecoder PccLibMetrics PccLibConformance tbb_static PccLibBitstreamCommon PccLibBitstreamReader
+        PccLibCommon PccLibDecoder PccLibConformance tbb_static PccLibBitstreamCommon PccLibBitstreamReader
 )

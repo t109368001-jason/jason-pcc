@@ -7,7 +7,7 @@ namespace jpcc::encoder {
 
 class JPCCEncoderTMC2 : public virtual JPCCEncoder {
  protected:
-  JPCCEncoderTMC2Parameter parameter_;
+  std::shared_ptr<void> parameter_;
 
  public:
   JPCCEncoderTMC2(JPCCEncoderTMC2Parameter parameter);  // NOLINT(google-explicit-constructor)
