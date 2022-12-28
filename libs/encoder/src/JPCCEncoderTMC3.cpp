@@ -92,7 +92,7 @@ void JPCCEncoderTMC3::encode(const CoderFramePtr& coderFrame, std::vector<char>&
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcc::EncoderParams toPCC(const JPCCEncoderTMC3Parameter& parameter) {
-  pcc::EncoderParams result;
+  pcc::EncoderParams result           = {0};
   result.sps.seqBoundingBoxOrigin     = {parameter.sps.seqBoundingBoxOrigin[0], parameter.sps.seqBoundingBoxOrigin[1],
                                          parameter.sps.seqBoundingBoxOrigin[2]};
   result.sps.seqBoundingBoxSize       = {parameter.sps.seqBoundingBoxSize[0], parameter.sps.seqBoundingBoxSize[1],
