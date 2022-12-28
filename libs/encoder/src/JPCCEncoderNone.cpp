@@ -44,7 +44,7 @@ void JPCCEncoderNone::encode(const CoderFramePtr& coderFrame, std::vector<char>&
 #endif
   std::string tmpString = os.str();
   for (char& i : tmpString) { encodedBytes.push_back(i); }
-  assert((coderFrame->getPointCount() * (sizeof(PointValueType) * 3) + 4) == (encodedBytes.size() - oldSize));
+  assert((_coderFrame->getPointCount() * (sizeof(PointValueType) * 3) + 4) == (encodedBytes.size() - oldSize));
 }
 
 }  // namespace jpcc::encoder
