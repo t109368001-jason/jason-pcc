@@ -1,0 +1,219 @@
+Subject: [PATCH] for jpcc
+---
+Index: tmc3/pcc_chrono.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/pcc_chrono.cpp b/tmc3/pcc_chrono.cpp
+--- a/tmc3/pcc_chrono.cpp	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/pcc_chrono.cpp	(date 1672216880720)
+@@ -51,7 +51,7 @@
+ #if _WIN32
+ namespace pcc {
+ namespace chrono {
+-  namespace detail {
++  namespace detail_tmc3 {
+     using hundredns = std::chrono::duration<int64_t, std::ratio<1, 10000000>>;
+ 
+     // global state to emulate getrusage(RUSAGE_CHILDREN).
+@@ -76,7 +76,7 @@
+   val.LowPart = userTime.dwLowDateTime;
+   val.HighPart = userTime.dwHighDateTime;
+ 
+-  using namespace detail;
++  using namespace detail_tmc3;
+   using hundredns = std::chrono::duration<int64_t, std::ratio<1, 10000000>>;
+   return time_point(hundredns(val.QuadPart) + g_cumulative_time_children);
+ }
+Index: tmc3/TMC3.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/TMC3.cpp b/tmc3/TMC3.cpp
+--- a/tmc3/TMC3.cpp	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/TMC3.cpp	(date 1672216835935)
+@@ -207,46 +207,46 @@
+ 
+ //============================================================================
+ 
+-int
+-main(int argc, char* argv[])
+-{
+-  cout << "MPEG PCC tmc3 version " << ::pcc::version << endl;
+-
+-  Parameters params;
+-
+-  try {
+-    if (!ParseParameters(argc, argv, params))
+-      return 1;
+-  }
+-  catch (df::program_options_lite::ParseFailure& e) {
+-    std::cerr << "Error parsing option \"" << e.arg << "\" with argument \""
+-              << e.val << "\"." << std::endl;
+-    return 1;
+-  }
+-
+-  // Timers to count elapsed wall/user time
+-  pcc::chrono::Stopwatch<std::chrono::steady_clock> clock_wall;
+-  pcc::chrono::Stopwatch<pcc::chrono::utime_inc_children_clock> clock_user;
+-
+-  clock_wall.start();
+-
+-  int ret = 0;
+-  if (params.isDecoder) {
+-    ret = SequenceDecoder(&params).decompress(&clock_user);
+-  } else {
+-    ret = SequenceEncoder(&params).compress(&clock_user);
+-  }
+-
+-  clock_wall.stop();
+-
+-  using namespace std::chrono;
+-  auto total_wall = duration_cast<milliseconds>(clock_wall.count()).count();
+-  auto total_user = duration_cast<milliseconds>(clock_user.count()).count();
+-  std::cout << "Processing time (wall): " << total_wall / 1000.0 << " s\n";
+-  std::cout << "Processing time (user): " << total_user / 1000.0 << " s\n";
+-
+-  return ret;
+-}
++//int
++//main(int argc, char* argv[])
++//{
++//  cout << "MPEG PCC tmc3 version " << ::pcc::version << endl;
++//
++//  Parameters params;
++//
++//  try {
++//    if (!ParseParameters(argc, argv, params))
++//      return 1;
++//  }
++//  catch (df::program_options_lite::ParseFailure& e) {
++//    std::cerr << "Error parsing option \"" << e.arg << "\" with argument \""
++//              << e.val << "\"." << std::endl;
++//    return 1;
++//  }
++//
++//  // Timers to count elapsed wall/user time
++//  pcc::chrono::Stopwatch<std::chrono::steady_clock> clock_wall;
++//  pcc::chrono::Stopwatch<pcc::chrono::utime_inc_children_clock> clock_user;
++//
++//  clock_wall.start();
++//
++//  int ret = 0;
++//  if (params.isDecoder) {
++//    ret = SequenceDecoder(&params).decompress(&clock_user);
++//  } else {
++//    ret = SequenceEncoder(&params).compress(&clock_user);
++//  }
++//
++//  clock_wall.stop();
++//
++//  using namespace std::chrono;
++//  auto total_wall = duration_cast<milliseconds>(clock_wall.count()).count();
++//  auto total_user = duration_cast<milliseconds>(clock_user.count()).count();
++//  std::cout << "Processing time (wall): " << total_wall / 1000.0 << " s\n";
++//  std::cout << "Processing time (user): " << total_user / 1000.0 << " s\n";
++//
++//  return ret;
++//}
+ 
+ //---------------------------------------------------------------------------
+ 
+Index: tmc3/PCCPointSet.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/PCCPointSet.h b/tmc3/PCCPointSet.h
+--- a/tmc3/PCCPointSet.h	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/PCCPointSet.h	(date 1672216835985)
+@@ -411,7 +411,7 @@
+   }
+ 
+   size_t getPointCount() const { return positions.size(); }
+-  void resize(const size_t size)
++  virtual void resize(const size_t size)
+   {
+     positions.resize(size);
+     if (hasColors()) {
+@@ -428,7 +428,7 @@
+     }
+   }
+ 
+-  void reserve(const size_t size)
++  virtual void reserve(const size_t size)
+   {
+     positions.reserve(size);
+     if (hasColors()) {
+@@ -444,7 +444,7 @@
+       laserAngles.reserve(size);
+     }
+   }
+-  void clear()
++  virtual void clear()
+   {
+     positions.clear();
+     colors.clear();
+@@ -499,7 +499,7 @@
+         std::next(laserAngles.begin(), dstEnd));
+   }
+ 
+-  void swapPoints(const size_t index1, const size_t index2)
++  virtual void swapPoints(const size_t index1, const size_t index2)
+   {
+     assert(index1 < getPointCount());
+     assert(index2 < getPointCount());
+Index: tmc3/CMakeLists.txt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/CMakeLists.txt b/tmc3/CMakeLists.txt
+--- a/tmc3/CMakeLists.txt	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/CMakeLists.txt	(date 1672216835935)
+@@ -28,8 +28,8 @@
+                            -D VERSION_EXTRA=${VERSION_EXTRA}
+                            -D VERSION_CACHE_FILE=${VERSION_CACHE_FILE}
+                            -D GIT_EXECUTABLE=${GIT_EXECUTABLE}
+-                           -P ${CMAKE_SOURCE_DIR}/scripts/genversion.cmake
+-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
++                           -P ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/genversion.cmake
++  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/..
+ )
+ 
+ add_custom_command(
+@@ -161,12 +161,13 @@
+   "${CMAKE_CURRENT_SOURCE_DIR}/../dependencies/program-options-lite"
+ )
+ 
+-add_executable (tmc3
++add_library (tmc3
+   ${PROJECT_CPP_FILES}
+   ${PROJECT_INC_FILES}
+   ${PROJECT_IN_FILES}
+   ${VERSION_FILE}
+ )
++target_include_directories(tmc3 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+ add_dependencies(tmc3 genversion)
+ 
+ add_executable (ply-merge EXCLUDE_FROM_ALL
+@@ -177,5 +178,3 @@
+   ${VERSION_FILE}
+ )
+ add_dependencies(ply-merge genversion)
+-
+-install (TARGETS tmc3 DESTINATION bin)
+Index: PATCHED
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/PATCHED b/PATCHED
+new file mode 100644
+--- /dev/null	(date 1672216835991)
++++ b/PATCHED	(date 1672216835991)
+@@ -0,0 +1,1 @@
++mpeg-pcc-tmc13 patched with: 
+\ No newline at end of file
