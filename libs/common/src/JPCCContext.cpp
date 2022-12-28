@@ -29,10 +29,18 @@ void JPCCContext::clear() {
   staticFrames_.clear();
   staticAddedFrames_.clear();
   staticRemovedFrames_.clear();
+  coderDynamicFrames_.clear();
+  coderStaticFrames_.clear();
+  coderStaticAddedFrames_.clear();
+  coderStaticRemovedFrames_.clear();
   dynamicEncodedBytesVector_.clear();
   staticEncodedBytesVector_.clear();
   staticAddedEncodedBytesVector_.clear();
   staticRemovedEncodedBytesVector_.clear();
+  coderDynamicReconstructFrames_.clear();
+  coderStaticReconstructFrames_.clear();
+  coderStaticAddedReconstructFrames_.clear();
+  coderStaticRemovedReconstructFrames_.clear();
   dynamicReconstructFrames_.clear();
   staticReconstructFrames_.clear();
   staticAddedReconstructFrames_.clear();
