@@ -9,20 +9,20 @@ namespace jpcc::encoder {
 JPCCEncoderAdapter::JPCCEncoderAdapter(const JPCCEncoderParameter& dynamicParameter,
                                        const JPCCEncoderParameter& staticParameter) {
   if (dynamicParameter.backendType == CoderBackendType::NONE) {
-    dynamicEncoder_ = make_shared<JPCCEncoderNone>(dynamicParameter);
+    dynamicEncoder_ = make_shared<JPCCEncoderNone>();
   } else if (dynamicParameter.backendType == CoderBackendType::TMC3) {
-    dynamicEncoder_ = make_shared<JPCCEncoderTMC3>(dynamicParameter);
+    dynamicEncoder_ = make_shared<JPCCEncoderTMC3>(dynamicParameter.tmc3);
   } else {
     BOOST_THROW_EXCEPTION(std::logic_error("unsupported staticPointType"));
   }
   if (staticParameter.backendType == CoderBackendType::NONE) {
-    staticEncoder_        = make_shared<JPCCEncoderNone>(staticParameter);
-    staticAddedEncoder_   = make_shared<JPCCEncoderNone>(staticParameter);
-    staticRemovedEncoder_ = make_shared<JPCCEncoderNone>(staticParameter);
+    staticEncoder_        = make_shared<JPCCEncoderNone>();
+    staticAddedEncoder_   = make_shared<JPCCEncoderNone>();
+    staticRemovedEncoder_ = make_shared<JPCCEncoderNone>();
   } else if (staticParameter.backendType == CoderBackendType::TMC3) {
-    staticEncoder_        = make_shared<JPCCEncoderTMC3>(staticParameter);
-    staticAddedEncoder_   = make_shared<JPCCEncoderTMC3>(staticParameter);
-    staticRemovedEncoder_ = make_shared<JPCCEncoderTMC3>(staticParameter);
+    staticEncoder_        = make_shared<JPCCEncoderTMC3>(staticParameter.tmc3);
+    staticAddedEncoder_   = make_shared<JPCCEncoderTMC3>(staticParameter.tmc3);
+    staticRemovedEncoder_ = make_shared<JPCCEncoderTMC3>(staticParameter.tmc3);
   } else {
     BOOST_THROW_EXCEPTION(std::logic_error("unsupported staticPointType"));
   }

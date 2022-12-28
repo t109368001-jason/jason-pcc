@@ -6,7 +6,7 @@ namespace jpcc::encoder {
 
 class JPCCEncoderNone : public virtual JPCCEncoder {
  public:
-  JPCCEncoderNone(const JPCCEncoderParameter& parameter);  // NOLINT(google-explicit-constructor)
+  JPCCEncoderNone();  // NOLINT(google-explicit-constructor)
 
   bool isConvertToCoderTypeThreadSafe() override;
 

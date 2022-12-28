@@ -1,7 +1,6 @@
 #pragma once
 
 #include <jpcc/common/Common.h>
-#include <jpcc/encoder/JPCCEncoderParameter.h>
 
 namespace jpcc::encoder {
 
@@ -13,12 +12,7 @@ class JPCCEncoder {
   using CoderFramePtr     = std::shared_ptr<CoderFrame>;
   using CoderGroupOfFrame = std::vector<CoderFramePtr>;
 
- protected:
-  JPCCEncoderParameter parameter_;
-
  public:
-  JPCCEncoder(JPCCEncoderParameter parameter);  // NOLINT(google-explicit-constructor)
-
   virtual bool isConvertToCoderTypeThreadSafe();
 
   virtual bool isEncodeThreadSafe();

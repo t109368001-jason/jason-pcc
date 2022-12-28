@@ -38,7 +38,7 @@ void PCCTMC3Encoder3LambdaCallbacks::onOutputBuffer(const PayloadBuffer& buffer)
 void PCCTMC3Encoder3LambdaCallbacks::onPostRecolour(const PCCPointSet3& set3) { onPostRecolour_(set3); }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-JPCCEncoderTMC3::JPCCEncoderTMC3(const JPCCEncoderParameter& parameter) : JPCCEncoder(parameter) {}
+JPCCEncoderTMC3::JPCCEncoderTMC3(const JPCCEncoderTMC3Parameter parameter) : JPCCEncoder(), parameter_(parameter) {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 bool JPCCEncoderTMC3::isConvertToCoderTypeThreadSafe() { return true; }
@@ -81,7 +81,7 @@ void JPCCEncoderTMC3::encode(const CoderFramePtr& coderFrame, std::vector<char>&
     return;
   }
 
-  pcc::EncoderParams             param = toPCC(this->parameter_.tmc3);
+  pcc::EncoderParams             param = toPCC(this->parameter_);
   PCCTMC3Encoder3LambdaCallbacks callback(onOutputBuffer, onPostRecolour);
   PCCTMC3Encoder3                encoder;
 
