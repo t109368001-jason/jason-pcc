@@ -1,7 +1,8 @@
 #include <jpcc/decoder/JPCCDecoderAdapter.h>
 
-#include "../include/jpcc/decoder/JPCCDecoderNone.h"
-#include "../include/jpcc/decoder/JPCCDecoderTMC3.h"
+#include <jpcc/decoder/JPCCDecoderNone.h>
+#include <jpcc/decoder/JPCCDecoderTMC2.h>
+#include <jpcc/decoder/JPCCDecoderTMC3.h>
 
 namespace jpcc::decoder {
 
@@ -9,6 +10,8 @@ namespace jpcc::decoder {
 void JPCCDecoderAdapter::set(JPCCHeader header) {
   if (header.dynamicBackendType == CoderBackendType::NONE) {
     dynamicDecoder_ = make_shared<JPCCDecoderNone>();
+  } else if (header.dynamicBackendType == CoderBackendType::TMC2) {
+    dynamicDecoder_ = make_shared<JPCCDecoderTMC2>();
   } else if (header.dynamicBackendType == CoderBackendType::TMC3) {
     dynamicDecoder_ = make_shared<JPCCDecoderTMC3>();
   } else {
@@ -17,6 +20,8 @@ void JPCCDecoderAdapter::set(JPCCHeader header) {
   if (header.segmentationOutputType == SegmentationOutputType::DYNAMIC_STATIC) {
     if (header.staticBackendType == CoderBackendType::NONE) {
       staticDecoder_ = make_shared<JPCCDecoderNone>();
+    } else if (header.staticBackendType == CoderBackendType::TMC2) {
+      staticDecoder_ = make_shared<JPCCDecoderTMC2>();
     } else if (header.staticBackendType == CoderBackendType::TMC3) {
       staticDecoder_ = make_shared<JPCCDecoderTMC3>();
     } else {
@@ -26,6 +31,9 @@ void JPCCDecoderAdapter::set(JPCCHeader header) {
     if (header.staticBackendType == CoderBackendType::NONE) {
       staticAddedDecoder_   = make_shared<JPCCDecoderNone>();
       staticRemovedDecoder_ = make_shared<JPCCDecoderNone>();
+    } else if (header.staticBackendType == CoderBackendType::TMC2) {
+      staticAddedDecoder_   = make_shared<JPCCDecoderTMC2>();
+      staticRemovedDecoder_ = make_shared<JPCCDecoderTMC2>();
     } else if (header.staticBackendType == CoderBackendType::TMC3) {
       staticAddedDecoder_   = make_shared<JPCCDecoderTMC3>();
       staticRemovedDecoder_ = make_shared<JPCCDecoderTMC3>();

@@ -13,6 +13,7 @@ JPCCEncoderParameter::JPCCEncoderParameter(const string& prefix, const string& c
     Parameter(prefix, caption),
     backendType_("none"),
     backendType(CoderBackendType::NONE),
+    tmc2(prefix + ".tmc2", "JPCCEncoderTMC2Parameter"),
     tmc3(prefix + ".tmc3", "JPCCEncoderTMC3Parameter") {
   opts_.add_options()                               //
       (string(prefix_ + BACKEND_TYPE_OPT).c_str(),  //
@@ -25,6 +26,7 @@ JPCCEncoderParameter::JPCCEncoderParameter(const string& prefix, const string& c
 void JPCCEncoderParameter::notify() {
   backendType = getCoderBackendType(backendType_);
   if (backendType == CoderBackendType::TMC3) { tmc3.notify(); }
+  if (backendType == CoderBackendType::TMC2) { tmc2.notify(); }
 }
 
 ostream& operator<<(ostream& out, const JPCCEncoderParameter& obj) {
@@ -32,6 +34,7 @@ ostream& operator<<(ostream& out, const JPCCEncoderParameter& obj) {
       (BACKEND_TYPE_OPT, obj.backendType_)  //
       ;
   if (obj.backendType == CoderBackendType::TMC3) { out << obj.tmc3; }
+  if (obj.backendType == CoderBackendType::TMC2) { out << obj.tmc2; }
   return out;
 }
 

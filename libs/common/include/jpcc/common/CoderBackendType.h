@@ -5,7 +5,7 @@
 
 namespace jpcc {
 
-enum class CoderBackendType { NONE = 0, TMC3 = 1 };
+enum class CoderBackendType { NONE = 0, TMC3 = 1, TMC2 = 2 };
 
 [[nodiscard]] CoderBackendType getCoderBackendType(const std::string& coderBackendType);
 

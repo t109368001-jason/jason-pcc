@@ -1,0 +1,23 @@
+#include <jpcc/decoder/JPCCDecoderTMC2.h>
+
+#include <sstream>
+
+namespace jpcc::decoder {
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+bool JPCCDecoderTMC2::isConvertFromCoderTypeThreadSafe() {
+  // TODO
+  return true;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void JPCCDecoderTMC2::decode(std::istream& is, std::shared_ptr<void>& coderReconstructFrame) {
+  // TODO
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void JPCCDecoderTMC2::convertFromCoderType(const std::shared_ptr<void>& coderFrame, FramePtr& frame) {
+  // TODO
+}
+
+}  // namespace jpcc::decoder

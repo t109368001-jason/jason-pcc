@@ -5,6 +5,7 @@
 
 #include <jpcc/common/Parameter.h>
 #include <jpcc/common/CoderBackendType.h>
+#include <jpcc/encoder/JPCCEncoderTMC2Parameter.h>
 #include <jpcc/encoder/JPCCEncoderTMC3Parameter.h>
 
 namespace jpcc::encoder {
@@ -17,6 +18,7 @@ class JPCCEncoderParameter : public virtual Parameter {
 
  public:
   CoderBackendType         backendType;
+  JPCCEncoderTMC2Parameter tmc2;
   JPCCEncoderTMC3Parameter tmc3;
 
   JPCCEncoderParameter();

@@ -13,6 +13,8 @@ CoderBackendType getCoderBackendType(const std::string& coderBackendType) {
     return CoderBackendType::NONE;
   } else if (coderBackendType == "tmc3") {
     return CoderBackendType::TMC3;
+  } else if (coderBackendType == "tmc2") {
+    return CoderBackendType::TMC2;
   } else {
     BOOST_THROW_EXCEPTION(logic_error("invalid encoderBackendType"));
   }
@@ -22,6 +24,7 @@ std::ostream& operator<<(std::ostream& out, const CoderBackendType& obj) {
   switch (obj) {
     case CoderBackendType::NONE: out << "NONE"; break;
     case CoderBackendType::TMC3: out << "TMC3"; break;
+    case CoderBackendType::TMC2: out << "TMC2"; break;
     default: out << "Unknown"; break;
   }
   return out;
