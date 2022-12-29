@@ -20,4 +20,3 @@ else ()
     target_compile_options(tmc3 PRIVATE
             -Wno-return-type -Wno-attributes)
 endif ()
-

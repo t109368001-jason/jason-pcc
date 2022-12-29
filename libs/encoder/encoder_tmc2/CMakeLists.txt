@@ -1,6 +1,7 @@
 JPCC_ADD_LIBRARY(LIBRARY_NAME)
 
-INCLUDE_DIRECTORIES(
+target_include_directories(
+        ${LIBRARY_NAME} PRIVATE
         ${TMC2_SOURCE_DIR}/source/lib/PccLibCommon/include
         ${TMC2_SOURCE_DIR}/source/lib/PccLibEncoder/include
         ${TMC2_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include

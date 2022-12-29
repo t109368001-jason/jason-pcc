@@ -8,6 +8,8 @@ namespace jpcc::encoder {
 class JPCCEncoderTMC2 : public virtual JPCCEncoder {
  protected:
   JPCCEncoderTMC2Parameter parameter_;
+  std::shared_ptr<void>    encoder_;
+  size_t                   contextIndex;
 
  public:
   JPCCEncoderTMC2(JPCCEncoderTMC2Parameter parameter);  // NOLINT(google-explicit-constructor)
@@ -19,6 +21,10 @@ class JPCCEncoderTMC2 : public virtual JPCCEncoder {
   void convertToCoderType(const FramePtr& frame, CoderFramePtr& coderFrame) override;
 
   void encode(const CoderFramePtr& coderFrame, std::vector<char>& encodedBytes) override;
+
+  void encode(const CoderGroupOfFrame&        coderFrames,
+              std::vector<std::vector<char>>& encodedBytesVector,
+              bool                            parallel) override;
 };
 
 }  // namespace jpcc::encoder
