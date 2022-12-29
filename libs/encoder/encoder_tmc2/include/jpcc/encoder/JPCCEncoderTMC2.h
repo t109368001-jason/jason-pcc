@@ -1,13 +1,13 @@
 #pragma once
 
-#include <jpcc/encoder/JPCCEncoder.h>
+#include <jpcc/encoder/JPCCEncoderNone.h>
 #include <jpcc/encoder/JPCCEncoderTMC2Parameter.h>
 
 namespace jpcc::encoder {
 
 class JPCCEncoderTMC2 : public virtual JPCCEncoder {
  protected:
-  std::shared_ptr<void> parameter_;
+  JPCCEncoderTMC2Parameter parameter_;
 
  public:
   JPCCEncoderTMC2(JPCCEncoderTMC2Parameter parameter);  // NOLINT(google-explicit-constructor)
