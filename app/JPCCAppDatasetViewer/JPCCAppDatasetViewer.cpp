@@ -16,7 +16,6 @@
 
 using namespace std;
 using namespace std::chrono;
-using namespace pcc;
 using namespace jpcc;
 using namespace jpcc::combination;
 using namespace jpcc::decoder;

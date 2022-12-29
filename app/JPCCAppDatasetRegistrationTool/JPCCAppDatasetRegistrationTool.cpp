@@ -15,7 +15,6 @@
 
 using namespace std;
 using namespace std::chrono;
-using namespace pcc;
 using namespace jpcc;
 using namespace jpcc::io;
 using namespace jpcc::process;

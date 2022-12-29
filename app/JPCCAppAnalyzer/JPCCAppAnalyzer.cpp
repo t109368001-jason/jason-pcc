@@ -27,7 +27,6 @@ using namespace std;
 using namespace std::chrono;
 using namespace std::filesystem;
 using namespace pcl::octree;
-using namespace pcc;
 using namespace jpcc;
 using namespace jpcc::io;
 using namespace jpcc::process;
