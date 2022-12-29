@@ -1,8 +1,284 @@
+Subject: [PATCH] <3rd> update mpeg-pcc-tmc2, update CMakeLists.txt
+---
+Index: dependencies/tbb/Makefile
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/dependencies/tbb/Makefile b/dependencies/tbb/Makefile
+--- a/dependencies/tbb/Makefile	(revision 1fc928244bc778c73bed0d36f1c22d95ed6b0fe2)
++++ b/dependencies/tbb/Makefile	(date 1672291718121)
+@@ -42,7 +42,7 @@
+ CMAKE_EDIT_COMMAND = /usr/bin/ccmake
+ 
+ # The top-level source directory on which CMake was run.
+-CMAKE_SOURCE_DIR = /home/wp21/PCC/ricardj/gitclones_dev/release-v1.2-proposal-in-progress
++TMC2_SOURCE_DIR = /home/wp21/PCC/ricardj/gitclones_dev/release-v1.2-proposal-in-progress
+ 
+ # The top-level build directory on which CMake was run.
+ CMAKE_BINARY_DIR = /home/wp21/PCC/ricardj/gitclones_dev/release-v1.2-proposal-in-progress
+@@ -53,7 +53,7 @@
+ # Special rule for the target edit_cache
+ edit_cache:
+ 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
+-	/usr/bin/ccmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
++	/usr/bin/ccmake -H$(TMC2_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+ .PHONY : edit_cache
+ 
+ # Special rule for the target edit_cache
+@@ -104,7 +104,7 @@
+ # Special rule for the target rebuild_cache
+ rebuild_cache:
+ 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
+-	/usr/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
++	/usr/bin/cmake -H$(TMC2_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+ .PHONY : rebuild_cache
+ 
+ # Special rule for the target rebuild_cache
+@@ -139,7 +139,7 @@
+ 
+ # clear depends
+ depend:
+-	cd /home/wp21/PCC/ricardj/gitclones_dev/release-v1.2-proposal-in-progress && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
++	cd /home/wp21/PCC/ricardj/gitclones_dev/release-v1.2-proposal-in-progress && $(CMAKE_COMMAND) -H$(TMC2_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+ .PHONY : depend
+ 
+ # Convenience name for target.
+@@ -1194,6 +1194,6 @@
+ # No rule that depends on this can have commands that come from listfiles
+ # because they might be regenerated.
+ cmake_check_build_system:
+-	cd /home/wp21/PCC/ricardj/gitclones_dev/release-v1.2-proposal-in-progress && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
++	cd /home/wp21/PCC/ricardj/gitclones_dev/release-v1.2-proposal-in-progress && $(CMAKE_COMMAND) -H$(TMC2_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+ .PHONY : cmake_check_build_system
+ 
+Index: source/lib/PccLibCommon/include/PCCPointSet.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/source/lib/PccLibCommon/include/PCCPointSet.h b/source/lib/PccLibCommon/include/PCCPointSet.h
+--- a/source/lib/PccLibCommon/include/PCCPointSet.h	(revision 1fc928244bc778c73bed0d36f1c22d95ed6b0fe2)
++++ b/source/lib/PccLibCommon/include/PCCPointSet.h	(date 1672297967899)
+@@ -42,7 +42,21 @@
+ class PCCPointSet3 {
+  public:
+   PCCPointSet3() : withNormals_( false ), withColors_( false ), withReflectances_( false ) {}
+-  PCCPointSet3( const PCCPointSet3& ) = default;
++  PCCPointSet3( const PCCPointSet3& src ) :
++      positions_( src.positions_ ),
++      colors_( src.colors_ ),
++      colors16bit_( src.colors16bit_ ),
++      reflectances_( src.reflectances_ ),
++      boundaryPointTypes_( src.boundaryPointTypes_ ),
++      pointPatchIndexes_( src.pointPatchIndexes_ ),
++      parentPointIndex_( src.parentPointIndex_ ),
++      types_( src.types_ ),
++      normals_( src.normals_ ),
++      withNormals_( src.withNormals_ ),
++      withColors_( src.withColors_ ),
++      withReflectances_( src.withReflectances_ ){
++
++      };
+   PCCPointSet3& operator=( const PCCPointSet3& rhs ) = default;
+   ~PCCPointSet3()                                    = default;
+ 
+@@ -125,7 +139,7 @@
+       colors_[k][2] = uint8_t( colors16bit_[k][2] );
+     }
+   }
+-  void fillColor( PCCColor3B color = {0, 0, 0} ) {
++  void fillColor( PCCColor3B color = { 0, 0, 0 } ) {
+     for ( size_t k = 0; k < getPointCount(); k++ ) { colors_[k] = color; }
+   }
+ 
+Index: source/lib/PccLibBitstreamWriter/CMakeLists.txt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/source/lib/PccLibBitstreamWriter/CMakeLists.txt b/source/lib/PccLibBitstreamWriter/CMakeLists.txt
+--- a/source/lib/PccLibBitstreamWriter/CMakeLists.txt	(revision 1fc928244bc778c73bed0d36f1c22d95ed6b0fe2)
++++ b/source/lib/PccLibBitstreamWriter/CMakeLists.txt	(date 1672291718126)
+@@ -7,7 +7,7 @@
+ FILE(GLOB SRC include/*.h source/*.cpp )
+ 
+ INCLUDE_DIRECTORIES( include
+-                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include )
++                     ${TMC2_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include )
+ 
+ ADD_LIBRARY( ${MYNAME} ${LINKER} ${SRC} )
+ 
+Index: source/app/PccAppMetrics/CMakeLists.txt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/source/app/PccAppMetrics/CMakeLists.txt b/source/app/PccAppMetrics/CMakeLists.txt
+--- a/source/app/PccAppMetrics/CMakeLists.txt	(revision 1fc928244bc778c73bed0d36f1c22d95ed6b0fe2)
++++ b/source/app/PccAppMetrics/CMakeLists.txt	(date 1672291718123)
+@@ -5,13 +5,13 @@
+ SET( MYNAME ${MYNAME}${CMAKE_DEBUG_POSTFIX} )
+ PROJECT(${MYNAME} C CXX)
+ 
+-FILE(GLOB SRC *.h *.cpp *.c ${CMAKE_SOURCE_DIR}/dependencies/program-options-lite/* )
++FILE(GLOB SRC *.h *.cpp *.c ${TMC2_SOURCE_DIR}/dependencies/program-options-lite/* )
+ 
+-INCLUDE_DIRECTORIES( ${CMAKE_SOURCE_DIR}/source/lib/PccLibCommon/include                    
+-                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibMetrics/include
+-                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include 
+-                     ${CMAKE_SOURCE_DIR}/dependencies/program-options-lite
+-                     ${CMAKE_SOURCE_DIR}/dependencies/tbb/include )
++INCLUDE_DIRECTORIES( ${TMC2_SOURCE_DIR}/source/lib/PccLibCommon/include
++                     ${TMC2_SOURCE_DIR}/source/lib/PccLibMetrics/include
++                     ${TMC2_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include
++                     ${TMC2_SOURCE_DIR}/dependencies/program-options-lite
++                     ${TMC2_SOURCE_DIR}/dependencies/tbb/include )
+ 
+ ADD_EXECUTABLE( ${MYNAME} ${SRC} )
+ 
+Index: source/lib/PccLibBitstreamReader/CMakeLists.txt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/source/lib/PccLibBitstreamReader/CMakeLists.txt b/source/lib/PccLibBitstreamReader/CMakeLists.txt
+--- a/source/lib/PccLibBitstreamReader/CMakeLists.txt	(revision 1fc928244bc778c73bed0d36f1c22d95ed6b0fe2)
++++ b/source/lib/PccLibBitstreamReader/CMakeLists.txt	(date 1672291718126)
+@@ -7,7 +7,7 @@
+ FILE(GLOB SRC include/*.h source/*.cpp )
+  
+ INCLUDE_DIRECTORIES( include 
+-                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include )
++                     ${TMC2_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include )
+ 
+ ADD_LIBRARY( ${MYNAME} ${LINKER} ${SRC} )
+ 
+Index: source/app/PccAppEncoder/CMakeLists.txt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/source/app/PccAppEncoder/CMakeLists.txt b/source/app/PccAppEncoder/CMakeLists.txt
+--- a/source/app/PccAppEncoder/CMakeLists.txt	(revision 1fc928244bc778c73bed0d36f1c22d95ed6b0fe2)
++++ b/source/app/PccAppEncoder/CMakeLists.txt	(date 1672291718122)
+@@ -5,18 +5,18 @@
+ SET( MYNAME ${MYNAME}${CMAKE_DEBUG_POSTFIX} )
+ PROJECT(${MYNAME} C CXX)
+ 
+-FILE(GLOB SRC *.h *.cpp *.c ${CMAKE_SOURCE_DIR}/dependencies/program-options-lite/* 
+-                            ${CMAKE_SOURCE_DIR}/dependencies/nanoflann/*.hpp
+-                            ${CMAKE_SOURCE_DIR}/dependencies/nanoflann/*.h )
++FILE(GLOB SRC *.h *.cpp *.c ${TMC2_SOURCE_DIR}/dependencies/program-options-lite/*
++                            ${TMC2_SOURCE_DIR}/dependencies/nanoflann/*.hpp
++                            ${TMC2_SOURCE_DIR}/dependencies/nanoflann/*.h )
+ 
+-INCLUDE_DIRECTORIES( ${CMAKE_SOURCE_DIR}/source/lib/PccLibCommon/include                    
+-                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibEncoder/include 
+-                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibMetrics/include 
+-                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include 
+-                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibBitstreamWriter/include
+-                     ${CMAKE_SOURCE_DIR}/dependencies/program-options-lite
+-                     ${CMAKE_SOURCE_DIR}/dependencies/tbb/include
+-                     ${CMAKE_SOURCE_DIR}/dependencies/nanoflann  )
++INCLUDE_DIRECTORIES( ${TMC2_SOURCE_DIR}/source/lib/PccLibCommon/include
++                     ${TMC2_SOURCE_DIR}/source/lib/PccLibEncoder/include
++                     ${TMC2_SOURCE_DIR}/source/lib/PccLibMetrics/include
++                     ${TMC2_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include
++                     ${TMC2_SOURCE_DIR}/source/lib/PccLibBitstreamWriter/include
++                     ${TMC2_SOURCE_DIR}/dependencies/program-options-lite
++                     ${TMC2_SOURCE_DIR}/dependencies/tbb/include
++                     ${TMC2_SOURCE_DIR}/dependencies/nanoflann  )
+                      
+ ADD_EXECUTABLE( ${MYNAME} ${SRC} )
+ 
+Index: PATCHED
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/PATCHED b/PATCHED
+new file mode 100644
+--- /dev/null	(date 1672291718137)
++++ b/PATCHED	(date 1672291718137)
+@@ -0,0 +1,1 @@
++mpeg-pcc-tmc2 patched with: 
+\ No newline at end of file
+Index: source/lib/PccLibBitstreamCommon/CMakeLists.txt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/source/lib/PccLibBitstreamCommon/CMakeLists.txt b/source/lib/PccLibBitstreamCommon/CMakeLists.txt
+--- a/source/lib/PccLibBitstreamCommon/CMakeLists.txt	(revision 1fc928244bc778c73bed0d36f1c22d95ed6b0fe2)
++++ b/source/lib/PccLibBitstreamCommon/CMakeLists.txt	(date 1672291718125)
+@@ -13,10 +13,10 @@
+                 ${CMAKE_CURRENT_SOURCE_DIR}/include/PCCConfig.h )
+ 
+ FILE(GLOB PROJECT_INC_FILES include/*.h 
+-                ${CMAKE_SOURCE_DIR}/dependencies/libmd5/*.h )
++                ${TMC2_SOURCE_DIR}/dependencies/libmd5/*.h )
+     
+ FILE(GLOB PROJECT_CPP_FILES source/*.cpp
+-                ${CMAKE_SOURCE_DIR}/dependencies/libmd5/*.c )
++                ${TMC2_SOURCE_DIR}/dependencies/libmd5/*.c )
+ 
+ FILE(GLOB PROJECT_IN_FILES  *.in)
+ 
+@@ -25,7 +25,7 @@
+ SOURCE_GROUP( input FILES ${PROJECT_IN_FILES}  )
+ 
+ INCLUDE_DIRECTORIES( include
+-                ${CMAKE_SOURCE_DIR}/dependencies/libmd5)
++                ${TMC2_SOURCE_DIR}/dependencies/libmd5)
+  
+ ADD_LIBRARY( ${MYNAME} ${LINKER} ${SRC} ${PROJECT_INC_FILES} ${PROJECT_CPP_FILES} ${PROJECT_IN_FILES} )
+ 
+Index: source/app/PccAppDecoder/CMakeLists.txt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/source/app/PccAppDecoder/CMakeLists.txt b/source/app/PccAppDecoder/CMakeLists.txt
+--- a/source/app/PccAppDecoder/CMakeLists.txt	(revision 1fc928244bc778c73bed0d36f1c22d95ed6b0fe2)
++++ b/source/app/PccAppDecoder/CMakeLists.txt	(date 1672291718122)
+@@ -5,17 +5,17 @@
+ SET( MYNAME ${MYNAME}${CMAKE_DEBUG_POSTFIX} )
+ PROJECT(${MYNAME} C CXX)
+ 
+-FILE(GLOB SRC *.h *.cpp *.c ${CMAKE_SOURCE_DIR}/dependencies/program-options-lite/* )
++FILE(GLOB SRC *.h *.cpp *.c ${TMC2_SOURCE_DIR}/dependencies/program-options-lite/* )
+ 
+-INCLUDE_DIRECTORIES( ${CMAKE_SOURCE_DIR}/source/lib/PccLibCommon/include                    
+-                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibDecoder/include                
+-                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibMetrics/include
+-                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibConformance/include
+-                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include 
+-                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibBitstreamReader/include
+-                     ${CMAKE_SOURCE_DIR}/dependencies/program-options-lite
+-                     ${CMAKE_SOURCE_DIR}/dependencies/tbb/include 
+-                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibConformance/include )
++INCLUDE_DIRECTORIES( ${TMC2_SOURCE_DIR}/source/lib/PccLibCommon/include
++                     ${TMC2_SOURCE_DIR}/source/lib/PccLibDecoder/include
++                     ${TMC2_SOURCE_DIR}/source/lib/PccLibMetrics/include
++                     ${TMC2_SOURCE_DIR}/source/lib/PccLibConformance/include
++                     ${TMC2_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include
++                     ${TMC2_SOURCE_DIR}/source/lib/PccLibBitstreamReader/include
++                     ${TMC2_SOURCE_DIR}/dependencies/program-options-lite
++                     ${TMC2_SOURCE_DIR}/dependencies/tbb/include
++                     ${TMC2_SOURCE_DIR}/source/lib/PccLibConformance/include )
+ 
+ ADD_EXECUTABLE( ${MYNAME} ${SRC} )
+ 
+Index: CMakeLists.txt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 992e661..74a69d6 100755
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -4,6 +4,8 @@ PROJECT (TMC2 CXX C )
+--- a/CMakeLists.txt	(revision 1fc928244bc778c73bed0d36f1c22d95ed6b0fe2)
++++ b/CMakeLists.txt	(date 1672300101916)
+@@ -4,6 +4,8 @@
  SET( TMC2_VERSION_MAJOR 15 )
  SET( TMC2_VERSION_MINOR 0  )
  
@@ -11,7 +287,7 @@ index 992e661..74a69d6 100755
  # Video encoder and decoder library and application:
  OPTION( USE_JMAPP_VIDEO_CODEC     "Use JM application to encode and decode video"           TRUE  )  # JMAPP  = 0
  OPTION( USE_HMAPP_VIDEO_CODEC     "Use HM application to encode and decode video"           TRUE  )  # HMAPP  = 1
-@@ -26,7 +28,7 @@ OPTION( ENABLE_PAPI_PROFILING     "Enable PAPI profiling"
+@@ -26,7 +28,7 @@
  set( CMAKE_CXX_STANDARD            14 )
  set( CMAKE_CXX_STANDARD_REQUIRED   ON )
  set( CMAKE_EXPORT_COMPILE_COMMANDS ON )
@@ -20,7 +296,7 @@ index 992e661..74a69d6 100755
  
  INCLUDE( CheckCXXCompilerFlag )
  CHECK_CXX_COMPILER_FLAG( "-std=c++14" COMPILER_SUPPORTS_CXX14 )
-@@ -41,13 +43,13 @@ ELSE ()
+@@ -41,13 +43,13 @@
  ENDIF()
  
  IF( ENABLE_PAPI_PROFILING )
@@ -32,13 +308,13 @@ index 992e661..74a69d6 100755
 -SET( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib )
 -SET( CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib )
 -SET( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin )
-+SET( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${TMC2_SOURCE_DIR}/lib )
-+SET( CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${TMC2_SOURCE_DIR}/lib )
-+SET( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${TMC2_SOURCE_DIR}/bin )
++#SET( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${TMC2_SOURCE_DIR}/lib )
++#SET( CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${TMC2_SOURCE_DIR}/lib )
++#SET( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${TMC2_SOURCE_DIR}/bin )
  IF (MSVC)
    MESSAGE(STATUS "MSVC OPTIONS")
    ADD_DEFINITIONS("/wd4244 /wd4267 /wd4996")
-@@ -57,25 +59,25 @@ ENDIF()
+@@ -57,25 +59,25 @@
  
  # Include external libraries
  IF( USE_HMLIB_VIDEO_CODEC )
@@ -71,7 +347,7 @@ index 992e661..74a69d6 100755
  ENDIF()
  
  ## CLANG FORMAT
-@@ -94,12 +96,12 @@ ADD_SUBDIRECTORY(source/lib/PccLibEncoder)
+@@ -94,12 +96,12 @@
  ADD_SUBDIRECTORY(source/lib/PccLibMetrics)
  ADD_SUBDIRECTORY(source/lib/PccLibConformance)
  
@@ -93,126 +369,276 @@ index 992e661..74a69d6 100755
 +#ADD_SUBDIRECTORY(source/app/PccAppVideoDecoder)
 +#ADD_SUBDIRECTORY(source/app/PccAppColorConverter)
 +#ADD_SUBDIRECTORY(source/app/PccAppNormalGenerator)
-diff --git a/dependencies/cmake/hdrtools.cmake b/dependencies/cmake/hdrtools.cmake
-index a49f7a2..8604dcf 100755
---- a/dependencies/cmake/hdrtools.cmake
-+++ b/dependencies/cmake/hdrtools.cmake
-@@ -1,7 +1,7 @@
- cmake_minimum_required(VERSION 3.17 FATAL_ERROR)
+Index: source/app/PccAppParser/CMakeLists.txt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/source/app/PccAppParser/CMakeLists.txt b/source/app/PccAppParser/CMakeLists.txt
+--- a/source/app/PccAppParser/CMakeLists.txt	(revision 1fc928244bc778c73bed0d36f1c22d95ed6b0fe2)
++++ b/source/app/PccAppParser/CMakeLists.txt	(date 1672291718123)
+@@ -7,8 +7,8 @@
  
-   
--SET( HDRTOOLS_DIR             ${CMAKE_SOURCE_DIR}/dependencies/HDRTools )
-+SET( HDRTOOLS_DIR             ${TMC2_SOURCE_DIR}/dependencies/HDRTools )
- MESSAGE("Clone and build HDRTools libraries: ${HDRTOOLS_DIR}") 
+ FILE(GLOB SRC *.h *.cpp *.c )
  
- IF( NOT EXISTS "${HDRTOOLS_DIR}/CMakeLists.txt" )   
-diff --git a/dependencies/cmake/hm.cmake b/dependencies/cmake/hm.cmake
-index 942c514..2932da1 100755
---- a/dependencies/cmake/hm.cmake
-+++ b/dependencies/cmake/hm.cmake
-@@ -1,7 +1,7 @@
- cmake_minimum_required(VERSION 3.17 FATAL_ERROR)
+-INCLUDE_DIRECTORIES( ${CMAKE_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include
+-                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibBitstreamReader/include )
++INCLUDE_DIRECTORIES( ${TMC2_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include
++                     ${TMC2_SOURCE_DIR}/source/lib/PccLibBitstreamReader/include )
  
- SET( HM_VERSION         HM-16.20+SCM-8.8 )
--SET( HM_DIR             ${CMAKE_SOURCE_DIR}/dependencies/${HM_VERSION}/ )
-+SET( HM_DIR             ${TMC2_SOURCE_DIR}/dependencies/${HM_VERSION}/ )
- set( HM_LIB_SOURCE_DIR  ${HM_DIR}/source/Lib )
- MESSAGE("Clone and build HM libraries: ${HM_LIB_SOURCE_DIR}") 
+ ADD_EXECUTABLE( ${MYNAME} ${SRC} )
  
-@@ -17,9 +17,9 @@ ENDIF()
+Index: source/lib/PccLibColorConverter/CMakeLists.txt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/source/lib/PccLibColorConverter/CMakeLists.txt b/source/lib/PccLibColorConverter/CMakeLists.txt
+--- a/source/lib/PccLibColorConverter/CMakeLists.txt	(revision 1fc928244bc778c73bed0d36f1c22d95ed6b0fe2)
++++ b/source/lib/PccLibColorConverter/CMakeLists.txt	(date 1672291718127)
+@@ -10,8 +10,8 @@
+                ${HDRTOOLS_DIR}/projects/HDRConvert/src/ProjectParameters.cpp )
  
- IF( NOT EXISTS "${HM_DIR}/PATCHED" )
-   IF ( USE_HM_PCC_RDO )
--    SET( HM_PATCH ${CMAKE_SOURCE_DIR}/dependencies/hm-modification/HM-16.20+SCM-8.8_with_RDO.patch )
-+    SET( HM_PATCH ${TMC2_SOURCE_DIR}/dependencies/hm-modification/HM-16.20+SCM-8.8_with_RDO.patch )
-   ELSE()
--    SET( HM_PATCH ${CMAKE_SOURCE_DIR}/dependencies/hm-modification/HM-16.20+SCM-8.8.patch )
-+    SET( HM_PATCH ${TMC2_SOURCE_DIR}/dependencies/hm-modification/HM-16.20+SCM-8.8.patch )
+ INCLUDE_DIRECTORIES( include 
+-                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibCommon/include/
+-                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include/
++                     ${TMC2_SOURCE_DIR}/source/lib/PccLibCommon/include/
++                     ${TMC2_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include/
+                      ${HDRTOOLS_DIR}/common/inc
+                      ${HDRTOOLS_DIR}/projects/HDRConvert/inc )
+ 
+Index: source/lib/PccLibVideoEncoder/CMakeLists.txt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/source/lib/PccLibVideoEncoder/CMakeLists.txt b/source/lib/PccLibVideoEncoder/CMakeLists.txt
+--- a/source/lib/PccLibVideoEncoder/CMakeLists.txt	(revision 1fc928244bc778c73bed0d36f1c22d95ed6b0fe2)
++++ b/source/lib/PccLibVideoEncoder/CMakeLists.txt	(date 1672293134240)
+@@ -10,8 +10,8 @@
+ 
+ SET( LIBS PccLibCommon )
+ INCLUDE_DIRECTORIES( include 
+-                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibCommon/include/
+-                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include/ )
++                     ${TMC2_SOURCE_DIR}/source/lib/PccLibCommon/include/
++                     ${TMC2_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include/ )
+ 
+ IF( USE_HMLIB_VIDEO_CODEC )
+   INCLUDE_DIRECTORIES( ${HM_LIB_SOURCE_DIR}/ )
+@@ -27,7 +27,7 @@
+   IF( WIN32 OR MSVC OR MSYS OR MINGW )
+     LINK_DIRECTORIES( ${FFMPEG_DEV_DIR}/lib ) 
    ENDIF()
-   MESSAGE("HM patch: ${HM_DIR} (${HM_PATCH})")
-   EXECUTE_PROCESS( COMMAND git apply ${HM_PATCH} --whitespace=nowarn WORKING_DIRECTORY ${HM_DIR} RESULT_VARIABLE ret )
-diff --git a/dependencies/cmake/jm_app.cmake b/dependencies/cmake/jm_app.cmake
-index 82c5378..ad45565 100644
---- a/dependencies/cmake/jm_app.cmake
-+++ b/dependencies/cmake/jm_app.cmake
-@@ -1,11 +1,11 @@
- cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
- 
- SET( JM_VERSION         jm19.0_app )
--SET( JM_DIR             ${CMAKE_SOURCE_DIR}/dependencies/${JM_VERSION}/ )
-+SET( JM_DIR             ${TMC2_SOURCE_DIR}/dependencies/${JM_VERSION}/ )
- SET( JM_APP_SOURCE_DIR  ${JM_DIR}/source )
- MESSAGE("Clone the JM source code: ${JM_DIR}") 
-   
- IF( NOT EXISTS "${JM_DIR}/CMakeLists.txt" )   
-   EXECUTE_PROCESS( COMMAND git -c http.sslVerify=false clone --depth 1 https://vcgit.hhi.fraunhofer.de/jct-vc/JM.git ${JM_DIR} )
--  #EXECUTE_PROCESS( COMMAND git apply ${CMAKE_SOURCE_DIR}/dependencies/jm-modification/SampleStreamITRI.patch WORKING_DIRECTORY ${JM_DIR} )    
-+  #EXECUTE_PROCESS( COMMAND git apply ${TMC2_SOURCE_DIR}/dependencies/jm-modification/SampleStreamITRI.patch WORKING_DIRECTORY ${JM_DIR} )
+-  INCLUDE_DIRECTORIES( ${CMAKE_SOURCE_DIR}/source/lib/PccLibVideoDecoder/include/ )
++  INCLUDE_DIRECTORIES( ${TMC2_SOURCE_DIR}/source/lib/PccLibVideoDecoder/include/ )
+   SET( LIBS ${LIBS} ${AVCODEC_LIBRARY} ${AVUTIL_LIBRARY} ${AVFORMAT_LIBRARY} PccLibVideoDecoder )    
  ENDIF()
-diff --git a/dependencies/cmake/jm_lib.cmake b/dependencies/cmake/jm_lib.cmake
-index a2c9cdd..00eb4a0 100644
---- a/dependencies/cmake/jm_lib.cmake
-+++ b/dependencies/cmake/jm_lib.cmake
-@@ -1,14 +1,14 @@
- cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
+ IF( USE_VTMLIB_VIDEO_CODEC )
+Index: source/lib/PccLibVideoDecoder/CMakeLists.txt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/source/lib/PccLibVideoDecoder/CMakeLists.txt b/source/lib/PccLibVideoDecoder/CMakeLists.txt
+--- a/source/lib/PccLibVideoDecoder/CMakeLists.txt	(revision 1fc928244bc778c73bed0d36f1c22d95ed6b0fe2)
++++ b/source/lib/PccLibVideoDecoder/CMakeLists.txt	(date 1672291718130)
+@@ -9,8 +9,8 @@
+                ${HM_LIB_SOURCE_DIR}/TAppCommon/* )
  
- SET( JM_VERSION         jm19.0_lib )
--SET( JM_DIR             ${CMAKE_SOURCE_DIR}/dependencies/${JM_VERSION}/ )
-+SET( JM_DIR             ${TMC2_SOURCE_DIR}/dependencies/${JM_VERSION}/ )
- SET( JM_LIB_SOURCE_DIR  ${JM_DIR}/source )
- MESSAGE("Clone and build JM libraries for JM LIB: ${JM_DIR}") 
-   
- IF( NOT EXISTS "${JM_DIR}/CMakeLists.txt" )   
-   EXECUTE_PROCESS( COMMAND git -c http.sslVerify=false clone --depth 1 https://vcgit.hhi.fraunhofer.de/jct-vc/JM.git ${JM_DIR} ) 
--  EXECUTE_PROCESS( COMMAND git apply ${CMAKE_SOURCE_DIR}/dependencies/jm-modification/PCC_JM.patch WORKING_DIRECTORY ${JM_DIR} )
--  #EXECUTE_PROCESS( COMMAND git apply ${CMAKE_SOURCE_DIR}/dependencies/jm-modification/SampleStreamITRI.patch WORKING_DIRECTORY ${JM_DIR} )  
-+  EXECUTE_PROCESS( COMMAND git apply ${TMC2_SOURCE_DIR}/dependencies/jm-modification/PCC_JM.patch WORKING_DIRECTORY ${JM_DIR} )
-+  #EXECUTE_PROCESS( COMMAND git apply ${TMC2_SOURCE_DIR}/dependencies/jm-modification/SampleStreamITRI.patch WORKING_DIRECTORY ${JM_DIR} )
+ INCLUDE_DIRECTORIES( include 
+-                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibCommon/include/
+-                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include/ )
++                     ${TMC2_SOURCE_DIR}/source/lib/PccLibCommon/include/
++                     ${TMC2_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include/ )
+ 
+ SET( LIBS PccLibCommon )
+ IF( USE_HMLIB_VIDEO_CODEC )
+@@ -33,15 +33,15 @@
+     SET( LIBS ${LIBS} CommonLib DecoderLib_vtm )
  ENDIF()
+ IF( USE_HMAPP_VIDEO_CODEC )
+-  INCLUDE_DIRECTORIES( ${CMAKE_SOURCE_DIR}/dependencies/PccLibHevcParser/include )
++  INCLUDE_DIRECTORIES( ${TMC2_SOURCE_DIR}/dependencies/PccLibHevcParser/include )
+   SET( LIBS ${LIBS} PccLibHevcParser )
+ ENDIF()
+ IF( USE_JMAPP_VIDEO_CODEC )
+-  INCLUDE_DIRECTORIES( ${CMAKE_SOURCE_DIR}/dependencies/PccLibAvcParser/include )
++  INCLUDE_DIRECTORIES( ${TMC2_SOURCE_DIR}/dependencies/PccLibAvcParser/include )
+   SET( LIBS ${LIBS} PccLibAvcParser )
+ ENDIF()
+ IF( USE_SHMAPP_VIDEO_CODEC )
+-  INCLUDE_DIRECTORIES( ${CMAKE_SOURCE_DIR}/dependencies/PccLibShvcParser/include )
++  INCLUDE_DIRECTORIES( ${TMC2_SOURCE_DIR}/dependencies/PccLibShvcParser/include )
+   SET( LIBS ${LIBS} PccLibShvcParser )
+ ENDIF()
+ ADD_LIBRARY( ${MYNAME} ${LINKER} ${SRC} )
+Index: source/lib/PccLibConformance/CMakeLists.txt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/source/lib/PccLibConformance/CMakeLists.txt b/source/lib/PccLibConformance/CMakeLists.txt
+--- a/source/lib/PccLibConformance/CMakeLists.txt	(revision 1fc928244bc778c73bed0d36f1c22d95ed6b0fe2)
++++ b/source/lib/PccLibConformance/CMakeLists.txt	(date 1672291718128)
+@@ -8,8 +8,8 @@
+ FILE(GLOB SRC include/*.h source/*.cpp )
  
- MESSAGE("JM_DIR       : ${JM_DIR}")
-diff --git a/dependencies/cmake/papi.cmake b/dependencies/cmake/papi.cmake
-index 3bb9b3d..1f6aac5 100644
---- a/dependencies/cmake/papi.cmake
-+++ b/dependencies/cmake/papi.cmake
-@@ -7,13 +7,13 @@ ENDIF()
+ INCLUDE_DIRECTORIES( include
+-                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibCommon/include
+-                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include )
++                     ${TMC2_SOURCE_DIR}/source/lib/PccLibCommon/include
++                     ${TMC2_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include )
  
+ ADD_LIBRARY( ${MYNAME} ${LINKER} ${SRC} )
+ 
+Index: source/lib/PccLibMetrics/CMakeLists.txt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/source/lib/PccLibMetrics/CMakeLists.txt b/source/lib/PccLibMetrics/CMakeLists.txt
+--- a/source/lib/PccLibMetrics/CMakeLists.txt	(revision 1fc928244bc778c73bed0d36f1c22d95ed6b0fe2)
++++ b/source/lib/PccLibMetrics/CMakeLists.txt	(date 1672291718130)
+@@ -5,14 +5,14 @@
+ PROJECT(${MYNAME} C CXX)
+ 
+ FILE(GLOB SRC include/*.h source/*.cpp 
+-              ${CMAKE_SOURCE_DIR}/dependencies/nanoflann/*.hpp
+-              ${CMAKE_SOURCE_DIR}/dependencies/nanoflann/*.h )
++              ${TMC2_SOURCE_DIR}/dependencies/nanoflann/*.hpp
++              ${TMC2_SOURCE_DIR}/dependencies/nanoflann/*.h )
+ 
+ INCLUDE_DIRECTORIES( include
+-                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibCommon/include  
+-                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include 
+-                     ${CMAKE_SOURCE_DIR}/dependencies/tbb/include
+-                     ${CMAKE_SOURCE_DIR}/dependencies/nanoflann )
++                     ${TMC2_SOURCE_DIR}/source/lib/PccLibCommon/include
++                     ${TMC2_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include
++                     ${TMC2_SOURCE_DIR}/dependencies/tbb/include
++                     ${TMC2_SOURCE_DIR}/dependencies/nanoflann )
+ 
+ ADD_LIBRARY( ${MYNAME} ${LINKER} ${SRC} )
+ 
+Index: source/lib/PccLibEncoder/CMakeLists.txt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/source/lib/PccLibEncoder/CMakeLists.txt b/source/lib/PccLibEncoder/CMakeLists.txt
+--- a/source/lib/PccLibEncoder/CMakeLists.txt	(revision 1fc928244bc778c73bed0d36f1c22d95ed6b0fe2)
++++ b/source/lib/PccLibEncoder/CMakeLists.txt	(date 1672291718129)
+@@ -5,16 +5,16 @@
+ PROJECT(${MYNAME} C CXX)
+ 
+ FILE(GLOB SRC include/*.h source/*.cpp 
+-              ${CMAKE_SOURCE_DIR}/dependencies/nanoflann/*.hpp
+-              ${CMAKE_SOURCE_DIR}/dependencies/nanoflann/*.h )
++              ${TMC2_SOURCE_DIR}/dependencies/nanoflann/*.hpp
++              ${TMC2_SOURCE_DIR}/dependencies/nanoflann/*.h )
+ 
+ INCLUDE_DIRECTORIES( include
+-                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibCommon/include  
+-                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include 
+-                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibVideoEncoder/include 
+-                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibColorConverter/include/
+-                     ${CMAKE_SOURCE_DIR}/dependencies/tbb/include
+-                     ${CMAKE_SOURCE_DIR}/dependencies/nanoflann )
++                     ${TMC2_SOURCE_DIR}/source/lib/PccLibCommon/include
++                     ${TMC2_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include
++                     ${TMC2_SOURCE_DIR}/source/lib/PccLibVideoEncoder/include
++                     ${TMC2_SOURCE_DIR}/source/lib/PccLibColorConverter/include/
++                     ${TMC2_SOURCE_DIR}/dependencies/tbb/include
++                     ${TMC2_SOURCE_DIR}/dependencies/nanoflann )
+ 
+ SET( LIBS PccLibCommon PccLibBitstreamCommon PccLibVideoEncoder PccLibColorConverter )
+ 
+Index: source/lib/PccLibDecoder/CMakeLists.txt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/source/lib/PccLibDecoder/CMakeLists.txt b/source/lib/PccLibDecoder/CMakeLists.txt
+--- a/source/lib/PccLibDecoder/CMakeLists.txt	(revision 1fc928244bc778c73bed0d36f1c22d95ed6b0fe2)
++++ b/source/lib/PccLibDecoder/CMakeLists.txt	(date 1672291718129)
+@@ -5,16 +5,16 @@
+ PROJECT(${MYNAME} C CXX)
+ 
+ FILE(GLOB SRC include/*.h source/*.cpp
+-              ${CMAKE_SOURCE_DIR}/dependencies/nanoflann/*.hpp
+-              ${CMAKE_SOURCE_DIR}/dependencies/nanoflann/*.h )
++              ${TMC2_SOURCE_DIR}/dependencies/nanoflann/*.hpp
++              ${TMC2_SOURCE_DIR}/dependencies/nanoflann/*.h )
+ 
+ INCLUDE_DIRECTORIES( include 
+-                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibCommon/include  
+-                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include 
+-                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibVideoDecoder/include 
+-                     ${CMAKE_SOURCE_DIR}/dependencies/tbb/include
+-                     ${CMAKE_SOURCE_DIR}/dependencies/nanoflann
+-                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibColorConverter/include  )
++                     ${TMC2_SOURCE_DIR}/source/lib/PccLibCommon/include
++                     ${TMC2_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include
++                     ${TMC2_SOURCE_DIR}/source/lib/PccLibVideoDecoder/include
++                     ${TMC2_SOURCE_DIR}/dependencies/tbb/include
++                     ${TMC2_SOURCE_DIR}/dependencies/nanoflann
++                     ${TMC2_SOURCE_DIR}/source/lib/PccLibColorConverter/include  )
+                      
+ SET( LIBS PccLibCommon PccLibBitstreamCommon PccLibVideoDecoder PccLibColorConverter )
+ 
+Index: source/lib/PccLibCommon/CMakeLists.txt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/source/lib/PccLibCommon/CMakeLists.txt b/source/lib/PccLibCommon/CMakeLists.txt
+--- a/source/lib/PccLibCommon/CMakeLists.txt	(revision 1fc928244bc778c73bed0d36f1c22d95ed6b0fe2)
++++ b/source/lib/PccLibCommon/CMakeLists.txt	(date 1672291718128)
+@@ -13,11 +13,11 @@
+                 ${CMAKE_CURRENT_SOURCE_DIR}/include/PCCConfig.h )
+ 
+ FILE(GLOB PROJECT_INC_FILES include/*.h
+-                            ${CMAKE_SOURCE_DIR}/dependencies/nanoflann/*.hpp
+-                            ${CMAKE_SOURCE_DIR}/dependencies/nanoflann/*.h
+-                            ${CMAKE_SOURCE_DIR}/dependencies/libmd5/*.h )
++                            ${TMC2_SOURCE_DIR}/dependencies/nanoflann/*.hpp
++                            ${TMC2_SOURCE_DIR}/dependencies/nanoflann/*.h
++                            ${TMC2_SOURCE_DIR}/dependencies/libmd5/*.h )
+ FILE(GLOB PROJECT_CPP_FILES source/*.cpp 
+-                            ${CMAKE_SOURCE_DIR}/dependencies/libmd5/*.c )
++                            ${TMC2_SOURCE_DIR}/dependencies/libmd5/*.c )
+ FILE(GLOB PROJECT_IN_FILES  *.in )
+ 
+ SOURCE_GROUP( inc   FILES ${PROJECT_INC_FILES} )
+@@ -25,14 +25,14 @@
+ SOURCE_GROUP( input FILES ${PROJECT_IN_FILES}  )
+ 
+ INCLUDE_DIRECTORIES( include
+-                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include 
+-                     ${CMAKE_SOURCE_DIR}/dependencies/nanoflann
+-                     ${CMAKE_SOURCE_DIR}/dependencies/tbb/include
+-                     ${CMAKE_SOURCE_DIR}/dependencies/libmd5 )
++                     ${TMC2_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include
++                     ${TMC2_SOURCE_DIR}/dependencies/nanoflann
++                     ${TMC2_SOURCE_DIR}/dependencies/tbb/include
++                     ${TMC2_SOURCE_DIR}/dependencies/libmd5 )
+  
+ ADD_LIBRARY( ${MYNAME} ${LINKER} ${SRC} ${PROJECT_INC_FILES} ${PROJECT_CPP_FILES} ${PROJECT_IN_FILES} )
  IF( ENABLE_PAPI_PROFILING )
-   MESSAGE( "PAPI profiling enable (ENABLE_PAPI_PROFILING = " ${ENABLE_PAPI_PROFILING} " ).")
--  IF( NOT IS_DIRECTORY "${CMAKE_SOURCE_DIR}/dependencies/papi/" )    
--    EXECUTE_PROCESS( COMMAND git clone --depth 1 https://bitbucket.org/icl/papi.git ${CMAKE_SOURCE_DIR}/dependencies/papi/; )    
-+  IF( NOT IS_DIRECTORY "${TMC2_SOURCE_DIR}/dependencies/papi/" )
-+    EXECUTE_PROCESS( COMMAND git clone --depth 1 https://bitbucket.org/icl/papi.git ${TMC2_SOURCE_DIR}/dependencies/papi/; )
-   ENDIF()
--  IF ( NOT EXISTS ${CMAKE_SOURCE_DIR}/dependencies/papi/src/libpapi.a )
--    EXECUTE_PROCESS( COMMAND ./configure WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/dependencies/papi/src/ )
--    EXECUTE_PROCESS( COMMAND make -j4    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/dependencies/papi/src/ )
-+  IF ( NOT EXISTS ${TMC2_SOURCE_DIR}/dependencies/papi/src/libpapi.a )
-+    EXECUTE_PROCESS( COMMAND ./configure WORKING_DIRECTORY ${TMC2_SOURCE_DIR}/dependencies/papi/src/ )
-+    EXECUTE_PROCESS( COMMAND make -j4    WORKING_DIRECTORY ${TMC2_SOURCE_DIR}/dependencies/papi/src/ )
-   ENDIF()
--  SET( CMAKE_CXX_FLAGS        "${CMAKE_CXX_FLAGS} -I${CMAKE_SOURCE_DIR}/dependencies/papi/src/ " )
--  SET( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${CMAKE_SOURCE_DIR}/dependencies/papi/src/libpapi.a ")
-+  SET( CMAKE_CXX_FLAGS        "${CMAKE_CXX_FLAGS} -I${TMC2_SOURCE_DIR}/dependencies/papi/src/ " )
-+  SET( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${TMC2_SOURCE_DIR}/dependencies/papi/src/libpapi.a ")
+-  TARGET_LINK_LIBRARIES(${MYNAME} ${CMAKE_SOURCE_DIR}/dependencies/papi/src/libpapi.a  )
++  TARGET_LINK_LIBRARIES(${MYNAME} ${TMC2_SOURCE_DIR}/dependencies/papi/src/libpapi.a  )
  ENDIF()
-diff --git a/dependencies/cmake/shm_app.cmake b/dependencies/cmake/shm_app.cmake
-index 3b54d4f..799eeb6 100644
---- a/dependencies/cmake/shm_app.cmake
-+++ b/dependencies/cmake/shm_app.cmake
-@@ -1,7 +1,7 @@
- cmake_minimum_required(VERSION 3.17 FATAL_ERROR)
  
- SET( SHM_VERSION         SHM-12.4 )
--SET( SHM_DIR             ${CMAKE_SOURCE_DIR}/dependencies/${SHM_VERSION}/ )
-+SET( SHM_DIR             ${TMC2_SOURCE_DIR}/dependencies/${SHM_VERSION}/ )
- set( SHM_APP_SOURCE_DIR  ${SHM_DIR}/source )
- MESSAGE("Clone the SHM source code: ${SHM_DIR}") 
- 
+ TARGET_LINK_LIBRARIES(${MYNAME} PccLibBitstreamCommon )
+Index: dependencies/cmake/vtm.cmake
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
 diff --git a/dependencies/cmake/vtm.cmake b/dependencies/cmake/vtm.cmake
-index ba66e10..addee47 100755
---- a/dependencies/cmake/vtm.cmake
-+++ b/dependencies/cmake/vtm.cmake
+--- a/dependencies/cmake/vtm.cmake	(revision 1fc928244bc778c73bed0d36f1c22d95ed6b0fe2)
++++ b/dependencies/cmake/vtm.cmake	(date 1672291718120)
 @@ -1,6 +1,6 @@
  cmake_minimum_required(VERSION 3.17 FATAL_ERROR)
  SET( VTM_VERSION         VTM-13.0 )
@@ -221,7 +647,7 @@ index ba66e10..addee47 100755
  set( VTM_LIB_SOURCE_DIR  ${VTM_DIR}/source/Lib )
  MESSAGE("Clone and build VTM libraries: ${VTM_LIB_SOURCE_DIR}") 
  
-@@ -17,7 +17,7 @@ ENDIF()
+@@ -17,7 +17,7 @@
  
  IF( NOT EXISTS "${VTM_DIR}/PATCHED" )
    MESSAGE("VTM patch: ${VTM_DIR}")
@@ -230,194 +656,15 @@ index ba66e10..addee47 100755
    EXECUTE_PROCESS( COMMAND git apply ${VTM_PATCH} --whitespace=nowarn WORKING_DIRECTORY ${VTM_DIR} RESULT_VARIABLE ret )
    IF( NOT ${ret} EQUAL "0")
      MESSAGE( FATAL_ERROR "Error during the VTM patch process. Check that git is well installed on your system." )
-diff --git a/dependencies/tbb/Makefile b/dependencies/tbb/Makefile
-index 9709201..a6d7764 100644
---- a/dependencies/tbb/Makefile
-+++ b/dependencies/tbb/Makefile
-@@ -42,7 +42,7 @@ EQUALS = =
- CMAKE_EDIT_COMMAND = /usr/bin/ccmake
- 
- # The top-level source directory on which CMake was run.
--CMAKE_SOURCE_DIR = /home/wp21/PCC/ricardj/gitclones_dev/release-v1.2-proposal-in-progress
-+TMC2_SOURCE_DIR = /home/wp21/PCC/ricardj/gitclones_dev/release-v1.2-proposal-in-progress
- 
- # The top-level build directory on which CMake was run.
- CMAKE_BINARY_DIR = /home/wp21/PCC/ricardj/gitclones_dev/release-v1.2-proposal-in-progress
-@@ -53,7 +53,7 @@ CMAKE_BINARY_DIR = /home/wp21/PCC/ricardj/gitclones_dev/release-v1.2-proposal-in
- # Special rule for the target edit_cache
- edit_cache:
- 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
--	/usr/bin/ccmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
-+	/usr/bin/ccmake -H$(TMC2_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
- .PHONY : edit_cache
- 
- # Special rule for the target edit_cache
-@@ -104,7 +104,7 @@ list_install_components/fast: list_install_components
- # Special rule for the target rebuild_cache
- rebuild_cache:
- 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
--	/usr/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
-+	/usr/bin/cmake -H$(TMC2_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
- .PHONY : rebuild_cache
- 
- # Special rule for the target rebuild_cache
-@@ -139,7 +139,7 @@ preinstall/fast:
- 
- # clear depends
- depend:
--	cd /home/wp21/PCC/ricardj/gitclones_dev/release-v1.2-proposal-in-progress && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
-+	cd /home/wp21/PCC/ricardj/gitclones_dev/release-v1.2-proposal-in-progress && $(CMAKE_COMMAND) -H$(TMC2_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
- .PHONY : depend
- 
- # Convenience name for target.
-@@ -1194,6 +1194,6 @@ help:
- # No rule that depends on this can have commands that come from listfiles
- # because they might be regenerated.
- cmake_check_build_system:
--	cd /home/wp21/PCC/ricardj/gitclones_dev/release-v1.2-proposal-in-progress && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
-+	cd /home/wp21/PCC/ricardj/gitclones_dev/release-v1.2-proposal-in-progress && $(CMAKE_COMMAND) -H$(TMC2_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
- .PHONY : cmake_check_build_system
- 
-diff --git a/source/app/PccAppColorConverter/CMakeLists.txt b/source/app/PccAppColorConverter/CMakeLists.txt
-index 9998c39..6bde8dd 100644
---- a/source/app/PccAppColorConverter/CMakeLists.txt
-+++ b/source/app/PccAppColorConverter/CMakeLists.txt
-@@ -6,12 +6,12 @@ SET( MYNAME ${MYNAME}${CMAKE_DEBUG_POSTFIX} )
- PROJECT(${MYNAME} C CXX)
- 
- FILE(GLOB SRC *.h *.cpp *.c 
--                ${CMAKE_SOURCE_DIR}/dependencies/program-options-lite/* )
-+                ${TMC2_SOURCE_DIR}/dependencies/program-options-lite/* )
-                      
--INCLUDE_DIRECTORIES( ${CMAKE_SOURCE_DIR}/source/lib/PccLibCommon/include                    
--                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include      
--                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibColorConverter/include 
--                     ${CMAKE_SOURCE_DIR}/dependencies/program-options-lite  )
-+INCLUDE_DIRECTORIES( ${TMC2_SOURCE_DIR}/source/lib/PccLibCommon/include
-+                     ${TMC2_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include
-+                     ${TMC2_SOURCE_DIR}/source/lib/PccLibColorConverter/include
-+                     ${TMC2_SOURCE_DIR}/dependencies/program-options-lite  )
- 
- SET( LIBS PccLibCommon PccLibBitstreamCommon PccLibColorConverter ) 
- 
-diff --git a/source/app/PccAppConformance/CMakeLists.txt b/source/app/PccAppConformance/CMakeLists.txt
-index 39e5d1a..74dcef4 100644
---- a/source/app/PccAppConformance/CMakeLists.txt
-+++ b/source/app/PccAppConformance/CMakeLists.txt
-@@ -6,12 +6,12 @@ SET( MYNAME ${MYNAME}${CMAKE_DEBUG_POSTFIX} )
- PROJECT(${MYNAME} C CXX)
- 
- FILE(GLOB SRC *.h *.cpp *.c 
--                ${CMAKE_SOURCE_DIR}/dependencies/program-options-lite/* )
-+                ${TMC2_SOURCE_DIR}/dependencies/program-options-lite/* )
-                      
--INCLUDE_DIRECTORIES( ${CMAKE_SOURCE_DIR}/source/lib/PccLibCommon/include                    
--                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include      
--                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibConformance/include 
--                     ${CMAKE_SOURCE_DIR}/dependencies/program-options-lite  )
-+INCLUDE_DIRECTORIES( ${TMC2_SOURCE_DIR}/source/lib/PccLibCommon/include
-+                     ${TMC2_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include
-+                     ${TMC2_SOURCE_DIR}/source/lib/PccLibConformance/include
-+                     ${TMC2_SOURCE_DIR}/dependencies/program-options-lite  )
- 
- SET( LIBS PccLibCommon PccLibBitstreamCommon PccLibConformance ) 
- 
-diff --git a/source/app/PccAppDecoder/CMakeLists.txt b/source/app/PccAppDecoder/CMakeLists.txt
-index 6dc131e..56ecaf2 100644
---- a/source/app/PccAppDecoder/CMakeLists.txt
-+++ b/source/app/PccAppDecoder/CMakeLists.txt
-@@ -5,17 +5,17 @@ STRING(REPLACE " " "_" MYNAME ${MYNAME})
- SET( MYNAME ${MYNAME}${CMAKE_DEBUG_POSTFIX} )
- PROJECT(${MYNAME} C CXX)
- 
--FILE(GLOB SRC *.h *.cpp *.c ${CMAKE_SOURCE_DIR}/dependencies/program-options-lite/* )
--
--INCLUDE_DIRECTORIES( ${CMAKE_SOURCE_DIR}/source/lib/PccLibCommon/include                    
--                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibDecoder/include                
--                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibMetrics/include
--                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibConformance/include
--                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include 
--                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibBitstreamReader/include
--                     ${CMAKE_SOURCE_DIR}/dependencies/program-options-lite
--                     ${CMAKE_SOURCE_DIR}/dependencies/tbb/include 
--                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibConformance/include )
-+FILE(GLOB SRC *.h *.cpp *.c ${TMC2_SOURCE_DIR}/dependencies/program-options-lite/* )
-+
-+INCLUDE_DIRECTORIES( ${TMC2_SOURCE_DIR}/source/lib/PccLibCommon/include
-+                     ${TMC2_SOURCE_DIR}/source/lib/PccLibDecoder/include
-+                     ${TMC2_SOURCE_DIR}/source/lib/PccLibMetrics/include
-+                     ${TMC2_SOURCE_DIR}/source/lib/PccLibConformance/include
-+                     ${TMC2_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include
-+                     ${TMC2_SOURCE_DIR}/source/lib/PccLibBitstreamReader/include
-+                     ${TMC2_SOURCE_DIR}/dependencies/program-options-lite
-+                     ${TMC2_SOURCE_DIR}/dependencies/tbb/include
-+                     ${TMC2_SOURCE_DIR}/source/lib/PccLibConformance/include )
- 
- ADD_EXECUTABLE( ${MYNAME} ${SRC} )
- 
-diff --git a/source/app/PccAppEncoder/CMakeLists.txt b/source/app/PccAppEncoder/CMakeLists.txt
-index f324cec..a743173 100644
---- a/source/app/PccAppEncoder/CMakeLists.txt
-+++ b/source/app/PccAppEncoder/CMakeLists.txt
-@@ -5,18 +5,18 @@ STRING(REPLACE " " "_" MYNAME ${MYNAME})
- SET( MYNAME ${MYNAME}${CMAKE_DEBUG_POSTFIX} )
- PROJECT(${MYNAME} C CXX)
- 
--FILE(GLOB SRC *.h *.cpp *.c ${CMAKE_SOURCE_DIR}/dependencies/program-options-lite/* 
--                            ${CMAKE_SOURCE_DIR}/dependencies/nanoflann/*.hpp
--                            ${CMAKE_SOURCE_DIR}/dependencies/nanoflann/*.h )
-+FILE(GLOB SRC *.h *.cpp *.c ${TMC2_SOURCE_DIR}/dependencies/program-options-lite/*
-+                            ${TMC2_SOURCE_DIR}/dependencies/nanoflann/*.hpp
-+                            ${TMC2_SOURCE_DIR}/dependencies/nanoflann/*.h )
- 
--INCLUDE_DIRECTORIES( ${CMAKE_SOURCE_DIR}/source/lib/PccLibCommon/include                    
--                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibEncoder/include 
--                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibMetrics/include 
--                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include 
--                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibBitstreamWriter/include
--                     ${CMAKE_SOURCE_DIR}/dependencies/program-options-lite
--                     ${CMAKE_SOURCE_DIR}/dependencies/tbb/include
--                     ${CMAKE_SOURCE_DIR}/dependencies/nanoflann  )
-+INCLUDE_DIRECTORIES( ${TMC2_SOURCE_DIR}/source/lib/PccLibCommon/include
-+                     ${TMC2_SOURCE_DIR}/source/lib/PccLibEncoder/include
-+                     ${TMC2_SOURCE_DIR}/source/lib/PccLibMetrics/include
-+                     ${TMC2_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include
-+                     ${TMC2_SOURCE_DIR}/source/lib/PccLibBitstreamWriter/include
-+                     ${TMC2_SOURCE_DIR}/dependencies/program-options-lite
-+                     ${TMC2_SOURCE_DIR}/dependencies/tbb/include
-+                     ${TMC2_SOURCE_DIR}/dependencies/nanoflann  )
-                      
- ADD_EXECUTABLE( ${MYNAME} ${SRC} )
- 
-diff --git a/source/app/PccAppMetrics/CMakeLists.txt b/source/app/PccAppMetrics/CMakeLists.txt
-index 89eadcb..2e5b488 100644
---- a/source/app/PccAppMetrics/CMakeLists.txt
-+++ b/source/app/PccAppMetrics/CMakeLists.txt
-@@ -5,13 +5,13 @@ STRING(REPLACE " " "_" MYNAME ${MYNAME})
- SET( MYNAME ${MYNAME}${CMAKE_DEBUG_POSTFIX} )
- PROJECT(${MYNAME} C CXX)
- 
--FILE(GLOB SRC *.h *.cpp *.c ${CMAKE_SOURCE_DIR}/dependencies/program-options-lite/* )
-+FILE(GLOB SRC *.h *.cpp *.c ${TMC2_SOURCE_DIR}/dependencies/program-options-lite/* )
- 
--INCLUDE_DIRECTORIES( ${CMAKE_SOURCE_DIR}/source/lib/PccLibCommon/include                    
--                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibMetrics/include
--                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include 
--                     ${CMAKE_SOURCE_DIR}/dependencies/program-options-lite
--                     ${CMAKE_SOURCE_DIR}/dependencies/tbb/include )
-+INCLUDE_DIRECTORIES( ${TMC2_SOURCE_DIR}/source/lib/PccLibCommon/include
-+                     ${TMC2_SOURCE_DIR}/source/lib/PccLibMetrics/include
-+                     ${TMC2_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include
-+                     ${TMC2_SOURCE_DIR}/dependencies/program-options-lite
-+                     ${TMC2_SOURCE_DIR}/dependencies/tbb/include )
- 
- ADD_EXECUTABLE( ${MYNAME} ${SRC} )
- 
+Index: source/app/PccAppNormalGenerator/CMakeLists.txt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
 diff --git a/source/app/PccAppNormalGenerator/CMakeLists.txt b/source/app/PccAppNormalGenerator/CMakeLists.txt
-index 277b9bd..a308c79 100644
---- a/source/app/PccAppNormalGenerator/CMakeLists.txt
-+++ b/source/app/PccAppNormalGenerator/CMakeLists.txt
-@@ -5,16 +5,16 @@ STRING(REPLACE " " "_" MYNAME ${MYNAME})
+--- a/source/app/PccAppNormalGenerator/CMakeLists.txt	(revision 1fc928244bc778c73bed0d36f1c22d95ed6b0fe2)
++++ b/source/app/PccAppNormalGenerator/CMakeLists.txt	(date 1672291718123)
+@@ -5,16 +5,16 @@
  SET( MYNAME ${MYNAME}${CMAKE_DEBUG_POSTFIX} )
  PROJECT(${MYNAME} C CXX)
  
@@ -443,48 +690,135 @@ index 277b9bd..a308c79 100644
                       
  ADD_EXECUTABLE( ${MYNAME} ${SRC} )
  
-diff --git a/source/app/PccAppParser/CMakeLists.txt b/source/app/PccAppParser/CMakeLists.txt
-index 81ad53f..43d3888 100644
---- a/source/app/PccAppParser/CMakeLists.txt
-+++ b/source/app/PccAppParser/CMakeLists.txt
-@@ -7,8 +7,8 @@ PROJECT(${MYNAME} C CXX)
+Index: dependencies/cmake/shm_app.cmake
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/dependencies/cmake/shm_app.cmake b/dependencies/cmake/shm_app.cmake
+--- a/dependencies/cmake/shm_app.cmake	(revision 1fc928244bc778c73bed0d36f1c22d95ed6b0fe2)
++++ b/dependencies/cmake/shm_app.cmake	(date 1672291718120)
+@@ -1,7 +1,7 @@
+ cmake_minimum_required(VERSION 3.17 FATAL_ERROR)
  
- FILE(GLOB SRC *.h *.cpp *.c )
+ SET( SHM_VERSION         SHM-12.4 )
+-SET( SHM_DIR             ${CMAKE_SOURCE_DIR}/dependencies/${SHM_VERSION}/ )
++SET( SHM_DIR             ${TMC2_SOURCE_DIR}/dependencies/${SHM_VERSION}/ )
+ set( SHM_APP_SOURCE_DIR  ${SHM_DIR}/source )
+ MESSAGE("Clone the SHM source code: ${SHM_DIR}") 
  
--INCLUDE_DIRECTORIES( ${CMAKE_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include
--                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibBitstreamReader/include )
-+INCLUDE_DIRECTORIES( ${TMC2_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include
-+                     ${TMC2_SOURCE_DIR}/source/lib/PccLibBitstreamReader/include )
+Index: dependencies/cmake/papi.cmake
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/dependencies/cmake/papi.cmake b/dependencies/cmake/papi.cmake
+--- a/dependencies/cmake/papi.cmake	(revision 1fc928244bc778c73bed0d36f1c22d95ed6b0fe2)
++++ b/dependencies/cmake/papi.cmake	(date 1672291718119)
+@@ -7,13 +7,13 @@
  
- ADD_EXECUTABLE( ${MYNAME} ${SRC} )
- 
-diff --git a/source/app/PccAppVideoDecoder/CMakeLists.txt b/source/app/PccAppVideoDecoder/CMakeLists.txt
-index 3345db2..9015044 100644
---- a/source/app/PccAppVideoDecoder/CMakeLists.txt
-+++ b/source/app/PccAppVideoDecoder/CMakeLists.txt
-@@ -5,12 +5,12 @@ STRING(REPLACE " " "_" MYNAME ${MYNAME})
- SET( MYNAME ${MYNAME}${CMAKE_DEBUG_POSTFIX} )
+ IF( ENABLE_PAPI_PROFILING )
+   MESSAGE( "PAPI profiling enable (ENABLE_PAPI_PROFILING = " ${ENABLE_PAPI_PROFILING} " ).")
+-  IF( NOT IS_DIRECTORY "${CMAKE_SOURCE_DIR}/dependencies/papi/" )    
+-    EXECUTE_PROCESS( COMMAND git clone --depth 1 https://bitbucket.org/icl/papi.git ${CMAKE_SOURCE_DIR}/dependencies/papi/; )    
++  IF( NOT IS_DIRECTORY "${TMC2_SOURCE_DIR}/dependencies/papi/" )
++    EXECUTE_PROCESS( COMMAND git clone --depth 1 https://bitbucket.org/icl/papi.git ${TMC2_SOURCE_DIR}/dependencies/papi/; )
+   ENDIF()
+-  IF ( NOT EXISTS ${CMAKE_SOURCE_DIR}/dependencies/papi/src/libpapi.a )
+-    EXECUTE_PROCESS( COMMAND ./configure WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/dependencies/papi/src/ )
+-    EXECUTE_PROCESS( COMMAND make -j4    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/dependencies/papi/src/ )
++  IF ( NOT EXISTS ${TMC2_SOURCE_DIR}/dependencies/papi/src/libpapi.a )
++    EXECUTE_PROCESS( COMMAND ./configure WORKING_DIRECTORY ${TMC2_SOURCE_DIR}/dependencies/papi/src/ )
++    EXECUTE_PROCESS( COMMAND make -j4    WORKING_DIRECTORY ${TMC2_SOURCE_DIR}/dependencies/papi/src/ )
+   ENDIF()
+-  SET( CMAKE_CXX_FLAGS        "${CMAKE_CXX_FLAGS} -I${CMAKE_SOURCE_DIR}/dependencies/papi/src/ " )
+-  SET( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${CMAKE_SOURCE_DIR}/dependencies/papi/src/libpapi.a ")
++  SET( CMAKE_CXX_FLAGS        "${CMAKE_CXX_FLAGS} -I${TMC2_SOURCE_DIR}/dependencies/papi/src/ " )
++  SET( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${TMC2_SOURCE_DIR}/dependencies/papi/src/libpapi.a ")
+ ENDIF()
+Index: source/app/PccAppColorConverter/CMakeLists.txt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/source/app/PccAppColorConverter/CMakeLists.txt b/source/app/PccAppColorConverter/CMakeLists.txt
+--- a/source/app/PccAppColorConverter/CMakeLists.txt	(revision 1fc928244bc778c73bed0d36f1c22d95ed6b0fe2)
++++ b/source/app/PccAppColorConverter/CMakeLists.txt	(date 1672291718121)
+@@ -6,12 +6,12 @@
  PROJECT(${MYNAME} C CXX)
  
--FILE(GLOB SRC *.h *.cpp *.c ${CMAKE_SOURCE_DIR}/dependencies/program-options-lite/* )
-+FILE(GLOB SRC *.h *.cpp *.c ${TMC2_SOURCE_DIR}/dependencies/program-options-lite/* )
- 
+ FILE(GLOB SRC *.h *.cpp *.c 
+-                ${CMAKE_SOURCE_DIR}/dependencies/program-options-lite/* )
++                ${TMC2_SOURCE_DIR}/dependencies/program-options-lite/* )
+                      
 -INCLUDE_DIRECTORIES( ${CMAKE_SOURCE_DIR}/source/lib/PccLibCommon/include                    
--                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include       
--                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibVideoDecoder/include 
+-                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include      
+-                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibColorConverter/include 
 -                     ${CMAKE_SOURCE_DIR}/dependencies/program-options-lite  )
 +INCLUDE_DIRECTORIES( ${TMC2_SOURCE_DIR}/source/lib/PccLibCommon/include
 +                     ${TMC2_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include
-+                     ${TMC2_SOURCE_DIR}/source/lib/PccLibVideoDecoder/include
++                     ${TMC2_SOURCE_DIR}/source/lib/PccLibColorConverter/include
 +                     ${TMC2_SOURCE_DIR}/dependencies/program-options-lite  )
-                      
- ADD_EXECUTABLE( ${MYNAME} ${SRC} )
  
+ SET( LIBS PccLibCommon PccLibBitstreamCommon PccLibColorConverter ) 
+ 
+Index: dependencies/cmake/jm_lib.cmake
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/dependencies/cmake/jm_lib.cmake b/dependencies/cmake/jm_lib.cmake
+--- a/dependencies/cmake/jm_lib.cmake	(revision 1fc928244bc778c73bed0d36f1c22d95ed6b0fe2)
++++ b/dependencies/cmake/jm_lib.cmake	(date 1672291718119)
+@@ -1,14 +1,14 @@
+ cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
+ 
+ SET( JM_VERSION         jm19.0_lib )
+-SET( JM_DIR             ${CMAKE_SOURCE_DIR}/dependencies/${JM_VERSION}/ )
++SET( JM_DIR             ${TMC2_SOURCE_DIR}/dependencies/${JM_VERSION}/ )
+ SET( JM_LIB_SOURCE_DIR  ${JM_DIR}/source )
+ MESSAGE("Clone and build JM libraries for JM LIB: ${JM_DIR}") 
+   
+ IF( NOT EXISTS "${JM_DIR}/CMakeLists.txt" )   
+   EXECUTE_PROCESS( COMMAND git -c http.sslVerify=false clone --depth 1 https://vcgit.hhi.fraunhofer.de/jct-vc/JM.git ${JM_DIR} ) 
+-  EXECUTE_PROCESS( COMMAND git apply ${CMAKE_SOURCE_DIR}/dependencies/jm-modification/PCC_JM.patch WORKING_DIRECTORY ${JM_DIR} )
+-  #EXECUTE_PROCESS( COMMAND git apply ${CMAKE_SOURCE_DIR}/dependencies/jm-modification/SampleStreamITRI.patch WORKING_DIRECTORY ${JM_DIR} )  
++  EXECUTE_PROCESS( COMMAND git apply ${TMC2_SOURCE_DIR}/dependencies/jm-modification/PCC_JM.patch WORKING_DIRECTORY ${JM_DIR} )
++  #EXECUTE_PROCESS( COMMAND git apply ${TMC2_SOURCE_DIR}/dependencies/jm-modification/SampleStreamITRI.patch WORKING_DIRECTORY ${JM_DIR} )
+ ENDIF()
+ 
+ MESSAGE("JM_DIR       : ${JM_DIR}")
+Index: dependencies/cmake/jm_app.cmake
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/dependencies/cmake/jm_app.cmake b/dependencies/cmake/jm_app.cmake
+--- a/dependencies/cmake/jm_app.cmake	(revision 1fc928244bc778c73bed0d36f1c22d95ed6b0fe2)
++++ b/dependencies/cmake/jm_app.cmake	(date 1672291718119)
+@@ -1,11 +1,11 @@
+ cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
+ 
+ SET( JM_VERSION         jm19.0_app )
+-SET( JM_DIR             ${CMAKE_SOURCE_DIR}/dependencies/${JM_VERSION}/ )
++SET( JM_DIR             ${TMC2_SOURCE_DIR}/dependencies/${JM_VERSION}/ )
+ SET( JM_APP_SOURCE_DIR  ${JM_DIR}/source )
+ MESSAGE("Clone the JM source code: ${JM_DIR}") 
+   
+ IF( NOT EXISTS "${JM_DIR}/CMakeLists.txt" )   
+   EXECUTE_PROCESS( COMMAND git -c http.sslVerify=false clone --depth 1 https://vcgit.hhi.fraunhofer.de/jct-vc/JM.git ${JM_DIR} )
+-  #EXECUTE_PROCESS( COMMAND git apply ${CMAKE_SOURCE_DIR}/dependencies/jm-modification/SampleStreamITRI.patch WORKING_DIRECTORY ${JM_DIR} )    
++  #EXECUTE_PROCESS( COMMAND git apply ${TMC2_SOURCE_DIR}/dependencies/jm-modification/SampleStreamITRI.patch WORKING_DIRECTORY ${JM_DIR} )
+ ENDIF()
+Index: source/app/PccAppVideoEncoder/CMakeLists.txt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
 diff --git a/source/app/PccAppVideoEncoder/CMakeLists.txt b/source/app/PccAppVideoEncoder/CMakeLists.txt
-index 7f99600..b5b8e4a 100644
---- a/source/app/PccAppVideoEncoder/CMakeLists.txt
-+++ b/source/app/PccAppVideoEncoder/CMakeLists.txt
-@@ -5,12 +5,12 @@ STRING(REPLACE " " "_" MYNAME ${MYNAME})
+--- a/source/app/PccAppVideoEncoder/CMakeLists.txt	(revision 1fc928244bc778c73bed0d36f1c22d95ed6b0fe2)
++++ b/source/app/PccAppVideoEncoder/CMakeLists.txt	(date 1672291718124)
+@@ -5,12 +5,12 @@
  SET( MYNAME ${MYNAME}${CMAKE_DEBUG_POSTFIX} )
  PROJECT(${MYNAME} C CXX)
  
@@ -502,266 +836,101 @@ index 7f99600..b5b8e4a 100644
                       
  ADD_EXECUTABLE( ${MYNAME} ${SRC} )
  
-diff --git a/source/lib/PccLibBitstreamCommon/CMakeLists.txt b/source/lib/PccLibBitstreamCommon/CMakeLists.txt
-index 21ae610..919a087 100644
---- a/source/lib/PccLibBitstreamCommon/CMakeLists.txt
-+++ b/source/lib/PccLibBitstreamCommon/CMakeLists.txt
-@@ -13,10 +13,10 @@ CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/include/PCCConfig.h.in
-                 ${CMAKE_CURRENT_SOURCE_DIR}/include/PCCConfig.h )
+Index: dependencies/cmake/hm.cmake
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/dependencies/cmake/hm.cmake b/dependencies/cmake/hm.cmake
+--- a/dependencies/cmake/hm.cmake	(revision 1fc928244bc778c73bed0d36f1c22d95ed6b0fe2)
++++ b/dependencies/cmake/hm.cmake	(date 1672291718118)
+@@ -1,7 +1,7 @@
+ cmake_minimum_required(VERSION 3.17 FATAL_ERROR)
  
- FILE(GLOB PROJECT_INC_FILES include/*.h 
--                ${CMAKE_SOURCE_DIR}/dependencies/libmd5/*.h )
-+                ${TMC2_SOURCE_DIR}/dependencies/libmd5/*.h )
-     
- FILE(GLOB PROJECT_CPP_FILES source/*.cpp
--                ${CMAKE_SOURCE_DIR}/dependencies/libmd5/*.c )
-+                ${TMC2_SOURCE_DIR}/dependencies/libmd5/*.c )
+ SET( HM_VERSION         HM-16.20+SCM-8.8 )
+-SET( HM_DIR             ${CMAKE_SOURCE_DIR}/dependencies/${HM_VERSION}/ )
++SET( HM_DIR             ${TMC2_SOURCE_DIR}/dependencies/${HM_VERSION}/ )
+ set( HM_LIB_SOURCE_DIR  ${HM_DIR}/source/Lib )
+ MESSAGE("Clone and build HM libraries: ${HM_LIB_SOURCE_DIR}") 
  
- FILE(GLOB PROJECT_IN_FILES  *.in)
+@@ -17,9 +17,9 @@
  
-@@ -25,7 +25,7 @@ SOURCE_GROUP( cpp   FILES ${PROJECT_CPP_FILES} )
- SOURCE_GROUP( input FILES ${PROJECT_IN_FILES}  )
+ IF( NOT EXISTS "${HM_DIR}/PATCHED" )
+   IF ( USE_HM_PCC_RDO )
+-    SET( HM_PATCH ${CMAKE_SOURCE_DIR}/dependencies/hm-modification/HM-16.20+SCM-8.8_with_RDO.patch )
++    SET( HM_PATCH ${TMC2_SOURCE_DIR}/dependencies/hm-modification/HM-16.20+SCM-8.8_with_RDO.patch )
+   ELSE()
+-    SET( HM_PATCH ${CMAKE_SOURCE_DIR}/dependencies/hm-modification/HM-16.20+SCM-8.8.patch )
++    SET( HM_PATCH ${TMC2_SOURCE_DIR}/dependencies/hm-modification/HM-16.20+SCM-8.8.patch )
+   ENDIF()
+   MESSAGE("HM patch: ${HM_DIR} (${HM_PATCH})")
+   EXECUTE_PROCESS( COMMAND git apply ${HM_PATCH} --whitespace=nowarn WORKING_DIRECTORY ${HM_DIR} RESULT_VARIABLE ret )
+Index: dependencies/cmake/hdrtools.cmake
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/dependencies/cmake/hdrtools.cmake b/dependencies/cmake/hdrtools.cmake
+--- a/dependencies/cmake/hdrtools.cmake	(revision 1fc928244bc778c73bed0d36f1c22d95ed6b0fe2)
++++ b/dependencies/cmake/hdrtools.cmake	(date 1672291718118)
+@@ -1,7 +1,7 @@
+ cmake_minimum_required(VERSION 3.17 FATAL_ERROR)
  
- INCLUDE_DIRECTORIES( include
--                ${CMAKE_SOURCE_DIR}/dependencies/libmd5)
-+                ${TMC2_SOURCE_DIR}/dependencies/libmd5)
-  
- ADD_LIBRARY( ${MYNAME} ${LINKER} ${SRC} ${PROJECT_INC_FILES} ${PROJECT_CPP_FILES} ${PROJECT_IN_FILES} )
+   
+-SET( HDRTOOLS_DIR             ${CMAKE_SOURCE_DIR}/dependencies/HDRTools )
++SET( HDRTOOLS_DIR             ${TMC2_SOURCE_DIR}/dependencies/HDRTools )
+ MESSAGE("Clone and build HDRTools libraries: ${HDRTOOLS_DIR}") 
  
-diff --git a/source/lib/PccLibBitstreamReader/CMakeLists.txt b/source/lib/PccLibBitstreamReader/CMakeLists.txt
-index c11e653..1daea09 100644
---- a/source/lib/PccLibBitstreamReader/CMakeLists.txt
-+++ b/source/lib/PccLibBitstreamReader/CMakeLists.txt
-@@ -7,7 +7,7 @@ PROJECT(${MYNAME} C CXX)
- FILE(GLOB SRC include/*.h source/*.cpp )
-  
- INCLUDE_DIRECTORIES( include 
--                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include )
-+                     ${TMC2_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include )
- 
- ADD_LIBRARY( ${MYNAME} ${LINKER} ${SRC} )
- 
-diff --git a/source/lib/PccLibBitstreamWriter/CMakeLists.txt b/source/lib/PccLibBitstreamWriter/CMakeLists.txt
-index 96c1385..2f33287 100644
---- a/source/lib/PccLibBitstreamWriter/CMakeLists.txt
-+++ b/source/lib/PccLibBitstreamWriter/CMakeLists.txt
-@@ -7,7 +7,7 @@ PROJECT(${MYNAME} C CXX)
- FILE(GLOB SRC include/*.h source/*.cpp )
- 
- INCLUDE_DIRECTORIES( include
--                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include )
-+                     ${TMC2_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include )
- 
- ADD_LIBRARY( ${MYNAME} ${LINKER} ${SRC} )
- 
-diff --git a/source/lib/PccLibColorConverter/CMakeLists.txt b/source/lib/PccLibColorConverter/CMakeLists.txt
-index 023b7ba..222e639 100644
---- a/source/lib/PccLibColorConverter/CMakeLists.txt
-+++ b/source/lib/PccLibColorConverter/CMakeLists.txt
-@@ -10,8 +10,8 @@ FILE(GLOB SRC  include/*.h
-                ${HDRTOOLS_DIR}/projects/HDRConvert/src/ProjectParameters.cpp )
- 
- INCLUDE_DIRECTORIES( include 
--                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibCommon/include/
--                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include/
-+                     ${TMC2_SOURCE_DIR}/source/lib/PccLibCommon/include/
-+                     ${TMC2_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include/
-                      ${HDRTOOLS_DIR}/common/inc
-                      ${HDRTOOLS_DIR}/projects/HDRConvert/inc )
- 
-diff --git a/source/lib/PccLibCommon/CMakeLists.txt b/source/lib/PccLibCommon/CMakeLists.txt
-index 059e95e..8415d2d 100644
---- a/source/lib/PccLibCommon/CMakeLists.txt
-+++ b/source/lib/PccLibCommon/CMakeLists.txt
-@@ -13,11 +13,11 @@ CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/include/PCCConfig.h.in
-                 ${CMAKE_CURRENT_SOURCE_DIR}/include/PCCConfig.h )
- 
- FILE(GLOB PROJECT_INC_FILES include/*.h
--                            ${CMAKE_SOURCE_DIR}/dependencies/nanoflann/*.hpp
--                            ${CMAKE_SOURCE_DIR}/dependencies/nanoflann/*.h
--                            ${CMAKE_SOURCE_DIR}/dependencies/libmd5/*.h )
-+                            ${TMC2_SOURCE_DIR}/dependencies/nanoflann/*.hpp
-+                            ${TMC2_SOURCE_DIR}/dependencies/nanoflann/*.h
-+                            ${TMC2_SOURCE_DIR}/dependencies/libmd5/*.h )
- FILE(GLOB PROJECT_CPP_FILES source/*.cpp 
--                            ${CMAKE_SOURCE_DIR}/dependencies/libmd5/*.c )
-+                            ${TMC2_SOURCE_DIR}/dependencies/libmd5/*.c )
- FILE(GLOB PROJECT_IN_FILES  *.in )
- 
- SOURCE_GROUP( inc   FILES ${PROJECT_INC_FILES} )
-@@ -25,14 +25,14 @@ SOURCE_GROUP( cpp   FILES ${PROJECT_CPP_FILES} )
- SOURCE_GROUP( input FILES ${PROJECT_IN_FILES}  )
- 
- INCLUDE_DIRECTORIES( include
--                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include 
--                     ${CMAKE_SOURCE_DIR}/dependencies/nanoflann
--                     ${CMAKE_SOURCE_DIR}/dependencies/tbb/include
--                     ${CMAKE_SOURCE_DIR}/dependencies/libmd5 )
-+                     ${TMC2_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include
-+                     ${TMC2_SOURCE_DIR}/dependencies/nanoflann
-+                     ${TMC2_SOURCE_DIR}/dependencies/tbb/include
-+                     ${TMC2_SOURCE_DIR}/dependencies/libmd5 )
-  
- ADD_LIBRARY( ${MYNAME} ${LINKER} ${SRC} ${PROJECT_INC_FILES} ${PROJECT_CPP_FILES} ${PROJECT_IN_FILES} )
- IF( ENABLE_PAPI_PROFILING )
--  TARGET_LINK_LIBRARIES(${MYNAME} ${CMAKE_SOURCE_DIR}/dependencies/papi/src/libpapi.a  )
-+  TARGET_LINK_LIBRARIES(${MYNAME} ${TMC2_SOURCE_DIR}/dependencies/papi/src/libpapi.a  )
- ENDIF()
- 
- TARGET_LINK_LIBRARIES(${MYNAME} PccLibBitstreamCommon )
-diff --git a/source/lib/PccLibConformance/CMakeLists.txt b/source/lib/PccLibConformance/CMakeLists.txt
-index ce18eeb..c688875 100644
---- a/source/lib/PccLibConformance/CMakeLists.txt
-+++ b/source/lib/PccLibConformance/CMakeLists.txt
-@@ -8,8 +8,8 @@ PROJECT(${MYNAME} C CXX)
- FILE(GLOB SRC include/*.h source/*.cpp )
- 
- INCLUDE_DIRECTORIES( include
--                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibCommon/include
--                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include )
-+                     ${TMC2_SOURCE_DIR}/source/lib/PccLibCommon/include
-+                     ${TMC2_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include )
- 
- ADD_LIBRARY( ${MYNAME} ${LINKER} ${SRC} )
- 
-diff --git a/source/lib/PccLibDecoder/CMakeLists.txt b/source/lib/PccLibDecoder/CMakeLists.txt
-index b6e35fc..03fd0be 100644
---- a/source/lib/PccLibDecoder/CMakeLists.txt
-+++ b/source/lib/PccLibDecoder/CMakeLists.txt
-@@ -5,16 +5,16 @@ STRING(REPLACE " " "_" MYNAME ${MYNAME})
+ IF( NOT EXISTS "${HDRTOOLS_DIR}/CMakeLists.txt" )   
+Index: source/app/PccAppVideoDecoder/CMakeLists.txt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/source/app/PccAppVideoDecoder/CMakeLists.txt b/source/app/PccAppVideoDecoder/CMakeLists.txt
+--- a/source/app/PccAppVideoDecoder/CMakeLists.txt	(revision 1fc928244bc778c73bed0d36f1c22d95ed6b0fe2)
++++ b/source/app/PccAppVideoDecoder/CMakeLists.txt	(date 1672291718124)
+@@ -5,12 +5,12 @@
+ SET( MYNAME ${MYNAME}${CMAKE_DEBUG_POSTFIX} )
  PROJECT(${MYNAME} C CXX)
  
- FILE(GLOB SRC include/*.h source/*.cpp
--              ${CMAKE_SOURCE_DIR}/dependencies/nanoflann/*.hpp
--              ${CMAKE_SOURCE_DIR}/dependencies/nanoflann/*.h )
-+              ${TMC2_SOURCE_DIR}/dependencies/nanoflann/*.hpp
-+              ${TMC2_SOURCE_DIR}/dependencies/nanoflann/*.h )
+-FILE(GLOB SRC *.h *.cpp *.c ${CMAKE_SOURCE_DIR}/dependencies/program-options-lite/* )
++FILE(GLOB SRC *.h *.cpp *.c ${TMC2_SOURCE_DIR}/dependencies/program-options-lite/* )
  
- INCLUDE_DIRECTORIES( include 
--                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibCommon/include  
--                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include 
+-INCLUDE_DIRECTORIES( ${CMAKE_SOURCE_DIR}/source/lib/PccLibCommon/include                    
+-                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include       
 -                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibVideoDecoder/include 
--                     ${CMAKE_SOURCE_DIR}/dependencies/tbb/include
--                     ${CMAKE_SOURCE_DIR}/dependencies/nanoflann
--                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibColorConverter/include  )
-+                     ${TMC2_SOURCE_DIR}/source/lib/PccLibCommon/include
+-                     ${CMAKE_SOURCE_DIR}/dependencies/program-options-lite  )
++INCLUDE_DIRECTORIES( ${TMC2_SOURCE_DIR}/source/lib/PccLibCommon/include
 +                     ${TMC2_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include
 +                     ${TMC2_SOURCE_DIR}/source/lib/PccLibVideoDecoder/include
-+                     ${TMC2_SOURCE_DIR}/dependencies/tbb/include
-+                     ${TMC2_SOURCE_DIR}/dependencies/nanoflann
-+                     ${TMC2_SOURCE_DIR}/source/lib/PccLibColorConverter/include  )
++                     ${TMC2_SOURCE_DIR}/dependencies/program-options-lite  )
                       
- SET( LIBS PccLibCommon PccLibBitstreamCommon PccLibVideoDecoder PccLibColorConverter )
+ ADD_EXECUTABLE( ${MYNAME} ${SRC} )
  
-diff --git a/source/lib/PccLibEncoder/CMakeLists.txt b/source/lib/PccLibEncoder/CMakeLists.txt
-index c8c62be..96a3ed8 100644
---- a/source/lib/PccLibEncoder/CMakeLists.txt
-+++ b/source/lib/PccLibEncoder/CMakeLists.txt
-@@ -5,16 +5,16 @@ STRING(REPLACE " " "_" MYNAME ${MYNAME})
+Index: source/app/PccAppConformance/CMakeLists.txt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/source/app/PccAppConformance/CMakeLists.txt b/source/app/PccAppConformance/CMakeLists.txt
+--- a/source/app/PccAppConformance/CMakeLists.txt	(revision 1fc928244bc778c73bed0d36f1c22d95ed6b0fe2)
++++ b/source/app/PccAppConformance/CMakeLists.txt	(date 1672291718122)
+@@ -6,12 +6,12 @@
  PROJECT(${MYNAME} C CXX)
  
- FILE(GLOB SRC include/*.h source/*.cpp 
--              ${CMAKE_SOURCE_DIR}/dependencies/nanoflann/*.hpp
--              ${CMAKE_SOURCE_DIR}/dependencies/nanoflann/*.h )
-+              ${TMC2_SOURCE_DIR}/dependencies/nanoflann/*.hpp
-+              ${TMC2_SOURCE_DIR}/dependencies/nanoflann/*.h )
- 
- INCLUDE_DIRECTORIES( include
--                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibCommon/include  
--                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include 
--                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibVideoEncoder/include 
--                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibColorConverter/include/
--                     ${CMAKE_SOURCE_DIR}/dependencies/tbb/include
--                     ${CMAKE_SOURCE_DIR}/dependencies/nanoflann )
-+                     ${TMC2_SOURCE_DIR}/source/lib/PccLibCommon/include
+ FILE(GLOB SRC *.h *.cpp *.c 
+-                ${CMAKE_SOURCE_DIR}/dependencies/program-options-lite/* )
++                ${TMC2_SOURCE_DIR}/dependencies/program-options-lite/* )
+                      
+-INCLUDE_DIRECTORIES( ${CMAKE_SOURCE_DIR}/source/lib/PccLibCommon/include                    
+-                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include      
+-                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibConformance/include 
+-                     ${CMAKE_SOURCE_DIR}/dependencies/program-options-lite  )
++INCLUDE_DIRECTORIES( ${TMC2_SOURCE_DIR}/source/lib/PccLibCommon/include
 +                     ${TMC2_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include
-+                     ${TMC2_SOURCE_DIR}/source/lib/PccLibVideoEncoder/include
-+                     ${TMC2_SOURCE_DIR}/source/lib/PccLibColorConverter/include/
-+                     ${TMC2_SOURCE_DIR}/dependencies/tbb/include
-+                     ${TMC2_SOURCE_DIR}/dependencies/nanoflann )
++                     ${TMC2_SOURCE_DIR}/source/lib/PccLibConformance/include
++                     ${TMC2_SOURCE_DIR}/dependencies/program-options-lite  )
  
- SET( LIBS PccLibCommon PccLibBitstreamCommon PccLibVideoEncoder PccLibColorConverter )
+ SET( LIBS PccLibCommon PccLibBitstreamCommon PccLibConformance ) 
  
-diff --git a/source/lib/PccLibMetrics/CMakeLists.txt b/source/lib/PccLibMetrics/CMakeLists.txt
-index 4cc914c..3ff511d 100644
---- a/source/lib/PccLibMetrics/CMakeLists.txt
-+++ b/source/lib/PccLibMetrics/CMakeLists.txt
-@@ -5,14 +5,14 @@ STRING(REPLACE " " "_" MYNAME ${MYNAME})
- PROJECT(${MYNAME} C CXX)
- 
- FILE(GLOB SRC include/*.h source/*.cpp 
--              ${CMAKE_SOURCE_DIR}/dependencies/nanoflann/*.hpp
--              ${CMAKE_SOURCE_DIR}/dependencies/nanoflann/*.h )
-+              ${TMC2_SOURCE_DIR}/dependencies/nanoflann/*.hpp
-+              ${TMC2_SOURCE_DIR}/dependencies/nanoflann/*.h )
- 
- INCLUDE_DIRECTORIES( include
--                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibCommon/include  
--                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include 
--                     ${CMAKE_SOURCE_DIR}/dependencies/tbb/include
--                     ${CMAKE_SOURCE_DIR}/dependencies/nanoflann )
-+                     ${TMC2_SOURCE_DIR}/source/lib/PccLibCommon/include
-+                     ${TMC2_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include
-+                     ${TMC2_SOURCE_DIR}/dependencies/tbb/include
-+                     ${TMC2_SOURCE_DIR}/dependencies/nanoflann )
- 
- ADD_LIBRARY( ${MYNAME} ${LINKER} ${SRC} )
- 
-diff --git a/source/lib/PccLibVideoDecoder/CMakeLists.txt b/source/lib/PccLibVideoDecoder/CMakeLists.txt
-index 37b6a78..985bccb 100644
---- a/source/lib/PccLibVideoDecoder/CMakeLists.txt
-+++ b/source/lib/PccLibVideoDecoder/CMakeLists.txt
-@@ -9,8 +9,8 @@ FILE(GLOB SRC  include/*.h
-                ${HM_LIB_SOURCE_DIR}/TAppCommon/* )
- 
- INCLUDE_DIRECTORIES( include 
--                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibCommon/include/
--                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include/ )
-+                     ${TMC2_SOURCE_DIR}/source/lib/PccLibCommon/include/
-+                     ${TMC2_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include/ )
- 
- SET( LIBS PccLibCommon )
- IF( USE_HMLIB_VIDEO_CODEC )
-@@ -33,15 +33,15 @@ IF( USE_VTMLIB_VIDEO_CODEC )
-     SET( LIBS ${LIBS} CommonLib DecoderLib_vtm )
- ENDIF()
- IF( USE_HMAPP_VIDEO_CODEC )
--  INCLUDE_DIRECTORIES( ${CMAKE_SOURCE_DIR}/dependencies/PccLibHevcParser/include )
-+  INCLUDE_DIRECTORIES( ${TMC2_SOURCE_DIR}/dependencies/PccLibHevcParser/include )
-   SET( LIBS ${LIBS} PccLibHevcParser )
- ENDIF()
- IF( USE_JMAPP_VIDEO_CODEC )
--  INCLUDE_DIRECTORIES( ${CMAKE_SOURCE_DIR}/dependencies/PccLibAvcParser/include )
-+  INCLUDE_DIRECTORIES( ${TMC2_SOURCE_DIR}/dependencies/PccLibAvcParser/include )
-   SET( LIBS ${LIBS} PccLibAvcParser )
- ENDIF()
- IF( USE_SHMAPP_VIDEO_CODEC )
--  INCLUDE_DIRECTORIES( ${CMAKE_SOURCE_DIR}/dependencies/PccLibShvcParser/include )
-+  INCLUDE_DIRECTORIES( ${TMC2_SOURCE_DIR}/dependencies/PccLibShvcParser/include )
-   SET( LIBS ${LIBS} PccLibShvcParser )
- ENDIF()
- ADD_LIBRARY( ${MYNAME} ${LINKER} ${SRC} )
-diff --git a/source/lib/PccLibVideoEncoder/CMakeLists.txt b/source/lib/PccLibVideoEncoder/CMakeLists.txt
-index efd097c..ecf789a 100644
---- a/source/lib/PccLibVideoEncoder/CMakeLists.txt
-+++ b/source/lib/PccLibVideoEncoder/CMakeLists.txt
-@@ -10,8 +10,8 @@ FILE(GLOB SRC include/*.h
- 
- SET( LIBS PccLibCommon )
- INCLUDE_DIRECTORIES( include 
--                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibCommon/include/
--                     ${CMAKE_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include/ )
-+                     ${TMC2_SOURCE_DIR}/source/lib/PccLibCommon/include/
-+                     ${TMC2_SOURCE_DIR}/source/lib/PccLibBitstreamCommon/include/ )
- 
- IF( USE_HMLIB_VIDEO_CODEC )
-   INCLUDE_DIRECTORIES( ${HM_LIB_SOURCE_DIR}/ )
-@@ -27,7 +27,7 @@ IF( USE_FFMPEG_VIDEO_CODEC )
-   IF( WIN32 OR MSVC OR MSYS OR MINGW )
-     LINK_DIRECTORIES( ${FFMPEG_DEV_DIR}/lib ) 
-   ENDIF()
--  INCLUDE_DIRECTORIES( ${CMAKE_SOURCE_DIR}/source/lib/PccLibVideoDecoder/include/ )
-+  INCLUDE_DIRECTORIES( ${TMC2_SOURCE_DIR}/source/lib/PccLibVideoDecoder/include/ )
-   SET( LIBS ${LIBS} ${AVCODEC_LIBRARY} ${AVUTIL_LIBRARY} ${AVFORMAT_LIBRARY} PccLibVideoDecoder )    
- ENDIF()
- IF( USE_VTMLIB_VIDEO_CODEC )
