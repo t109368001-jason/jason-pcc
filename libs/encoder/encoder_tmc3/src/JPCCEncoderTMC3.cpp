@@ -5,7 +5,7 @@
 #include <io_tlv.h>
 #include <PCCTMC3Encoder.h>
 
-using namespace pcc;
+using namespace pcc_tmc3;
 
 namespace jpcc::encoder {
 
@@ -46,8 +46,8 @@ bool JPCCEncoderTMC3::isEncodeThreadSafe() { return true; }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void JPCCEncoderTMC3::convertToCoderType(const FramePtr& frame, CoderFramePtr& coderFrame) {
-  coderFrame       = std::make_shared<pcc::PCCPointSet3>();
-  auto _coderFrame = std::static_pointer_cast<pcc::PCCPointSet3>(coderFrame);
+  coderFrame       = std::make_shared<PCCPointSet3>();
+  auto _coderFrame = std::static_pointer_cast<PCCPointSet3>(coderFrame);
   _coderFrame->resize(frame->getPointCount());
   for (size_t i = 0; i < _coderFrame->getPointCount(); i++) {
     (*_coderFrame)[i].x() = (*frame)[i][0];
@@ -70,8 +70,8 @@ void JPCCEncoderTMC3::encode(const CoderFramePtr& coderFrame, std::vector<char>&
   };
   std::function<void(const PCCPointSet3& set3)> onPostRecolour = [](const PCCPointSet3& set3) {};
 
-  pcc::PCCPointSet3 ff;
-  auto              _coderFrame = std::static_pointer_cast<pcc::PCCPointSet3>(coderFrame);
+  PCCPointSet3 ff;
+  auto         _coderFrame = std::static_pointer_cast<PCCPointSet3>(coderFrame);
   if (_coderFrame->getPointCount() == 0) {
     PayloadBuffer buffer;
     buffer.type = PayloadType::kSequenceParameterSet;
@@ -80,7 +80,7 @@ void JPCCEncoderTMC3::encode(const CoderFramePtr& coderFrame, std::vector<char>&
     return;
   }
 
-  pcc::EncoderParams             param = *std::static_pointer_cast<pcc::EncoderParams>(this->parameter_.params_);
+  EncoderParams                  param = *std::static_pointer_cast<EncoderParams>(this->parameter_.params_);
   PCCTMC3Encoder3LambdaCallbacks callback(onOutputBuffer, onPostRecolour);
   PCCTMC3Encoder3                encoder;
 

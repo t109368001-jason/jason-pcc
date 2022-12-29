@@ -1,5 +1,1665 @@
 Subject: [PATCH] for jpcc
 ---
+Index: tmc3/AttributeCommon.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/AttributeCommon.cpp b/tmc3/AttributeCommon.cpp
+--- a/tmc3/AttributeCommon.cpp	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/AttributeCommon.cpp	(date 1672298550690)
+@@ -37,7 +37,7 @@
+ 
+ #include "PCCTMC3Common.h"
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ // AttributeLods methods
+@@ -197,4 +197,4 @@
+ 
+ //============================================================================
+ 
+-}  // namespace pcc
++}  // namespace pcc_tmc3
+Index: tmc3/Attribute.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/Attribute.h b/tmc3/Attribute.h
+--- a/tmc3/Attribute.h	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/Attribute.h	(date 1672298550157)
+@@ -42,7 +42,7 @@
+ #include "PCCPointSet.h"
+ #include "entropy.h"
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ 
+@@ -111,4 +111,4 @@
+ 
+ //============================================================================
+ 
+-}  // namespace pcc
++}  // namespace pcc_tmc3
+Index: tmc3/AttributeDecoder.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/AttributeDecoder.cpp b/tmc3/AttributeDecoder.cpp
+--- a/tmc3/AttributeDecoder.cpp	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/AttributeDecoder.cpp	(date 1672298549804)
+@@ -45,7 +45,7 @@
+ #include "RAHT.h"
+ #include "FixedPoint.h"
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ // An encapsulation of the entropy decoding methods used in attribute coding
+@@ -797,4 +797,4 @@
+ 
+ //============================================================================
+ 
+-} /* namespace pcc */
++} /* namespace pcc_tmc3 */
+Index: tmc3/AttributeCommon.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/AttributeCommon.h b/tmc3/AttributeCommon.h
+--- a/tmc3/AttributeCommon.h	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/AttributeCommon.h	(date 1672298550505)
+@@ -42,7 +42,7 @@
+ #include "hls.h"
+ #include "PCCTMC3Common.h"
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ 
+@@ -114,4 +114,4 @@
+ 
+ //============================================================================
+ 
+-}  // namespace pcc
++}  // namespace pcc_tmc3
+Index: tmc3/AttributeEncoder.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/AttributeEncoder.cpp b/tmc3/AttributeEncoder.cpp
+--- a/tmc3/AttributeEncoder.cpp	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/AttributeEncoder.cpp	(date 1672298549903)
+@@ -50,7 +50,7 @@
+ static const double kAttrPredLambdaR = 0.01;
+ static const double kAttrPredLambdaC = 0.14;
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ //============================================================================
+ // An encapsulation of the entropy coding methods used in attribute coding
+ 
+@@ -1555,4 +1555,4 @@
+ 
+ //============================================================================
+ 
+-} /* namespace pcc */
++} /* namespace pcc_tmc3 */
+Index: tmc3/AttributeDecoder.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/AttributeDecoder.h b/tmc3/AttributeDecoder.h
+--- a/tmc3/AttributeDecoder.h	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/AttributeDecoder.h	(date 1672298550227)
+@@ -43,7 +43,7 @@
+ #include "PCCTMC3Common.h"
+ #include "quantization.h"
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ // Opaque definitions (Internal detail)
+@@ -137,4 +137,4 @@
+ 
+ //============================================================================
+ 
+-} /* namespace pcc */
++} /* namespace pcc_tmc3 */
+Index: tmc3/attribute_raw.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/attribute_raw.h b/tmc3/attribute_raw.h
+--- a/tmc3/attribute_raw.h	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/attribute_raw.h	(date 1672298549682)
+@@ -39,7 +39,7 @@
+ #include "PayloadBuffer.h"
+ #include "PCCPointSet.h"
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ 
+@@ -69,4 +69,4 @@
+ 
+ //============================================================================
+ 
+-}  // namespace pcc
++}  // namespace pcc_tmc3
+Index: tmc3/AttributeEncoder.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/AttributeEncoder.h b/tmc3/AttributeEncoder.h
+--- a/tmc3/AttributeEncoder.h	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/AttributeEncoder.h	(date 1672298549869)
+@@ -45,7 +45,7 @@
+ #include "hls.h"
+ #include "quantization.h"
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ // Opaque definitions (Internal detail)
+@@ -179,4 +179,4 @@
+ 
+ //============================================================================
+ 
+-} /* namespace pcc */
++} /* namespace pcc_tmc3 */
+Index: tmc3/attribute_raw_encoder.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/attribute_raw_encoder.cpp b/tmc3/attribute_raw_encoder.cpp
+--- a/tmc3/attribute_raw_encoder.cpp	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/attribute_raw_encoder.cpp	(date 1672298549933)
+@@ -38,7 +38,7 @@
+ #include "BitWriter.h"
+ #include "io_hls.h"
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ 
+@@ -80,4 +80,4 @@
+ 
+ //============================================================================
+ 
+-} /* namespace pcc */
++} /* namespace pcc_tmc3 */
+Index: tmc3/attribute_raw_decoder.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/attribute_raw_decoder.cpp b/tmc3/attribute_raw_decoder.cpp
+--- a/tmc3/attribute_raw_decoder.cpp	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/attribute_raw_decoder.cpp	(date 1672298550287)
+@@ -38,7 +38,7 @@
+ #include "BitReader.h"
+ #include "io_hls.h"
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ 
+@@ -89,4 +89,4 @@
+ 
+ //============================================================================
+ 
+-} /* namespace pcc */
++} /* namespace pcc_tmc3 */
+Index: tmc3/BitWriter.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/BitWriter.h b/tmc3/BitWriter.h
+--- a/tmc3/BitWriter.h	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/BitWriter.h	(date 1672298549734)
+@@ -40,7 +40,7 @@
+ #include <cstdint>
+ #include <cstdlib>
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ 
+@@ -223,4 +223,4 @@
+ 
+ //============================================================================
+ 
+-}  // namespace pcc
+\ No newline at end of file
++}  // namespace pcc_tmc3
+\ No newline at end of file
+Index: tmc3/BitReader.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/BitReader.h b/tmc3/BitReader.h
+--- a/tmc3/BitReader.h	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/BitReader.h	(date 1672298550096)
+@@ -38,7 +38,7 @@
+ #include <cstdint>
+ #include <cstdlib>
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ 
+@@ -212,4 +212,4 @@
+ 
+ //============================================================================
+ 
+-}  // namespace pcc
+\ No newline at end of file
++}  // namespace pcc_tmc3
+\ No newline at end of file
+Index: tmc3/colourspace.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/colourspace.h b/tmc3/colourspace.h
+--- a/tmc3/colourspace.h	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/colourspace.h	(date 1672298549699)
+@@ -39,7 +39,7 @@
+ 
+ #include "PCCMath.h"
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ 
+@@ -125,4 +125,4 @@
+ 
+ //============================================================================
+ 
+-}  // namespace pcc
++}  // namespace pcc_tmc3
+Index: tmc3/CMakeLists.txt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/CMakeLists.txt b/tmc3/CMakeLists.txt
+--- a/tmc3/CMakeLists.txt	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/CMakeLists.txt	(date 1672291714562)
+@@ -28,8 +28,8 @@
+                            -D VERSION_EXTRA=${VERSION_EXTRA}
+                            -D VERSION_CACHE_FILE=${VERSION_CACHE_FILE}
+                            -D GIT_EXECUTABLE=${GIT_EXECUTABLE}
+-                           -P ${CMAKE_SOURCE_DIR}/scripts/genversion.cmake
+-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
++                           -P ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/genversion.cmake
++  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/..
+ )
+ 
+ add_custom_command(
+@@ -161,12 +161,13 @@
+   "${CMAKE_CURRENT_SOURCE_DIR}/../dependencies/program-options-lite"
+ )
+ 
+-add_executable (tmc3
++add_library (tmc3
+   ${PROJECT_CPP_FILES}
+   ${PROJECT_INC_FILES}
+   ${PROJECT_IN_FILES}
+   ${VERSION_FILE}
+ )
++target_include_directories(tmc3 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+ add_dependencies(tmc3 genversion)
+ 
+ add_executable (ply-merge EXCLUDE_FROM_ALL
+@@ -177,5 +178,3 @@
+   ${VERSION_FILE}
+ )
+ add_dependencies(ply-merge genversion)
+-
+-install (TARGETS tmc3 DESTINATION bin)
+Index: tmc3/coordinate_conversion.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/coordinate_conversion.cpp b/tmc3/coordinate_conversion.cpp
+--- a/tmc3/coordinate_conversion.cpp	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/coordinate_conversion.cpp	(date 1672298550069)
+@@ -37,7 +37,7 @@
+ 
+ #include "geometry_octree.h"
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ 
+Index: tmc3/constants.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/constants.h b/tmc3/constants.h
+--- a/tmc3/constants.h	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/constants.h	(date 1672298549949)
+@@ -37,7 +37,7 @@
+ 
+ #include <cstdint>
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ 
+@@ -48,4 +48,4 @@
+ 
+ //============================================================================
+ 
+-}  // namespace pcc
++}  // namespace pcc_tmc3
+Index: tmc3/decoder.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/decoder.cpp b/tmc3/decoder.cpp
+--- a/tmc3/decoder.cpp	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/decoder.cpp	(date 1672298550317)
+@@ -52,7 +52,7 @@
+ #include "pcc_chrono.h"
+ #include "osspecific.h"
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ 
+@@ -368,7 +368,7 @@
+   _currentPointCloud.clear();
+   _currentPointCloud.addRemoveAttributes(hasColour, hasReflectance);
+ 
+-  pcc::chrono::Stopwatch<pcc::chrono::utime_inc_children_clock> clock_user;
++  pcc_tmc3::chrono::Stopwatch<pcc_tmc3::chrono::utime_inc_children_clock> clock_user;
+   clock_user.start();
+ 
+   int gbhSize, gbfSize;
+@@ -510,7 +510,7 @@
+   int abhSize;
+   abh = parseAbh(*_sps, attr_aps, buf, &abhSize);
+ 
+-  pcc::chrono::Stopwatch<pcc::chrono::utime_inc_children_clock> clock_user;
++  pcc_tmc3::chrono::Stopwatch<pcc_tmc3::chrono::utime_inc_children_clock> clock_user;
+ 
+   // replace the attribute decoder if not compatible
+   if (!_attrDecoder || !_attrDecoder->isReusable(attr_aps, abh))
+@@ -520,7 +520,7 @@
+ 
+   // Convert cartesian positions to spherical for use in attribute coding.
+   // NB: this retains the original cartesian positions to restore afterwards
+-  std::vector<pcc::point_t> altPositions;
++  std::vector<pcc_tmc3::point_t> altPositions;
+   if (attr_aps.spherical_coord_flag) {
+     // If predgeom was used, re-use the internal positions rather than
+     // calculating afresh.
+@@ -607,4 +607,4 @@
+ 
+ //============================================================================
+ 
+-}  // namespace pcc
++}  // namespace pcc_tmc3
+Index: tmc3/coordinate_conversion.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/coordinate_conversion.h b/tmc3/coordinate_conversion.h
+--- a/tmc3/coordinate_conversion.h	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/coordinate_conversion.h	(date 1672298549918)
+@@ -37,7 +37,7 @@
+ 
+ #include "PCCMath.h"
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ // Converts points in the range [begin, end) from cartesian co-ordinates to
+@@ -63,4 +63,4 @@
+ 
+ //============================================================================
+ 
+-}  // namespace pcc
++}  // namespace pcc_tmc3
+Index: tmc3/DualLutCoder.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/DualLutCoder.h b/tmc3/DualLutCoder.h
+--- a/tmc3/DualLutCoder.h	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/DualLutCoder.h	(date 1672298549666)
+@@ -40,7 +40,7 @@
+ 
+ #include "entropy.h"
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ // A forward and inverse symbol to frequency-sorted index lookup table.
+@@ -218,4 +218,4 @@
+ 
+ //============================================================================
+ 
+-}  // namespace pcc
++}  // namespace pcc_tmc3
+Index: tmc3/DualLutCoder.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/DualLutCoder.cpp b/tmc3/DualLutCoder.cpp
+--- a/tmc3/DualLutCoder.cpp	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/DualLutCoder.cpp	(date 1672298550475)
+@@ -37,7 +37,7 @@
+ 
+ #include <algorithm>
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ // :: FrequencySortingLut methods
+@@ -399,4 +399,4 @@
+ 
+ //============================================================================
+ 
+-}  // namespace pcc
++}  // namespace pcc_tmc3
+Index: tmc3/entropy.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/entropy.h b/tmc3/entropy.h
+--- a/tmc3/entropy.h	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/entropy.h	(date 1672298550720)
+@@ -38,7 +38,7 @@
+ #include "entropydirac.h"
+ #include "entropyutils.h"
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ using EntropyEncoder = EntropyEncoderWrapper<dirac::ArithmeticEncoder>;
+ using EntropyDecoder = EntropyDecoderWrapper<dirac::ArithmeticDecoder>;
+-}  // namespace pcc
++}  // namespace pcc_tmc3
+Index: tmc3/encoder.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/encoder.cpp b/tmc3/encoder.cpp
+--- a/tmc3/encoder.cpp	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/encoder.cpp	(date 1672298703708)
+@@ -55,7 +55,7 @@
+ #include "pcc_chrono.h"
+ #include "ply.h"
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ 
+@@ -609,7 +609,7 @@
+   if (1) {
+     PayloadBuffer payload(PayloadType::kGeometryBrick);
+ 
+-    pcc::chrono::Stopwatch<pcc::chrono::utime_inc_children_clock> clock_user;
++    pcc_tmc3::chrono::Stopwatch<pcc_tmc3::chrono::utime_inc_children_clock> clock_user;
+     clock_user.start();
+ 
+     encodeGeometryBrick(params, &payload);
+@@ -663,7 +663,7 @@
+ 
+     PayloadBuffer payload(PayloadType::kAttributeBrick);
+ 
+-    pcc::chrono::Stopwatch<pcc::chrono::utime_inc_children_clock> clock_user;
++    pcc_tmc3::chrono::Stopwatch<pcc_tmc3::chrono::utime_inc_children_clock> clock_user;
+     clock_user.start();
+ 
+     // todo(df): move elsewhere?
+@@ -692,7 +692,7 @@
+ 
+     // Convert cartesian positions to spherical for use in attribute coding.
+     // NB: this retains the original cartesian positions to restore afterwards
+-    std::vector<pcc::point_t> altPositions;
++    std::vector<pcc_tmc3::point_t> altPositions;
+     if (attr_aps.spherical_coord_flag) {
+       // If predgeom was used, re-use the internal positions rather than
+       // calculating afresh.
+Index: tmc3/entropydirac.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/entropydirac.cpp b/tmc3/entropydirac.cpp
+--- a/tmc3/entropydirac.cpp	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/entropydirac.cpp	(date 1672298550664)
+@@ -39,7 +39,7 @@
+ 
+ #include <algorithm>
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ namespace dirac {
+ 
+   //=========================================================================
+@@ -81,4 +81,4 @@
+   //==========================================================================
+ 
+ }  // namespace dirac
+-}  // namespace pcc
++}  // namespace pcc_tmc3
+Index: tmc3/entropychunk.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/entropychunk.h b/tmc3/entropychunk.h
+--- a/tmc3/entropychunk.h	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/entropychunk.h	(date 1672298550533)
+@@ -41,7 +41,7 @@
+ #include <cstdint>
+ #include <stdexcept>
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //=============================================================================
+ // This multiplexer takes two input streams (one bytewise and one bitwise)
+@@ -477,4 +477,4 @@
+ 
+ //=============================================================================
+ 
+-}  // namespace pcc
++}  // namespace pcc_tmc3
+Index: tmc3/entropyutils.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/entropyutils.h b/tmc3/entropyutils.h
+--- a/tmc3/entropyutils.h	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/entropyutils.h	(date 1672298549820)
+@@ -38,7 +38,7 @@
+ #include <algorithm>
+ #include <stddef.h>
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ // :: Entropy codec interface (Encoder)
+@@ -237,4 +237,4 @@
+ 
+ //============================================================================
+ 
+-}  // namespace pcc
++}  // namespace pcc_tmc3
+Index: tmc3/entropydirac.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/entropydirac.h b/tmc3/entropydirac.h
+--- a/tmc3/entropydirac.h	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/entropydirac.h	(date 1672298550443)
+@@ -45,7 +45,7 @@
+ #include <memory>
+ #include <vector>
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ namespace dirac {
+ 
+   //==========================================================================
+@@ -351,4 +351,4 @@
+ 
+ //============================================================================
+ 
+-}  // namespace pcc
++}  // namespace pcc_tmc3
+Index: tmc3/FixedPoint.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/FixedPoint.h b/tmc3/FixedPoint.h
+--- a/tmc3/FixedPoint.h	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/FixedPoint.h	(date 1672298549751)
+@@ -37,7 +37,7 @@
+ 
+ #include <cstdint>
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ 
+@@ -123,4 +123,4 @@
+ 
+ //============================================================================
+ 
+-}  // namespace pcc
++}  // namespace pcc_tmc3
+Index: tmc3/FixedPoint.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/FixedPoint.cpp b/tmc3/FixedPoint.cpp
+--- a/tmc3/FixedPoint.cpp	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/FixedPoint.cpp	(date 1672298550191)
+@@ -35,7 +35,7 @@
+ 
+ #include "FixedPoint.h"
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ 
+@@ -61,4 +61,4 @@
+ 
+ //============================================================================
+ 
+-}  // namespace pcc
++}  // namespace pcc_tmc3
+Index: tmc3/frame.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/frame.h b/tmc3/frame.h
+--- a/tmc3/frame.h	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/frame.h	(date 1672298550127)
+@@ -41,7 +41,7 @@
+ #include "PCCPointSet.h"
+ #include "hls.h"
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ // Represents a frame in the encoder or decoder.
+Index: tmc3/frame.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/frame.cpp b/tmc3/frame.cpp
+--- a/tmc3/frame.cpp	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/frame.cpp	(date 1672298550257)
+@@ -37,7 +37,7 @@
+ 
+ #include "PCCMisc.h"
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ 
+@@ -97,4 +97,4 @@
+ 
+ //============================================================================
+ 
+-}  // namespace pcc
++}  // namespace pcc_tmc3
+Index: tmc3/geometry.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/geometry.h b/tmc3/geometry.h
+--- a/tmc3/geometry.h	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/geometry.h	(date 1672298550355)
+@@ -44,7 +44,7 @@
+ #include "hls.h"
+ #include "partitioning.h"
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ 
+@@ -114,4 +114,4 @@
+ 
+ //============================================================================
+ 
+-}  // namespace pcc
++}  // namespace pcc_tmc3
+Index: tmc3/framectr.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/framectr.h b/tmc3/framectr.h
+--- a/tmc3/framectr.h	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/framectr.h	(date 1672298549964)
+@@ -33,7 +33,7 @@
+  * POSSIBILITY OF SUCH DAMAGE.
+  */
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ // A free-running frame counter, synchronised by updates
+@@ -75,4 +75,4 @@
+ 
+ //============================================================================
+ 
+-}  // namespace pcc
++}  // namespace pcc_tmc3
+Index: tmc3/geometry_intra_pred.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/geometry_intra_pred.h b/tmc3/geometry_intra_pred.h
+--- a/tmc3/geometry_intra_pred.h	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/geometry_intra_pred.h	(date 1672298550001)
+@@ -40,7 +40,7 @@
+ #include "OctreeNeighMap.h"
+ #include "PCCMath.h"
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ 
+@@ -53,4 +53,4 @@
+ 
+ //============================================================================
+ 
+-}  // namespace pcc
++}  // namespace pcc_tmc3
+Index: tmc3/geometry_intra_pred.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/geometry_intra_pred.cpp b/tmc3/geometry_intra_pred.cpp
+--- a/tmc3/geometry_intra_pred.cpp	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/geometry_intra_pred.cpp	(date 1672298549787)
+@@ -35,7 +35,7 @@
+ 
+ #include "geometry_intra_pred.h"
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ // Mapping of neighbour influence to affected (childIdx + 1).
+@@ -116,4 +116,4 @@
+ 
+ //============================================================================
+ 
+-}  // namespace pcc
++}  // namespace pcc_tmc3
+Index: tmc3/geometry_octree.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/geometry_octree.h b/tmc3/geometry_octree.h
+--- a/tmc3/geometry_octree.h	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/geometry_octree.h	(date 1672298703566)
+@@ -47,7 +47,7 @@
+ #include "ringbuf.h"
+ #include "tables.h"
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ 
+@@ -518,7 +518,7 @@
+   PCCPointSet3& pointCloud,
+   GeometryOctreeContexts& ctxtMem,
+   std::vector<std::unique_ptr<EntropyEncoder>>& arithmeticEncoders,
+-  pcc::ringbuf<PCCOctree3Node>* nodesRemaining);
++  pcc_tmc3::ringbuf<PCCOctree3Node>* nodesRemaining);
+ 
+ void decodeGeometryOctree(
+   const GeometryParameterSet& gps,
+@@ -527,7 +527,7 @@
+   PCCPointSet3& pointCloud,
+   GeometryOctreeContexts& ctxtMem,
+   EntropyDecoder& arithmeticDecoder,
+-  pcc::ringbuf<PCCOctree3Node>* nodesRemaining);
++  pcc_tmc3::ringbuf<PCCOctree3Node>* nodesRemaining);
+ 
+ //============================================================================
+ 
+Index: tmc3/geometry_octree.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/geometry_octree.cpp b/tmc3/geometry_octree.cpp
+--- a/tmc3/geometry_octree.cpp	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/geometry_octree.cpp	(date 1672298550568)
+@@ -43,7 +43,7 @@
+ #include "quantization.h"
+ #include "tables.h"
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ 
+@@ -729,7 +729,7 @@
+ //============================================================================
+ 
+ int
+-findLaser(pcc::point_t point, const int* thetaList, const int numTheta)
++findLaser(pcc_tmc3::point_t point, const int* thetaList, const int numTheta)
+ {
+   if (numTheta == 1)
+     return 0;
+@@ -749,4 +749,4 @@
+ 
+ //============================================================================
+ 
+-}  // namespace pcc
++}  // namespace pcc_tmc3
+Index: tmc3/geometry_octree_encoder.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/geometry_octree_encoder.cpp b/tmc3/geometry_octree_encoder.cpp
+--- a/tmc3/geometry_octree_encoder.cpp	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/geometry_octree_encoder.cpp	(date 1672298703548)
+@@ -46,7 +46,7 @@
+ #include <set>
+ #include <random>
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ 
+@@ -1437,7 +1437,7 @@
+   PCCPointSet3& pointCloud,
+   GeometryOctreeContexts& ctxtMem,
+   std::vector<std::unique_ptr<EntropyEncoder>>& arithmeticEncoders,
+-  pcc::ringbuf<PCCOctree3Node>* nodesRemaining)
++  pcc_tmc3::ringbuf<PCCOctree3Node>* nodesRemaining)
+ {
+   auto arithmeticEncoderIt = arithmeticEncoders.begin();
+   GeometryOctreeEncoder encoder(gps, gbh, ctxtMem, arithmeticEncoderIt->get());
+@@ -1449,7 +1449,7 @@
+   // init main fifo
+   //  -- worst case size is the last level containing every input poit
+   //     and each point being isolated in the previous level.
+-  pcc::ringbuf<PCCOctree3Node> fifo(pointCloud.getPointCount() + 1);
++  pcc_tmc3::ringbuf<PCCOctree3Node> fifo(pointCloud.getPointCount() + 1);
+ 
+   // push the first node
+   fifo.emplace_back();
+Index: tmc3/geometry_octree_decoder.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/geometry_octree_decoder.cpp b/tmc3/geometry_octree_decoder.cpp
+--- a/tmc3/geometry_octree_decoder.cpp	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/geometry_octree_decoder.cpp	(date 1672298703656)
+@@ -43,7 +43,7 @@
+ #include "tables.h"
+ #include "quantization.h"
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ 
+@@ -1229,7 +1229,7 @@
+   PCCPointSet3& pointCloud,
+   GeometryOctreeContexts& ctxtMem,
+   EntropyDecoder& arithmeticDecoder,
+-  pcc::ringbuf<PCCOctree3Node>* nodesRemaining)
++  pcc_tmc3::ringbuf<PCCOctree3Node>* nodesRemaining)
+ {
+   // init main fifo
+   //  -- worst case size is the last level containing every input poit
+@@ -1241,7 +1241,7 @@
+   size_t ringBufferSize = gbh.footer.geom_num_points_minus1 + 1;
+   if (gbh.trisoupNodeSizeLog2(gps))
+     ringBufferSize = 1100000;
+-  pcc::ringbuf<PCCOctree3Node> fifo(ringBufferSize + 1);
++  pcc_tmc3::ringbuf<PCCOctree3Node> fifo(ringBufferSize + 1);
+ 
+   // push the first node
+   fifo.emplace_back();
+@@ -1675,7 +1675,7 @@
+   GeometryOctreeContexts& ctxtMem,
+   EntropyDecoder& arithmeticDecoder)
+ {
+-  pcc::ringbuf<PCCOctree3Node> nodes;
++  pcc_tmc3::ringbuf<PCCOctree3Node> nodes;
+   decodeGeometryOctree(
+     gps, gbh, minGeomNodeSizeLog2, pointCloud, ctxtMem, arithmeticDecoder,
+     &nodes);
+Index: tmc3/geometry_predictive.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/geometry_predictive.h b/tmc3/geometry_predictive.h
+--- a/tmc3/geometry_predictive.h	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/geometry_predictive.h	(date 1672298550756)
+@@ -42,7 +42,7 @@
+ #include "PCCMath.h"
+ #include "hls.h"
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ 
+@@ -306,4 +306,4 @@
+ 
+ //============================================================================
+ 
+-}  // namespace pcc
++}  // namespace pcc_tmc3
+Index: tmc3/geometry_params.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/geometry_params.h b/tmc3/geometry_params.h
+--- a/tmc3/geometry_params.h	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/geometry_params.h	(date 1672298549885)
+@@ -35,7 +35,7 @@
+ 
+ #pragma once
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //=============================================================================
+ 
+@@ -95,4 +95,4 @@
+ 
+ //=============================================================================
+ 
+-}  // namespace pcc
++}  // namespace pcc_tmc3
+Index: tmc3/geometry_predictive_encoder.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/geometry_predictive_encoder.cpp b/tmc3/geometry_predictive_encoder.cpp
+--- a/tmc3/geometry_predictive_encoder.cpp	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/geometry_predictive_encoder.cpp	(date 1672298550042)
+@@ -44,7 +44,7 @@
+ #include <algorithm>
+ #include <bitset>
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ 
+Index: tmc3/geometry_predictive_decoder.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/geometry_predictive_decoder.cpp b/tmc3/geometry_predictive_decoder.cpp
+--- a/tmc3/geometry_predictive_decoder.cpp	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/geometry_predictive_decoder.cpp	(date 1672298549717)
+@@ -41,7 +41,7 @@
+ 
+ #include <vector>
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ 
+Index: tmc3/geometry_trisoup_decoder.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/geometry_trisoup_decoder.cpp b/tmc3/geometry_trisoup_decoder.cpp
+--- a/tmc3/geometry_trisoup_decoder.cpp	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/geometry_trisoup_decoder.cpp	(date 1672298549979)
+@@ -41,7 +41,7 @@
+ #include "geometry.h"
+ #include "geometry_octree.h"
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ 
+@@ -97,7 +97,7 @@
+ {
+   // trisoup uses octree coding until reaching the triangulation level.
+   // todo(df): pass trisoup node size rather than 0?
+-  pcc::ringbuf<PCCOctree3Node> nodes;
++  pcc_tmc3::ringbuf<PCCOctree3Node> nodes;
+   decodeGeometryOctree(
+     gps, gbh, 0, pointCloud, ctxtMemOctree, arithmeticDecoder, &nodes);
+ 
+Index: tmc3/geometry_trisoup.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/geometry_trisoup.h b/tmc3/geometry_trisoup.h
+--- a/tmc3/geometry_trisoup.h	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/geometry_trisoup.h	(date 1672298550384)
+@@ -42,7 +42,7 @@
+ #include "geometry_octree.h"
+ #include "ringbuf.h"
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ 
+@@ -98,4 +98,4 @@
+ 
+ //============================================================================
+ 
+-}  // namespace pcc
++}  // namespace pcc_tmc3
+Index: tmc3/hls.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/hls.h b/tmc3/hls.h
+--- a/tmc3/hls.h	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/hls.h	(date 1672298591667)
+@@ -40,7 +40,7 @@
+ #include <ostream>
+ #include <vector>
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ 
+Index: tmc3/geometry_trisoup_encoder.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/geometry_trisoup_encoder.cpp b/tmc3/geometry_trisoup_encoder.cpp
+--- a/tmc3/geometry_trisoup_encoder.cpp	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/geometry_trisoup_encoder.cpp	(date 1672298549837)
+@@ -39,7 +39,7 @@
+ #include "geometry.h"
+ #include "geometry_octree.h"
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ 
+@@ -53,7 +53,7 @@
+   std::vector<std::unique_ptr<EntropyEncoder>>& arithmeticEncoders)
+ {
+   // trisoup uses octree coding until reaching the triangulation level.
+-  pcc::ringbuf<PCCOctree3Node> nodes;
++  pcc_tmc3::ringbuf<PCCOctree3Node> nodes;
+   encodeGeometryOctree(
+     opt, gps, gbh, pointCloud, ctxtMemOctree, arithmeticEncoders, &nodes);
+ 
+Index: tmc3/io_hls.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/io_hls.h b/tmc3/io_hls.h
+--- a/tmc3/io_hls.h	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/io_hls.h	(date 1672298591309)
+@@ -38,7 +38,7 @@
+ #include "PayloadBuffer.h"
+ #include "hls.h"
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ 
+Index: tmc3/io_hls.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/io_hls.cpp b/tmc3/io_hls.cpp
+--- a/tmc3/io_hls.cpp	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/io_hls.cpp	(date 1672298591689)
+@@ -44,7 +44,7 @@
+ #include <algorithm>
+ #include <sstream>
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ 
+Index: tmc3/io_tlv.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/io_tlv.h b/tmc3/io_tlv.h
+--- a/tmc3/io_tlv.h	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/io_tlv.h	(date 1672298591493)
+@@ -40,7 +40,7 @@
+ #include <istream>
+ #include <ostream>
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ 
+Index: tmc3/io_tlv.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/io_tlv.cpp b/tmc3/io_tlv.cpp
+--- a/tmc3/io_tlv.cpp	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/io_tlv.cpp	(date 1672298591648)
+@@ -37,7 +37,7 @@
+ 
+ #include <cstdint>
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ 
+Index: tmc3/OctreeNeighMap.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/OctreeNeighMap.cpp b/tmc3/OctreeNeighMap.cpp
+--- a/tmc3/OctreeNeighMap.cpp	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/OctreeNeighMap.cpp	(date 1672298703759)
+@@ -43,7 +43,7 @@
+ #  define VALGRIND_MAKE_MEM_UNDEFINED(a, b) (void)0
+ #endif
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ 
+@@ -83,8 +83,8 @@
+ updateGeometryOccupancyAtlas(
+   const Vec3<int32_t>& currentPosition,
+   const int atlasShift,
+-  const pcc::ringbuf<PCCOctree3Node>& fifo,
+-  const pcc::ringbuf<PCCOctree3Node>::iterator& fifoCurrLvlEnd,
++  const pcc_tmc3::ringbuf<PCCOctree3Node>& fifo,
++  const pcc_tmc3::ringbuf<PCCOctree3Node>::iterator& fifoCurrLvlEnd,
+   MortonMap3D* occupancyAtlas,
+   Vec3<int32_t>* atlasOrigin)
+ {
+Index: tmc3/misc.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/misc.cpp b/tmc3/misc.cpp
+--- a/tmc3/misc.cpp	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/misc.cpp	(date 1672298591413)
+@@ -41,7 +41,7 @@
+ #include <cstdio>
+ #include <string>
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ 
+Index: tmc3/osspecific.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/osspecific.cpp b/tmc3/osspecific.cpp
+--- a/tmc3/osspecific.cpp	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/osspecific.cpp	(date 1672298703690)
+@@ -48,7 +48,7 @@
+ 
+ #if _WIN32
+ int
+-pcc::mkdir(const char* path)
++pcc_tmc3::mkdir(const char* path)
+ {
+   return _mkdir(path);
+ }
+@@ -56,7 +56,7 @@
+ 
+ #if _POSIX_C_SOURCE
+ int
+-pcc::mkdir(const char* path)
++pcc_tmc3::mkdir(const char* path)
+ {
+   return ::mkdir(path, 0775);
+ }
+Index: tmc3/OctreeNeighMap.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/OctreeNeighMap.h b/tmc3/OctreeNeighMap.h
+--- a/tmc3/OctreeNeighMap.h	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/OctreeNeighMap.h	(date 1672298591396)
+@@ -44,7 +44,7 @@
+ #include <memory>
+ #include <vector>
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ // Provides a mapping of (x,y,z) co-ordinate to a bit flag.
+Index: tmc3/partitioning.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/partitioning.cpp b/tmc3/partitioning.cpp
+--- a/tmc3/partitioning.cpp	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/partitioning.cpp	(date 1672298591341)
+@@ -40,7 +40,7 @@
+ #include <map>
+ #include <stdint.h>
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ 
+Index: tmc3/osspecific.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/osspecific.h b/tmc3/osspecific.h
+--- a/tmc3/osspecific.h	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/osspecific.h	(date 1672298591591)
+@@ -35,9 +35,9 @@
+ 
+ #pragma once
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ // Create a directory at the given path.
+ int mkdir(const char* path);
+ 
+-} /* namespace pcc */
+\ No newline at end of file
++} /* namespace pcc_tmc3 */
+\ No newline at end of file
+Index: tmc3/PayloadBuffer.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/PayloadBuffer.h b/tmc3/PayloadBuffer.h
+--- a/tmc3/PayloadBuffer.h	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/PayloadBuffer.h	(date 1672298591609)
+@@ -39,7 +39,7 @@
+ 
+ #include <vector>
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ 
+Index: tmc3/partitioning.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/partitioning.h b/tmc3/partitioning.h
+--- a/tmc3/partitioning.h	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/partitioning.h	(date 1672298591524)
+@@ -42,7 +42,7 @@
+ #include "PCCPointSet.h"
+ #include "hls.h"
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ 
+Index: tmc3/PCCMisc.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/PCCMisc.h b/tmc3/PCCMisc.h
+--- a/tmc3/PCCMisc.h	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/PCCMisc.h	(date 1672298591358)
+@@ -55,7 +55,7 @@
+ #  define __attribute__(...)
+ #endif
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ const uint32_t PCC_UNDEFINED_INDEX = -1;
+ 
+ enum PCCEndianness
+Index: tmc3/PCCMath.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/PCCMath.h b/tmc3/PCCMath.h
+--- a/tmc3/PCCMath.h	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/PCCMath.h	(date 1672298703725)
+@@ -49,7 +49,7 @@
+ 
+ #include <algorithm>
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ /// Vector dim 3
+ template<typename T>
+ class Vec3 {
+@@ -121,7 +121,7 @@
+   }
+ 
+   template<typename U>
+-  Vec3& operator+=(const typename pcc::Vec3<U>& rhs)
++  Vec3& operator+=(const typename pcc_tmc3::Vec3<U>& rhs)
+   {
+     data[0] += rhs[0];
+     data[1] += rhs[1];
+@@ -130,7 +130,7 @@
+   }
+ 
+   template<typename U>
+-  Vec3& operator-=(const typename pcc::Vec3<U>& rhs)
++  Vec3& operator-=(const typename pcc_tmc3::Vec3<U>& rhs)
+   {
+     data[0] -= rhs[0];
+     data[1] -= rhs[1];
+@@ -229,7 +229,7 @@
+ 
+   template<typename U>
+   friend Vec3<typename std::common_type<T, U>::type>
+-  operator+(const Vec3& lhs, const typename pcc::Vec3<U>& rhs)
++  operator+(const Vec3& lhs, const typename pcc_tmc3::Vec3<U>& rhs)
+   {
+     return Vec3<typename std::common_type<T, U>::type>(
+       lhs[0] + rhs[0], lhs[1] + rhs[1], lhs[2] + rhs[2]);
+@@ -257,7 +257,7 @@
+ 
+   template<typename U>
+   friend Vec3<typename std::common_type<T, U>::type>
+-  operator-(const Vec3& lhs, const typename pcc::Vec3<U>& rhs)
++  operator-(const Vec3& lhs, const typename pcc_tmc3::Vec3<U>& rhs)
+   {
+     return Vec3<typename std::common_type<T, U>::type>(
+       lhs[0] - rhs[0], lhs[1] - rhs[1], lhs[2] - rhs[2]);
+@@ -296,7 +296,7 @@
+   // todo(df): make this elementwise?
+   template<typename U>
+   friend typename std::common_type<T, U>::type
+-  operator*(pcc::Vec3<T> lhs, const pcc::Vec3<U>& rhs)
++  operator*(pcc_tmc3::Vec3<T> lhs, const pcc_tmc3::Vec3<U>& rhs)
+   {
+     return (lhs[0] * rhs[0] + lhs[1] * rhs[1] + lhs[2] * rhs[2]);
+   }
+@@ -403,7 +403,7 @@
+   }
+ 
+   template<typename U>
+-  Vec3(const typename pcc::Vec3<U>& vec)
++  Vec3(const typename pcc_tmc3::Vec3<U>& vec)
+   {
+     data[0] = vec.data[0];
+     data[1] = vec.data[1];
+@@ -417,7 +417,7 @@
+   T data[3];
+ 
+   template<typename U>
+-  friend class pcc::Vec3;
++  friend class pcc_tmc3::Vec3;
+ };
+ 
+ template<typename T>
+@@ -833,6 +833,6 @@
+ 
+ //---------------------------------------------------------------------------
+ 
+-} /* namespace pcc */
++} /* namespace pcc_tmc3 */
+ 
+ #endif /* PCCMath_h */
+Index: tmc3/PCCTMC3Common.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/PCCTMC3Common.h b/tmc3/PCCTMC3Common.h
+--- a/tmc3/PCCTMC3Common.h	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/PCCTMC3Common.h	(date 1672298591326)
+@@ -48,7 +48,7 @@
+ #include <memory>
+ #include <vector>
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ // Hierachichal bounding boxes.
+Index: tmc3/PCCPointSet.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/PCCPointSet.h b/tmc3/PCCPointSet.h
+--- a/tmc3/PCCPointSet.h	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/PCCPointSet.h	(date 1672298591239)
+@@ -50,7 +50,7 @@
+ #include "PCCMath.h"
+ #include "PCCMisc.h"
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ // The type used for internally representing attribute data
+@@ -411,7 +411,7 @@
+   }
+ 
+   size_t getPointCount() const { return positions.size(); }
+-  void resize(const size_t size)
++  virtual void resize(const size_t size)
+   {
+     positions.resize(size);
+     if (hasColors()) {
+@@ -428,7 +428,7 @@
+     }
+   }
+ 
+-  void reserve(const size_t size)
++  virtual void reserve(const size_t size)
+   {
+     positions.reserve(size);
+     if (hasColors()) {
+@@ -444,7 +444,7 @@
+       laserAngles.reserve(size);
+     }
+   }
+-  void clear()
++  virtual void clear()
+   {
+     positions.clear();
+     colors.clear();
+@@ -499,7 +499,7 @@
+         std::next(laserAngles.begin(), dstEnd));
+   }
+ 
+-  void swapPoints(const size_t index1, const size_t index2)
++  virtual void swapPoints(const size_t index1, const size_t index2)
+   {
+     assert(index1 < getPointCount());
+     assert(index2 < getPointCount());
+@@ -596,6 +596,6 @@
+ 
+ //---------------------------------------------------------------------------
+ 
+-} /* namespace pcc */
++} /* namespace pcc_tmc3 */
+ 
+ #endif /* PCCPointSet_h */
+Index: tmc3/PCCTMC3Encoder.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/PCCTMC3Encoder.h b/tmc3/PCCTMC3Encoder.h
+--- a/tmc3/PCCTMC3Encoder.h	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/PCCTMC3Encoder.h	(date 1672298591574)
+@@ -51,7 +51,7 @@
+ #include "partitioning.h"
+ #include "pointset_processing.h"
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ 
+Index: tmc3/PCCTMC3Decoder.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/PCCTMC3Decoder.h b/tmc3/PCCTMC3Decoder.h
+--- a/tmc3/PCCTMC3Decoder.h	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/PCCTMC3Decoder.h	(date 1672298591630)
+@@ -47,7 +47,7 @@
+ #include "geometry.h"
+ #include "hls.h"
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ 
+Index: tmc3/pcc_chrono.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/pcc_chrono.h b/tmc3/pcc_chrono.h
+--- a/tmc3/pcc_chrono.h	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/pcc_chrono.h	(date 1672298703603)
+@@ -39,13 +39,13 @@
+ 
+ //===========================================================================
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ namespace chrono {
+   /**
+  * Clock reporting elapsed user time of the current process and children.
+  *
+  * NB: under winapi, only child processes that have completed execution
+- *     via pcc::system() are reported.
++ *     via pcc_tmc3::system() are reported.
+  */
+   struct utime_inc_children_clock {
+     typedef std::chrono::nanoseconds duration;
+@@ -63,7 +63,7 @@
+ 
+ //===========================================================================
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ namespace chrono {
+   /**
+  * Measurement of cumulative elapsed time intervals.
+@@ -105,7 +105,7 @@
+ 
+ template<typename Clock>
+ void
+-pcc::chrono::Stopwatch<Clock>::reset()
++pcc_tmc3::chrono::Stopwatch<Clock>::reset()
+ {
+   cumulative_time_ = cumulative_time_.zero();
+ }
+@@ -114,7 +114,7 @@
+ 
+ template<typename Clock>
+ void
+-pcc::chrono::Stopwatch<Clock>::start()
++pcc_tmc3::chrono::Stopwatch<Clock>::start()
+ {
+   start_time_ = Clock::now();
+ }
+@@ -122,8 +122,8 @@
+ //---------------------------------------------------------------------------
+ 
+ template<typename Clock>
+-typename pcc::chrono::Stopwatch<Clock>::duration
+-pcc::chrono::Stopwatch<Clock>::stop()
++typename pcc_tmc3::chrono::Stopwatch<Clock>::duration
++pcc_tmc3::chrono::Stopwatch<Clock>::stop()
+ {
+   const auto& delta = duration(Clock::now() - start_time_);
+   cumulative_time_ += delta;
 Index: tmc3/pcc_chrono.cpp
 IDEA additional info:
 Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
@@ -7,25 +1667,437 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 ===================================================================
 diff --git a/tmc3/pcc_chrono.cpp b/tmc3/pcc_chrono.cpp
 --- a/tmc3/pcc_chrono.cpp	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
-+++ b/tmc3/pcc_chrono.cpp	(date 1672216880720)
-@@ -51,7 +51,7 @@
++++ b/tmc3/pcc_chrono.cpp	(date 1672298703638)
+@@ -49,7 +49,7 @@
+ //===========================================================================
+ 
  #if _WIN32
- namespace pcc {
+-namespace pcc {
++namespace pcc_tmc3 {
  namespace chrono {
--  namespace detail {
-+  namespace detail_tmc3 {
+   namespace detail {
      using hundredns = std::chrono::duration<int64_t, std::ratio<1, 10000000>>;
+@@ -64,8 +64,8 @@
+ //---------------------------------------------------------------------------
  
-     // global state to emulate getrusage(RUSAGE_CHILDREN).
-@@ -76,7 +76,7 @@
-   val.LowPart = userTime.dwLowDateTime;
-   val.HighPart = userTime.dwHighDateTime;
+ #if _WIN32
+-pcc::chrono::utime_inc_children_clock::time_point
+-pcc::chrono::utime_inc_children_clock::now() noexcept
++pcc_tmc3::chrono::utime_inc_children_clock::time_point
++pcc_tmc3::chrono::utime_inc_children_clock::now() noexcept
+ {
+   HANDLE hProcess = GetCurrentProcess();
+   FILETIME dummy, userTime;
+@@ -85,8 +85,8 @@
+ //---------------------------------------------------------------------------
  
--  using namespace detail;
-+  using namespace detail_tmc3;
-   using hundredns = std::chrono::duration<int64_t, std::ratio<1, 10000000>>;
-   return time_point(hundredns(val.QuadPart) + g_cumulative_time_children);
- }
+ #if HAVE_GETRUSAGE
+-pcc::chrono::utime_inc_children_clock::time_point
+-pcc::chrono::utime_inc_children_clock::now() noexcept
++pcc_tmc3::chrono::utime_inc_children_clock::time_point
++pcc_tmc3::chrono::utime_inc_children_clock::now() noexcept
+ {
+   std::chrono::nanoseconds total;
+ 
+Index: tmc3/ply.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/ply.h b/tmc3/ply.h
+--- a/tmc3/ply.h	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/ply.h	(date 1672298591255)
+@@ -40,7 +40,7 @@
+ 
+ #include "PCCPointSet.h"
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ namespace ply {
+ 
+   //============================================================================
+Index: tmc3/ply.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/ply.cpp b/tmc3/ply.cpp
+--- a/tmc3/ply.cpp	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/ply.cpp	(date 1672298591508)
+@@ -42,7 +42,7 @@
+ #include <string>
+ #include <vector>
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ 
+Index: tmc3/pointset_processing.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/pointset_processing.h b/tmc3/pointset_processing.h
+--- a/tmc3/pointset_processing.h	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/pointset_processing.h	(date 1672298591445)
+@@ -40,7 +40,7 @@
+ #include "PCCPointSet.h"
+ #include "hls.h"
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ 
+Index: tmc3/pointset_processing.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/pointset_processing.cpp b/tmc3/pointset_processing.cpp
+--- a/tmc3/pointset_processing.cpp	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/pointset_processing.cpp	(date 1672298591460)
+@@ -45,7 +45,7 @@
+ #include <utility>
+ #include <map>
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ 
+Index: tmc3/quantization.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/quantization.h b/tmc3/quantization.h
+--- a/tmc3/quantization.h	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/quantization.h	(date 1672298591557)
+@@ -41,7 +41,7 @@
+ #include "constants.h"
+ #include "PCCMath.h"
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ struct AttributeDescription;
+ struct AttributeParameterSet;
+Index: tmc3/quantization.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/quantization.cpp b/tmc3/quantization.cpp
+--- a/tmc3/quantization.cpp	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/quantization.cpp	(date 1672298591288)
+@@ -39,7 +39,7 @@
+ #include "hls.h"
+ #include "tables.h"
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ 
+Index: tmc3/RAHT.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/RAHT.h b/tmc3/RAHT.h
+--- a/tmc3/RAHT.h	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/RAHT.h	(date 1672298591272)
+@@ -42,7 +42,7 @@
+ #include "quantization.h"
+ #include <vector>
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ void regionAdaptiveHierarchicalTransform(
+   bool raht_prediction_enabled_flag,
+@@ -66,4 +66,4 @@
+   const int voxelCount,
+   int* coefficients);
+ 
+-} /* namespace pcc */
++} /* namespace pcc_tmc3 */
+Index: tmc3/RAHT.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/RAHT.cpp b/tmc3/RAHT.cpp
+--- a/tmc3/RAHT.cpp	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/RAHT.cpp	(date 1672298703620)
+@@ -46,7 +46,7 @@
+ #include "PCCTMC3Common.h"
+ #include "PCCMisc.h"
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //============================================================================
+ 
+@@ -343,7 +343,7 @@
+ 
+     // apply weighted neighbour value to masked positions
+     for (int k = 0; k < numAttrs; k++)
+-      neighValue[k] *= predWeight[i] << pcc::FixedPoint::kFracBits;
++      neighValue[k] *= predWeight[i] << pcc_tmc3::FixedPoint::kFracBits;
+ 
+     int mask = predMasks[i] & occupancy;
+     for (int j = 0; mask; j++, mask >>= 1) {
+Index: tmc3/tables.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/tables.cpp b/tmc3/tables.cpp
+--- a/tmc3/tables.cpp	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/tables.cpp	(date 1672298703529)
+@@ -38,7 +38,7 @@
+ // indicates impossible values in the following table
+ static const int x = 0;
+ 
+-const uint8_t pcc::kNeighPatternInvMap[64][8] = {
++const uint8_t pcc_tmc3::kNeighPatternInvMap[64][8] = {
+   {0, 1, 2, 3, 4, 5, 6, 7}, {0, 1, 2, 3, 4, 5, 6, 7}, {6, 7, 4, 5, 2, 3, 0, 1},
+   {0, 1, 2, 3, 4, 5, 6, 7}, {2, 3, 6, 7, 0, 1, 4, 5}, {2, 3, 6, 7, 0, 1, 4, 5},
+   {6, 7, 4, 5, 2, 3, 0, 1}, {4, 5, 0, 1, 6, 7, 2, 3}, {4, 5, 0, 1, 6, 7, 2, 3},
+@@ -63,40 +63,40 @@
+   {0, 1, 2, 3, 4, 5, 6, 7},
+ };
+ 
+-const int pcc::numMaxOccupided[8] = {8, 4, 4, 2, 4, 2, 2, 1};
++const int pcc_tmc3::numMaxOccupided[8] = {8, 4, 4, 2, 4, 2, 2, 1};
+ 
+-const uint8_t pcc::kNeighPattern64to9[64] = {
++const uint8_t pcc_tmc3::kNeighPattern64to9[64] = {
+   0, 1, 1, 1, 1, 2, 2, 3, 1, 2, 2, 3, 1, 3, 3, 4, 1, 2, 2, 3, 2, 5,
+   5, 6, 2, 5, 5, 6, 3, 6, 6, 7, 1, 2, 2, 3, 2, 5, 5, 6, 2, 5, 5, 6,
+   3, 6, 6, 7, 1, 3, 3, 4, 3, 6, 6, 7, 3, 6, 6, 7, 4, 7, 7, 8};
+ 
+-const uint8_t pcc::kNeighPattern64to6[64] = {
++const uint8_t pcc_tmc3::kNeighPattern64to6[64] = {
+   0, 5, 5, x, 5, 1, 1, x, 5, 1, 1, x, x, x, x, x, 2, 3, 3, x, 3, 7,
+   7, x, 3, 7, 7, x, x, x, x, x, 2, 3, 3, x, 3, 7, 7, x, 3, 7, 7, x,
+   x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x};
+ 
+-const uint8_t pcc::kNeighPattern9to5[9] = {0, 1, 2, 3, 1, 2, 3, 4, 4};
++const uint8_t pcc_tmc3::kNeighPattern9to5[9] = {0, 1, 2, 3, 1, 2, 3, 4, 4};
+ 
+-const uint8_t pcc::kNeighPattern9to3[9] = {0, 1, 1, 2, 2, 1, 2, 2, 2};
++const uint8_t pcc_tmc3::kNeighPattern9to3[9] = {0, 1, 1, 2, 2, 1, 2, 2, 2};
+ 
+-const uint8_t pcc::kNeighPattern10to7[10] = {0, 1, 2, 3, 4, 5, 3, 4, 5, 6};
++const uint8_t pcc_tmc3::kNeighPattern10to7[10] = {0, 1, 2, 3, 4, 5, 3, 4, 5, 6};
+ 
+-const uint8_t pcc::kNeighPattern7to5[7] = {0, 1, 2, 1, 4, 4, 3};
++const uint8_t pcc_tmc3::kNeighPattern7to5[7] = {0, 1, 2, 1, 4, 4, 3};
+ 
+-const uint8_t pcc::kOccMapRotateXIdFromPattern[64] = {
++const uint8_t pcc_tmc3::kOccMapRotateXIdFromPattern[64] = {
+   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 1, 0,
+   0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 0, 1, 1, 2, 1, 0, 0, 0, 1, 0, 0, 0,
+   2, 0, 0, 0, 0, 2, 2, 1, 2, 3, 3, 0, 2, 3, 3, 0, 1, 0, 0, 0};
+ 
+-const uint8_t pcc::kOccMapRotateZIdFromPatternXY[16] = {
++const uint8_t pcc_tmc3::kOccMapRotateZIdFromPatternXY[16] = {
+   0, 0, 2, 0, 3, 3, 2, 1, 1, 0, 1, 3, 1, 2, 0, 0};
+ 
+-const bool pcc::kOccMapRotateYIdFromPattern[64] = {
++const bool pcc_tmc3::kOccMapRotateYIdFromPattern[64] = {
+   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0,
+   0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,
+   1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 0};
+ 
+-const uint8_t pcc::kOccMapRotateX270[256] = {
++const uint8_t pcc_tmc3::kOccMapRotateX270[256] = {
+   0,   4,   1,   5,   8,   12,  9,   13,  2,   6,   3,   7,   10,  14,  11,
+   15,  64,  68,  65,  69,  72,  76,  73,  77,  66,  70,  67,  71,  74,  78,
+   75,  79,  16,  20,  17,  21,  24,  28,  25,  29,  18,  22,  19,  23,  26,
+@@ -116,7 +116,7 @@
+   240, 244, 241, 245, 248, 252, 249, 253, 242, 246, 243, 247, 250, 254, 251,
+   255};
+ 
+-const uint8_t pcc::kOccMapRotateX090[256] = {
++const uint8_t pcc_tmc3::kOccMapRotateX090[256] = {
+   0,   2,   8,   10,  1,   3,   9,   11,  4,   6,   12,  14,  5,   7,   13,
+   15,  32,  34,  40,  42,  33,  35,  41,  43,  36,  38,  44,  46,  37,  39,
+   45,  47,  128, 130, 136, 138, 129, 131, 137, 139, 132, 134, 140, 142, 133,
+@@ -136,7 +136,7 @@
+   240, 242, 248, 250, 241, 243, 249, 251, 244, 246, 252, 254, 245, 247, 253,
+   255};
+ 
+-const uint8_t pcc::kOccMapRotateX270Y180[256] = {
++const uint8_t pcc_tmc3::kOccMapRotateX270Y180[256] = {
+   0,  128, 32, 160, 64, 192, 96,  224, 16, 144, 48, 176, 80, 208, 112, 240,
+   8,  136, 40, 168, 72, 200, 104, 232, 24, 152, 56, 184, 88, 216, 120, 248,
+   2,  130, 34, 162, 66, 194, 98,  226, 18, 146, 50, 178, 82, 210, 114, 242,
+@@ -154,7 +154,7 @@
+   7,  135, 39, 167, 71, 199, 103, 231, 23, 151, 55, 183, 87, 215, 119, 247,
+   15, 143, 47, 175, 79, 207, 111, 239, 31, 159, 63, 191, 95, 223, 127, 255};
+ 
+-const uint8_t pcc::kOccMapRotateX090Y180[256] = {
++const uint8_t pcc_tmc3::kOccMapRotateX090Y180[256] = {
+   0,  16, 64, 80, 32, 48, 96,  112, 128, 144, 192, 208, 160, 176, 224, 240,
+   1,  17, 65, 81, 33, 49, 97,  113, 129, 145, 193, 209, 161, 177, 225, 241,
+   4,  20, 68, 84, 36, 52, 100, 116, 132, 148, 196, 212, 164, 180, 228, 244,
+@@ -172,7 +172,7 @@
+   14, 30, 78, 94, 46, 62, 110, 126, 142, 158, 206, 222, 174, 190, 238, 254,
+   15, 31, 79, 95, 47, 63, 111, 127, 143, 159, 207, 223, 175, 191, 239, 255};
+ 
+-const uint8_t pcc::kOccMapRotateY090[256] = {
++const uint8_t pcc_tmc3::kOccMapRotateY090[256] = {
+   0,   16,  1,   17,  64,  80,  65,  81,  4,   20,  5,   21,  68,  84,  69,
+   85,  32,  48,  33,  49,  96,  112, 97,  113, 36,  52,  37,  53,  100, 116,
+   101, 117, 2,   18,  3,   19,  66,  82,  67,  83,  6,   22,  7,   23,  70,
+@@ -192,7 +192,7 @@
+   170, 186, 171, 187, 234, 250, 235, 251, 174, 190, 175, 191, 238, 254, 239,
+   255};
+ 
+-const uint8_t pcc::kOccMapRotateY270[256] = {
++const uint8_t pcc_tmc3::kOccMapRotateY270[256] = {
+   0,  2,  32,  34,  8,  10, 40,  42,  128, 130, 160, 162, 136, 138, 168, 170,
+   1,  3,  33,  35,  9,  11, 41,  43,  129, 131, 161, 163, 137, 139, 169, 171,
+   16, 18, 48,  50,  24, 26, 56,  58,  144, 146, 176, 178, 152, 154, 184, 186,
+@@ -210,7 +210,7 @@
+   84, 86, 116, 118, 92, 94, 124, 126, 212, 214, 244, 246, 220, 222, 252, 254,
+   85, 87, 117, 119, 93, 95, 125, 127, 213, 215, 245, 247, 221, 223, 253, 255};
+ 
+-const uint8_t pcc::kOccMapMirrorXY[256] = {
++const uint8_t pcc_tmc3::kOccMapMirrorXY[256] = {
+   0,   2,   1,   3,   8,   10,  9,   11,  4,   6,   5,   7,   12,  14,  13,
+   15,  32,  34,  33,  35,  40,  42,  41,  43,  36,  38,  37,  39,  44,  46,
+   45,  47,  16,  18,  17,  19,  24,  26,  25,  27,  20,  22,  21,  23,  28,
+@@ -230,7 +230,7 @@
+   240, 242, 241, 243, 248, 250, 249, 251, 244, 246, 245, 247, 252, 254, 253,
+   255};
+ 
+-const uint8_t pcc::kOccMapRotateZ270[256] = {
++const uint8_t pcc_tmc3::kOccMapRotateZ270[256] = {
+   0,   16,  32,  48,  1,   17,  33,  49,  2,   18,  34,  50,  3,   19,  35,
+   51,  64,  80,  96,  112, 65,  81,  97,  113, 66,  82,  98,  114, 67,  83,
+   99,  115, 128, 144, 160, 176, 129, 145, 161, 177, 130, 146, 162, 178, 131,
+@@ -250,7 +250,7 @@
+   204, 220, 236, 252, 205, 221, 237, 253, 206, 222, 238, 254, 207, 223, 239,
+   255};
+ 
+-const uint8_t pcc::kOccMapRotateZ180[256] = {
++const uint8_t pcc_tmc3::kOccMapRotateZ180[256] = {
+   0,  64, 128, 192, 16, 80, 144, 208, 32, 96,  160, 224, 48, 112, 176, 240,
+   4,  68, 132, 196, 20, 84, 148, 212, 36, 100, 164, 228, 52, 116, 180, 244,
+   8,  72, 136, 200, 24, 88, 152, 216, 40, 104, 168, 232, 56, 120, 184, 248,
+@@ -268,7 +268,7 @@
+   11, 75, 139, 203, 27, 91, 155, 219, 43, 107, 171, 235, 59, 123, 187, 251,
+   15, 79, 143, 207, 31, 95, 159, 223, 47, 111, 175, 239, 63, 127, 191, 255};
+ 
+-const uint8_t pcc::kOccMapRotateZ090[256] = {
++const uint8_t pcc_tmc3::kOccMapRotateZ090[256] = {
+   0,  4,  8,  12, 64,  68,  72,  76,  128, 132, 136, 140, 192, 196, 200, 204,
+   1,  5,  9,  13, 65,  69,  73,  77,  129, 133, 137, 141, 193, 197, 201, 205,
+   2,  6,  10, 14, 66,  70,  74,  78,  130, 134, 138, 142, 194, 198, 202, 206,
+@@ -288,17 +288,17 @@
+ 
+ //============================================================================
+ 
+-const int8_t pcc::kOccBitCodingOrder[8] = {1, 7, 5, 3, 2, 6, 4, 0};
++const int8_t pcc_tmc3::kOccBitCodingOrder[8] = {1, 7, 5, 3, 2, 6, 4, 0};
+ 
+ //============================================================================
+ 
+ // Generated from (L*p+s)/(L+1), L=min(200, max(5, 1/p, 1/(1-p))
+-const uint8_t pcc::kCtxMapOctreeOccupancyDelta[16] = {
++const uint8_t pcc_tmc3::kCtxMapOctreeOccupancyDelta[16] = {
+   0, 1, 1, 2, 4, 7, 9, 11, 14, 16, 19, 23, 22, 18, 13, 6};
+ 
+ //============================================================================
+ 
+-const uint8_t pcc::kDualLutOccupancyCoderInit[10][32] = {
++const uint8_t pcc_tmc3::kDualLutOccupancyCoderInit[10][32] = {
+   /* [0] = */ {1,   2,   3,   4,   5,   7,   8,   10,  12,  16, 17,
+                20,  32,  42,  44,  48,  49,  64,  65,  68,  76, 80,
+                115, 128, 136, 160, 163, 168, 192, 207, 224, 240},
+@@ -332,7 +332,7 @@
+ 
+ //============================================================================
+ 
+-const uint32_t pcc::kMortonCode256Z[256] = {
++const uint32_t pcc_tmc3::kMortonCode256Z[256] = {
+   0x00000000, 0x00000001, 0x00000008, 0x00000009, 0x00000040, 0x00000041,
+   0x00000048, 0x00000049, 0x00000200, 0x00000201, 0x00000208, 0x00000209,
+   0x00000240, 0x00000241, 0x00000248, 0x00000249, 0x00001000, 0x00001001,
+@@ -377,7 +377,7 @@
+   0x00249048, 0x00249049, 0x00249200, 0x00249201, 0x00249208, 0x00249209,
+   0x00249240, 0x00249241, 0x00249248, 0x00249249};
+ 
+-const uint32_t pcc::kMortonCode256Y[256] = {
++const uint32_t pcc_tmc3::kMortonCode256Y[256] = {
+   0x00000000, 0x00000002, 0x00000010, 0x00000012, 0x00000080, 0x00000082,
+   0x00000090, 0x00000092, 0x00000400, 0x00000402, 0x00000410, 0x00000412,
+   0x00000480, 0x00000482, 0x00000490, 0x00000492, 0x00002000, 0x00002002,
+@@ -422,7 +422,7 @@
+   0x00492090, 0x00492092, 0x00492400, 0x00492402, 0x00492410, 0x00492412,
+   0x00492480, 0x00492482, 0x00492490, 0x00492492};
+ 
+-const uint32_t pcc::kMortonCode256X[256] = {
++const uint32_t pcc_tmc3::kMortonCode256X[256] = {
+   0x00000000, 0x00000004, 0x00000020, 0x00000024, 0x00000100, 0x00000104,
+   0x00000120, 0x00000124, 0x00000800, 0x00000804, 0x00000820, 0x00000824,
+   0x00000900, 0x00000904, 0x00000920, 0x00000924, 0x00004000, 0x00004004,
+@@ -469,14 +469,14 @@
+ 
+ //============================================================================
+ 
+-const int16_t pcc::kQpStep[6] = {161, 181, 203, 228, 256, 287};
++const int16_t pcc_tmc3::kQpStep[6] = {161, 181, 203, 228, 256, 287};
+ 
+-const int32_t pcc::kQpStepRecip[6] = {416825, 370767, 330586,
++const int32_t pcc_tmc3::kQpStepRecip[6] = {416825, 370767, 330586,
+                                       294337, 262144, 233829};
+ 
+ //============================================================================
+ 
+-const int32_t pcc::kISine[1026] = {
++const int32_t pcc_tmc3::kISine[1026] = {
+   0,        25736,    51472,    77208,    102943,   128678,   154413,
+   180148,   205882,   231616,   257349,   283082,   308814,   334545,
+   360275,   386005,   411733,   437461,   463188,   488913,   514638,
+Index: tmc3/ringbuf.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/ringbuf.h b/tmc3/ringbuf.h
+--- a/tmc3/ringbuf.h	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/ringbuf.h	(date 1672298703741)
+@@ -41,7 +41,7 @@
+ #include <memory>
+ #include <type_traits>
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ //===========================================================================
+ // A ringbuf::iterator with RandomAccessIterator semantics.
+@@ -217,7 +217,7 @@
+ // An indexed sequence cotainer allowing fast insertion and deletion at both
+ // the head and tail.
+ //
+-// As opposed to std::deque, a pcc::ringbuf uses a fixed-sized backing store
++// As opposed to std::deque, a pcc_tmc3::ringbuf uses a fixed-sized backing store
+ // that is not resized so as to avoid memory management calls when inserting
+ // or erasing elements.  To permit fast manipulation of the head and tail,
+ // elements are not guaranteed to be stored contigiously.
+@@ -412,4 +412,4 @@
+ 
+ //===========================================================================
+ 
+-} /* namespace pcc */
++} /* namespace pcc_tmc3 */
 Index: tmc3/TMC3.cpp
 IDEA additional info:
 Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
@@ -33,7 +2105,27 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 ===================================================================
 diff --git a/tmc3/TMC3.cpp b/tmc3/TMC3.cpp
 --- a/tmc3/TMC3.cpp	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
-+++ b/tmc3/TMC3.cpp	(date 1672216835935)
++++ b/tmc3/TMC3.cpp	(date 1672298719016)
+@@ -47,7 +47,7 @@
+ #include "version.h"
+ 
+ using namespace std;
+-using namespace pcc;
++using namespace pcc_tmc3;
+ 
+ //============================================================================
+ 
+@@ -104,8 +104,8 @@
+   // Filename for saving pre inverse scaled point cloud (decoder).
+   std::string preInvScalePath;
+ 
+-  pcc::EncoderParams encoder;
+-  pcc::DecoderParams decoder;
++  pcc_tmc3::EncoderParams encoder;
++  pcc_tmc3::DecoderParams decoder;
+ 
+   // perform attribute colourspace conversion on ply input/output.
+   bool convertColourspace;
 @@ -207,46 +207,46 @@
  
  //============================================================================
@@ -81,7 +2173,7 @@ diff --git a/tmc3/TMC3.cpp b/tmc3/TMC3.cpp
 +//int
 +//main(int argc, char* argv[])
 +//{
-+//  cout << "MPEG PCC tmc3 version " << ::pcc::version << endl;
++//  cout << "MPEG PCC tmc3 version " << ::pcc_tmc3::version << endl;
 +//
 +//  Parameters params;
 +//
@@ -96,8 +2188,8 @@ diff --git a/tmc3/TMC3.cpp b/tmc3/TMC3.cpp
 +//  }
 +//
 +//  // Timers to count elapsed wall/user time
-+//  pcc::chrono::Stopwatch<std::chrono::steady_clock> clock_wall;
-+//  pcc::chrono::Stopwatch<pcc::chrono::utime_inc_children_clock> clock_user;
++//  pcc_tmc3::chrono::Stopwatch<std::chrono::steady_clock> clock_wall;
++//  pcc_tmc3::chrono::Stopwatch<pcc_tmc3::chrono::utime_inc_children_clock> clock_user;
 +//
 +//  clock_wall.start();
 +//
@@ -121,90 +2213,259 @@ diff --git a/tmc3/TMC3.cpp b/tmc3/TMC3.cpp
  
  //---------------------------------------------------------------------------
  
-Index: tmc3/PCCPointSet.h
+@@ -274,7 +274,7 @@
+   return in;
+ }
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ static std::istream&
+ operator>>(std::istream& in, ScaleUnit& val)
+ {
+@@ -302,7 +302,7 @@
+   return readUInt(in, val);
+ }
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ static std::istream&
+ operator>>(std::istream& in, ColourMatrix& val)
+ {
+@@ -310,7 +310,7 @@
+ }
+ }  // namespace pcc
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ static std::istream&
+ operator>>(std::istream& in, AxisOrder& val)
+ {
+@@ -318,7 +318,7 @@
+ }
+ }  // namespace pcc
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ static std::istream&
+ operator>>(std::istream& in, AttributeEncoding& val)
+ {
+@@ -326,7 +326,7 @@
+ }
+ }  // namespace pcc
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ static std::istream&
+ operator>>(std::istream& in, LodDecimationMethod& val)
+ {
+@@ -334,7 +334,7 @@
+ }
+ }  // namespace pcc
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ static std::istream&
+ operator>>(std::istream& in, PartitionMethod& val)
+ {
+@@ -342,7 +342,7 @@
+ }
+ }  // namespace pcc
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ static std::istream&
+ operator>>(std::istream& in, PredGeomEncOpts::SortMode& val)
+ {
+@@ -350,7 +350,7 @@
+ }
+ }  // namespace pcc
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ static std::istream&
+ operator>>(std::istream& in, OctreeEncOpts::QpMethod& val)
+ {
+@@ -368,7 +368,7 @@
+   return out;
+ }
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ static std::ostream&
+ operator<<(std::ostream& out, const ScaleUnit& val)
+ {
+@@ -380,7 +380,7 @@
+ }
+ }  // namespace pcc
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ static std::ostream&
+ operator<<(std::ostream& out, const ColourMatrix& val)
+ {
+@@ -405,7 +405,7 @@
+ }
+ }  // namespace pcc
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ static std::ostream&
+ operator<<(std::ostream& out, const AxisOrder& val)
+ {
+@@ -423,7 +423,7 @@
+ }
+ }  // namespace pcc
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ static std::ostream&
+ operator<<(std::ostream& out, const AttributeEncoding& val)
+ {
+@@ -437,7 +437,7 @@
+ }
+ }  // namespace pcc
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ static std::ostream&
+ operator<<(std::ostream& out, const LodDecimationMethod& val)
+ {
+@@ -450,7 +450,7 @@
+ }
+ }  // namespace pcc
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ static std::ostream&
+ operator<<(std::ostream& out, const PartitionMethod& val)
+ {
+@@ -466,7 +466,7 @@
+ }
+ }  // namespace pcc
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ static std::ostream&
+ operator<<(std::ostream& out, const PredGeomEncOpts::SortMode& val)
+ {
+@@ -483,7 +483,7 @@
+ }
+ }  // namespace pcc
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ static std::ostream&
+ operator<<(std::ostream& out, const OctreeEncOpts::QpMethod& val)
+ {
+@@ -501,13 +501,13 @@
+ namespace df {
+ namespace program_options_lite {
+   template<typename T>
+-  struct option_detail<pcc::Vec3<T>> {
++  struct option_detail<pcc_tmc3::Vec3<T>> {
+     static constexpr bool is_container = true;
+     static constexpr bool is_fixed_size = true;
+     typedef T* output_iterator;
+ 
+-    static void clear(pcc::Vec3<T>& container){};
+-    static output_iterator make_output_iterator(pcc::Vec3<T>& container)
++    static void clear(pcc_tmc3::Vec3<T>& container){};
++    static output_iterator make_output_iterator(pcc_tmc3::Vec3<T>& container)
+     {
+       return &container[0];
+     }
+Index: tmc3/tables.h
 IDEA additional info:
 Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 <+>UTF-8
 ===================================================================
-diff --git a/tmc3/PCCPointSet.h b/tmc3/PCCPointSet.h
---- a/tmc3/PCCPointSet.h	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
-+++ b/tmc3/PCCPointSet.h	(date 1672216835985)
-@@ -411,7 +411,7 @@
-   }
+diff --git a/tmc3/tables.h b/tmc3/tables.h
+--- a/tmc3/tables.h	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/tables.h	(date 1672298591749)
+@@ -37,7 +37,7 @@
  
-   size_t getPointCount() const { return positions.size(); }
--  void resize(const size_t size)
-+  virtual void resize(const size_t size)
-   {
-     positions.resize(size);
-     if (hasColors()) {
-@@ -428,7 +428,7 @@
-     }
-   }
+ #include <cstdint>
  
--  void reserve(const size_t size)
-+  virtual void reserve(const size_t size)
-   {
-     positions.reserve(size);
-     if (hasColors()) {
-@@ -444,7 +444,7 @@
-       laserAngles.reserve(size);
-     }
-   }
--  void clear()
-+  virtual void clear()
-   {
-     positions.clear();
-     colors.clear();
-@@ -499,7 +499,7 @@
-         std::next(laserAngles.begin(), dstEnd));
-   }
+-namespace pcc {
++namespace pcc_tmc3 {
+ extern const uint8_t kNeighPatternInvMap[64][8];
+ extern const int numMaxOccupided[8];
  
--  void swapPoints(const size_t index1, const size_t index2)
-+  virtual void swapPoints(const size_t index1, const size_t index2)
-   {
-     assert(index1 < getPointCount());
-     assert(index2 < getPointCount());
-Index: tmc3/CMakeLists.txt
+@@ -117,4 +117,4 @@
+ const int32_t kLog2ISineAngleScale = 12;
+ extern const int32_t kISine[1026];
+ 
+-} /* namespace pcc */
++} /* namespace pcc_tmc3 */
+Index: tmc3/TMC3.h
 IDEA additional info:
 Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 <+>UTF-8
 ===================================================================
-diff --git a/tmc3/CMakeLists.txt b/tmc3/CMakeLists.txt
---- a/tmc3/CMakeLists.txt	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
-+++ b/tmc3/CMakeLists.txt	(date 1672216835935)
-@@ -28,8 +28,8 @@
-                            -D VERSION_EXTRA=${VERSION_EXTRA}
-                            -D VERSION_CACHE_FILE=${VERSION_CACHE_FILE}
-                            -D GIT_EXECUTABLE=${GIT_EXECUTABLE}
--                           -P ${CMAKE_SOURCE_DIR}/scripts/genversion.cmake
--  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-+                           -P ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/genversion.cmake
-+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/..
- )
+diff --git a/tmc3/TMC3.h b/tmc3/TMC3.h
+--- a/tmc3/TMC3.h	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/TMC3.h	(date 1672298703674)
+@@ -44,7 +44,7 @@
  
- add_custom_command(
-@@ -161,12 +161,13 @@
-   "${CMAKE_CURRENT_SOURCE_DIR}/../dependencies/program-options-lite"
- )
+ struct Parameters;
  
--add_executable (tmc3
-+add_library (tmc3
-   ${PROJECT_CPP_FILES}
-   ${PROJECT_INC_FILES}
-   ${PROJECT_IN_FILES}
-   ${VERSION_FILE}
- )
-+target_include_directories(tmc3 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
- add_dependencies(tmc3 genversion)
+-typedef pcc::chrono::Stopwatch<pcc::chrono::utime_inc_children_clock>
++typedef pcc_tmc3::chrono::Stopwatch<pcc_tmc3::chrono::utime_inc_children_clock>
+   Stopwatch;
  
- add_executable (ply-merge EXCLUDE_FROM_ALL
-@@ -177,5 +178,3 @@
-   ${VERSION_FILE}
- )
- add_dependencies(ply-merge genversion)
--
--install (TARGETS tmc3 DESTINATION bin)
+ bool ParseParameters(int argc, char* argv[], Parameters& params);
+Index: tmc3/version.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/version.h b/tmc3/version.h
+--- a/tmc3/version.h	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/version.h	(date 1672298591709)
+@@ -35,9 +35,9 @@
+ 
+ #pragma once
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ 
+ // Description of the software source version
+ extern const char version[];
+ 
+-} /* namespace pcc */
++} /* namespace pcc_tmc3 */
+Index: tmc3/version.cpp.in
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tmc3/version.cpp.in b/tmc3/version.cpp.in
+--- a/tmc3/version.cpp.in	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tmc3/version.cpp.in	(date 1672298591294)
+@@ -1,5 +1,5 @@
+ #include "version.h"
+ 
+-namespace pcc {
++namespace pcc_tmc3 {
+ const char version[] = "@VERSION@";
+ }
+Index: tools/ply-merge.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tools/ply-merge.cpp b/tools/ply-merge.cpp
+--- a/tools/ply-merge.cpp	(revision c3c9798a0f63970bd17ce191900ded478a8aa0f6)
++++ b/tools/ply-merge.cpp	(date 1672298719034)
+@@ -43,7 +43,7 @@
+ #include "version.h"
+ 
+ using namespace std;
+-using namespace pcc;
++using namespace pcc_tmc3;
+ 
+ //============================================================================
+ 
 Index: PATCHED
 IDEA additional info:
 Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
@@ -212,8 +2473,8 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 ===================================================================
 diff --git a/PATCHED b/PATCHED
 new file mode 100644
---- /dev/null	(date 1672216835991)
-+++ b/PATCHED	(date 1672216835991)
+--- /dev/null	(date 1672291714567)
++++ b/PATCHED	(date 1672291714567)
 @@ -0,0 +1,1 @@
 +mpeg-pcc-tmc13 patched with: 
 \ No newline at end of file
