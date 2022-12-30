@@ -3,7 +3,7 @@
 #include <thread>
 #include <vector>
 
-#include <jpcc/common/JPCCContext.h>
+#include <jpcc/common/JPCCCoderContext.h>
 #include <jpcc/combination/JPCCCombination.h>
 #include <jpcc/common/ParameterParser.h>
 #include <jpcc/decoder/JPCCDecoderAdapter.h>
@@ -47,7 +47,7 @@ void main_(const AppParameter& parameter, Stopwatch& clock) {
       decoder.set(header);
       combination.set(header);
     }
-    JPCCContext context(header);
+    JPCCCoderContext context(header);
     while (run && !ifs.eof()) {
       context.clear();
       {  // decode

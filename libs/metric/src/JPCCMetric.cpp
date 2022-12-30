@@ -161,14 +161,17 @@ void JPCCMetric::copyNormalToReconstruct(const GroupOfFrame& frames,
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void JPCCMetric::copyNormalToReconstruct(const JPCCContext& context, const bool parallel) {
-  this->copyNormalToReconstruct(context.getDynamicFrames(), context.getDynamicReconstructFrames(), parallel);
-  if (context.getSegmentationOutputType() == SegmentationOutputType::DYNAMIC_STATIC) {
-    this->copyNormalToReconstruct(context.getStaticFrames(), context.getStaticReconstructFrames(), parallel);
+void JPCCMetric::copyNormalToReconstruct(const JPCCContext& encoderContext,
+                                         const JPCCContext& decoderContext,
+                                         const bool         parallel) {
+  this->copyNormalToReconstruct(encoderContext.getDynamicFrames(), decoderContext.getDynamicFrames(), parallel);
+  if (encoderContext.getSegmentationOutputType() == SegmentationOutputType::DYNAMIC_STATIC) {
+    this->copyNormalToReconstruct(encoderContext.getStaticFrames(), decoderContext.getStaticFrames(), parallel);
   }
-  if (context.getSegmentationOutputType() == SegmentationOutputType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED) {
-    this->copyNormalToReconstruct(context.getStaticAddedFrames(), context.getStaticAddedReconstructFrames(), parallel);
-    this->copyNormalToReconstruct(context.getStaticRemovedFrames(), context.getStaticRemovedReconstructFrames(),
+  if (encoderContext.getSegmentationOutputType() == SegmentationOutputType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED) {
+    this->copyNormalToReconstruct(encoderContext.getStaticAddedFrames(), decoderContext.getStaticAddedFrames(),
+                                  parallel);
+    this->copyNormalToReconstruct(encoderContext.getStaticRemovedFrames(), decoderContext.getStaticRemovedFrames(),
                                   parallel);
   }
 }
@@ -206,9 +209,10 @@ void JPCCMetric::computePSNR(const FramePtr& frameA,
     // Compute point-to-plane, normals in B will be used for point-to-plane
     double distProjC2p;
     if (frameB->hasNormals()) {
-      PointType  err     = {pointA[0] - pointB[0], pointA[1] - pointB[1], pointA[2] - pointB[2]};
-      NormalType normalB = frameB->getNormal(pointIdxKNNSearch.front());
-      distProjC2p        = err[0] * normalB[0] + err[1] * normalB[1] + err[2] * normalB[2];
+      std::array<float, 3> err = {static_cast<float>(pointA[0] - pointB[0]), static_cast<float>(pointA[1] - pointB[1]),
+                                  static_cast<float>(pointA[2] - pointB[2])};
+      NormalType           normalB = frameB->getNormal(pointIdxKNNSearch.front());
+      distProjC2p                  = err[0] * normalB[0] + err[1] * normalB[1] + err[2] * normalB[2];
       distProjC2p *= distProjC2p;
     } else {
       distProjC2p = distProjC2c;

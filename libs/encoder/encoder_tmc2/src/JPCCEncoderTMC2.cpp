@@ -40,14 +40,12 @@ void JPCCEncoderTMC2::convertToCoderType(const FramePtr& frame, CoderFramePtr& c
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void JPCCEncoderTMC2::encode(const JPCCEncoder::CoderFramePtr& coderFrame, std::vector<char>& encodedBytes) {
+void JPCCEncoderTMC2::encode(const JPCCEncoder::CoderFramePtr& coderFrame, std::ostream& os) {
   BOOST_THROW_EXCEPTION(std::logic_error("no implementation"));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void JPCCEncoderTMC2::encode(const CoderGroupOfFrame&        coderFrames,
-                             std::vector<std::vector<char>>& encodedBytesVector,
-                             const bool                      parallel) {
+void JPCCEncoderTMC2::encode(const CoderGroupOfFrame& coderFrames, std::ostream& os, const bool parallel) {
   auto _encoder = std::static_pointer_cast<PCCEncoder>(encoder_);
   auto _params  = std::static_pointer_cast<PCCEncoderParameters>(parameter_.params_);
 
@@ -77,9 +75,7 @@ void JPCCEncoderTMC2::encode(const CoderGroupOfFrame&        coderFrames,
   size_t headerSize = bitstreamWriter.write(ssvu, bitstream, _params->forcedSsvhUnitSizePrecisionBytes_);
   bitstreamStat.incrHeader(headerSize);
 
-  encodedBytesVector.resize(coderFrames.size());
-
-  encodedBytesVector[0].swap(reinterpret_cast<std::vector<char>&>(bitstream.vector()));
+  for (auto& data : bitstream.vector()) { os << data; }
 }
 
 }  // namespace jpcc::encoder

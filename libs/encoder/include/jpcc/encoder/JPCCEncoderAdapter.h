@@ -1,6 +1,6 @@
 #pragma once
 
-#include <jpcc/common/IJPCCEncoderContext.h>
+#include <jpcc/common/JPCCContext.h>
 #include <jpcc/encoder/JPCCEncoder.h>
 #include <jpcc/encoder/JPCCEncoderParameter.h>
 
@@ -16,9 +16,9 @@ class JPCCEncoderAdapter {
  public:
   JPCCEncoderAdapter(const JPCCEncoderParameter& dynamicParameter, const JPCCEncoderParameter& staticParameter);
 
-  void convertToCoderType(IJPCCEncoderContext& context, bool parallel);
+  void convertToCoderType(JPCCContext& context, bool parallel);
 
-  void encode(IJPCCEncoderContext& context, bool parallel);
+  void encode(JPCCContext& context, bool parallel);
 };
 
 }  // namespace jpcc::encoder

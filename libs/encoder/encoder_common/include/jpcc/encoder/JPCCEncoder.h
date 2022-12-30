@@ -21,11 +21,9 @@ class JPCCEncoder {
 
   virtual void convertToCoderType(const GroupOfFrame& frames, CoderGroupOfFrame& coderFrames, bool parallel);
 
-  virtual void encode(const CoderFramePtr& coderFrame, std::vector<char>& encodedBytes) = 0;
+  virtual void encode(const CoderFramePtr& coderFrame, std::ostream& os) = 0;
 
-  virtual void encode(const CoderGroupOfFrame&        coderFrames,
-                      std::vector<std::vector<char>>& encodedBytesVector,
-                      bool                            parallel);
+  virtual void encode(const CoderGroupOfFrame& coderFrames, std::ostream& os, bool parallel);
 };
 
 }  // namespace jpcc::encoder

@@ -54,7 +54,7 @@ class JPCCMetric {
 
   void copyNormalToReconstruct(const GroupOfFrame& frames, const GroupOfFrame& reconstructFrames, bool parallel);
 
-  void copyNormalToReconstruct(const JPCCContext& context, bool parallel);
+  void copyNormalToReconstruct(const JPCCContext& encoderContext, const JPCCContext& decoderContext, bool parallel);
 
   void computePSNR(const FramePtr& frameA,
                    const FramePtr& frameB,

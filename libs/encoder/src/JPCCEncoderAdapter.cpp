@@ -36,46 +36,34 @@ JPCCEncoderAdapter::JPCCEncoderAdapter(const JPCCEncoderParameter& dynamicParame
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void JPCCEncoderAdapter::convertToCoderType(IJPCCEncoderContext& context, const bool parallel) {
-  context.getCoderDynamicFrames().resize(context.getDynamicFrames().size());
-  context.getCoderStaticFrames().resize(context.getStaticFrames().size());
-  context.getCoderStaticAddedFrames().resize(context.getStaticAddedFrames().size());
-  context.getCoderStaticRemovedFrames().resize(context.getStaticRemovedFrames().size());
-  if (dynamicEncoder_) {
-    dynamicEncoder_->convertToCoderType(context.getDynamicFrames(), context.getCoderDynamicFrames(), parallel);
-  }
-  if (staticEncoder_) {
-    staticEncoder_->convertToCoderType(context.getStaticFrames(), context.getCoderStaticFrames(), parallel);
-  }
-  if (staticAddedEncoder_) {
-    staticAddedEncoder_->convertToCoderType(context.getStaticAddedFrames(), context.getCoderStaticAddedFrames(),
-                                            parallel);
-  }
-  if (staticRemovedEncoder_) {
-    staticRemovedEncoder_->convertToCoderType(context.getStaticRemovedFrames(), context.getCoderStaticRemovedFrames(),
-                                              parallel);
+void JPCCEncoderAdapter::convertToCoderType(JPCCContext& context, const bool parallel) {
+  context.getDynamicContext().getCoderFrames().resize(context.getDynamicContext().getFrames().size());
+  dynamicEncoder_->convertToCoderType(context.getDynamicFrames(), context.getDynamicContext().getCoderFrames(),
+                                      parallel);
+  if (context.getSegmentationOutputType() == SegmentationOutputType::DYNAMIC_STATIC) {
+    context.getStaticContext().getCoderFrames().resize(context.getStaticContext().getFrames().size());
+    staticEncoder_->convertToCoderType(context.getStaticFrames(), context.getStaticContext().getCoderFrames(),
+                                       parallel);
+  } else if (context.getSegmentationOutputType() == SegmentationOutputType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED) {
+    context.getStaticAddedContext().getCoderFrames().resize(context.getStaticAddedContext().getFrames().size());
+    context.getStaticRemovedContext().getCoderFrames().resize(context.getStaticRemovedContext().getFrames().size());
+    staticAddedEncoder_->convertToCoderType(context.getStaticAddedFrames(),
+                                            context.getStaticAddedContext().getCoderFrames(), parallel);
+    staticRemovedEncoder_->convertToCoderType(context.getStaticRemovedFrames(),
+                                              context.getStaticRemovedContext().getCoderFrames(), parallel);
   }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void JPCCEncoderAdapter::encode(IJPCCEncoderContext& context, const bool parallel) {
-  context.getDynamicEncodedBytesVector().resize(context.getDynamicFrames().size());
-  context.getStaticEncodedBytesVector().resize(context.getStaticFrames().size());
-  context.getStaticAddedEncodedBytesVector().resize(context.getStaticAddedFrames().size());
-  context.getStaticRemovedEncodedBytesVector().resize(context.getStaticRemovedFrames().size());
-  if (dynamicEncoder_) {
-    dynamicEncoder_->encode(context.getCoderDynamicFrames(), context.getDynamicEncodedBytesVector(), parallel);
-  }
-  if (staticEncoder_) {
-    staticEncoder_->encode(context.getCoderStaticFrames(), context.getStaticEncodedBytesVector(), parallel);
-  }
-  if (staticAddedEncoder_) {
-    staticAddedEncoder_->encode(context.getCoderStaticAddedFrames(), context.getStaticAddedEncodedBytesVector(),
-                                parallel);
-  }
-  if (staticRemovedEncoder_) {
-    staticRemovedEncoder_->encode(context.getCoderStaticRemovedFrames(), context.getStaticRemovedEncodedBytesVector(),
-                                  parallel);
+void JPCCEncoderAdapter::encode(JPCCContext& context, const bool parallel) {
+  dynamicEncoder_->encode(context.getDynamicContext().getCoderFrames(), context.getDynamicContext().getOs(), parallel);
+  if (context.getSegmentationOutputType() == SegmentationOutputType::DYNAMIC_STATIC) {
+    staticEncoder_->encode(context.getStaticContext().getCoderFrames(), context.getStaticContext().getOs(), parallel);
+  } else if (context.getSegmentationOutputType() == SegmentationOutputType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED) {
+    staticAddedEncoder_->encode(context.getStaticAddedContext().getCoderFrames(),
+                                context.getStaticAddedContext().getOs(), parallel);
+    staticRemovedEncoder_->encode(context.getStaticRemovedContext().getCoderFrames(),
+                                  context.getStaticRemovedContext().getOs(), parallel);
   }
 }
 

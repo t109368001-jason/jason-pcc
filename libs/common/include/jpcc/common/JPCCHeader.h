@@ -10,20 +10,17 @@
 namespace jpcc {
 
 struct JPCCHeader {
-  double                 resolution;
-  SegmentationType       segmentationType;
-  SegmentationOutputType segmentationOutputType;
+  double resolution;
 
-  CoderBackendType dynamicBackendType;
-  CoderBackendType staticBackendType;
+  CoderBackendType backendType;
+
+  void write(std::ostream& os) const;
+
+  void read(std::istream& is);
 
   bool operator==(const JPCCHeader& other) const;
 
   friend std::ostream& operator<<(std::ostream& out, const JPCCHeader& obj);
 };
-
-std::ostream& writeJPCCHeader(const JPCCHeader& header, std::ostream& os);
-
-std::istream& readJPCCHeader(std::istream& is, JPCCHeader* header);
 
 }  // namespace jpcc

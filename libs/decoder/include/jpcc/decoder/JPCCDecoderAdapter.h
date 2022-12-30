@@ -1,7 +1,7 @@
 #pragma once
 
 #include <jpcc/common/IJPCCDecoderContext.h>
-#include <jpcc/common/JPCCHeader.h>
+#include <jpcc/common/JPCCContext.h>
 #include <jpcc/decoder/JPCCDecoder.h>
 
 namespace jpcc::decoder {
@@ -14,11 +14,11 @@ class JPCCDecoderAdapter {
   typename JPCCDecoder::Ptr staticRemovedDecoder_;
 
  public:
-  void set(JPCCHeader header);
+  void set(const JPCCContext& context);
 
-  void decode(std::istream& is, IJPCCDecoderContext& context, size_t frameCount);
+  void decode(JPCCContext& context, size_t frameCount);
 
-  void convertFromCoderType(IJPCCDecoderContext& context, bool parallel);
+  void convertFromCoderType(JPCCContext& context, bool parallel);
 };
 
 }  // namespace jpcc::decoder

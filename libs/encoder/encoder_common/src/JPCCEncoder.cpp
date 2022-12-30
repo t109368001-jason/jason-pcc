@@ -27,17 +27,17 @@ void JPCCEncoder::convertToCoderType(const GroupOfFrame& frames, CoderGroupOfFra
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void JPCCEncoder::encode(const CoderGroupOfFrame&        coderFrames,
-                         std::vector<std::vector<char>>& encodedBytesVector,
-                         const bool                      parallel) {
+void JPCCEncoder::encode(const CoderGroupOfFrame& coderFrames, std::ostream& os, const bool parallel) {
   if (!parallel || !isEncodeThreadSafe()) {
-    for (size_t i = 0; i < coderFrames.size(); i++) { this->encode(coderFrames[i], encodedBytesVector[i]); }
+    for (const auto& coderFrame : coderFrames) { this->encode(coderFrame, os); }
   } else {
-    const auto range = boost::counting_range<size_t>(0, coderFrames.size());
+    std::vector<std::stringstream> encodedBytesVector(coderFrames.size());
+    const auto                     range = boost::counting_range<size_t>(0, coderFrames.size());
     std::for_each(std::execution::par, range.begin(), range.end(),
                   [&](const size_t& i) {  //
                     this->encode(coderFrames[i], encodedBytesVector[i]);
                   });
+    for (size_t i = 0; i < encodedBytesVector.size(); i++) { os << encodedBytesVector[i].str(); }
   }
 }
 

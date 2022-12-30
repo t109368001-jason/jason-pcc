@@ -35,14 +35,20 @@ void JPCCSegmentationOPCGMMCenter<LeafContainerT>::appendTrainSamplesAndBuild(co
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename LeafContainerT>
 void JPCCSegmentationOPCGMMCenter<LeafContainerT>::segmentation(IJPCCSegmentationContext& context, const size_t index) {
-  const FrameConstPtr       frame    = !context.getFrames().empty() ? context.getFrames()[index] : nullptr;
-  const PclFramePtr<PointT> pclFrame = !context.getPclFrames().empty() ? context.getPclFrames()[index] : nullptr;
-  const FramePtr dynamicFrame = !context.getDynamicFrames().empty() ? context.getDynamicFrames()[index] : nullptr;
-  const FramePtr staticFrame  = !context.getStaticFrames().empty() ? context.getStaticFrames()[index] : nullptr;
-  const FramePtr staticAddedFrame =
-      !context.getStaticAddedFrames().empty() ? context.getStaticAddedFrames()[index] : nullptr;
+  const FrameConstPtr       frame        = context.getFrames()[index];
+  const PclFramePtr<PointT> pclFrame     = context.getPclFrames()[index];
+  const FramePtr            dynamicFrame = context.getDynamicFrames()[index];
+  const FramePtr            staticFrame  = context.getSegmentationOutputType() == SegmentationOutputType::DYNAMIC_STATIC
+                                               ? context.getStaticFrames()[index]
+                                               : nullptr;
+  const FramePtr            staticAddedFrame =
+      context.getSegmentationOutputType() == SegmentationOutputType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED
+                     ? context.getStaticAddedFrames()[index]
+                     : nullptr;
   const FramePtr staticRemovedFrame =
-      !context.getStaticRemovedFrames().empty() ? context.getStaticRemovedFrames()[index] : nullptr;
+      context.getSegmentationOutputType() == SegmentationOutputType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED
+          ? context.getStaticRemovedFrames()[index]
+          : nullptr;
   if (dynamicFrame) {
     dynamicFrame->clear();
     dynamicFrame->setFrameNumber(frame->getFrameNumber());

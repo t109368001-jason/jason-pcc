@@ -10,24 +10,23 @@ using PointCombination = pcl::PointXYZINormal;
 
 class IJPCCCombinationContext {
  public:
-  [[nodiscard]] virtual SegmentationType       getSegmentationType() const       = 0;
   [[nodiscard]] virtual SegmentationOutputType getSegmentationOutputType() const = 0;
 
   [[nodiscard]] virtual const GroupOfPclFrame<PointCombination>& getStaticAddedReconstructPclFrames() const   = 0;
   [[nodiscard]] virtual const GroupOfPclFrame<PointCombination>& getStaticRemovedReconstructPclFrames() const = 0;
-  [[nodiscard]] virtual const GroupOfFrame&                      getDynamicReconstructFrames() const          = 0;
-  [[nodiscard]] virtual const GroupOfFrame&                      getStaticReconstructFrames() const           = 0;
-  [[nodiscard]] virtual const GroupOfFrame&                      getStaticAddedReconstructFrames() const      = 0;
-  [[nodiscard]] virtual const GroupOfFrame&                      getStaticRemovedReconstructFrames() const    = 0;
-  [[nodiscard]] virtual const GroupOfFrame&                      getReconstructFrames() const                 = 0;
+  [[nodiscard]] virtual const GroupOfFrame&                      getDynamicFrames() const                     = 0;
+  [[nodiscard]] virtual const GroupOfFrame&                      getStaticFrames() const                      = 0;
+  [[nodiscard]] virtual const GroupOfFrame&                      getStaticAddedFrames() const                 = 0;
+  [[nodiscard]] virtual const GroupOfFrame&                      getStaticRemovedFrames() const               = 0;
+  [[nodiscard]] virtual const GroupOfFrame&                      getFrames() const                            = 0;
 
-  [[nodiscard]] virtual GroupOfPclFrame<PointCombination>& getStaticAddedReconstructPclFrames()   = 0;
-  [[nodiscard]] virtual GroupOfPclFrame<PointCombination>& getStaticRemovedReconstructPclFrames() = 0;
-  [[nodiscard]] virtual GroupOfFrame&                      getDynamicReconstructFrames()          = 0;
-  [[nodiscard]] virtual GroupOfFrame&                      getStaticReconstructFrames()           = 0;
-  [[nodiscard]] virtual GroupOfFrame&                      getStaticAddedReconstructFrames()      = 0;
-  [[nodiscard]] virtual GroupOfFrame&                      getStaticRemovedReconstructFrames()    = 0;
-  [[nodiscard]] virtual GroupOfFrame&                      getReconstructFrames()                 = 0;
+  [[nodiscard]] virtual GroupOfPclFrame<PointCombination>& getStaticAddedPclFrames()   = 0;
+  [[nodiscard]] virtual GroupOfPclFrame<PointCombination>& getStaticRemovedPclFrames() = 0;
+  [[nodiscard]] virtual GroupOfFrame&                      getDynamicFrames()          = 0;
+  [[nodiscard]] virtual GroupOfFrame&                      getStaticFrames()           = 0;
+  [[nodiscard]] virtual GroupOfFrame&                      getStaticAddedFrames()      = 0;
+  [[nodiscard]] virtual GroupOfFrame&                      getStaticRemovedFrames()    = 0;
+  [[nodiscard]] virtual GroupOfFrame&                      getFrames()                 = 0;
 };
 
 }  // namespace jpcc

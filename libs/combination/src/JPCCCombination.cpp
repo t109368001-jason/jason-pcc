@@ -7,27 +7,26 @@
 namespace jpcc::combination {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void JPCCCombination::set(const JPCCHeader& header) {
-  staticFrame_ = jpcc::make_shared<PclFrame<PointT>>();
-  staticOctree_ =
-      jpcc::make_shared<octree::JPCCOctreePointCloud<PointT, octree::OctreeContainerEditableIndex>>(header.resolution);
+void JPCCCombination::set(const JPCCContext& context) {
+  staticFrame_  = jpcc::make_shared<PclFrame<PointT>>();
+  staticOctree_ = jpcc::make_shared<octree::JPCCOctreePointCloud<PointT, octree::OctreeContainerEditableIndex>>(
+      context.getDynamicContext().getHeader().resolution);
   staticOctree_->setInputCloud(staticFrame_);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void JPCCCombination::combine(IJPCCCombinationContext& context, bool parallel) {
-  context.getReconstructFrames().clear();
-  context.getReconstructFrames().resize(context.getDynamicReconstructFrames().size());
-  GroupOfFrame _staticFrames = context.getStaticReconstructFrames();
-  if (context.getSegmentationOutputType() == SegmentationOutputType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED) {
-    context.getStaticReconstructFrames().resize(context.getDynamicReconstructFrames().size());
-    this->combineStaticAddedRemoved(context.getStaticAddedReconstructPclFrames(),
-                                    context.getStaticRemovedReconstructPclFrames(),
-                                    context.getStaticReconstructFrames());
-    _staticFrames = context.getStaticReconstructFrames();
+  context.getFrames().clear();
+  context.getFrames().resize(context.getDynamicFrames().size());
+  GroupOfFrame _staticFrames;
+  if (context.getSegmentationOutputType() == SegmentationOutputType::DYNAMIC_STATIC) {
+    _staticFrames = context.getStaticFrames();
+  } else if (context.getSegmentationOutputType() == SegmentationOutputType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED) {
+    _staticFrames.resize(context.getDynamicFrames().size());
+    this->combineStaticAddedRemoved(context.getStaticAddedPclFrames(), context.getStaticRemovedPclFrames(),
+                                    _staticFrames);
   }
-  JPCCCombination::combineDynamicStatic(context.getDynamicReconstructFrames(), _staticFrames,
-                                        context.getReconstructFrames(), parallel);
+  JPCCCombination::combineDynamicStatic(context.getDynamicFrames(), _staticFrames, context.getFrames(), parallel);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

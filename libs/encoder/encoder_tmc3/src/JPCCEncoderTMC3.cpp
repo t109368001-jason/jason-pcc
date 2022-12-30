@@ -57,16 +57,14 @@ void JPCCEncoderTMC3::convertToCoderType(const FramePtr& frame, CoderFramePtr& c
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void JPCCEncoderTMC3::encode(const CoderFramePtr& coderFrame, std::vector<char>& encodedBytes) {
-  std::function<void(const PayloadBuffer& buffer)> onOutputBuffer = [&encodedBytes](const PayloadBuffer& buffer) {
-    std::stringstream os;
-    writeTlv(buffer, os);
+void JPCCEncoderTMC3::encode(const CoderFramePtr& coderFrame, std::ostream& os) {
+  auto                                             startPosition  = os.tellp();
+  std::function<void(const PayloadBuffer& buffer)> onOutputBuffer = [&os](const PayloadBuffer& buffer) {
 #if !defined(NDEBUG)
-    size_t oldSize = encodedBytes.size();
+    auto _startPosition = os.tellp();
 #endif
-    std::string tmpString = os.str();
-    for (char& i : tmpString) { encodedBytes.push_back(i); }
-    assert((buffer.size() + 5) == (encodedBytes.size() - oldSize));
+    writeTlv(buffer, os);
+    assert((buffer.size() + 5) == (os.tellp() - _startPosition));
   };
   std::function<void(const PCCPointSet3& set3)> onPostRecolour = [](const PCCPointSet3& set3) {};
 
@@ -86,7 +84,7 @@ void JPCCEncoderTMC3::encode(const CoderFramePtr& coderFrame, std::vector<char>&
 
   encoder.compress(*_coderFrame, &param, &callback, nullptr);
   std::cout << __FUNCTION__ << "() "
-            << "bytes=" << encodedBytes.size() << std::endl;
+            << "bytes=" << (os.tellp() - startPosition) << std::endl;
 }
 
 }  // namespace jpcc::encoder

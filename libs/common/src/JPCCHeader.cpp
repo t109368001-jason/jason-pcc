@@ -3,12 +3,21 @@
 namespace jpcc {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
+void JPCCHeader::write(std::ostream& os) const {
+  os.write(reinterpret_cast<const char*>(&resolution), sizeof(resolution));
+  os.put(char(backendType));
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void JPCCHeader::read(std::istream& is) {
+  is.read(reinterpret_cast<char*>(&resolution), sizeof(resolution));
+  backendType = CoderBackendType(static_cast<char>(is.get()));
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
 bool JPCCHeader::operator==(const JPCCHeader& other) const {
   if (this->resolution != other.resolution) { return false; }
-  if (this->segmentationType != other.segmentationType) { return false; }
-  if (this->segmentationOutputType != other.segmentationOutputType) { return false; }
-  if (this->dynamicBackendType != other.dynamicBackendType) { return false; }
-  if (this->staticBackendType != other.staticBackendType) { return false; }
+  if (this->backendType != other.backendType) { return false; }
   return true;
 }
 
@@ -16,32 +25,9 @@ bool JPCCHeader::operator==(const JPCCHeader& other) const {
 std::ostream& operator<<(std::ostream& out, const JPCCHeader& obj) {
   out << "JPCCHeader(";
   out << "resolution=" << obj.resolution << ",";
-  out << "segmentationType=" << obj.segmentationType << ",";
-  out << "segmentationOutputType=" << obj.segmentationOutputType << ",";
-  out << "dynamicBackendType=" << obj.dynamicBackendType << ",";
-  out << "staticBackendType=" << obj.staticBackendType;
+  out << "backendType=" << obj.backendType;
   out << ")";
   return out;
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-std::ostream& writeJPCCHeader(const JPCCHeader& header, std::ostream& os) {
-  os.write(reinterpret_cast<const char*>(&header.resolution), sizeof(header.resolution));
-  os.put(char(header.segmentationType));
-  os.put(char(header.segmentationOutputType));
-  os.put(char(header.dynamicBackendType));
-  os.put(char(header.staticBackendType));
-  return os;
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-std::istream& readJPCCHeader(std::istream& is, JPCCHeader* header) {
-  is.read(reinterpret_cast<char*>(&header->resolution), sizeof(header->resolution));
-  header->segmentationType       = SegmentationType(static_cast<char>(is.get()));
-  header->segmentationOutputType = SegmentationOutputType(static_cast<char>(is.get()));
-  header->dynamicBackendType     = CoderBackendType(static_cast<char>(is.get()));
-  header->staticBackendType      = CoderBackendType(static_cast<char>(is.get()));
-  return is;
 }
 
 }  // namespace jpcc

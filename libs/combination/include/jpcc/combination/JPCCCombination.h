@@ -1,6 +1,6 @@
 #pragma once
 
-#include <jpcc/common/JPCCHeader.h>
+#include <jpcc/common/JPCCContext.h>
 #include <jpcc/common/Common.h>
 #include <jpcc/common/IJPCCCombinationContext.h>
 #include <jpcc/octree/JPCCOctreePointCloud.h>
@@ -17,7 +17,7 @@ class JPCCCombination {
   typename octree::JPCCOctreePointCloud<PointT, octree::OctreeContainerEditableIndex>::Ptr staticOctree_;
 
  public:
-  void set(const JPCCHeader& header);
+  void set(const JPCCContext& context);
 
   void combine(IJPCCCombinationContext& context, bool parallel);
 

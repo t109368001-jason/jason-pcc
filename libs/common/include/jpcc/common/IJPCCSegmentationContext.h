@@ -10,7 +10,6 @@ using PointSegmentation = pcl::PointXYZINormal;
 
 class IJPCCSegmentationContext {
  public:
-  [[nodiscard]] virtual SegmentationType       getSegmentationType() const       = 0;
   [[nodiscard]] virtual SegmentationOutputType getSegmentationOutputType() const = 0;
 
   [[nodiscard]] virtual const GroupOfFrame&                       getFrames() const              = 0;

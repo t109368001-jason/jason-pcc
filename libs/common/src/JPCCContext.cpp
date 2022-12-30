@@ -1,51 +1,103 @@
 #include <jpcc/common/JPCCContext.h>
 
 #include <execution>
+#include <filesystem>
 
 #include <boost/range/counting_range.hpp>
 
+using namespace std::filesystem;
+
 namespace jpcc {
 
-//////////////////////////////////////////////////////////////////////////////////////////////
-JPCCContext::JPCCContext(double                 resolution,
-                         SegmentationType       segmentationType,
-                         SegmentationOutputType segmentationOutputType,
-                         CoderBackendType       dynamicBackendType,
-                         CoderBackendType       staticBackendType) :
-    header_({0}), startFrameNumber_(0) {
-  header_.resolution             = resolution;
-  header_.segmentationType       = segmentationType;
-  header_.segmentationOutputType = segmentationOutputType;
-  header_.dynamicBackendType     = dynamicBackendType;
-  header_.staticBackendType      = staticBackendType;
-}
-
-JPCCContext::JPCCContext(JPCCHeader header) : header_(header), startFrameNumber_(0) {}
+JPCCContext::JPCCContext(const std::string& compressedStreamPathPrefix) :
+    compressedStreamPathPrefix_(compressedStreamPathPrefix),
+    segmentationOutputType_(),
+    dynamic_(),
+    static_(),
+    staticAdded_(),
+    staticRemoved_() {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void JPCCContext::clear() {
+  frames_.clear();
   pclFrames_.clear();
-  dynamicFrames_.clear();
-  staticFrames_.clear();
-  staticAddedFrames_.clear();
-  staticRemovedFrames_.clear();
-  coderDynamicFrames_.clear();
-  coderStaticFrames_.clear();
-  coderStaticAddedFrames_.clear();
-  coderStaticRemovedFrames_.clear();
-  dynamicEncodedBytesVector_.clear();
-  staticEncodedBytesVector_.clear();
-  staticAddedEncodedBytesVector_.clear();
-  staticRemovedEncodedBytesVector_.clear();
-  coderDynamicReconstructFrames_.clear();
-  coderStaticReconstructFrames_.clear();
-  coderStaticAddedReconstructFrames_.clear();
-  coderStaticRemovedReconstructFrames_.clear();
-  dynamicReconstructFrames_.clear();
-  staticReconstructFrames_.clear();
-  staticAddedReconstructFrames_.clear();
-  staticRemovedReconstructFrames_.clear();
-  reconstructFrames_.clear();
+  dynamic_->clear();
+  if (segmentationOutputType_ == SegmentationOutputType::DYNAMIC_STATIC) {
+    static_->clear();
+  } else if (segmentationOutputType_ == SegmentationOutputType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED) {
+    staticAdded_->clear();
+    staticRemoved_->clear();
+  }
+  staticAddedPclFrames_.clear();
+  staticRemovedPclFrames_.clear();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void JPCCContext::writeHeader(SegmentationOutputType segmentationOutputType,
+                              double                 resolution,
+                              CoderBackendType       dynamicBackendType,
+                              CoderBackendType       staticBackendType) {
+  segmentationOutputType_ = segmentationOutputType;
+  dynamic_                = std::make_shared<JPCCCoderContext>(compressedStreamPathPrefix_ + "-dynamic.bin");
+  if (segmentationOutputType == SegmentationOutputType::DYNAMIC_STATIC) {
+    static_ = std::make_shared<JPCCCoderContext>(compressedStreamPathPrefix_ + "-static.bin");
+  } else if (segmentationOutputType == SegmentationOutputType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED) {
+    staticAdded_   = std::make_shared<JPCCCoderContext>(compressedStreamPathPrefix_ + "-static-added.bin");
+    staticRemoved_ = std::make_shared<JPCCCoderContext>(compressedStreamPathPrefix_ + "-static-removed.bin");
+  }
+  dynamic_->writeHeader(resolution, dynamicBackendType);
+  if (segmentationOutputType_ == SegmentationOutputType::DYNAMIC_STATIC) {
+    static_->writeHeader(resolution, staticBackendType);
+  } else if (segmentationOutputType_ == SegmentationOutputType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED) {
+    staticAdded_->writeHeader(resolution, staticBackendType);
+    staticRemoved_->writeHeader(resolution, staticBackendType);
+  }
+  flush();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void JPCCContext::readHeader() {
+  dynamic_ = std::make_shared<JPCCCoderContext>(compressedStreamPathPrefix_ + "-dynamic.bin");
+  if (exists(compressedStreamPathPrefix_ + "-static.bin")) {
+    segmentationOutputType_ = SegmentationOutputType::DYNAMIC_STATIC;
+    static_                 = std::make_shared<JPCCCoderContext>(compressedStreamPathPrefix_ + "-static.bin");
+  } else if (exists(compressedStreamPathPrefix_ + "-static-added.bin") &&
+             exists(compressedStreamPathPrefix_ + "-static-removed.bin")) {
+    segmentationOutputType_ = SegmentationOutputType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED;
+    staticAdded_            = std::make_shared<JPCCCoderContext>(compressedStreamPathPrefix_ + "-static-added.bin");
+    staticRemoved_          = std::make_shared<JPCCCoderContext>(compressedStreamPathPrefix_ + "-static-removed.bin");
+  } else {
+    segmentationOutputType_ = SegmentationOutputType::NONE;
+  }
+  dynamic_->readHeader();
+  if (segmentationOutputType_ == SegmentationOutputType::DYNAMIC_STATIC) {
+    static_->readHeader();
+  } else if (segmentationOutputType_ == SegmentationOutputType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED) {
+    staticAdded_->readHeader();
+    staticRemoved_->readHeader();
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void JPCCContext::flush() {
+  dynamic_->flush();
+  if (segmentationOutputType_ == SegmentationOutputType::DYNAMIC_STATIC) {
+    static_->flush();
+  } else if (segmentationOutputType_ == SegmentationOutputType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED) {
+    staticAdded_->flush();
+    staticRemoved_->flush();
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void JPCCContext::ifsSeekgEnd() {
+  dynamic_->ifsSeekgEnd();
+  if (segmentationOutputType_ == SegmentationOutputType::DYNAMIC_STATIC) {
+    static_->ifsSeekgEnd();
+  } else if (segmentationOutputType_ == SegmentationOutputType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED) {
+    staticAdded_->ifsSeekgEnd();
+    staticRemoved_->ifsSeekgEnd();
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -63,48 +115,34 @@ void JPCCContext::convertToPclBuild(bool parallel) {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////
 void JPCCContext::convertToPclCombination(bool parallel) {
-  staticAddedReconstructPclFrames_.resize(staticAddedReconstructFrames_.size());
+  if (segmentationOutputType_ != SegmentationOutputType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED) {
+    BOOST_THROW_EXCEPTION(std::logic_error("invalid segmentationOutputType"));
+  }
+  staticAddedPclFrames_.resize(staticAdded_->getFrames().size());
   if (!parallel) {
-    for (size_t i = 0; i < staticAddedReconstructFrames_.size(); i++) {
-      staticAddedReconstructPclFrames_[i] = staticAddedReconstructFrames_[i]->toPcl<PointCombination>();
+    for (size_t i = 0; i < staticAdded_->getFrames().size(); i++) {
+      staticAddedPclFrames_[i] = staticAdded_->getFrames()[i]->toPcl<PointCombination>();
     }
   } else {
-    const auto range = boost::counting_range<size_t>(0, staticAddedReconstructFrames_.size());
+    const auto range = boost::counting_range<size_t>(0, staticAdded_->getFrames().size());
     std::for_each(std::execution::par, range.begin(), range.end(),
                   [&](const size_t& i) {  //
-                    staticAddedReconstructPclFrames_[i] = staticAddedReconstructFrames_[i]->toPcl<PointCombination>();
+                    staticAddedPclFrames_[i] = staticAdded_->getFrames()[i]->toPcl<PointCombination>();
                   });
   }
-  staticRemovedReconstructPclFrames_.resize(staticRemovedReconstructFrames_.size());
+  staticRemovedPclFrames_.resize(staticRemoved_->getFrames().size());
   if (!parallel) {
-    for (size_t i = 0; i < staticRemovedReconstructFrames_.size(); i++) {
-      staticRemovedReconstructPclFrames_[i] = staticRemovedReconstructFrames_[i]->toPcl<PointCombination>();
+    for (size_t i = 0; i < staticRemoved_->getFrames().size(); i++) {
+      staticRemovedPclFrames_[i] = staticRemoved_->getFrames()[i]->toPcl<PointCombination>();
     }
   } else {
-    const auto range = boost::counting_range<size_t>(0, staticRemovedReconstructFrames_.size());
+    const auto range = boost::counting_range<size_t>(0, staticRemoved_->getFrames().size());
     std::for_each(std::execution::par, range.begin(), range.end(),
                   [&](const size_t& i) {  //
-                    staticRemovedReconstructPclFrames_[i] =
-                        staticRemovedReconstructFrames_[i]->toPcl<PointCombination>();
+                    staticRemovedPclFrames_[i] = staticRemoved_->getFrames()[i]->toPcl<PointCombination>();
                   });
-  }
-}
-
-void writeJPCCContext(const JPCCContext& context, std::ostream& os) {
-  for (int i = 0; i < context.getDynamicEncodedBytesVector().size(); i++) {
-    os.write(context.getDynamicEncodedBytesVector()[i].data(),
-             (std::streamsize)context.getDynamicEncodedBytesVector()[i].size());
-    if (context.getHeader().segmentationOutputType == jpcc::SegmentationOutputType::DYNAMIC_STATIC) {
-      os.write(context.getStaticEncodedBytesVector()[i].data(),
-               (std::streamsize)context.getStaticEncodedBytesVector()[i].size());
-    } else if (context.getHeader().segmentationOutputType ==
-               jpcc::SegmentationOutputType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED) {
-      os.write(context.getStaticAddedEncodedBytesVector()[i].data(),
-               (std::streamsize)context.getStaticAddedEncodedBytesVector()[i].size());
-      os.write(context.getStaticRemovedEncodedBytesVector()[i].data(),
-               (std::streamsize)context.getStaticRemovedEncodedBytesVector()[i].size());
-    }
   }
 }
 

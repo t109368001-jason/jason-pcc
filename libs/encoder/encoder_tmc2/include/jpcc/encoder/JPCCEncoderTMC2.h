@@ -20,11 +20,9 @@ class JPCCEncoderTMC2 : public virtual JPCCEncoder {
 
   void convertToCoderType(const FramePtr& frame, CoderFramePtr& coderFrame) override;
 
-  void encode(const CoderFramePtr& coderFrame, std::vector<char>& encodedBytes) override;
+  void encode(const CoderFramePtr& coderFrame, std::ostream& os) override;
 
-  void encode(const CoderGroupOfFrame&        coderFrames,
-              std::vector<std::vector<char>>& encodedBytesVector,
-              bool                            parallel) override;
+  void encode(const CoderGroupOfFrame& coderFrames, std::ostream& os, bool parallel) override;
 };
 
 }  // namespace jpcc::encoder

@@ -19,9 +19,11 @@ void JPCCEncoderNone::convertToCoderType(const FramePtr& frame, CoderFramePtr& c
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void JPCCEncoderNone::encode(const CoderFramePtr& coderFrame, std::vector<char>& encodedBytes) {
-  auto              _coderFrame = std::static_pointer_cast<Frame>(coderFrame);
-  std::stringstream os;
+void JPCCEncoderNone::encode(const CoderFramePtr& coderFrame, std::ostream& os) {
+#if !defined(NDEBUG)
+  auto startPosition = os.tellp();
+#endif
+  auto _coderFrame = std::static_pointer_cast<Frame>(coderFrame);
 
   const auto length = uint32_t(_coderFrame->getPointCount());
 
@@ -37,12 +39,7 @@ void JPCCEncoderNone::encode(const CoderFramePtr& coderFrame, std::vector<char>&
     os.write(reinterpret_cast<char*>(&point[2]), sizeof(PointValueType));
   }
 
-#if !defined(NDEBUG)
-  size_t oldSize = encodedBytes.size();
-#endif
-  std::string tmpString = os.str();
-  for (char& i : tmpString) { encodedBytes.push_back(i); }
-  assert((_coderFrame->getPointCount() * (sizeof(PointValueType) * 3) + 4) == (encodedBytes.size() - oldSize));
+  assert((_coderFrame->getPointCount() * (sizeof(PointValueType) * 3) + 4) == (os.tellp() - startPosition));
 }
 
 }  // namespace jpcc::encoder

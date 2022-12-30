@@ -14,7 +14,7 @@ class JPCCEncoderNone : public virtual JPCCEncoder {
 
   void convertToCoderType(const FramePtr& frame, CoderFramePtr& coderFrame) override;
 
-  void encode(const CoderFramePtr& coderFrame, std::vector<char>& encodedBytes) override;
+  void encode(const CoderFramePtr& coderFrame, std::ostream& os) override;
 };
 
 }  // namespace jpcc::encoder
