@@ -36,6 +36,8 @@ class JPCCCoderContext : public IJPCCEncoderContext, public IJPCCDecoderContext 
 
   void ifsSeekgEnd();
 
+  [[nodiscard]] bool eof() const;
+
   [[nodiscard]] JPCCHeader          getHeader() const { return header_; };
   [[nodiscard]] Index               getStartFrameNumber() const override { return startFrameNumber_; };
   [[nodiscard]] const GroupOfFrame& getFrames() const override { return frames_; };

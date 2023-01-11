@@ -36,4 +36,7 @@ void JPCCCoderContext::ifsSeekgEnd() {
   fs_.seekg(0, std::ios::end);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
+bool JPCCCoderContext::eof() const { return fs_.eof(); }
+
 }  // namespace jpcc

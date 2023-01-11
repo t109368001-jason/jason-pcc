@@ -3,7 +3,7 @@
 #include <thread>
 #include <vector>
 
-#include <jpcc/common/JPCCCoderContext.h>
+#include <jpcc/common/JPCCContext.h>
 #include <jpcc/combination/JPCCCombination.h>
 #include <jpcc/common/ParameterParser.h>
 #include <jpcc/decoder/JPCCDecoderAdapter.h>
@@ -40,18 +40,15 @@ void main_(const AppParameter& parameter, Stopwatch& clock) {
     JPCCDecoderAdapter decoder;
     JPCCCombination    combination;
 
-    std::ifstream ifs(parameter.compressedStreamPath, std::ios::binary | std::ios::in);
-    JPCCHeader    header{0};
-    {
-      readJPCCHeader(ifs, &header);
-      decoder.set(header);
-      combination.set(header);
-    }
-    JPCCCoderContext context(header);
-    while (run && !ifs.eof()) {
+    JPCCContext context(parameter.compressedStreamPathPrefix);
+    context.readHeader();
+    while (run && !context.anyEof()) {
       context.clear();
       {  // decode
-        decoder.decode(ifs, context, parameter.groupOfFramesSize);
+        decoder.decode(context, parameter.groupOfFramesSize);
+      }
+      {  // convertFromCoderType
+        decoder.convertFromCoderType(context, parameter.parallel);
       }
       {  // Convert to pcl (combination)
         context.convertToPclCombination(parameter.parallel);
@@ -60,10 +57,10 @@ void main_(const AppParameter& parameter, Stopwatch& clock) {
         combination.combine(context, parameter.parallel);
       }
 
-      viewer->enqueue(GroupOfFrameMap{{primaryId, context.getReconstructFrames()}});
+      viewer->enqueue(GroupOfFrameMap{{primaryId, context.getFrames()}});
 
       while (run && viewer->isFull()) { this_thread::sleep_for(100ms); }
-      context.getStartFrameNumber() += (Index)context.getReconstructFrames().size();
+      context.getStartFrameNumber() += (Index)context.getFrames().size();
     }
     while (run && !viewer->isEmpty()) { this_thread::sleep_for(100ms); }
     run = false;
@@ -103,7 +100,7 @@ void main_(const AppParameter& parameter, Stopwatch& clock) {
     run = false;
   };
   shared_ptr<thread> loadThread;
-  if (parameter.compressedStreamPath.empty()) {
+  if (parameter.compressedStreamPathPrefix.empty()) {
     loadThread = make_shared<thread>(loadDataset);
   } else {
     loadThread = make_shared<thread>(loadEncoded);
@@ -131,7 +128,6 @@ int main(int argc, char* argv[]) {
   }
 
   try {
-    ParameterParser pp;
     // Timers to count elapsed wall/user time
     Stopwatch clockWall;
     Stopwatch clockUser;

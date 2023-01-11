@@ -47,6 +47,8 @@ class JPCCContext : public IJPCCSegmentationContext, public IJPCCCombinationCont
 
   void ifsSeekgEnd();
 
+  [[nodiscard]] bool anyEof() const;
+
   [[nodiscard]] Index                   getStartFrameNumber() const { return startFrameNumber_; };
   [[nodiscard]] SegmentationOutputType  getSegmentationOutputType() const override { return segmentationOutputType_; };
   [[nodiscard]] const JPCCCoderContext& getDynamicContext() const { return *dynamic_; };

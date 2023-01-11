@@ -16,7 +16,7 @@ class AppParameter : public Parameter {
  public:
   bool                               parallel;
   size_t                             groupOfFramesSize;
-  std::string                        compressedStreamPath;
+  std::string                        compressedStreamPathPrefix;
   io::DatasetParameter               dataset;
   io::DatasetReaderParameter         reader;
   process::PreProcessParameter       preProcess;

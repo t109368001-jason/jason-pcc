@@ -101,6 +101,18 @@ void JPCCContext::ifsSeekgEnd() {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
+bool JPCCContext::anyEof() const {
+  if (dynamic_->eof()) { return true; }
+  if (segmentationOutputType_ == SegmentationOutputType::DYNAMIC_STATIC) {
+    if (static_->eof()) { return true; }
+  } else if (segmentationOutputType_ == SegmentationOutputType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED) {
+    if (staticAdded_->eof()) { return true; }
+    if (staticRemoved_->eof()) { return true; }
+  }
+  return false;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
 void JPCCContext::convertToPclBuild(bool parallel) {
   pclFrames_.resize(frames_.size());
   if (!parallel) {
