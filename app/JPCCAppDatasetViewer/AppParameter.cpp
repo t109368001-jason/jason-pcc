@@ -53,7 +53,7 @@ void AppParameter::notify() {
   visualizerParameter.notify();
   if (!parallel) { groupOfFramesSize = 1; }
   if (!compressedStreamPathPrefix.empty()) {
-    THROW_IF_NOT(filesystem::exists(compressedStreamPathPrefix + "dynamic.bin"));
+    THROW_IF_NOT(filesystem::exists(compressedStreamPathPrefix + "-dynamic.bin"));
   }
 }
 

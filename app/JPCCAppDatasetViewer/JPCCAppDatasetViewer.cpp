@@ -42,6 +42,8 @@ void main_(const AppParameter& parameter, Stopwatch& clock) {
 
     JPCCContext context(parameter.compressedStreamPathPrefix);
     context.readHeader();
+    decoder.set(context);
+    combination.set(context);
     while (run && !context.anyEof()) {
       context.clear();
       {  // decode
