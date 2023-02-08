@@ -20,21 +20,22 @@ JPCCEncoderParameter::JPCCEncoderParameter(const string& prefix, const string& c
        value<string>(&backendType_)->required(),    //
        "backendType")                               //
       ;
+  opts_.add(tmc2.getOpts());
   opts_.add(tmc3.getOpts());
 }
 
 void JPCCEncoderParameter::notify() {
   backendType = getCoderBackendType(backendType_);
-  if (backendType == CoderBackendType::TMC3) { tmc3.notify(); }
   if (backendType == CoderBackendType::TMC2) { tmc2.notify(); }
+  if (backendType == CoderBackendType::TMC3) { tmc3.notify(); }
 }
 
 ostream& operator<<(ostream& out, const JPCCEncoderParameter& obj) {
   obj.coutParameters(out)                   //
       (BACKEND_TYPE_OPT, obj.backendType_)  //
       ;
-  if (obj.backendType == CoderBackendType::TMC3) { out << obj.tmc3; }
   if (obj.backendType == CoderBackendType::TMC2) { out << obj.tmc2; }
+  if (obj.backendType == CoderBackendType::TMC3) { out << obj.tmc3; }
   return out;
 }
 

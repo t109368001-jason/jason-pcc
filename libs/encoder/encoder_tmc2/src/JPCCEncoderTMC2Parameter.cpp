@@ -218,7 +218,8 @@ JPCCEncoderTMC2Parameter::JPCCEncoderTMC2Parameter(  // NOLINT(cppcoreguidelines
     const string& prefix,
     const string& caption) :
     Parameter(prefix, caption) {
-  auto _params = std::make_shared<pcc::PCCEncoderParameters>();
+  auto _params  = std::make_shared<pcc::PCCEncoderParameters>();
+  this->params_ = _params;
   opts_.add_options()                                                                     //
       (string(prefix_ + configurationFolder_opt).c_str(),                                 //
        value<string>(&_params->configurationFolder_),                                     //
