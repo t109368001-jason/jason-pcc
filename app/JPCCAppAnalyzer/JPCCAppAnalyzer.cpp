@@ -3,6 +3,8 @@
 #include <iostream>
 #include <vector>
 
+#include <boost/log/trivial.hpp>
+
 #include <jpcc/common/Common.h>
 #include <jpcc/common/ParameterParser.h>
 #include <jpcc/io/Reader.h>
@@ -76,7 +78,7 @@ void previewOnly(const AppParameter& parameter) {
 }
 
 void analyze(const AppParameter& parameter, Stopwatch& clock, const Analyzer::Ptr& analyzer) {
-  cout << analyzer->getFilepath() << " start" << endl;
+  BOOST_LOG_TRIVIAL(info) << analyzer->getFilepath() << " start";
 
   const typename DatasetReader::Ptr  reader = newReader(parameter.reader, parameter.dataset);
   typename PreProcessor::Ptr         preProcessor;
@@ -127,7 +129,7 @@ void analyze(const AppParameter& parameter, Stopwatch& clock, const Analyzer::Pt
   analyzer->reset();
   clock.stop();
 
-  cout << analyzer->getFilepath() << " end" << endl;
+  BOOST_LOG_TRIVIAL(info) << analyzer->getFilepath() << " end";
 }
 
 void main_(AppParameter& parameter) {
@@ -138,8 +140,8 @@ void main_(AppParameter& parameter) {
   for (const auto& frequency : parameter.frequencies) {
     parameter.reader.frequency = frequency;
     parameter.reader.notify();
-    cout << "\n========== current parameter ==========\n" << endl;
-    cout << parameter << endl;
+    BOOST_LOG_TRIVIAL(info) << "\n========== current parameter ==========\n";
+    BOOST_LOG_TRIVIAL(info) << parameter;
     for (const auto& resolution : parameter.resolutions) {
       vector<Analyzer::Ptr> analyzers = {
           jpcc::make_shared<VoxelOccupancyCountToVoxelCount>(frequency, resolution, parameter.outputDir),
@@ -164,11 +166,11 @@ void main_(AppParameter& parameter) {
       }
       for (const Analyzer::Ptr& analyzer : analyzers) {
         if (!parameter.forceReRun && analyzer->exists()) {
-          cout << analyzer->getFilepath() << " already exists, skip analyze." << endl;
+          BOOST_LOG_TRIVIAL(info) << analyzer->getFilepath() << " already exists, skip analyze.";
           continue;
         }
         if (!analyzer->tryLockFile()) {
-          cout << analyzer->getFilepath() << " running, skip analyze." << endl;
+          BOOST_LOG_TRIVIAL(info) << analyzer->getFilepath() << " running, skip analyze.";
           continue;
         }
         Stopwatch clockWall;
@@ -180,9 +182,9 @@ void main_(AppParameter& parameter) {
 
         auto totalWall = duration_cast<milliseconds>(clockWall.count()).count();
         auto totalUser = duration_cast<milliseconds>(clockUser.count()).count();
-        cout << "Processing time (wall): " << (float)totalWall / 1000.0 << " s\n";
-        cout << "Processing time (user): " << (float)totalUser / 1000.0 << " s\n";
-        cout << "Peak memory: " << getPeakMemory() << " KB\n";
+        BOOST_LOG_TRIVIAL(info) << "Processing time (wall): " << (float)totalWall / 1000.0 << " s";
+        BOOST_LOG_TRIVIAL(info) << "Processing time (user): " << (float)totalUser / 1000.0 << " s";
+        BOOST_LOG_TRIVIAL(info) << "Peak memory: " << getPeakMemory() << " KB";
 
         analyzer->releaseLockFile();
       }
@@ -191,16 +193,16 @@ void main_(AppParameter& parameter) {
 }
 
 int main(int argc, char* argv[]) {
-  cout << "JPCC App Analyzer Start" << endl;
+  BOOST_LOG_TRIVIAL(info) << "JPCC App Analyzer Start";
 
   AppParameter parameter;
   try {
     ParameterParser pp;
     pp.add(parameter);
     if (!pp.parse(argc, argv)) { return 1; }
-    cout << parameter << endl;
+    BOOST_LOG_TRIVIAL(info) << parameter;
   } catch (exception& e) {
-    cerr << e.what() << endl;
+    BOOST_LOG_TRIVIAL(error) << e.what();
     return 1;
   }
 
@@ -208,8 +210,8 @@ int main(int argc, char* argv[]) {
     ParameterParser pp;
     // Timers to count elapsed wall/user time
     main_(parameter);
-  } catch (exception& e) { cerr << e.what() << endl; }
+  } catch (exception& e) { BOOST_LOG_TRIVIAL(error) << e.what(); }
 
-  cout << "JPCC App Analyzer End" << endl;
+  BOOST_LOG_TRIVIAL(info) << "JPCC App Analyzer End";
   return 0;
 }

@@ -1,5 +1,7 @@
 #include <jpcc/common/ParameterParser.h>
 
+#include <boost/log/trivial.hpp>
+
 #include <algorithm>
 #include <fstream>
 
@@ -27,7 +29,7 @@ bool ParameterParser::parse(int argc, char* argv[]) {
     variables_map vm;
     store(cmdOpts, vm);
     if (vm.count("help")) {
-      cout << opts_ << "\n";
+      BOOST_LOG_TRIVIAL(info) << opts_;
       return false;
     }
     const parsed_options envOpts =
@@ -50,11 +52,11 @@ bool ParameterParser::parse(int argc, char* argv[]) {
 
     notify(vm_final);
     for (Parameter* param : params_) { param->notify(); }
-    cout << param_ << endl;
+    BOOST_LOG_TRIVIAL(info) << param_;
     return true;
   } catch (exception& e) {
-    cerr << e.what() << endl;
-    cout << opts_ << "\n";
+    BOOST_LOG_TRIVIAL(info) << e.what();
+    BOOST_LOG_TRIVIAL(error) << opts_;
     BOOST_THROW_EXCEPTION(e);
   }
 }

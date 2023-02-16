@@ -4,6 +4,8 @@
 #include <execution>
 #include <utility>
 
+#include <boost/log/trivial.hpp>
+
 namespace jpcc::io {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -47,9 +49,9 @@ void DatasetReader::loadAll(const size_t  startFrameNumber,
     for (size_t datasetIndex = 0; datasetIndex < datasetParam_.count(); datasetIndex++) {
       if (i < sources[datasetIndex].size()) { frame->append(*sources[datasetIndex][i]); }
     }
-    std::cout << "reader read "
-              << "frameNumber_=" << frame->getFrameNumber() << ", "
-              << "points=" << frame->getPointCount() << std::endl;
+    BOOST_LOG_TRIVIAL(info) << "reader read "
+                            << "frameNumber_=" << frame->getFrameNumber() << ", "
+                            << "points=" << frame->getPointCount();
   }
 }
 

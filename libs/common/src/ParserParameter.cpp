@@ -1,5 +1,7 @@
 #include <jpcc/common/ParserParameter.h>
 
+#include <boost/log/trivial.hpp>
+
 namespace jpcc {
 
 using namespace std;

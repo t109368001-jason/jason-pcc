@@ -3,6 +3,8 @@
 #include <thread>
 #include <vector>
 
+#include <boost/log/trivial.hpp>
+
 #include <jpcc/common/JPCCContext.h>
 #include <jpcc/combination/JPCCCombination.h>
 #include <jpcc/common/ParameterParser.h>
@@ -36,7 +38,7 @@ void main_(const AppParameter& parameter, Stopwatch& clock) {
   viewer->setPrimaryId(primaryId);
 
   auto loadEncoded = [&] {
-    cout << "loadEncoded" << endl;
+    BOOST_LOG_TRIVIAL(info) << "loadEncoded" << endl;
     JPCCDecoderAdapter decoder;
     JPCCCombination    combination;
 
@@ -69,7 +71,7 @@ void main_(const AppParameter& parameter, Stopwatch& clock) {
   };
 
   auto loadDataset = [&] {
-    cout << "loadDataset" << endl;
+    BOOST_LOG_TRIVIAL(info) << "loadDataset";
     try {
       const DatasetReader::Ptr reader = newReader(parameter.reader, parameter.dataset);
       PreProcessor             preProcessor(parameter.preProcess);
@@ -98,7 +100,7 @@ void main_(const AppParameter& parameter, Stopwatch& clock) {
 
       while (run && !viewer->isEmpty()) { this_thread::sleep_for(100ms); }
 
-    } catch (exception& e) { cerr << e.what() << endl; }
+    } catch (exception& e) { BOOST_LOG_TRIVIAL(error) << e.what(); }
     run = false;
   };
   shared_ptr<thread> loadThread;
@@ -116,16 +118,16 @@ void main_(const AppParameter& parameter, Stopwatch& clock) {
 }
 
 int main(int argc, char* argv[]) {
-  cout << "JPCC App Dataset Viewer Start" << endl;
+  BOOST_LOG_TRIVIAL(info) << "JPCC App Dataset Viewer Start";
 
   AppParameter parameter;
   try {
     ParameterParser pp;
     pp.add(parameter);
     if (!pp.parse(argc, argv)) { return 1; }
-    cout << parameter << endl;
+    BOOST_LOG_TRIVIAL(info) << parameter;
   } catch (exception& e) {
-    cerr << e.what() << endl;
+    BOOST_LOG_TRIVIAL(error) << e.what();
     return 1;
   }
 
@@ -140,11 +142,11 @@ int main(int argc, char* argv[]) {
 
     auto totalWall = duration_cast<milliseconds>(clockWall.count()).count();
     auto totalUser = duration_cast<milliseconds>(clockUser.count()).count();
-    cout << "Processing time (wall): " << (float)totalWall / 1000.0 << " s\n";
-    cout << "Processing time (user): " << (float)totalUser / 1000.0 << " s\n";
-    cout << "Peak memory: " << getPeakMemory() << " KB\n";
-  } catch (exception& e) { cerr << e.what() << endl; }
+    BOOST_LOG_TRIVIAL(info) << "Processing time (wall): " << (float)totalWall / 1000.0 << " s";
+    BOOST_LOG_TRIVIAL(info) << "Processing time (user): " << (float)totalUser / 1000.0 << " s";
+    BOOST_LOG_TRIVIAL(info) << "Peak memory: " << getPeakMemory() << " KB";
+  } catch (exception& e) { BOOST_LOG_TRIVIAL(error) << e.what(); }
 
-  cout << "JPCC App Dataset Viewer End" << endl;
+  BOOST_LOG_TRIVIAL(info) << "JPCC App Dataset Viewer End";
   return 0;
 }

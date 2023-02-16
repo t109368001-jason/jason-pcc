@@ -1,5 +1,7 @@
 #include <jpcc/visualization/JPCCVisualizerBase.h>
 
+#include <boost/log/trivial.hpp>
+
 #include <vtkObject.h>
 
 namespace jpcc::visualization {
@@ -44,7 +46,7 @@ JPCCVisualizerBase::JPCCVisualizerBase(const VisualizerParameter& param) :
   registerPointPickingCallback([](const auto& event) {
     pcl::PointXYZ point;
     event.getPoint(point.x, point.y, point.z);
-    cout << "picked point=" << point << endl;
+    BOOST_LOG_TRIVIAL(info) << "picked point=" << point;
   });
   if (param_.windowWidth != 0 && param_.windowHeight != 0) { setSize(param_.windowWidth, param_.windowHeight); }
 }
@@ -119,11 +121,10 @@ void JPCCVisualizerBase::handleKeyboardEvent(const pcl::visualization::KeyboardE
     switch (event.getKeyCode()) {
       case 'h':
       case 'H':
-        std::cout << "\n"
-                     "------- JPCCVisualizerBase\n"
-                     "         space   : next frame\n"
-                     "    SHIFT + p, P : toggle display parameters\n"
-                     "\n";
+        BOOST_LOG_TRIVIAL(info) << "\n"
+                                   "------- JPCCVisualizerBase\n"
+                                   "         space   : next frame\n"
+                                   "    SHIFT + p, P : toggle display parameters\n";
         break;
       case ' ': nextFrame(); break;
       case 'p':
@@ -137,7 +138,7 @@ void JPCCVisualizerBase::handleKeyboardEvent(const pcl::visualization::KeyboardE
   }
   for (auto& keyboardCallback : keyboardCallbacks_) { keyboardCallback.second(event); }
   if (event.getKeyCode() != 0) {
-    std::cout << "KeyboardEvent: keyCode=" << event.getKeyCode() << " keyDown=" << event.keyDown() << std::endl;
+    BOOST_LOG_TRIVIAL(info) << "KeyboardEvent: keyCode=" << event.getKeyCode() << " keyDown=" << event.keyDown();
   }
 }
 

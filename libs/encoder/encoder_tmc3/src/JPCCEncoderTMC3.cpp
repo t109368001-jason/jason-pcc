@@ -2,6 +2,8 @@
 
 #include <sstream>
 
+#include <boost/log/trivial.hpp>
+
 #include <io_tlv.h>
 #include <PCCTMC3Encoder.h>
 
@@ -83,8 +85,7 @@ void JPCCEncoderTMC3::encode(const CoderFramePtr& coderFrame, std::ostream& os) 
   PCCTMC3Encoder3                encoder;
 
   encoder.compress(*_coderFrame, &param, &callback, nullptr);
-  std::cout << __FUNCTION__ << "() "
-            << "bytes=" << (os.tellp() - startPosition) << std::endl;
+  BOOST_LOG_TRIVIAL(info) << "bytes=" << (os.tellp() - startPosition);
 }
 
 }  // namespace jpcc::encoder

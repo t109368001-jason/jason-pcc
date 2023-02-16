@@ -12,19 +12,19 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
-if (WIN32)
-    macro(get_WIN32_WINNT version)
-        if (WIN32 AND CMAKE_SYSTEM_VERSION)
-            set(ver ${CMAKE_SYSTEM_VERSION})
-            string(REPLACE "." "" ver ${ver})
-            string(REGEX REPLACE "([0-9])" "0\\1" ver ${ver})
-            set(${version} "0x${ver}")
-        endif ()
-    endmacro()
-
-    get_WIN32_WINNT(WIN32_WINNT)
-    add_definitions(-D_WIN32_WINNT=${WIN32_WINNT})
-endif (WIN32)
+#if (WIN32)
+#    macro(get_WIN32_WINNT version)
+#        if (WIN32 AND CMAKE_SYSTEM_VERSION)
+#            set(ver ${CMAKE_SYSTEM_VERSION})
+#            string(REPLACE "." "" ver ${ver})
+#            string(REGEX REPLACE "([0-9])" "0\\1" ver ${ver})
+#            set(${version} "0x${ver}")
+#        endif ()
+#    endmacro()
+#
+#    get_WIN32_WINNT(WIN32_WINNT)
+#    add_definitions(-D_WIN32_WINNT=${WIN32_WINNT})
+#endif (WIN32)
 
 MESSAGE(STATUS "Build type: " ${CMAKE_BUILD_TYPE})
 
@@ -42,7 +42,7 @@ if (NOT WIN32)
     endif (NOT TBB_FOUND)
 endif (NOT WIN32)
 
-find_package(Boost 1.74 REQUIRED COMPONENTS program_options)
+find_package(Boost 1.74 REQUIRED COMPONENTS log program_options)
 
 find_package(Eigen3 3.4.0 REQUIRED NO_MODULE)
 

@@ -3,6 +3,8 @@
 #include <fstream>
 #include <iomanip>
 
+#include <boost/log/trivial.hpp>
+
 namespace jpcc {
 
 const uint32_t g_undefined_index = -1;
@@ -148,7 +150,7 @@ bool JPCCPointSet3::read(const std::string& fileName, const bool readNormals) {
   ifs.getline(tmp, MAX_BUFFER_SIZE);
   getTokens(tmp, sep, tokens);
   if (tokens.empty() || tokens[0] != "ply") {
-    std::cout << "Error: corrupted file!" << std::endl;
+    BOOST_LOG_TRIVIAL(error) << "Error: corrupted file!";
     return false;
   }
   bool   isAscii          = false;
@@ -157,7 +159,7 @@ bool JPCCPointSet3::read(const std::string& fileName, const bool readNormals) {
   bool   isVertexProperty = true;
   while (true) {
     if (ifs.eof()) {
-      std::cout << "Error: corrupted header!" << std::endl;
+      BOOST_LOG_TRIVIAL(error) << "Error: corrupted header!";
       return false;
     }
     ifs.getline(tmp, MAX_BUFFER_SIZE);
@@ -165,14 +167,14 @@ bool JPCCPointSet3::read(const std::string& fileName, const bool readNormals) {
     if (tokens.empty() || tokens[0] == "comment") { continue; }
     if (tokens[0] == "format") {
       if (tokens.size() != 3) {
-        std::cout << "Error: corrupted format info!" << std::endl;
+        BOOST_LOG_TRIVIAL(error) << "Error: corrupted format info!";
         return false;
       }
       isAscii = tokens[1] == "ascii";
       version = atof(tokens[2].c_str());
     } else if (tokens[0] == "element") {
       if (tokens.size() != 3) {
-        std::cout << "Error: corrupted element info!" << std::endl;
+        BOOST_LOG_TRIVIAL(error) << "Error: corrupted element info!";
         return false;
       }
       if (tokens[1] == "vertex") {
@@ -182,7 +184,7 @@ bool JPCCPointSet3::read(const std::string& fileName, const bool readNormals) {
       }
     } else if (tokens[0] == "property" && isVertexProperty) {
       if (tokens.size() != 3) {
-        std::cout << "Error: corrupted property info!" << std::endl;
+        BOOST_LOG_TRIVIAL(error) << "Error: corrupted property info!";
         return false;
       }
       const std::string& propertyType   = tokens[1];
@@ -227,7 +229,7 @@ bool JPCCPointSet3::read(const std::string& fileName, const bool readNormals) {
     }
   }
   if (version != 1.0) {
-    std::cout << "Error: non-supported version!" << std::endl;
+    BOOST_LOG_TRIVIAL(error) << "Error: non-supported version!";
     return false;
   }
 
@@ -270,7 +272,7 @@ bool JPCCPointSet3::read(const std::string& fileName, const bool readNormals) {
     }
   }
   if (indexX == g_undefined_index || indexY == g_undefined_index || indexZ == g_undefined_index) {
-    std::cout << "Error: missing coordinates!" << std::endl;
+    BOOST_LOG_TRIVIAL(error) << "Error: missing coordinates!";
     return false;
   }
   withReflectances_ = indexReflectance != g_undefined_index;

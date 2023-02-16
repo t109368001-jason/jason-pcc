@@ -3,6 +3,8 @@
 #include <iostream>
 #include <vector>
 
+#include <boost/log/trivial.hpp>
+
 #include <jpcc/common/JPCCContext.h>
 #include <jpcc/common/ParameterParser.h>
 #include <jpcc/decoder/JPCCDecoderAdapter.h>
@@ -62,16 +64,14 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
     decoder.set(decoderContext);
     combination.set(decoderContext);
   }
-  std::cout << __FUNCTION__ << "() "
-            << "dynamicHeader=" << encoderContext.getDynamicContext().getHeader();
+  BOOST_LOG_TRIVIAL(info) << "dynamicHeader=" << encoderContext.getDynamicContext().getHeader();
   if (encoderContext.getSegmentationOutputType() == jpcc::SegmentationOutputType::DYNAMIC_STATIC) {
-    std::cout << "StaticHeader=" << encoderContext.getStaticContext().getHeader();
+    BOOST_LOG_TRIVIAL(info) << "staticHeader=" << encoderContext.getStaticContext().getHeader();
   } else if (encoderContext.getSegmentationOutputType() ==
              jpcc::SegmentationOutputType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED) {
-    std::cout << "StaticAddedHeader=" << encoderContext.getStaticAddedContext().getHeader()
-              << "StaticRemovedHeader=" << encoderContext.getStaticRemovedContext().getHeader();
+    BOOST_LOG_TRIVIAL(info) << "staticAddedHeader=" << encoderContext.getStaticAddedContext().getHeader();
+    BOOST_LOG_TRIVIAL(info) << "staticRemovedHeader=" << encoderContext.getStaticRemovedContext().getHeader();
   }
-  std::cout << std::endl;
 
   {  // build gaussian mixture model
     GroupOfFrame frames;
@@ -212,16 +212,16 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
 }
 
 int main(int argc, char* argv[]) {
-  cout << "JPCC App Encoder Start" << endl;
+  BOOST_LOG_TRIVIAL(info) << "JPCC App Encoder Start";
 
   AppParameter parameter;
   try {
     ParameterParser pp;
     pp.add(parameter);
     if (!pp.parse(argc, argv)) { return 1; }
-    cout << parameter << endl;
+    BOOST_LOG_TRIVIAL(info) << parameter;
   } catch (exception& e) {
-    cerr << e.what() << endl;
+    BOOST_LOG_TRIVIAL(error) << e.what();
     return 1;
   }
 
@@ -235,6 +235,6 @@ int main(int argc, char* argv[]) {
 
   metric.writeAndShow();
 
-  cout << "JPCC App Encoder End" << endl;
+  BOOST_LOG_TRIVIAL(info) << "JPCC App Encoder End";
   return 0;
 }

@@ -3,6 +3,8 @@
 #include <mutex>
 #include <vector>
 
+#include <boost/log/trivial.hpp>
+
 #include <jpcc/common/ParameterParser.h>
 #include <jpcc/io/Reader.h>
 #include <jpcc/process/Process.h>
@@ -57,8 +59,8 @@ void main_(const AppParameter& parameter, Stopwatch& clock) {
     ransac.computeModel();
     ransac.getInliers(indices);
 
-    cout << "RANSAC iteration=" << ransac.iterations_ << endl;
-    cout << "RANSAC coefficients=" << endl << ransac.model_coefficients_ << endl << endl;
+    BOOST_LOG_TRIVIAL(info) << "RANSAC iteration=" << ransac.iterations_;
+    BOOST_LOG_TRIVIAL(info) << "RANSAC coefficients=" << endl << ransac.model_coefficients_ << endl;
 
     if (!viewer) { return; }
 
@@ -80,16 +82,16 @@ void main_(const AppParameter& parameter, Stopwatch& clock) {
 }
 
 int main(int argc, char* argv[]) {
-  cout << "JPCC App Ground Segmentation Start" << endl;
+  BOOST_LOG_TRIVIAL(info) << "JPCC App Ground Segmentation Start";
 
   AppParameter parameter;
   try {
     ParameterParser pp;
     pp.add(parameter);
     if (!pp.parse(argc, argv)) { return 1; }
-    cout << parameter << endl;
+    BOOST_LOG_TRIVIAL(info) << parameter;
   } catch (exception& e) {
-    cerr << e.what() << endl;
+    BOOST_LOG_TRIVIAL(error) << e.what();
     return 1;
   }
 
@@ -105,11 +107,11 @@ int main(int argc, char* argv[]) {
 
     auto totalWall = duration_cast<milliseconds>(clockWall.count()).count();
     auto totalUser = duration_cast<milliseconds>(clockUser.count()).count();
-    cout << "Processing time (wall): " << (float)totalWall / 1000.0 << " s\n";
-    cout << "Processing time (user): " << (float)totalUser / 1000.0 << " s\n";
-    cout << "Peak memory: " << getPeakMemory() << " KB\n";
-  } catch (exception& e) { cerr << e.what() << endl; }
+    BOOST_LOG_TRIVIAL(info) << "Processing time (wall): " << (float)totalWall / 1000.0 << " s";
+    BOOST_LOG_TRIVIAL(info) << "Processing time (user): " << (float)totalUser / 1000.0 << " s";
+    BOOST_LOG_TRIVIAL(info) << "Peak memory: " << getPeakMemory() << " KB";
+  } catch (exception& e) { BOOST_LOG_TRIVIAL(error) << e.what(); }
 
-  cout << "JPCC App Ground Segmentation End" << endl;
+  BOOST_LOG_TRIVIAL(info) << "JPCC App Ground Segmentation End";
   return 0;
 }

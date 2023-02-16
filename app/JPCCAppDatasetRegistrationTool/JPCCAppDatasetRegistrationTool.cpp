@@ -3,6 +3,8 @@
 #include <mutex>
 #include <vector>
 
+#include <boost/log/trivial.hpp>
+
 #include <pcl/registration/icp.h>
 #include <pcl/registration/ndt.h>
 
@@ -65,7 +67,7 @@ void main_(const AppParameter& parameter, Stopwatch& clock) {
           std::string id(1, (char)keyCode);
           auto&       pclFrames        = pclFramesMap[id];
           auto&       startFrameNumber = startFrameNumberMap[id];
-          cout << id << endl;
+          BOOST_LOG_TRIVIAL(info) << id;
           clock.start();
           GroupOfFrame frames;
           reader->load(keyCode - '0', startFrameNumber++, 1, frames, parameter.parallel);
@@ -80,7 +82,7 @@ void main_(const AppParameter& parameter, Stopwatch& clock) {
 
               registration->setInputSource(pclFrames[0]);
               registration->align(*frame);
-              cout << registration->getFinalTransformation() << endl;
+              BOOST_LOG_TRIVIAL(info) << registration->getFinalTransformation();
               pclFrames[0] = frame;
             }
           }
@@ -93,10 +95,10 @@ void main_(const AppParameter& parameter, Stopwatch& clock) {
           handleKey('2');
           handleKey('3');
         }
-        cout << startFrameNumberMap["0"] << ", "  //
-             << startFrameNumberMap["1"] << ", "  //
-             << startFrameNumberMap["2"] << ", "  //
-             << startFrameNumberMap["3"] << endl;
+        BOOST_LOG_TRIVIAL(info) << startFrameNumberMap["0"] << ", "  //
+                                << startFrameNumberMap["1"] << ", "  //
+                                << startFrameNumberMap["2"] << ", "  //
+                                << startFrameNumberMap["3"];
         viewer->enqueue(pclFramesMap);
         viewer->nextFrame();
         return true;
@@ -110,16 +112,16 @@ void main_(const AppParameter& parameter, Stopwatch& clock) {
 }
 
 int main(int argc, char* argv[]) {
-  cout << "JPCC App Dataset Registration Tool Start" << endl;
+  BOOST_LOG_TRIVIAL(info) << "JPCC App Dataset Registration Tool Start";
 
   AppParameter parameter;
   try {
     ParameterParser pp;
     pp.add(parameter);
     if (!pp.parse(argc, argv)) { return 1; }
-    cout << parameter << endl;
+    BOOST_LOG_TRIVIAL(info) << parameter;
   } catch (exception& e) {
-    cerr << e.what() << endl;
+    BOOST_LOG_TRIVIAL(error) << e.what();
     return 1;
   }
 
@@ -135,11 +137,11 @@ int main(int argc, char* argv[]) {
 
     auto totalWall = duration_cast<milliseconds>(clockWall.count()).count();
     auto totalUser = duration_cast<milliseconds>(clockUser.count()).count();
-    cout << "Processing time (wall): " << (float)totalWall / 1000.0 << " s\n";
-    cout << "Processing time (user): " << (float)totalUser / 1000.0 << " s\n";
-    cout << "Peak memory: " << getPeakMemory() << " KB\n";
-  } catch (exception& e) { cerr << e.what() << endl; }
+    BOOST_LOG_TRIVIAL(info) << "Processing time (wall): " << (float)totalWall / 1000.0 << " s";
+    BOOST_LOG_TRIVIAL(info) << "Processing time (user): " << (float)totalUser / 1000.0 << " s";
+    BOOST_LOG_TRIVIAL(info) << "Peak memory: " << getPeakMemory() << " KB";
+  } catch (exception& e) { BOOST_LOG_TRIVIAL(error) << e.what(); }
 
-  cout << "JPCC App Dataset Registration Tool End" << endl;
+  BOOST_LOG_TRIVIAL(info) << "JPCC App Dataset Registration Tool End";
   return 0;
 }

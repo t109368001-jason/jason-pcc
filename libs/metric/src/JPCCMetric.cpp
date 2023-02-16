@@ -6,6 +6,7 @@
 #include <iostream>
 
 #include <boost/config.hpp>
+#include <boost/log/trivial.hpp>
 #include <boost/range/counting_range.hpp>
 
 #include <KDTreeVectorOfVectorsAdaptor.h>
@@ -40,10 +41,9 @@ void JPCCMetric::addPoints(const std::string& name, const FramePtr& frame, bool 
   frameNumberSet_.insert(frame->getFrameNumber());
   pointsNameSet_.insert(name);
   pointsMapMap_[frame->getFrameNumber()][name] += points;
-  std::cout << __FUNCTION__ << "() "
-            << "name=" << name << ", "
-            << "frameNumber_=" << frame->getFrameNumber() << ", "
-            << "points=" << points << std::endl;
+  BOOST_LOG_TRIVIAL(info) << "name=" << name << ", "
+                          << "frameNumber_=" << frame->getFrameNumber() << ", "
+                          << "points=" << points;
   if (addBytes) { this->addBytes(name, frame->getFrameNumber(), points * sizeof(PointValueType) * 3); }
 }
 
@@ -55,10 +55,9 @@ void JPCCMetric::addPoints(const std::string& name, const GroupOfFrame& frames, 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void JPCCMetric::addBytes(const std::string& name, FrameNumber frameNumber, const uint64_t bytes) {
   if (bytes == 0) { return; }
-  cout << __FUNCTION__ << "() "
-       << "name=" << name << ", "
-       << "frameNumber_=" << frameNumber << ", "
-       << "bytes=" << bytes << std::endl;
+  BOOST_LOG_TRIVIAL(info) << "name=" << name << ", "
+                          << "frameNumber_=" << frameNumber << ", "
+                          << "bytes=" << bytes;
   frameNumberSet_.insert(frameNumber);
   bytesNameSet_.insert(name);
   bytesMapMap_[frameNumber][name] = bytes;
@@ -89,16 +88,15 @@ void JPCCMetric::addPSNR(const std::string& name, const FramePtr& frameA, const 
   c2cPSNRMapMap_[frameA->getFrameNumber()][name] = c2cPSNR;
   c2pMSEMapMap_[frameA->getFrameNumber()][name]  = c2pMSE;
   c2pPSNRMapMap_[frameA->getFrameNumber()][name] = c2pPSNR;
-  std::cout << __FUNCTION__ << "() "
-            << "name=" << name << ", "
-            << "frameNumberA=" << frameA->getFrameNumber() << ", "
-            << "frameNumberB=" << frameB->getFrameNumber() << ", "
-            << "pointsA=" << frameA->getPointCount() << ", "
-            << "pointsB=" << frameB->getPointCount() << ", "
-            << "c2cMSE=" << c2cMSE << ", "
-            << "c2cPSNR=" << c2cPSNR << ", "
-            << "c2pMSE=" << c2pMSE << ", "
-            << "c2pPSNR=" << c2pPSNR << std::endl;
+  BOOST_LOG_TRIVIAL(info) << "name=" << name << ", "
+                          << "frameNumberA=" << frameA->getFrameNumber() << ", "
+                          << "frameNumberB=" << frameB->getFrameNumber() << ", "
+                          << "pointsA=" << frameA->getPointCount() << ", "
+                          << "pointsB=" << frameB->getPointCount() << ", "
+                          << "c2cMSE=" << c2cMSE << ", "
+                          << "c2cPSNR=" << c2cPSNR << ", "
+                          << "c2pMSE=" << c2pMSE << ", "
+                          << "c2pPSNR=" << c2pPSNR;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -314,14 +312,14 @@ void JPCCMetric::writeAndShow() {
 #endif
   metricSummaryCSV << "Compiler," << BOOST_COMPILER << endl;
 
-  cout << "Environment Info:" << endl;
-  cout << "  Platform          :" << BOOST_PLATFORM << endl;
+  BOOST_LOG_TRIVIAL(info) << "Environment Info:";
+  BOOST_LOG_TRIVIAL(info) << "  Platform          :" << BOOST_PLATFORM;
 #if defined(BOOST_CXX_VERSION)
-  cout << "  C++ Version       :" << BOOST_CXX_VERSION << endl;
+  BOOST_LOG_TRIVIAL(info) << "  C++ Version       :" << BOOST_CXX_VERSION;
 #elif defined(__cplusplus)
-  cout << "  C++ Version       :" << __cplusplus << endl;
+  BOOST_LOG_TRIVIAL(info) << "  C++ Version       :" << __cplusplus;
 #endif
-  cout << "  Compiler          :" << BOOST_COMPILER << endl;
+  BOOST_LOG_TRIVIAL(info) << "  Compiler          :" << BOOST_COMPILER;
 
   unsigned long frameCount = frameNumberSet_.size();
   metricSummaryCSV << "Frame Count," << frameCount << endl;
@@ -334,51 +332,52 @@ void JPCCMetric::writeAndShow() {
   for (const auto& name : c2pMSENameSet_) { maxNameLength = max(maxNameLength, (int)name.size()); }
   for (const auto& name : c2pPSNRNameSet_) { maxNameLength = max(maxNameLength, (int)name.size()); }
   for (const auto& name : clockNameSet_) { maxNameLength = max(maxNameLength, (int)name.size()); }
-  cout << endl;
-  cout << "Metric:" << endl;
-  cout << "  Points:" << endl;
+  BOOST_LOG_TRIVIAL(info) << "";
+  BOOST_LOG_TRIVIAL(info) << "Metric:";
+  BOOST_LOG_TRIVIAL(info) << "  Points:";
   for (const auto& [name, points] : pointsSumMap_) {  //
     metricSummaryCSV << name << " (points)," << points << endl;
-    cout << "    " << std::setfill(' ') << std::setw(maxNameLength) << name << left << ": " << points << " points"
-         << endl;
+    BOOST_LOG_TRIVIAL(info) << "    " << std::setfill(' ') << std::setw(maxNameLength) << name << left << ": " << points
+                            << " points";
   }
-  cout << "  Bytes:" << endl;
+  BOOST_LOG_TRIVIAL(info) << "  Bytes:";
   for (const auto& [name, bytes] : bytesSumMap_) {  //
     metricSummaryCSV << name << " (bytes)," << bytes << endl;
-    cout << "    " << std::setfill(' ') << std::setw(maxNameLength) << name << left << ": " << bytes << " bytes"
-         << endl;
+    BOOST_LOG_TRIVIAL(info) << "    " << std::setfill(' ') << std::setw(maxNameLength) << name << left << ": " << bytes
+                            << " bytes";
   }
-  cout << "  MSE (c2c):" << endl;
+  BOOST_LOG_TRIVIAL(info) << "  MSE (c2c):";
   for (const auto& [name, mse] : c2cMSESumMap_) {  //
     metricSummaryCSV << name << " (mm^2)," << mse / (double)frameCount << endl;
-    cout << "    " << std::setfill(' ') << std::setw(maxNameLength) << name << left << ": " << mse / (double)frameCount
-         << " mm^2" << endl;
+    BOOST_LOG_TRIVIAL(info) << "    " << std::setfill(' ') << std::setw(maxNameLength) << name << left << ": "
+                            << mse / (double)frameCount << " mm^2";
   }
-  cout << "  PSNR (c2c):" << endl;
+  BOOST_LOG_TRIVIAL(info) << "  PSNR (c2c):";
   for (const auto& [name, psnr] : c2cPSNRSumMap_) {  //
     metricSummaryCSV << name << " (db)," << psnr / (double)frameCount << endl;
-    cout << "    " << std::setfill(' ') << std::setw(maxNameLength) << name << left << ": " << psnr / (double)frameCount
-         << " db" << endl;
+    BOOST_LOG_TRIVIAL(info) << "    " << std::setfill(' ') << std::setw(maxNameLength) << name << left << ": "
+                            << psnr / (double)frameCount << " db";
   }
-  cout << "  MSE (c2p):" << endl;
+  BOOST_LOG_TRIVIAL(info) << "  MSE (c2p):";
   for (const auto& [name, mse] : c2pMSESumMap_) {  //
     metricSummaryCSV << name << " (mm^2)," << mse / (double)frameCount << endl;
-    cout << "    " << std::setfill(' ') << std::setw(maxNameLength) << name << left << ": " << mse / (double)frameCount
-         << " mm^2" << endl;
+    BOOST_LOG_TRIVIAL(info) << "    " << std::setfill(' ') << std::setw(maxNameLength) << name << left << ": "
+                            << mse / (double)frameCount << " mm^2";
   }
-  cout << "  PSNR (c2p):" << endl;
+  BOOST_LOG_TRIVIAL(info) << "  PSNR (c2p):";
   for (const auto& [name, psnr] : c2pPSNRSumMap_) {  //
     metricSummaryCSV << name << " (db)," << psnr / (double)frameCount << endl;
-    cout << "    " << std::setfill(' ') << std::setw(maxNameLength) << name << left << ": " << psnr / (double)frameCount
-         << " db" << endl;
+    BOOST_LOG_TRIVIAL(info) << "    " << std::setfill(' ') << std::setw(maxNameLength) << name << left << ": "
+                            << psnr / (double)frameCount << " db";
   }
-  cout << "  Processing time:" << endl;
+  BOOST_LOG_TRIVIAL(info) << "  Processing time:";
   for (const auto& [name, duration] : clockSumMap_) {
     metricSummaryCSV << name << " (s)," << duration << endl;
-    cout << "    " << std::setfill(' ') << std::setw(maxNameLength) << name << left << ": " << duration << " s" << endl;
+    BOOST_LOG_TRIVIAL(info) << "    " << std::setfill(' ') << std::setw(maxNameLength) << name << left << ": "
+                            << duration << " s";
   }
   metricSummaryCSV << "Peek memory (KB)," << getPeakMemory() << endl;
-  cout << "Peak memory: " << getPeakMemory() << " KB\n\n";
+  BOOST_LOG_TRIVIAL(info) << "Peak memory: " << getPeakMemory() << " KB\n";
 }
 
 }  // namespace jpcc::metric

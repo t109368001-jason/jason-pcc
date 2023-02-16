@@ -120,11 +120,10 @@ void JPCCVisualizer<PointT>::handleKeyboardEvent(const pcl::visualization::Keybo
     switch (event.getKeyCode()) {
       case 'h':
       case 'H':
-        std::cout << "\n"
-                     "------- JPCCVisualizer\n"
-                     "    SHIFT + j, J : save screenshot\n"
-                     "    SHIFT + a, A : toggle auto next frame\n"
-                     "\n";
+        BOOST_LOG_TRIVIAL(info) << "\n"
+                                   "------- JPCCVisualizer\n"
+                                   "    SHIFT + j, J : save screenshot\n"
+                                   "    SHIFT + a, A : toggle auto next frame\n";
         break;
       case 'j':
       case 'J':

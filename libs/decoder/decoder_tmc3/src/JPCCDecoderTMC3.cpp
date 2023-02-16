@@ -2,6 +2,8 @@
 
 #include <sstream>
 
+#include <boost/log/trivial.hpp>
+
 #include <io_tlv.h>
 #include <PCCTMC3Decoder.h>
 
@@ -82,10 +84,9 @@ void JPCCDecoderTMC3::decode(std::istream& is, std::shared_ptr<void>& coderRecon
     if (coderReconstructFrame) { break; }
   }
   if (coderReconstructFrame) {
-    std::cout << __FUNCTION__ << "() "
-              << "bytes=" << is.tellg() - startPosition << ", "
-              << "points=" << std::static_pointer_cast<PCCPointSet3>(coderReconstructFrame)->getPointCount()
-              << std::endl;
+    BOOST_LOG_TRIVIAL(info) << "bytes=" << is.tellg() - startPosition << ", "
+                            << "points="
+                            << std::static_pointer_cast<PCCPointSet3>(coderReconstructFrame)->getPointCount();
   }
 }
 

@@ -1,5 +1,7 @@
 #include <limits>
 
+#include <boost/log/trivial.hpp>
+
 #include <jpcc/segmentation/IOctreeContainerGMM.h>
 
 namespace jpcc::segmentation {
@@ -73,24 +75,24 @@ void JPCCSegmentationOPCGMMCenter<LeafContainerT>::segmentation(IJPCCSegmentatio
                               this->root_node_);
 
   if (dynamicFrame) {
-    cout << "segmentation dynamic "
-         << "frameNumber_=" << dynamicFrame->getFrameNumber() << ", "
-         << "points=" << dynamicFrame->getPointCount() << endl;
+    BOOST_LOG_TRIVIAL(info) << "segmentation dynamic "
+                            << "frameNumber_=" << dynamicFrame->getFrameNumber() << ", "
+                            << "points=" << dynamicFrame->getPointCount();
   }
   if (staticFrame) {
-    cout << "segmentation static "
-         << "frameNumber_=" << staticFrame->getFrameNumber() << ", "
-         << "points=" << staticFrame->getPointCount() << endl;
+    BOOST_LOG_TRIVIAL(info) << "segmentation static "
+                            << "frameNumber_=" << staticFrame->getFrameNumber() << ", "
+                            << "points=" << staticFrame->getPointCount();
   }
   if (staticAddedFrame) {
-    cout << "segmentation static added "
-         << "frameNumber_=" << staticAddedFrame->getFrameNumber() << ", "
-         << "points=" << staticAddedFrame->getPointCount() << endl;
+    BOOST_LOG_TRIVIAL(info) << "segmentation static added "
+                            << "frameNumber_=" << staticAddedFrame->getFrameNumber() << ", "
+                            << "points=" << staticAddedFrame->getPointCount();
   }
   if (staticRemovedFrame) {
-    cout << "segmentation static removed "
-         << "frameNumber_=" << staticRemovedFrame->getFrameNumber() << ", "
-         << "points=" << staticRemovedFrame->getPointCount() << endl;
+    BOOST_LOG_TRIVIAL(info) << "segmentation static removed "
+                            << "frameNumber_=" << staticRemovedFrame->getFrameNumber() << ", "
+                            << "points=" << staticRemovedFrame->getPointCount();
   }
 }
 
