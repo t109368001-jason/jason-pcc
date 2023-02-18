@@ -1,7 +1,9 @@
 #include <jpcc/encoder/JPCCEncoderAdapter.h>
 
 #include <jpcc/encoder/JPCCEncoderNone.h>
+#if defined(HAVE_MPEG_PCC_TMC2)
 #include <jpcc/encoder/JPCCEncoderTMC2.h>
+#endif
 #include <jpcc/encoder/JPCCEncoderTMC3.h>
 
 namespace jpcc::encoder {
@@ -11,8 +13,10 @@ JPCCEncoderAdapter::JPCCEncoderAdapter(const JPCCEncoderParameter& dynamicParame
                                        const JPCCEncoderParameter& staticParameter) {
   if (dynamicParameter.backendType == CoderBackendType::NONE) {
     dynamicEncoder_ = make_shared<JPCCEncoderNone>();
+#if defined(HAVE_MPEG_PCC_TMC2)
   } else if (dynamicParameter.backendType == CoderBackendType::TMC2) {
     dynamicEncoder_ = make_shared<JPCCEncoderTMC2>(dynamicParameter.tmc2);
+#endif
   } else if (dynamicParameter.backendType == CoderBackendType::TMC3) {
     dynamicEncoder_ = make_shared<JPCCEncoderTMC3>(dynamicParameter.tmc3);
   } else {
@@ -22,10 +26,12 @@ JPCCEncoderAdapter::JPCCEncoderAdapter(const JPCCEncoderParameter& dynamicParame
     staticEncoder_        = make_shared<JPCCEncoderNone>();
     staticAddedEncoder_   = make_shared<JPCCEncoderNone>();
     staticRemovedEncoder_ = make_shared<JPCCEncoderNone>();
+#if defined(HAVE_MPEG_PCC_TMC2)
   } else if (staticParameter.backendType == CoderBackendType::TMC2) {
     staticEncoder_        = make_shared<JPCCEncoderTMC2>(staticParameter.tmc2);
     staticAddedEncoder_   = make_shared<JPCCEncoderTMC2>(staticParameter.tmc2);
     staticRemovedEncoder_ = make_shared<JPCCEncoderTMC2>(staticParameter.tmc2);
+#endif
   } else if (staticParameter.backendType == CoderBackendType::TMC3) {
     staticEncoder_        = make_shared<JPCCEncoderTMC3>(staticParameter.tmc3);
     staticAddedEncoder_   = make_shared<JPCCEncoderTMC3>(staticParameter.tmc3);

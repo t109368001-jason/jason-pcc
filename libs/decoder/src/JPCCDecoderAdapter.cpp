@@ -1,7 +1,9 @@
 #include <jpcc/decoder/JPCCDecoderAdapter.h>
 
 #include <jpcc/decoder/JPCCDecoderNone.h>
+#if defined(HAVE_MPEG_PCC_TMC2)
 #include <jpcc/decoder/JPCCDecoderTMC2.h>
+#endif
 #include <jpcc/decoder/JPCCDecoderTMC3.h>
 
 namespace jpcc::decoder {
@@ -10,8 +12,10 @@ namespace jpcc::decoder {
 void JPCCDecoderAdapter::set(const JPCCContext& context) {
   if (context.getDynamicContext().getHeader().backendType == CoderBackendType::NONE) {
     dynamicDecoder_ = make_shared<JPCCDecoderNone>();
+#if defined(HAVE_MPEG_PCC_TMC2)
   } else if (context.getDynamicContext().getHeader().backendType == CoderBackendType::TMC2) {
     dynamicDecoder_ = make_shared<JPCCDecoderTMC2>();
+#endif
   } else if (context.getDynamicContext().getHeader().backendType == CoderBackendType::TMC3) {
     dynamicDecoder_ = make_shared<JPCCDecoderTMC3>();
   } else {
@@ -20,8 +24,10 @@ void JPCCDecoderAdapter::set(const JPCCContext& context) {
   if (context.getSegmentationOutputType() == SegmentationOutputType::DYNAMIC_STATIC) {
     if (context.getStaticContext().getHeader().backendType == CoderBackendType::NONE) {
       staticDecoder_ = make_shared<JPCCDecoderNone>();
+#if defined(HAVE_MPEG_PCC_TMC2)
     } else if (context.getStaticContext().getHeader().backendType == CoderBackendType::TMC2) {
       staticDecoder_ = make_shared<JPCCDecoderTMC2>();
+#endif
     } else if (context.getStaticContext().getHeader().backendType == CoderBackendType::TMC3) {
       staticDecoder_ = make_shared<JPCCDecoderTMC3>();
     } else {
@@ -30,8 +36,10 @@ void JPCCDecoderAdapter::set(const JPCCContext& context) {
   } else if (context.getSegmentationOutputType() == SegmentationOutputType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED) {
     if (context.getStaticAddedContext().getHeader().backendType == CoderBackendType::NONE) {
       staticAddedDecoder_ = make_shared<JPCCDecoderNone>();
+#if defined(HAVE_MPEG_PCC_TMC2)
     } else if (context.getStaticAddedContext().getHeader().backendType == CoderBackendType::TMC2) {
       staticAddedDecoder_ = make_shared<JPCCDecoderTMC2>();
+#endif
     } else if (context.getStaticAddedContext().getHeader().backendType == CoderBackendType::TMC3) {
       staticAddedDecoder_ = make_shared<JPCCDecoderTMC3>();
     } else {
@@ -39,8 +47,10 @@ void JPCCDecoderAdapter::set(const JPCCContext& context) {
     }
     if (context.getStaticRemovedContext().getHeader().backendType == CoderBackendType::NONE) {
       staticRemovedDecoder_ = make_shared<JPCCDecoderNone>();
+#if defined(HAVE_MPEG_PCC_TMC2)
     } else if (context.getStaticRemovedContext().getHeader().backendType == CoderBackendType::TMC2) {
       staticRemovedDecoder_ = make_shared<JPCCDecoderTMC2>();
+#endif
     } else if (context.getStaticRemovedContext().getHeader().backendType == CoderBackendType::TMC3) {
       staticRemovedDecoder_ = make_shared<JPCCDecoderTMC3>();
     } else {

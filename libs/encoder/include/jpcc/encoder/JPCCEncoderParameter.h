@@ -5,7 +5,9 @@
 
 #include <jpcc/common/Parameter.h>
 #include <jpcc/common/CoderBackendType.h>
+#if defined(HAVE_MPEG_PCC_TMC2)
 #include <jpcc/encoder/JPCCEncoderTMC2Parameter.h>
+#endif
 #include <jpcc/encoder/JPCCEncoderTMC3Parameter.h>
 
 namespace jpcc::encoder {
@@ -17,8 +19,10 @@ class JPCCEncoderParameter : public virtual Parameter {
   std::string backendType_;
 
  public:
-  CoderBackendType         backendType;
+  CoderBackendType backendType;
+#if defined(HAVE_MPEG_PCC_TMC2)
   JPCCEncoderTMC2Parameter tmc2;
+#endif
   JPCCEncoderTMC3Parameter tmc3;
 
   JPCCEncoderParameter();

@@ -20,3 +20,8 @@ target_link_libraries(
         ${LIBRARY_NAME} PRIVATE
         PccLibCommon PccLibEncoder tbb_static PccLibBitstreamCommon PccLibBitstreamWriter
 )
+
+target_compile_definitions(
+        ${LIBRARY_NAME} PUBLIC
+        HAVE_MPEG_PCC_TMC2
+)
