@@ -2,9 +2,9 @@
 set -ex
 
 function JPCCAppEncoderCommon() {
-  LOCAL resolution = ${1}
-  LOCAL qp = ${2}
-  LOCAL output_folder = ${3}
+  LOCAL resolution=${1}
+  LOCAL qp=${2}
+  LOCAL output_folder=${3}
 
   mkdir -p "${output_folder}"
 

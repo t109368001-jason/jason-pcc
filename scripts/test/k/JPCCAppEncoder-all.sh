@@ -1,7 +1,7 @@
 #!/bin/bash
 set -ex
 
-OUTPUT_FOLDER_PREFIX = ${OUTPUT_FOLDER_PREFIX:="../../result/test-k-$(date +%Y%m%d-%H)/"}
+OUTPUT_FOLDER_PREFIX=${OUTPUT_FOLDER_PREFIX:="../../result/test-k-$(date +%Y%m%d-%H)/"}
 
 source ./JPCCAppEncoderTestK.sh
 
