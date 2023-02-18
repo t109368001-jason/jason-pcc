@@ -1,7 +1,7 @@
 #!/bin/bash
 set -ex
 
-sourcce "$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )../JPCCAppEncoderCommon.sh"
+sourcce "$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )/../JPCCAppEncoderCommon.sh"
 
 function JPCCAppEncoderTestK() {
   LOCAL resolution=${1}
