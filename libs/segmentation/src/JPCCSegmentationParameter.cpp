@@ -26,9 +26,9 @@ JPCCSegmentationParameter::JPCCSegmentationParameter() :
 
 JPCCSegmentationParameter::JPCCSegmentationParameter(const string& prefix, const string& caption) :
     Parameter(prefix, caption),
-    type_(),
-    outputType_(),
-    staticPointType_(),
+    type_("none"),
+    outputType_("none"),
+    staticPointType_("center"),
     outputExistsPointOnlyVector_(),
     kVector_(),
     alphaVector_(),
@@ -38,42 +38,42 @@ JPCCSegmentationParameter::JPCCSegmentationParameter(const string& prefix, const
     staticThreshold2Vector_(),
     nullStaticThreshold1Vector_(),
     nullStaticThreshold2Vector_(),
-    type(SegmentationType::GMM_2L),
-    outputType(SegmentationOutputType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED),
+    type(SegmentationType::NONE),
+    outputType(SegmentationOutputType::NONE),
     staticPointType(StaticPointType::CENTER),
     updateModelBeforeNTrain(false),
     resolution(100.0),
     minimumVariance(0.0016) {
   opts_.add_options()                                                //
       (string(prefix_ + TYPE_OPT).c_str(),                           //
-       value<string>(&type_)->required(),                            //
+       value<string>(&type_),                                        //
        "type")                                                       //
       (string(prefix_ + OUTPUT_TYPE_OPT).c_str(),                    //
-       value<string>(&outputType_)->required(),                      //
+       value<string>(&outputType_),                                  //
        "outputType")                                                 //
       (string(prefix_ + STATIC_POINT_TYPE_OPT).c_str(),              //
-       value<string>(&staticPointType_)->required(),                 //
+       value<string>(&staticPointType_),                             //
        "staticPointType, [center]")                                  //
       (string(prefix_ + UPDATE_MODEL_BEFORE_N_TRAIN_OPT).c_str(),    //
-       value<bool>(&updateModelBeforeNTrain)->required(),            //
+       value<bool>(&updateModelBeforeNTrain),                        //
        JPCC_GMM_SEGMENTATION_OPT_PREFIX " updateModelBeforeNTrain")  //
       (string(prefix_ + OUTPUT_EXISTS_POINT_ONLY_OPT).c_str(),       //
        value<vector<bool>>(&outputExistsPointOnlyVector_),           //
        JPCC_GMM_SEGMENTATION_OPT_PREFIX " outputExistsPointOnly")    //
       (string(prefix_ + RESOLUTION_OPT).c_str(),                     //
-       value<double>(&resolution)->required(),                       //
+       value<double>(&resolution),                                   //
        JPCC_GMM_SEGMENTATION_OPT_PREFIX " resolution")               //
       (string(prefix_ + K_OPT).c_str(),                              //
-       value<vector<int>>(&kVector_)->required(),                    //
+       value<vector<int>>(&kVector_),                                //
        JPCC_GMM_SEGMENTATION_OPT_PREFIX " k")                        //
       (string(prefix_ + ALPHA_OPT).c_str(),                          //
-       value<vector<double>>(&alphaVector_)->required(),             //
+       value<vector<double>>(&alphaVector_),                         //
        JPCC_GMM_SEGMENTATION_OPT_PREFIX " alpha")                    //
       (string(prefix_ + NULL_ALPHA_RATIO_OPT).c_str(),               //
-       value<vector<double>>(&nullAlphaRatioVector_)->required(),    //
+       value<vector<double>>(&nullAlphaRatioVector_),                //
        JPCC_GMM_SEGMENTATION_OPT_PREFIX " nullAlphaRatio")           //
       (string(prefix_ + N_TRAIN_OPT).c_str(),                        //
-       value<vector<int>>(&nTrainVector_)->required(),               //
+       value<vector<int>>(&nTrainVector_),                           //
        JPCC_GMM_SEGMENTATION_OPT_PREFIX " nTrain")                   //
       (string(prefix_ + STATIC_THRESHOLD1_OPT).c_str(),              //
        value<vector<double>>(&staticThreshold1Vector_),              //
@@ -88,7 +88,7 @@ JPCCSegmentationParameter::JPCCSegmentationParameter(const string& prefix, const
        value<vector<double>>(&nullStaticThreshold2Vector_),          //
        JPCC_GMM_SEGMENTATION_OPT_PREFIX " nullStaticThreshold2")     //
       (string(prefix_ + MINIMUM_VARIANCE_OPT).c_str(),               //
-       value<double>(&minimumVariance)->required(),                  //
+       value<double>(&minimumVariance),                              //
        JPCC_GMM_SEGMENTATION_OPT_PREFIX " minimumVariance")          //
       ;
 }
@@ -109,6 +109,7 @@ void JPCCSegmentationParameter::notify() {
   type            = getSegmentationType(type_);
   outputType      = getSegmentationOutputType(outputType_);
   staticPointType = getStaticPointType(staticPointType_);
+  if (type == SegmentationType::NONE) { return; }
   assert(resolution > 0.0);
   assert(!outputExistsPointOnlyVector_.empty());
   assert(!kVector_.empty());
