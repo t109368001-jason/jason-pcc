@@ -28,16 +28,16 @@ int getUsedMemory() {
   struct mach_task_basic_info info;
   mach_msg_type_number_t      infoCount = MACH_TASK_BASIC_INFO_COUNT;
   if (task_info(mach_task_self(), MACH_TASK_BASIC_INFO, (task_info_t)&info, &infoCount) != KERN_SUCCESS) { return 0; }
-  return (size_t)info.resident_size;
+  return static_cast<size_t>(info.resident_size);
 }
 uint64_t getPeakMemory() {
   struct rusage rusage;
   getrusage(RUSAGE_SELF, &rusage);
-  return (size_t)rusage.ru_maxrss / 1024;
+  return static_cast<size_t>(rusage.ru_maxrss / 1024);
 }
 #else
 int parseLine(char* pLine) {
-  int         iLen = (int)strlen(pLine);
+  int         iLen = static_cast<int>(strlen(pLine));
   const char* pTmp = pLine;
   while (*pTmp < '0' || *pTmp > '9') { pTmp++; }
   pLine[iLen - 3] = '\0';
@@ -51,7 +51,7 @@ int getUsedMemory() {
     char pLine[128];
     while (fgets(pLine, 128, pFile) != NULL) {
       if (strncmp(pLine, "VmSize:", 7) == 0) {
-        iResult          = (int)strlen(pLine);
+        iResult          = static_cast<int>(strlen(pLine));
         const char* pTmp = pLine;
         while (*pTmp < '0' || *pTmp > '9') { pTmp++; }
         pLine[iResult - 3] = '\0';
@@ -72,8 +72,8 @@ uint64_t getPeakMemory() {
       if (strncmp(pLine, "VmPeak:", 7) == 0) {
         const char* pTmp = pLine;
         while (*pTmp < '0' || *pTmp > '9') { pTmp++; }
-        pLine[(int)strlen(pLine) - 3] = '\0';
-        iResult                       = atoi(pTmp);
+        pLine[static_cast<int>(strlen(pLine)) - 3] = '\0';
+        iResult                                    = atoi(pTmp);
         break;
       }
     }

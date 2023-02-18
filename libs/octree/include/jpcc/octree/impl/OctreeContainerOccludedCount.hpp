@@ -25,10 +25,13 @@ void OctreeContainerOccludedCount<PointT>::compute(const Eigen::Vector3f& min_pt
                                                    const size_t           quantCount) {
   if (count3D_.empty()) { count3D_.resize(quantCount * quantCount * quantCount); }
   for (const PointT& point : pointBuffer_) {
-    auto   xIndex = (size_t)((point.x - min_pt.x()) / (max_pt.x() - min_pt.x()) * (float)quantCount);
-    auto   yIndex = (size_t)((point.y - min_pt.y()) / (max_pt.y() - min_pt.y()) * (float)quantCount);
-    auto   zIndex = (size_t)((point.z - min_pt.z()) / (max_pt.z() - min_pt.z()) * (float)quantCount);
-    size_t index  = xIndex * quantCount * quantCount + yIndex * quantCount + zIndex;
+    auto xIndex =
+        static_cast<size_t>((point.x - min_pt.x()) / (max_pt.x() - min_pt.x()) * static_cast<float>(quantCount));
+    auto yIndex =
+        static_cast<size_t>((point.y - min_pt.y()) / (max_pt.y() - min_pt.y()) * static_cast<float>(quantCount));
+    auto zIndex =
+        static_cast<size_t>((point.z - min_pt.z()) / (max_pt.z() - min_pt.z()) * static_cast<float>(quantCount));
+    size_t index = xIndex * quantCount * quantCount + yIndex * quantCount + zIndex;
 
     count3D_.set(index);
   }
@@ -64,7 +67,7 @@ float OctreeContainerOccludedCount<PointT>::getXYOccludedPercentage(const size_t
       }
     }
   }
-  return (float)occluded / (float)total * 100.0f;
+  return static_cast<float>(occluded) / static_cast<float>(total) * 100.0f;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -85,7 +88,7 @@ float OctreeContainerOccludedCount<PointT>::getXZOccludedPercentage(const size_t
       }
     }
   }
-  return (float)occluded / (float)total * 100.0f;
+  return static_cast<float>(occluded) / static_cast<float>(total) * 100.0f;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -106,7 +109,7 @@ float OctreeContainerOccludedCount<PointT>::getYZOccludedPercentage(const size_t
       }
     }
   }
-  return (float)occluded / (float)total * 100.0f;
+  return static_cast<float>(occluded) / static_cast<float>(total) * 100.0f;
 }
 
 }  // namespace jpcc::octree

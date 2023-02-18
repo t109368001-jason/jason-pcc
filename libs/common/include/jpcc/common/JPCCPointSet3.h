@@ -134,12 +134,13 @@ class JPCCPointSet3 {
     auto srcSize = src.positions_.size();
     resize(dstEnd + srcSize);
 
-    std::copy(src.positions_.begin(), src.positions_.end(), std::next(positions_.begin(), (int)dstEnd));
+    std::copy(src.positions_.begin(), src.positions_.end(), std::next(positions_.begin(), static_cast<int>(dstEnd)));
 
     if (hasReflectances() && src.hasReflectances())
-      std::copy(src.reflectances_.begin(), src.reflectances_.end(), std::next(reflectances_.begin(), (int)dstEnd));
+      std::copy(src.reflectances_.begin(), src.reflectances_.end(),
+                std::next(reflectances_.begin(), static_cast<int>(dstEnd)));
     if (hasNormals() && src.hasNormals())
-      std::copy(src.normals_.begin(), src.normals_.end(), std::next(normals_.begin(), (int)dstEnd));
+      std::copy(src.normals_.begin(), src.normals_.end(), std::next(normals_.begin(), static_cast<int>(dstEnd)));
   }
 
   void swapPoints(const size_t index1, const size_t index2) {

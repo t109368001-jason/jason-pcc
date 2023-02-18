@@ -128,7 +128,8 @@ void JPCCMetric::copyNormalToReconstruct(const FramePtr& frame, const FramePtr& 
   reconstructFrame->addNormals();
   for (size_t i = 0; i < reconstructFrame->getPointCount(); i++) {
     auto&                 point       = (*reconstructFrame)[i];
-    std::array<double, 3> pointDouble = {(double)point[0], (double)point[1], (double)point[2]};
+    std::array<double, 3> pointDouble = {static_cast<double>(point[0]), static_cast<double>(point[1]),
+                                         static_cast<double>(point[2])};
     resultSet.init(&pointIdxKNNSearch[0], &pointKNNSquaredDistance[0]);
     bool ret = kdtree.index->findNeighbors(resultSet, &pointDouble[0], nanoflann::SearchParams(10));
     THROW_IF_NOT(ret);
@@ -193,7 +194,8 @@ void JPCCMetric::computePSNR(const FramePtr& frameA,
 
   for (size_t indexA = 0; indexA < frameA->getPointCount(); indexA++) {
     auto&        pointA       = (*frameA)[indexA];
-    Vec3<double> pointADouble = {(double)pointA[0], (double)pointA[1], (double)pointA[2]};
+    Vec3<double> pointADouble = {static_cast<double>(pointA[0]), static_cast<double>(pointA[1]),
+                                 static_cast<double>(pointA[2])};
     // For point 'i' in A, find its nearest neighbor in B. store it in 'j'
     resultSet.init(&pointIdxKNNSearch[0], &pointKNNSquaredDistance[0]);
     bool ret = kdtree.index->findNeighbors(resultSet, &pointADouble[0], nanoflann::SearchParams(10));
@@ -221,9 +223,9 @@ void JPCCMetric::computePSNR(const FramePtr& frameA,
     sseC2p += distProjC2p;
   }
 
-  c2cMSE  = sseC2c / float(frameA->getPointCount());
+  c2cMSE  = sseC2c / static_cast<float>(frameA->getPointCount());
   c2cPSNR = 10 * log10((3 * pow(parameter_.maximumValue, 2)) / c2cMSE);
-  c2pMSE  = sseC2p / float(frameA->getPointCount());
+  c2pMSE  = sseC2p / static_cast<float>(frameA->getPointCount());
   c2pPSNR = 10 * log10((3 * pow(parameter_.maximumValue, 2)) / c2pMSE);
 }
 
@@ -297,7 +299,7 @@ void JPCCMetric::writeAndShow() {
       c2pPSNRSumMap_[name] += psnr;
     }
     for (const auto& name : clockNameSet_) {
-      double duration = (double)clockMap[name].count().count() / 1000000000.0;
+      double duration = static_cast<double>(clockMap[name].count().count()) / 1000000000.0;
       metricCSV << duration << ",";
       clockSumMap_[name] += duration;
     }
@@ -325,13 +327,13 @@ void JPCCMetric::writeAndShow() {
   metricSummaryCSV << "Frame Count," << frameCount << endl;
 
   int maxNameLength = 0;
-  for (const auto& name : pointsNameSet_) { maxNameLength = max(maxNameLength, (int)name.size()); }
-  for (const auto& name : bytesNameSet_) { maxNameLength = max(maxNameLength, (int)name.size()); }
-  for (const auto& name : c2cMSENameSet_) { maxNameLength = max(maxNameLength, (int)name.size()); }
-  for (const auto& name : c2cPSNRNameSet_) { maxNameLength = max(maxNameLength, (int)name.size()); }
-  for (const auto& name : c2pMSENameSet_) { maxNameLength = max(maxNameLength, (int)name.size()); }
-  for (const auto& name : c2pPSNRNameSet_) { maxNameLength = max(maxNameLength, (int)name.size()); }
-  for (const auto& name : clockNameSet_) { maxNameLength = max(maxNameLength, (int)name.size()); }
+  for (const auto& name : pointsNameSet_) { maxNameLength = max(maxNameLength, static_cast<int>(name.size())); }
+  for (const auto& name : bytesNameSet_) { maxNameLength = max(maxNameLength, static_cast<int>(name.size())); }
+  for (const auto& name : c2cMSENameSet_) { maxNameLength = max(maxNameLength, static_cast<int>(name.size())); }
+  for (const auto& name : c2cPSNRNameSet_) { maxNameLength = max(maxNameLength, static_cast<int>(name.size())); }
+  for (const auto& name : c2pMSENameSet_) { maxNameLength = max(maxNameLength, static_cast<int>(name.size())); }
+  for (const auto& name : c2pPSNRNameSet_) { maxNameLength = max(maxNameLength, static_cast<int>(name.size())); }
+  for (const auto& name : clockNameSet_) { maxNameLength = max(maxNameLength, static_cast<int>(name.size())); }
   BOOST_LOG_TRIVIAL(info) << "";
   BOOST_LOG_TRIVIAL(info) << "Metric:";
   BOOST_LOG_TRIVIAL(info) << "  Points:";
@@ -348,27 +350,27 @@ void JPCCMetric::writeAndShow() {
   }
   BOOST_LOG_TRIVIAL(info) << "  MSE (c2c):";
   for (const auto& [name, mse] : c2cMSESumMap_) {  //
-    metricSummaryCSV << name << " (mm^2)," << mse / (double)frameCount << endl;
+    metricSummaryCSV << name << " (mm^2)," << mse / static_cast<double>(frameCount) << endl;
     BOOST_LOG_TRIVIAL(info) << "    " << std::setfill(' ') << std::setw(maxNameLength) << name << left << ": "
-                            << mse / (double)frameCount << " mm^2";
+                            << mse / static_cast<double>(frameCount) << " mm^2";
   }
   BOOST_LOG_TRIVIAL(info) << "  PSNR (c2c):";
   for (const auto& [name, psnr] : c2cPSNRSumMap_) {  //
-    metricSummaryCSV << name << " (db)," << psnr / (double)frameCount << endl;
+    metricSummaryCSV << name << " (db)," << psnr / static_cast<double>(frameCount) << endl;
     BOOST_LOG_TRIVIAL(info) << "    " << std::setfill(' ') << std::setw(maxNameLength) << name << left << ": "
-                            << psnr / (double)frameCount << " db";
+                            << psnr / static_cast<double>(frameCount) << " db";
   }
   BOOST_LOG_TRIVIAL(info) << "  MSE (c2p):";
   for (const auto& [name, mse] : c2pMSESumMap_) {  //
-    metricSummaryCSV << name << " (mm^2)," << mse / (double)frameCount << endl;
+    metricSummaryCSV << name << " (mm^2)," << mse / static_cast<double>(frameCount) << endl;
     BOOST_LOG_TRIVIAL(info) << "    " << std::setfill(' ') << std::setw(maxNameLength) << name << left << ": "
-                            << mse / (double)frameCount << " mm^2";
+                            << mse / static_cast<double>(frameCount) << " mm^2";
   }
   BOOST_LOG_TRIVIAL(info) << "  PSNR (c2p):";
   for (const auto& [name, psnr] : c2pPSNRSumMap_) {  //
-    metricSummaryCSV << name << " (db)," << psnr / (double)frameCount << endl;
+    metricSummaryCSV << name << " (db)," << psnr / static_cast<double>(frameCount) << endl;
     BOOST_LOG_TRIVIAL(info) << "    " << std::setfill(' ') << std::setw(maxNameLength) << name << left << ": "
-                            << psnr / (double)frameCount << " db";
+                            << psnr / static_cast<double>(frameCount) << " db";
   }
   BOOST_LOG_TRIVIAL(info) << "  Processing time:";
   for (const auto& [name, duration] : clockSumMap_) {

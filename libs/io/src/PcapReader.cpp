@@ -139,7 +139,7 @@ PcapReader::PcapReader(DatasetReaderParameter param, DatasetParameter datasetPar
       sinVerticals_[i] = VLP16_VERTICAL_SIN[i];
       cosVerticals_[i] = VLP16_VERTICAL_COS[i];
     }
-    this->capacity_ = (size_t)((double)(300000) / this->param_.frequency);
+    this->capacity_ = static_cast<size_t>(static_cast<double>(300000) / this->param_.frequency);
   } else if (this->datasetParam_.sensor == Sensor::HI_RES) {
     maxNumLasers_ = HI_RES_MAX_NUM_LASERS;
     verticals_.resize(maxNumLasers_);
@@ -150,7 +150,7 @@ PcapReader::PcapReader(DatasetReaderParameter param, DatasetParameter datasetPar
       sinVerticals_[i] = HI_RES_VERTICAL_SIN[i];
       cosVerticals_[i] = HI_RES_VERTICAL_COS[i];
     }
-    this->capacity_ = (size_t)((double)(300000) / this->param_.frequency);
+    this->capacity_ = static_cast<size_t>(static_cast<double>(300000) / this->param_.frequency);
   } else if (this->datasetParam_.sensor == Sensor::HDL_32) {
     maxNumLasers_ = HDL32_MAX_NUM_LASERS;
     verticals_.resize(maxNumLasers_);
@@ -161,7 +161,7 @@ PcapReader::PcapReader(DatasetReaderParameter param, DatasetParameter datasetPar
       sinVerticals_[i] = HDL32_VERTICAL_SIN[i];
       cosVerticals_[i] = HDL32_VERTICAL_COS[i];
     }
-    this->capacity_ = (size_t)((double)(695000) / this->param_.frequency);
+    this->capacity_ = static_cast<size_t>(static_cast<double>(695000) / this->param_.frequency);
   } else {
     BOOST_THROW_EXCEPTION(std::logic_error("sensor not support"));
   }
@@ -271,7 +271,7 @@ int PcapReader::parseDataPacket(void* const           pcap,
             frameBuffer.insert(frameBuffer.begin(), frame);
             finishVector.insert(finishVector.begin(), false);
             timestampVector.insert(timestampVector.begin(),
-                                   timestampVector.front() + (int64_t)(this->param_.interval * (float)i));
+                                   timestampVector.front() + (int64_t)(this->param_.interval * static_cast<float>(i)));
           }
           index = 0;
         } else if (index >= frameBuffer.size()) {
@@ -282,7 +282,8 @@ int PcapReader::parseDataPacket(void* const           pcap,
             frame->reserve(this->capacity_);
             frameBuffer.push_back(frame);
             finishVector.push_back(false);
-            timestampVector.push_back(timestampVector.front() + (int64_t)(this->param_.interval * (float)i));
+            timestampVector.push_back(timestampVector.front() +
+                                      (int64_t)(this->param_.interval * static_cast<float>(i)));
           }
         }
 

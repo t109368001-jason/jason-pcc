@@ -45,27 +45,27 @@ void GMM::buildN(vector<Intensity>&         samples,
 
       bool exists = false;
       for (const auto& centroid : centroids) {
-        if (std::abs(float(*sampleIter) - centroid) < 0.00001) {
+        if (std::abs(static_cast<float>(*sampleIter) - centroid) < 0.00001) {
           exists = true;
           break;
         }
       }
-      if (!exists) { centroids.push_back(float(*sampleIter)); }
+      if (!exists) { centroids.push_back(static_cast<float>(*sampleIter)); }
     }
   } else {
     for (size_t i = 0; i < uniqueSamples.size() && centroids.size() < K_; i++) {
       const Intensity sample = uniqueSamples[i];
       bool            exists = false;
       for (float centroid : centroids) {
-        if (std::abs(float(sample) - centroid) < 0.00001) {
+        if (std::abs(static_cast<float>(sample) - centroid) < 0.00001) {
           exists = true;
           break;
         }
       }
-      if (!exists) { centroids.push_back(float(sample)); }
+      if (!exists) { centroids.push_back(static_cast<float>(sample)); }
     }
     for (auto it = alternateCentroids.begin(); it != alternateCentroids.end() && centroids.size() < K_; it++) {
-      centroids.push_back(float(*it));
+      centroids.push_back(static_cast<float>(*it));
       samples.push_back(*it);
     }
   }

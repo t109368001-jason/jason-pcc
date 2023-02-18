@@ -26,9 +26,9 @@ void kmeans(const std::vector<Intensity>&        samples,
 
     for (const auto& sample : samples) {
       size_t minIndex    = 0;
-      float  minDistance = abs(float(sample) - centroids.front());
+      float  minDistance = abs(static_cast<float>(sample) - centroids.front());
       for (k = 1; k < K; k++) {
-        const float distance = abs(float(sample) - centroids[k]);
+        const float distance = abs(static_cast<float>(sample) - centroids[k]);
         if (distance < minDistance) {
           minIndex    = k;
           minDistance = distance;
@@ -56,7 +56,7 @@ void kmeans(const std::vector<Intensity>&        samples,
             }
           }
           if (uniques.size() > 1) {
-            centroids[k] = float(uniques.front());
+            centroids[k] = static_cast<float>(uniques.front());
             break;
           }
         }

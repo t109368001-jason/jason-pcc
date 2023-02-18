@@ -13,9 +13,9 @@ LvxReader::LvxReader(DatasetReaderParameter param, DatasetParameter datasetParam
     DatasetStreamReader(std::move(param), std::move(datasetParam)) {
   THROW_IF_NOT(this->datasetParam_.type == Type::LVX);
   if (this->datasetParam_.sensor == Sensor::MID_100) {
-    this->capacity_ = (size_t)((double)(100000 * 3) / this->param_.frequency * 1.05);
+    this->capacity_ = static_cast<size_t>(static_cast<double>(100000 * 3) / this->param_.frequency * 1.05);
   } else if (this->datasetParam_.sensor == Sensor::MID_70) {
-    this->capacity_ = (size_t)((double)(100000) / this->param_.frequency * 1.05);
+    this->capacity_ = static_cast<size_t>(static_cast<double>(100000) / this->param_.frequency * 1.05);
   } else {
     BOOST_THROW_EXCEPTION(std::logic_error("sensor not support"));
   }
@@ -75,7 +75,8 @@ void LvxReader::load_(const size_t datasetIndex, const size_t startFrameNumber, 
       frame->reserve(this->capacity_);
       frameBuffer.push_back(frame);
       finishVector.push_back(false);
-      timestampVector.push_back((int64_t)((float)timestamp / this->param_.interval * this->param_.interval));
+      timestampVector.push_back(
+          (int64_t)(static_cast<float>(timestamp) / this->param_.interval * this->param_.interval));
     }
     int64_t index = (timestamp - (int64_t)timestampVector.front()) / (int64_t)this->param_.interval;
     if (index < 0) {
@@ -87,7 +88,7 @@ void LvxReader::load_(const size_t datasetIndex, const size_t startFrameNumber, 
         frameBuffer.insert(frameBuffer.begin(), frame);
         finishVector.insert(finishVector.begin(), false);
         timestampVector.insert(timestampVector.begin(),
-                               timestampVector.front() + (int64_t)(this->param_.interval * (float)i));
+                               timestampVector.front() + (int64_t)(this->param_.interval * static_cast<float>(i)));
       }
       index = 0;
     } else if (index >= frameBuffer.size()) {
@@ -98,7 +99,7 @@ void LvxReader::load_(const size_t datasetIndex, const size_t startFrameNumber, 
         frame->reserve(this->capacity_);
         frameBuffer.push_back(frame);
         finishVector.push_back(false);
-        timestampVector.push_back(timestampVector.front() + (int64_t)(this->param_.interval * (float)i));
+        timestampVector.push_back(timestampVector.front() + (int64_t)(this->param_.interval * static_cast<float>(i)));
       }
     }
 

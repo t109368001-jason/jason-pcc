@@ -47,7 +47,7 @@ void VoxelOccupancyIntervalEntropyToVoxelCount::finalCompute() {
 
       double occupancyIntervalEntropy = entropy(occupancyIntervals, 0, 6372, 10);
 
-      int quantizedOccupancyIntervalEntropy = (int)round(occupancyIntervalEntropy * 10.0);
+      int quantizedOccupancyIntervalEntropy = static_cast<int>(round(occupancyIntervalEntropy * 10.0));
 
       countMap.try_emplace(quantizedOccupancyIntervalEntropy, array<size_t, BUFFER_SIZE>{0, 0, 0});
       countMap[quantizedOccupancyIntervalEntropy][bufferIndex] =
@@ -89,7 +89,7 @@ void VoxelOccupancyIntervalEntropyToVoxelCount::getCloud(PclFramePtr<PointAnalyz
 
       double occupancyIntervalEntropy = entropy(occupancyIntervals, 0, 6372, 10);
 
-      int quantizedOccupancyIntervalEntropy = (int)round(occupancyIntervalEntropy * 10.0);
+      int quantizedOccupancyIntervalEntropy = static_cast<int>(round(occupancyIntervalEntropy * 10.0));
 
       auto i = static_cast<float>(quantizedOccupancyIntervalEntropy);
       cloud->points.emplace_back(x, y, z, i);

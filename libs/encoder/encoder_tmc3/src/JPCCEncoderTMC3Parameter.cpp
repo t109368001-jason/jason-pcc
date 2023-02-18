@@ -586,29 +586,29 @@ static std::ostream& operator<<(std::ostream& out, const PartitionMethod& val) {
     case PartitionMethod::kOctreeUniform: out << "3 (UniformOctree)"; break;
     case PartitionMethod::kUniformSquare: out << "4 (UniformSquare)"; break;
     case PartitionMethod::kNpoints: out << "5 (NPointSpans)"; break;
-    default: out << int(val) << " (Unknown)"; break;
+    default: out << static_cast<int>(val) << " (Unknown)"; break;
   }
   return out;
 }
 static std::ostream& operator<<(std::ostream& out, const PredGeomEncOpts::SortMode& val) {
   switch (val) {
     using SortMode = PredGeomEncOpts::SortMode;
-    case SortMode::kNoSort: out << int(val) << " (None)"; break;
-    case SortMode::kSortMorton: out << int(val) << " (Morton)"; break;
-    case SortMode::kSortAzimuth: out << int(val) << " (Azimuth)"; break;
-    case SortMode::kSortRadius: out << int(val) << " (Radius)"; break;
-    case SortMode::kSortLaserAngle: out << int(val) << " (LaserAngle)"; break;
-    default: out << int(val) << " (Unknown)"; break;
+    case SortMode::kNoSort: out << static_cast<int>(val) << " (None)"; break;
+    case SortMode::kSortMorton: out << static_cast<int>(val) << " (Morton)"; break;
+    case SortMode::kSortAzimuth: out << static_cast<int>(val) << " (Azimuth)"; break;
+    case SortMode::kSortRadius: out << static_cast<int>(val) << " (Radius)"; break;
+    case SortMode::kSortLaserAngle: out << static_cast<int>(val) << " (LaserAngle)"; break;
+    default: out << static_cast<int>(val) << " (Unknown)"; break;
   }
   return out;
 }
 static std::ostream& operator<<(std::ostream& out, const OctreeEncOpts::QpMethod& val) {
   switch (val) {
     using Method = OctreeEncOpts::QpMethod;
-    case Method::kUniform: out << int(val) << " (Uniform)"; break;
-    case Method::kRandom: out << int(val) << " (Random)"; break;
-    case Method::kByDensity: out << int(val) << " (ByDensity)"; break;
-    default: out << int(val) << " (Unknown)"; break;
+    case Method::kUniform: out << static_cast<int>(val) << " (Uniform)"; break;
+    case Method::kRandom: out << static_cast<int>(val) << " (Random)"; break;
+    case Method::kByDensity: out << static_cast<int>(val) << " (ByDensity)"; break;
+    default: out << static_cast<int>(val) << " (Unknown)"; break;
   }
   return out;
 }

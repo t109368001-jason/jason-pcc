@@ -107,8 +107,8 @@ int main(int argc, char* argv[]) {
 
     auto totalWall = duration_cast<milliseconds>(clockWall.count()).count();
     auto totalUser = duration_cast<milliseconds>(clockUser.count()).count();
-    BOOST_LOG_TRIVIAL(info) << "Processing time (wall): " << (float)totalWall / 1000.0 << " s";
-    BOOST_LOG_TRIVIAL(info) << "Processing time (user): " << (float)totalUser / 1000.0 << " s";
+    BOOST_LOG_TRIVIAL(info) << "Processing time (wall): " << static_cast<float>(totalWall) / 1000.0 << " s";
+    BOOST_LOG_TRIVIAL(info) << "Processing time (user): " << static_cast<float>(totalUser) / 1000.0 << " s";
     BOOST_LOG_TRIVIAL(info) << "Peak memory: " << getPeakMemory() << " KB";
   } catch (exception& e) { BOOST_LOG_TRIVIAL(error) << e.what(); }
 

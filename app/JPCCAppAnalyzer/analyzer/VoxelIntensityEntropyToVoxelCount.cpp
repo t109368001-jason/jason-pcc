@@ -40,7 +40,7 @@ void VoxelIntensityEntropyToVoxelCount::finalCompute() {
 
       double intensityEntropy = entropy(intensities, 0.0f, 1.0f, 0.04f);
 
-      auto quantizedIntensityEntropy = (int)round(intensityEntropy * 10.0);
+      auto quantizedIntensityEntropy = static_cast<int>(round(intensityEntropy * 10.0));
 
       countMap.try_emplace(quantizedIntensityEntropy, array<size_t, BUFFER_SIZE>{0, 0, 0});
       countMap[quantizedIntensityEntropy][bufferIndex] = countMap[quantizedIntensityEntropy][bufferIndex] + 1;
@@ -82,7 +82,7 @@ void VoxelIntensityEntropyToVoxelCount::getCloud(PclFramePtr<PointAnalyzer>& clo
 
       double intensityEntropy = entropy(intensities, 0.0f, 1.0f, 0.04f);
 
-      auto quantizedIntensityEntropy = (int)round(intensityEntropy * 10.0);
+      auto quantizedIntensityEntropy = static_cast<int>(round(intensityEntropy * 10.0));
 
       auto i = static_cast<float>(quantizedIntensityEntropy);
       cloud->points.emplace_back(x, y, z, i);

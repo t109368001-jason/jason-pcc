@@ -28,7 +28,8 @@ void JPCCNormalEstimation::computeInPlace(FramePtr& frame) const {
   Eigen::Matrix3d D;
   for (size_t index = 0; index < frame->getPointCount(); index++) {
     auto&                 point       = (*frame)[index];
-    std::array<double, 3> pointDouble = {(double)point[0], (double)point[1], (double)point[2]};
+    std::array<double, 3> pointDouble = {static_cast<double>(point[0]), static_cast<double>(point[1]),
+                                         static_cast<double>(point[2])};
     std::vector<size_t>   indices;
     if (param_.radiusSearch > 0) {
       std::vector<std::pair<Index, double> >    indicesDists;
@@ -55,7 +56,7 @@ void JPCCNormalEstimation::computeInPlace(FramePtr& frame) const {
         auto& neighborPoint = (*frame)[neighborIndex];
         bary += Eigen::Vector3d(neighborPoint[0], neighborPoint[1], neighborPoint[2]);
       }
-      bary /= double(indices.size());
+      bary /= static_cast<double>(indices.size());
       covMat = Eigen::Matrix3d::Zero();
       Eigen::Vector3d pt;
       for (unsigned long long neighborIndex : indices) {
@@ -71,7 +72,7 @@ void JPCCNormalEstimation::computeInPlace(FramePtr& frame) const {
       covMat(1, 0) = covMat(0, 1);
       covMat(2, 0) = covMat(0, 2);
       covMat(2, 1) = covMat(1, 2);
-      covMat /= (double(indices.size()) - 1.0);
+      covMat /= (static_cast<double>(indices.size()) - 1.0);
 
       PCCDiagonalize(covMat, Q, D);
 
@@ -118,9 +119,9 @@ void JPCCNormalEstimation::computeInPlace(FramePtr& frame) const {
       }
     }
 
-    frame->getNormal(index)[0] = float(normal[0]);
-    frame->getNormal(index)[1] = float(normal[1]);
-    frame->getNormal(index)[2] = float(normal[2]);
+    frame->getNormal(index)[0] = static_cast<float>(normal[0]);
+    frame->getNormal(index)[1] = static_cast<float>(normal[1]);
+    frame->getNormal(index)[2] = static_cast<float>(normal[2]);
   }
 }
 

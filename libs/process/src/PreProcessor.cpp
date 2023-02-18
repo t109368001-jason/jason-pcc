@@ -85,7 +85,8 @@ void radiusOutlierRemoval(Frame& frame, const float radius, const int minNeighbo
 
   for (Index i = 0; i < frame.getPointCount(); i++) {
     auto&                 point       = frame[i];
-    std::array<double, 3> pointDouble = {(double)point[0], (double)point[1], (double)point[2]};
+    std::array<double, 3> pointDouble = {static_cast<double>(point[0]), static_cast<double>(point[1]),
+                                         static_cast<double>(point[2])};
     resultSet.init();
     bool ret = kdtree.index->radiusSearchCustomCallback(&pointDouble[0], resultSet, nanoflann::SearchParams(10));
     THROW_IF_NOT(ret);
@@ -102,7 +103,8 @@ void radiusOutlierRemoval(
   KDTreeVectorOfVectorsAdaptor<Frame> kdtree(3, frame, 10);
 
   for (Index i = 0; i < frame.getPointCount(); i++) {
-    std::array<double, 3> pointDouble = {(double)frame[i][0], (double)frame[i][1], (double)frame[i][2]};
+    std::array<double, 3> pointDouble = {static_cast<double>(frame[i][0]), static_cast<double>(frame[i][1]),
+                                         static_cast<double>(frame[i][2])};
     resultSet.init();
     bool ret = kdtree.index->radiusSearchCustomCallback(&pointDouble[0], resultSet, nanoflann::SearchParams(10));
     THROW_IF_NOT(ret);

@@ -48,8 +48,8 @@ void VoxelPointNormalAngleSTDToVoxelCount::finalCompute() {
       assert(!isnan(azimuthSTD));
       assert(!isnan(zenithSTD));
 
-      int quantizedAzimuthSTD = (int)round(azimuthSTD);
-      int quantizedZenithSTD  = (int)round(zenithSTD);
+      int quantizedAzimuthSTD = static_cast<int>(round(azimuthSTD));
+      int quantizedZenithSTD  = static_cast<int>(round(zenithSTD));
 
       countMap.try_emplace(quantizedAzimuthSTD, array<size_t, BUFFER_SIZE * 2>{0, 0, 0, 0, 0, 0});
       countMap.try_emplace(quantizedZenithSTD, array<size_t, BUFFER_SIZE * 2>{0, 0, 0, 0, 0, 0});
@@ -117,7 +117,7 @@ void VoxelPointNormalAngleSTDToVoxelCount::getCloud(PclFramePtr<PointAnalyzer>& 
 
       assert(!isnan(azimuthSTD));
 
-      int quantizedAzimuthSTD = (int)round(azimuthSTD);
+      int quantizedAzimuthSTD = static_cast<int>(round(azimuthSTD));
 
       auto i = static_cast<float>(quantizedAzimuthSTD);
       cloud->points.emplace_back(x, y, z, i);

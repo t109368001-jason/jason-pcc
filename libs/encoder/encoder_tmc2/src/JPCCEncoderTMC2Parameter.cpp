@@ -1130,36 +1130,38 @@ std::istream& operator>>(std::istream& in, PCCCodecId& val) {
 }
 std::ostream& operator<<(std::ostream& out, const PCCColorTransform& val) {
   switch (val) {
-    case PCCColorTransform::COLOR_TRANSFORM_NONE: out << int(val) << " (none)"; break;
-    case PCCColorTransform::COLOR_TRANSFORM_RGB_TO_YCBCR: out << int(val) << " (RGB to YCbCr (Rec.709))"; break;
-    default: out << int(val) << " (Unknown)"; break;
+    case PCCColorTransform::COLOR_TRANSFORM_NONE: out << static_cast<int>(val) << " (none)"; break;
+    case PCCColorTransform::COLOR_TRANSFORM_RGB_TO_YCBCR:
+      out << static_cast<int>(val) << " (RGB to YCbCr (Rec.709))";
+      break;
+    default: out << static_cast<int>(val) << " (Unknown)"; break;
   }
   return out;
 }
 std::ostream& operator<<(std::ostream& out, const PCCCodecId& val) {
   switch (val) {
 #ifdef USE_JMAPP_VIDEO_CODEC
-    case PCCCodecId::JMAPP: out << int(val) << "(JMAPP)"; break;
+    case PCCCodecId::JMAPP: out << static_cast<int>(val) << "(JMAPP)"; break;
 #endif
 #ifdef USE_HMAPP_VIDEO_CODEC
-    case PCCCodecId::HMAPP: out << int(val) << "(HMAPP)"; break;
+    case PCCCodecId::HMAPP: out << static_cast<int>(val) << "(HMAPP)"; break;
 #endif
 #ifdef USE_SHMAPP_VIDEO_CODEC
-    case PCCCodecId::SHMAPP: out << int(val) << "(SHMAPP)"; break;
+    case PCCCodecId::SHMAPP: out << static_cast<int>(val) << "(SHMAPP)"; break;
 #endif
 #ifdef USE_JMLIB_VIDEO_CODEC
-    case PCCCodecId::JMLIB: out << int(val) << "(JMLIB)"; break;
+    case PCCCodecId::JMLIB: out << static_cast<int>(val) << "(JMLIB)"; break;
 #endif
 #ifdef USE_HMLIB_VIDEO_CODEC
-    case PCCCodecId::HMLIB: out << int(val) << "(HMLIB)"; break;
+    case PCCCodecId::HMLIB: out << static_cast<int>(val) << "(HMLIB)"; break;
 #endif
 #ifdef USE_VTMLIB_VIDEO_CODEC
-    case PCCCodecId::VTMLIB: out << int(val) << "(VTMLIB)"; break;
+    case PCCCodecId::VTMLIB: out << static_cast<int>(val) << "(VTMLIB)"; break;
 #endif
 #ifdef USE_FFMPEG_VIDEO_CODEC
-    case PCCCodecId::FFMPEG: out << int(val) << "(FFMPEG)"; break;
+    case PCCCodecId::FFMPEG: out << static_cast<int>(val) << "(FFMPEG)"; break;
 #endif
-    default: out << int(val) << " (Unknown)"; break;
+    default: out << static_cast<int>(val) << " (Unknown)"; break;
   }
   return out;
 }

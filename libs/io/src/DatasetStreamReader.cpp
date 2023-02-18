@@ -50,12 +50,15 @@ void DatasetStreamReader::load(const size_t  datasetIndex,
         for (size_t i = 0; i < frameBuffer.front()->getPointCount(); i++) {
           auto& position = (*frameBuffer.front())[i];
 
-          const auto x = static_cast<float>(tf(0, 0) * float(position[0]) + tf(0, 1) * float(position[1]) +
-                                            tf(0, 2) * float(position[2]) + tf(0, 3));
-          const auto y = static_cast<float>(tf(1, 0) * float(position[0]) + tf(1, 1) * float(position[1]) +
-                                            tf(1, 2) * float(position[2]) + tf(1, 3));
-          const auto z = static_cast<float>(tf(2, 0) * float(position[0]) + tf(2, 1) * float(position[1]) +
-                                            tf(2, 2) * float(position[2]) + tf(2, 3));
+          const auto x = static_cast<float>(tf(0, 0) * static_cast<float>(position[0]) +
+                                            tf(0, 1) * static_cast<float>(position[1]) +
+                                            tf(0, 2) * static_cast<float>(position[2]) + tf(0, 3));
+          const auto y = static_cast<float>(tf(1, 0) * static_cast<float>(position[0]) +
+                                            tf(1, 1) * static_cast<float>(position[1]) +
+                                            tf(1, 2) * static_cast<float>(position[2]) + tf(1, 3));
+          const auto z = static_cast<float>(tf(2, 0) * static_cast<float>(position[0]) +
+                                            tf(2, 1) * static_cast<float>(position[1]) +
+                                            tf(2, 2) * static_cast<float>(position[2]) + tf(2, 3));
 
           position[0] = PointValueType(x);
           position[1] = PointValueType(y);

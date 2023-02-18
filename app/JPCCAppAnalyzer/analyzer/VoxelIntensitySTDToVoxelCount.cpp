@@ -42,7 +42,7 @@ void VoxelIntensitySTDToVoxelCount::finalCompute() {
 
       assert(!isnan(intensitySTD));
 
-      auto quantizedIntensitySTD = (int)round(intensitySTD);
+      auto quantizedIntensitySTD = static_cast<int>(round(intensitySTD));
 
       countMap.try_emplace(quantizedIntensitySTD, array<size_t, BUFFER_SIZE>{0, 0, 0});
       countMap[quantizedIntensitySTD][bufferIndex] = countMap[quantizedIntensitySTD][bufferIndex] + 1;
@@ -86,7 +86,7 @@ void VoxelIntensitySTDToVoxelCount::getCloud(PclFramePtr<PointAnalyzer>& cloud) 
 
       assert(!isnan(intensitySTD));
 
-      auto quantizedIntensitySTD = (int)round(intensitySTD);
+      auto quantizedIntensitySTD = static_cast<int>(round(intensitySTD));
 
       auto i = static_cast<float>(quantizedIntensitySTD);
       cloud->points.emplace_back(x, y, z, i);

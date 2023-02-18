@@ -33,8 +33,8 @@ using namespace jpcc::combination;
 void encode(const AppParameter& parameter, JPCCMetric& metric) {
   DatasetReader::Ptr    reader = newReader(parameter.reader, parameter.dataset);
   PreProcessor          preProcessor(parameter.preProcess);
-  JPCCSegmentation::Ptr gmmSegmentation =
-      JPCCSegmentationAdapter::build(parameter.jpccGmmSegmentation, (int)parameter.dataset.getStartFrameNumber());
+  JPCCSegmentation::Ptr gmmSegmentation = JPCCSegmentationAdapter::build(
+      parameter.jpccGmmSegmentation, static_cast<int>(parameter.dataset.getStartFrameNumber()));
   JPCCNormalEstimation normalEstimation(parameter.normalEstimation);
 
   JPCCEncoderAdapter encoder(parameter.jpccEncoderDynamic, parameter.jpccEncoderStatic);

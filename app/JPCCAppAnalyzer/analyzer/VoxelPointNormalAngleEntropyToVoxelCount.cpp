@@ -42,8 +42,8 @@ void VoxelPointNormalAngleEntropyToVoxelCount::finalCompute() {
       double azimuthEntropy = entropy(azimuths_, 0.0, M_PI * 2, M_PI * 2 / 10.0);
       double zenithEntropy  = entropy(zeniths_, 0.0, M_PI, M_PI / 10.0);
 
-      int quantizedAzimuthEntropy = (int)round(azimuthEntropy * 10.0);
-      int quantizedZenithEntropy  = (int)round(zenithEntropy * 10.0);
+      int quantizedAzimuthEntropy = static_cast<int>(round(azimuthEntropy * 10.0));
+      int quantizedZenithEntropy  = static_cast<int>(round(zenithEntropy * 10.0));
 
       countMap.try_emplace(quantizedAzimuthEntropy, array<size_t, BUFFER_SIZE * 2>{0, 0, 0, 0, 0, 0});
       countMap.try_emplace(quantizedZenithEntropy, array<size_t, BUFFER_SIZE * 2>{0, 0, 0, 0, 0, 0});
@@ -107,7 +107,7 @@ void VoxelPointNormalAngleEntropyToVoxelCount::getCloud(PclFramePtr<PointAnalyze
 
       double azimuthEntropy = entropy(azimuths_, 0.0, M_PI * 2, M_PI * 2 / 10.0);
 
-      int quantizedAzimuthEntropy = (int)round(azimuthEntropy * 10.0);
+      int quantizedAzimuthEntropy = static_cast<int>(round(azimuthEntropy * 10.0));
 
       auto i = static_cast<float>(quantizedAzimuthEntropy);
       cloud->points.emplace_back(x, y, z, i);

@@ -20,7 +20,7 @@ VoxelOccludedPercentageToVoxelCount::VoxelOccludedPercentageToVoxelCount(const f
              outputDir,
              "VoxelOccludedPercentageToVoxelCount",
              "[" + to_string(quantResolution) + "]"),
-    quantCount_((size_t)(resolution / (double)quantResolution)),
+    quantCount_(static_cast<size_t>(resolution / static_cast<double>(quantResolution))),
     octree_(resolution) {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -50,7 +50,7 @@ void VoxelOccludedPercentageToVoxelCount::finalCompute() {
     for (auto it = octree_.leaf_depth_begin(), end = octree_.leaf_depth_end(); it != end; ++it) {
       OctreeContainerOccludedCount<PointAnalyzer>& leafNode = it.getLeafContainer();
 
-      int percentage = (int)leafNode.getMinimumOccludedPercentage(quantCount_);
+      int percentage = static_cast<int>(leafNode.getMinimumOccludedPercentage(quantCount_));
 
       countMap.try_emplace(percentage, array<size_t, BUFFER_SIZE>{0, 0, 0});
       countMap[percentage][bufferIndex]++;
@@ -88,7 +88,7 @@ void VoxelOccludedPercentageToVoxelCount::getCloud(PclFramePtr<PointAnalyzer>& c
 
       OctreeContainerOccludedCount<PointAnalyzer>& leafNode = it.getLeafContainer();
 
-      int percentage = (int)leafNode.getMinimumOccludedPercentage(quantCount_);
+      int percentage = static_cast<int>(leafNode.getMinimumOccludedPercentage(quantCount_));
 
       auto i = static_cast<float>(percentage);
       cloud->points.emplace_back(x, y, z, i);

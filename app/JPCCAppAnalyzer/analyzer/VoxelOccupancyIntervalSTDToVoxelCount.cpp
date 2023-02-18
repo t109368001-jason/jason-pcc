@@ -49,7 +49,7 @@ void VoxelOccupancyIntervalSTDToVoxelCount::finalCompute() {
 
       assert(!isnan(occupancyIntervalSTD));
 
-      int quantizedOccupancyIntervalSTD = (int)round(occupancyIntervalSTD);
+      int quantizedOccupancyIntervalSTD = static_cast<int>(round(occupancyIntervalSTD));
 
       countMap.try_emplace(quantizedOccupancyIntervalSTD, array<size_t, BUFFER_SIZE>{0, 0, 0});
       countMap[quantizedOccupancyIntervalSTD][bufferIndex] = countMap[quantizedOccupancyIntervalSTD][bufferIndex] + 1;
@@ -92,7 +92,7 @@ void VoxelOccupancyIntervalSTDToVoxelCount::getCloud(PclFramePtr<PointAnalyzer>&
 
       assert(!isnan(occupancyIntervalSTD));
 
-      int quantizedOccupancyIntervalSTD = (int)round(occupancyIntervalSTD);
+      int quantizedOccupancyIntervalSTD = static_cast<int>(round(occupancyIntervalSTD));
 
       auto i = static_cast<float>(quantizedOccupancyIntervalSTD);
       cloud->points.emplace_back(x, y, z, i);
