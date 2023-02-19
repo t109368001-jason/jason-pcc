@@ -1,0 +1,27 @@
+#!/bin/bash
+set -ex
+
+OUTPUT_FOLDER_PREFIX=${OUTPUT_FOLDER_PREFIX:="../../result/test-k-$(date +%Y%m%d-%H)/"}
+
+source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)/JPCCAppEncoderTestST.sh"
+
+# 0.4 ~ 0.6 SD
+JPCCAppEncoderTestST 100 53 0.003682 0.003332 &
+JPCCAppEncoderTestST 200 60 0.003682 0.003332 &
+JPCCAppEncoderTestST 300 65 0.003682 0.003332 &
+JPCCAppEncoderTestST 400 68 0.003682 0.003332 &
+JPCCAppEncoderTestST 500 71 0.003682 0.003332 &
+
+# 0.9 ~ 1.1 SD
+JPCCAppEncoderTestST 100 53 0.002661 0.002179 &
+JPCCAppEncoderTestST 200 60 0.002661 0.002179 &
+JPCCAppEncoderTestST 300 65 0.002661 0.002179 &
+JPCCAppEncoderTestST 400 68 0.002661 0.002179 &
+JPCCAppEncoderTestST 500 71 0.002661 0.002179 &
+
+# 1.9 ~ 2.1 SD
+JPCCAppEncoderTestST 100 53 0.0006562 0.0004398 &
+JPCCAppEncoderTestST 200 60 0.0006562 0.0004398 &
+JPCCAppEncoderTestST 300 65 0.0006562 0.0004398 &
+JPCCAppEncoderTestST 400 68 0.0006562 0.0004398 &
+JPCCAppEncoderTestST 500 71 0.0006562 0.0004398 &
