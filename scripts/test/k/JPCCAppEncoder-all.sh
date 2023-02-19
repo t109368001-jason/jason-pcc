@@ -3,7 +3,7 @@ set -ex
 
 OUTPUT_FOLDER_PREFIX=${OUTPUT_FOLDER_PREFIX:="../../result/test-k-$(date +%Y%m%d-%H)/"}
 
-source "$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )/JPCCAppEncoderTestK.sh"
+source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)/JPCCAppEncoderTestK.sh"
 
 JPCCAppEncoderTestK 100 53 2 &
 JPCCAppEncoderTestK 200 60 2 &
@@ -22,3 +22,9 @@ JPCCAppEncoderTestK 200 60 4 &
 JPCCAppEncoderTestK 300 65 4 &
 JPCCAppEncoderTestK 400 68 4 &
 JPCCAppEncoderTestK 500 71 4 &
+
+JPCCAppEncoderTestK 100 53 5 &
+JPCCAppEncoderTestK 200 60 5 &
+JPCCAppEncoderTestK 300 65 5 &
+JPCCAppEncoderTestK 400 68 5 &
+JPCCAppEncoderTestK 500 71 5 &
