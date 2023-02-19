@@ -3,7 +3,7 @@ set -ex
 
 source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)/../JPCCAppEncoderCommon.sh"
 
-function JPCCAppEncoderTestST() {
+function JPCCAppEncoderTestNST() {
   local resolution=${1}
   local qp=${2}
   local nst1=${3}
