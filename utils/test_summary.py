@@ -49,11 +49,12 @@ ROOT_FOLDER = Path("../../result/test-parameters/")
 GPCC_BYTES = [582787403, 362976909, 252035824, 188440045, 149546411]
 GPCC_PSNR = [70.4182, 65.0899, 61.5701, 59.1515, 57.1218]
 
-file_info_pattern = re.compile(
-    r'(?P<file_path>.*'
-    r'[/\\]test-(?P<parameter_name>[^-]+)-[\d]+-[\d]+'
-    r'[/\\]ZX-XS-20220707\[seg-split-(?P<resolution>[\d]+)]\[tmc3-(?P<qp>[\d]+)-0]\[[^-]+-(?P<value>[+-]?([0-9]*[.])?[0-9]+)-?(?P<value_2>[+-]?([0-9]*[.])?[0-9]+)?]'
-    r'.*\.csv)')
+file_info_pattern = re.compile(r'(?P<file_path>.*'
+                               r'[/\\]test-(?P<parameter_name>[^-]+)-\d+-\d+'
+                               r'[/\\]ZX-XS-20220707\[seg-split-(?P<resolution>\d+)]'
+                               r'\[tmc3-(?P<qp>\d+)-0]'
+                               r'\[[^-]+-(?P<value>[+-]?([0-9]*[.])?[0-9]+)-?(?P<value_2>[+-]?([0-9]*[.])?[0-9]+)?]'
+                               r'.*\.csv)')
 
 LABEL_COLUMN_NAME = "Parameter Value"
 RESOLUTION_COLUMN_NAME = "Resolution (mm)"
@@ -154,11 +155,12 @@ def copy_file_info_to_result_csv(file_info, result):
     return result
 
 
-def gen_summary_png(parameter_name, csv: pd.DataFrame, file_info_dict):
+def gen_summary_png(parameter_name, result_csv: pd.DataFrame, file_info_dict):
     fig, axes = plt.subplots()
     fig: plt.Figure
     axes: plt.Axes
     right_axes: plt.Axes = axes.twinx()
+    # noinspection PyProtectedMember
     right_axes._get_lines.prop_cycler = axes._get_lines.prop_cycler
     filename = f"test-{parameter_name}.png"
     axes.set_title(f"{parameter_name} - BD-Rate/BD-PSNR")
@@ -170,16 +172,14 @@ def gen_summary_png(parameter_name, csv: pd.DataFrame, file_info_dict):
 
     x = np.array(list(file_info_dict.keys())).astype(float)
     x.sort()
-    bd_rate = csv.loc[csv[LABEL_COLUMN_NAME] == BD_RATE_LABEL, file_info_dict.keys()].values.flatten().astype(float)
+    bd_rate = result_csv.loc[result_csv[LABEL_COLUMN_NAME] == BD_RATE_LABEL,
+                             file_info_dict.keys()].values.flatten().astype(float)
     axes.plot(x, bd_rate, label="DB-Rate")
     for xx, yy in zip(x, bd_rate):
         axes.annotate(f"({xx:.4g}, {yy:.4g})", (xx, yy), **annotate_kwargs)
 
-    # bd_psnr = csv.loc[csv[LABEL_COLUMN_NAME]==BD_PSNR_LABEL, file_info_dict.keys()].values.flatten().astype(float)
-    # axes.plot(x, bd_psnr, label="DB-PSNR")
-
-    dynamic_stream = csv.loc[csv[LABEL_COLUMN_NAME] == DYNAMIC_STREAM_LABEL,
-                             file_info_dict.keys()].values.flatten().astype(float)
+    dynamic_stream = result_csv.loc[result_csv[LABEL_COLUMN_NAME] == DYNAMIC_STREAM_LABEL,
+                                    file_info_dict.keys()].values.flatten().astype(float)
     right_axes.plot(x, dynamic_stream, label="Dynamic Stream")
     for xx, yy in zip(x, dynamic_stream):
         right_axes.annotate(f"({xx:.4g}, {yy:.4g})", (xx, yy), **annotate_kwargs)
@@ -210,10 +210,14 @@ def to_file_info_list_group(files):
     return file_info_dict_dict
 
 
-if __name__ == '__main__':
+def main():
     files = list(ROOT_FOLDER.rglob("test-*/*/metric-summary.csv"))
 
     file_info_dict_dict = to_file_info_list_group(files)
     for parameter_name, file_info_dict in file_info_dict_dict.items():
-        csv = gen_summary_csv(parameter_name, file_info_dict)
-        gen_summary_png(parameter_name, csv, file_info_dict)
+        result_csv = gen_summary_csv(parameter_name, file_info_dict)
+        gen_summary_png(parameter_name, result_csv, file_info_dict)
+
+
+if __name__ == '__main__':
+    main()
