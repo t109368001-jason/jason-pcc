@@ -13,29 +13,29 @@ marker_list = [
 ]
 
 params = {
-    'font.size': 16,
+    'font.size':
+        16,
     'figure.figsize': (10, 10),  # (10, 10) = 1000 x 1000 pixels
-    'lines.markersize': 10,
-    "axes.prop_cycle": cycler(
-        color=["r", "g", "b", "k"],
-        linestyle=[
-            '-',  # 'solid',
-            ':',  # 'dotted',
-            '--',  # 'dashed',
-            '-.'  # 'dashdot'
-        ],
-        marker=marker_list
-    )
+    'lines.markersize':
+        10,
+    "axes.prop_cycle":
+        cycler(
+            color=["r", "g", "b", "k"],
+            linestyle=[
+                '-',  # 'solid',
+                ':',  # 'dotted',
+                '--',  # 'dashed',
+                '-.'  # 'dashdot'
+            ],
+            marker=marker_list)
 }
 pylab.rcParams.update(params)
 savefig_kwargs = dict(bbox_inches='tight')
-annotate_kwargs = dict(
-    xycoords='data',
-    textcoords="offset points",
-    xytext=(0, 16),
-    horizontalalignment='center',
-    verticalalignment='center'
-)
+annotate_kwargs = dict(xycoords='data',
+                       textcoords="offset points",
+                       xytext=(0, 16),
+                       horizontalalignment='center',
+                       verticalalignment='center')
 
 folder = pathlib.Path("../../result/jason-pcc/figure/")
 
@@ -100,8 +100,11 @@ def plot_gmm(clusters, filename="gmm.png", **kwargs):
         for index, multiplier in enumerate(cluster.get("sd_multiplier_list", [])):
             annotate_x = cluster["u"] + cluster["s"] * multiplier
             annotate_y = gaussian(annotate_x, cluster["u"], cluster["s"], cluster.get("w"))
-            scatter = axes.scatter(annotate_x, annotate_y, label=fr"$\mu + {multiplier} \sigma$",
-                                   zorder=line.zorder + 1, marker=marker_list[index % 3 + 1])
+            scatter = axes.scatter(annotate_x,
+                                   annotate_y,
+                                   label=fr"$\mu + {multiplier} \sigma$",
+                                   zorder=line.zorder + 1,
+                                   marker=marker_list[index % 3 + 1])
             handles.append(scatter)
             axes.annotate(f"({annotate_x:.4g}, {annotate_y:.4g})", (annotate_x, annotate_y), **annotate_kwargs)
 
@@ -125,7 +128,7 @@ def quiver(x, y, axes: plt.Axes, **kwargs):
     v = np.diff(y)
     pos_prob = x[:-1] + u / 2
     pos_y1 = y[:-1] + v / 2
-    norm = np.sqrt(u ** 2 + v ** 2)
+    norm = np.sqrt(u**2 + v**2)
     axes.quiver(pos_prob, pos_y1, u / norm, v / norm, **kwargs)
 
 
@@ -152,8 +155,7 @@ def plot_schmitt(filename="schmitt_trigger.png"):
     # axes.fill_betweenx(y, 0, 1, where=y <= 0, color='g', alpha=0.5)
 
     axes.axis('off')
-    axes.plot((1), (0), ls="", marker=">", ms=10, color="k",
-              transform=axes.get_yaxis_transform(), clip_on=False)
+    axes.plot((1), (0), ls="", marker=">", ms=10, color="k", transform=axes.get_yaxis_transform(), clip_on=False)
     axes.axhline(0, color='k')
     axes.axvline(0, color='k')
     axes.annotate("Probability", (1, 0), **{**annotate_kwargs, "xytext": (0, -20)})
@@ -173,32 +175,82 @@ if __name__ == '__main__':
 
     folder.mkdir(parents=True, exist_ok=True)
 
-    plot_learning_rate([{"alpha": 0.00198, "annotate_x": 350}, {"alpha": 0.00656, "annotate_x": 700}],
+    plot_learning_rate([{
+        "alpha": 0.00198,
+        "annotate_x": 350
+    }, {
+        "alpha": 0.00656,
+        "annotate_x": 700
+    }],
                        700,
-                       "weight_curve-n[700].png", title=r"Weight Curve $N=700$")
+                       "weight_curve-n[700].png",
+                       title=r"Weight Curve $N=700$")
 
-    plot_gmm([{"u": 75, "s": 25}, {"u": 150, "s": 5}, {"u": 200, "s": 50}],
+    plot_gmm([{
+        "u": 75,
+        "s": 25
+    }, {
+        "u": 150,
+        "s": 5
+    }, {
+        "u": 200,
+        "s": 50
+    }],
              "gmm.png",
-             title=r"Gaussian Mixture Model $K=3$", xlim=[0, 255], ylim=[-0.03, 0.09])
-    plot_gmm([{"u": 512, "s": 10}, {"u": 0, "s": 10}, {"u": 128, "s": 10}],
+             title=r"Gaussian Mixture Model $K=3$",
+             xlim=[0, 255],
+             ylim=[-0.03, 0.09])
+    plot_gmm([{
+        "u": 512,
+        "s": 10
+    }, {
+        "u": 0,
+        "s": 10
+    }, {
+        "u": 128,
+        "s": 10
+    }],
              "gmm_without_weight.png",
              title=r"Gaussian Mixture Model $K=3$")
-    plot_gmm([{"u": 512, "s": 10, "w": 0.9}, {"u": 128, "s": 10, "w": 0.1}],
+    plot_gmm([{
+        "u": 512,
+        "s": 10,
+        "w": 0.9
+    }, {
+        "u": 128,
+        "s": 10,
+        "w": 0.1
+    }],
              "gmm_weight[9_1].png",
              title=r"Gaussian Mixture Model $K=2$")
-    plot_gmm([{"u": 512, "s": 10, "w": 0.9},
-              {"u": 0, "s": 10, "w": 0.01},
-              {"u": 128, "s": 10, "w": 0.09}],
+    plot_gmm([{
+        "u": 512,
+        "s": 10,
+        "w": 0.9
+    }, {
+        "u": 0,
+        "s": 10,
+        "w": 0.01
+    }, {
+        "u": 128,
+        "s": 10,
+        "w": 0.09
+    }],
              "gmm_weight[9_0.5_0.5].png",
              title=r"Gaussian Mixture Model $K=3$")
 
-    plot_gmm([{"u": 128, "s": 10, "w": 0.1,
-               "sd_multiplier_list": [0.5, 1, 2]
-               }],
-             "gmm_10w_sd_multiplier[0.5,1,2].png",
-             title="Probability of Background GMM Cluster", xlim=(0, 255)
-             # , ylim=[-0.4, 1.2]
-             , ylim=[-0.0015, 0.0045]
-             )
+    plot_gmm(
+        [{
+            "u": 128,
+            "s": 10,
+            "w": 0.1,
+            "sd_multiplier_list": [0.5, 1, 2]
+        }],
+        "gmm_10w_sd_multiplier[0.5,1,2].png",
+        title="Probability of Background GMM Cluster",
+        xlim=(0, 255)
+        # , ylim=[-0.4, 1.2]
+        ,
+        ylim=[-0.0015, 0.0045])
 
     plot_schmitt()
