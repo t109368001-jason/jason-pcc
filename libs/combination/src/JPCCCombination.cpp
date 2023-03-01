@@ -18,15 +18,13 @@ void JPCCCombination::set(const JPCCContext& context) {
 void JPCCCombination::combine(IJPCCCombinationContext& context, bool parallel) {
   context.getFrames().clear();
   context.getFrames().resize(context.getDynamicFrames().size());
-  GroupOfFrame _staticFrames;
-  if (context.getSegmentationOutputType() == SegmentationOutputType::DYNAMIC_STATIC) {
-    _staticFrames = context.getStaticFrames();
-  } else if (context.getSegmentationOutputType() == SegmentationOutputType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED) {
-    _staticFrames.resize(context.getDynamicFrames().size());
+  if (context.getSegmentationOutputType() == SegmentationOutputType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED) {
+    context.getStaticFrames().resize(context.getDynamicFrames().size());
     this->combineStaticAddedRemoved(context.getStaticAddedPclFrames(), context.getStaticRemovedPclFrames(),
-                                    _staticFrames);
+                                    context.getStaticFrames());
   }
-  JPCCCombination::combineDynamicStatic(context.getDynamicFrames(), _staticFrames, context.getFrames(), parallel);
+  JPCCCombination::combineDynamicStatic(context.getDynamicFrames(), context.getStaticFrames(), context.getFrames(),
+                                        parallel);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

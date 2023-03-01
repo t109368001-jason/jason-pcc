@@ -61,7 +61,7 @@ void main_(const AppParameter& parameter, Stopwatch& clock) {
         combination.combine(context, parameter.parallel);
       }
 
-      viewer->enqueue(GroupOfFrameMap{{primaryId, context.getFrames()}, {"dynamic", context.getDynamicFrames()}});
+      viewer->enqueue(GroupOfFrameMap{{primaryId, context.getStaticFrames()}, {"dynamic", context.getDynamicFrames()}});
 
       while (run && viewer->isFull()) { this_thread::sleep_for(100ms); }
       context.getStartFrameNumber() += (Index)context.getFrames().size();

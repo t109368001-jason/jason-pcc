@@ -64,6 +64,7 @@ void JPCCContext::readHeader() {
   } else if (exists(compressedStreamPathPrefix_ + "-static-added.bin") &&
              exists(compressedStreamPathPrefix_ + "-static-removed.bin")) {
     segmentationOutputType_ = SegmentationOutputType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED;
+    static_                 = std::make_shared<JPCCCoderContext>("");
     staticAdded_            = std::make_shared<JPCCCoderContext>(compressedStreamPathPrefix_ + "-static-added.bin");
     staticRemoved_          = std::make_shared<JPCCCoderContext>(compressedStreamPathPrefix_ + "-static-removed.bin");
   } else {
