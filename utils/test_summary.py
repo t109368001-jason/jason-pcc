@@ -9,45 +9,19 @@ from matplotlib import pyplot as plt, cycler
 
 import bd
 
-marker_list = [
-    'o',  # 'point'
-    'D',  # 'diamond'
-    '^',  # 'triangle_up'
-    'v'  # 'triangle_down'
-]
-
-params = {
-    'font.size':
-        16,
-    'figure.figsize': (10, 10),  # (10, 10) = 1000 x 1000 pixels
-    'lines.markersize':
-        10,
-    "axes.prop_cycle":
-        cycler(
-            color=["r", "g", "b", "k"],
-            linestyle=[
-                '-',  # 'solid',
-                ':',  # 'dotted',
-                '--',  # 'dashed',
-                '-.'  # 'dashdot'
-            ],
-            marker=marker_list)
-}
-pylab.rcParams.update(params)
-
-savefig_kwargs = dict(bbox_inches='tight')
-annotate_kwargs = dict(xycoords='data',
-                       textcoords="offset points",
-                       xytext=(0, 16),
-                       horizontalalignment='center',
-                       verticalalignment='center')
-
 RESOLUTION_LIST = ["100", "200", "300", "400", "500"]
 
 ROOT_FOLDER = Path("../../result/test-parameters/")
 
 GPCC_BYTES = [582787403, 362976909, 252035824, 188440045, 149546411]
 GPCC_PSNR = [70.4182, 65.0899, 61.5701, 59.1515, 57.1218]
+
+marker_list = [
+    'o',  # 'point'
+    'D',  # 'diamond'
+    '^',  # 'triangle_up'
+    'v'  # 'triangle_down'
+]
 
 file_info_pattern = re.compile(r'(?P<file_path>.*'
                                r'[/\\]test-(?P<parameter_name>[^-]+)-\d+-\d+'
@@ -101,6 +75,32 @@ RESOLUTION_COLUMN.extend(RESOLUTION_LIST)
 RESOLUTION_COLUMN.extend([""])
 RESOLUTION_COLUMN.extend(RESOLUTION_LIST)
 RESOLUTION_COLUMN.extend([""])
+
+params = {
+    'font.size':
+        16,
+    'figure.figsize': (10, 10),  # (10, 10) = 1000 x 1000 pixels
+    'lines.markersize':
+        10,
+    "axes.prop_cycle":
+        cycler(
+            color=["r", "g", "b", "k"],
+            linestyle=[
+                '-',  # 'solid',
+                ':',  # 'dotted',
+                '--',  # 'dashed',
+                '-.'  # 'dashdot'
+            ],
+            marker=marker_list)
+}
+pylab.rcParams.update(params)
+
+savefig_kwargs = dict(bbox_inches='tight')
+annotate_kwargs = dict(xycoords='data',
+                       textcoords="offset points",
+                       xytext=(0, 16),
+                       horizontalalignment='center',
+                       verticalalignment='center')
 
 
 def gen_summary_csv(parameter_name, file_info_dict: dict):
@@ -156,6 +156,13 @@ def copy_file_info_to_result_csv(file_info, result):
 
 
 def gen_summary_png(parameter_name, result_csv: pd.DataFrame, file_info_dict):
+    x = np.array(list(file_info_dict.keys())).astype(float)
+    x.sort()
+    bd_rate = result_csv.loc[result_csv[LABEL_COLUMN_NAME] == BD_RATE_LABEL,
+                             file_info_dict.keys()].values.flatten().astype(float)
+    dynamic_stream = result_csv.loc[result_csv[LABEL_COLUMN_NAME] == DYNAMIC_STREAM_LABEL,
+                                    file_info_dict.keys()].values.flatten().astype(float)
+
     fig, axes = plt.subplots()
     fig: plt.Figure
     axes: plt.Axes
@@ -167,19 +174,13 @@ def gen_summary_png(parameter_name, result_csv: pd.DataFrame, file_info_dict):
     axes.set_xlabel(parameter_name)
     axes.set_ylabel("%")
     right_axes.set_ylabel("%")
-    axes.set_ylim(-50, 0)
-    right_axes.set_ylim(0, 50)
+    axes.set_ylim(np.min(bd_rate) * 1.2, np.max(np.max(bd_rate), 0))
+    right_axes.set_ylim(0, np.max(dynamic_stream) * 1.2)
 
-    x = np.array(list(file_info_dict.keys())).astype(float)
-    x.sort()
-    bd_rate = result_csv.loc[result_csv[LABEL_COLUMN_NAME] == BD_RATE_LABEL,
-                             file_info_dict.keys()].values.flatten().astype(float)
     axes.plot(x, bd_rate, label="DB-Rate")
     for xx, yy in zip(x, bd_rate):
         axes.annotate(f"({xx:.4g}, {yy:.4g})", (xx, yy), **annotate_kwargs)
 
-    dynamic_stream = result_csv.loc[result_csv[LABEL_COLUMN_NAME] == DYNAMIC_STREAM_LABEL,
-                                    file_info_dict.keys()].values.flatten().astype(float)
     right_axes.plot(x, dynamic_stream, label="Dynamic Stream")
     for xx, yy in zip(x, dynamic_stream):
         right_axes.annotate(f"({xx:.4g}, {yy:.4g})", (xx, yy), **annotate_kwargs)
