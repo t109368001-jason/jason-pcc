@@ -157,11 +157,15 @@ def copy_file_info_to_result_csv(file_info, result):
 
 def gen_summary_png(parameter_name, result_csv: pd.DataFrame, file_info_dict):
     x = np.array(list(file_info_dict.keys())).astype(float)
-    x.sort()
     bd_rate = result_csv.loc[result_csv[LABEL_COLUMN_NAME] == BD_RATE_LABEL,
                              file_info_dict.keys()].values.flatten().astype(float)
     dynamic_stream = result_csv.loc[result_csv[LABEL_COLUMN_NAME] == DYNAMIC_STREAM_LABEL,
                                     file_info_dict.keys()].values.flatten().astype(float)
+    i = x.argsort()
+    x = x[i]
+    bd_rate = bd_rate[i]
+    dynamic_stream = dynamic_stream[i]
+
 
     fig, axes = plt.subplots()
     fig: plt.Figure
