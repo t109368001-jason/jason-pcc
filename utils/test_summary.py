@@ -174,8 +174,18 @@ def gen_summary_png(parameter_name, result_csv: pd.DataFrame, file_info_dict):
     axes.set_xlabel(parameter_name)
     axes.set_ylabel("%")
     right_axes.set_ylabel("%")
-    axes.set_ylim(np.min(bd_rate) * 1.2, np.max(np.max(bd_rate), 0))
-    right_axes.set_ylim(0, np.max(dynamic_stream) * 1.2)
+    x_min = np.min(x)
+    x_max = np.max(x)
+    x_l = x_max - x_min
+    axes.set_xlim(x_min - x_l * 0.2, x_max + x_l * 0.2)
+    yl_min = np.min(bd_rate)
+    yl_max = np.max(bd_rate)
+    yl_l = yl_max - yl_min
+    axes.set_ylim(yl_min - yl_l * 0.1, yl_max + yl_l * 0.3)
+    yr_min = np.min(dynamic_stream)
+    yr_max = np.max(dynamic_stream)
+    yr_l = yr_max - yr_min
+    right_axes.set_ylim(yr_min - yr_l * 0.2, yr_max + yr_l * 0.2)
 
     axes.plot(x, bd_rate, label="DB-Rate")
     for xx, yy in zip(x, bd_rate):
