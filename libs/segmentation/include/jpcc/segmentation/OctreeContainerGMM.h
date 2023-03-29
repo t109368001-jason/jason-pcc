@@ -44,7 +44,7 @@ class OctreeContainerGMM : public IOctreeContainerGMM,
                               const std::vector<double>& nullStaticThreshold2Vector,
                               bool                       lastIsStatic) override;
 
-  void updateModel(int index, double alpha, double nullAlpha, double minimumVariance) override;
+  void updateModel(int index, double alpha, double minimumVariance) override;
 };
 
 }  // namespace jpcc::segmentation

@@ -237,8 +237,7 @@ void JPCCSegmentationOPCGMMCenter<LeafContainerT>::segmentationRecursive(const F
           for (size_t i = 0; i < SIZE; i++) {
             if (this->parameter_.updateModelBeforeNTrain ||
                 frame->getFrameNumber() >= this->startFrameNumber_ + this->parameter_.getNTrain(i)) {
-              leafContainer.updateModel(i, this->parameter_.getAlpha(i), this->parameter_.getAlpha(i),
-                                        this->parameter_.minimumVariance);
+              leafContainer.updateModel(i, this->parameter_.getAlpha(i), this->parameter_.minimumVariance);
             }
           }
           leafContainer.resetLastPoint();
