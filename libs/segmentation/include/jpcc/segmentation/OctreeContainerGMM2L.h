@@ -44,7 +44,6 @@ class OctreeContainerGMM2L : public IOctreeContainerGMM,
                               const std::vector<double>& staticThreshold2Vector,
                               const std::vector<double>& nullStaticThreshold1Vector,
                               const std::vector<double>& nullStaticThreshold2Vector,
-                              const std::vector<bool>&   outputExistsPointOnlyVector,
                               bool                       lastIsStatic) override;
 
   void updateModel(int index, double alpha, double nullAlpha, double minimumVariance) override;

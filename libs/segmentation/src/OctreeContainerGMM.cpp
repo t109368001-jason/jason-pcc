@@ -45,15 +45,12 @@ bool OctreeContainerGMM::isStatic(const std::vector<double>& staticThreshold1Vec
                                   const std::vector<double>& staticThreshold2Vector,
                                   const std::vector<double>& nullStaticThreshold1Vector,
                                   const std::vector<double>& nullStaticThreshold2Vector,
-                                  const std::vector<bool>&   outputExistsPointOnlyVector,
                                   const bool                 lastIsStatic) {
   if (isnan(this->lastPoint_.x)) {
-    if (!outputExistsPointOnlyVector.front()) {
-      if (!lastIsStatic) {
-        if (GMM::getStaticProbability() > nullStaticThreshold1Vector.front()) { return true; }
-      } else {
-        if (GMM::getStaticProbability() > nullStaticThreshold2Vector.front()) { return true; }
-      }
+    if (!lastIsStatic) {
+      if (GMM::getStaticProbability() > nullStaticThreshold1Vector.front()) { return true; }
+    } else {
+      if (GMM::getStaticProbability() > nullStaticThreshold2Vector.front()) { return true; }
     }
     return false;
   } else {

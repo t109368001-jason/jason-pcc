@@ -11,7 +11,7 @@ import bd
 
 RESOLUTION_LIST = ["100", "200", "300", "400", "500"]
 
-ROOT_FOLDER = Path("../../result/test-parameters/")
+ROOT_FOLDER = Path("../../result/test-20230306/")
 
 GPCC_BYTES = [582787403, 362976909, 252035824, 188440045, 149546411]
 GPCC_PSNR = [70.4182, 65.0899, 61.5701, 59.1515, 57.1218]
@@ -143,29 +143,28 @@ def copy_file_info_to_result_csv(file_info, result):
     resolution_filter = (result[RESOLUTION_COLUMN_NAME] == file_info["resolution"])
     result.loc[(result[LABEL_COLUMN_NAME] == DYNAMIC_LABEL) & resolution_filter, file_info["value"]] = dynamic_bytes
     result.loc[(result[LABEL_COLUMN_NAME] == STATIC_ADDED_LABEL) & resolution_filter,
-               file_info["value"]] = static_added_bytes
+    file_info["value"]] = static_added_bytes
     result.loc[(result[LABEL_COLUMN_NAME] == STATIC_REMOVED_LABEL) & resolution_filter,
-               file_info["value"]] = static_removed_bytes
+    file_info["value"]] = static_removed_bytes
     result.loc[(result[LABEL_COLUMN_NAME] == TOTAL_LABEL) & resolution_filter, file_info["value"]] = total_bytes
     result.loc[(result[LABEL_COLUMN_NAME] == PSNR_LABEL) & resolution_filter, file_info["value"]] = a2b_psnr
     result.loc[(result[LABEL_COLUMN_NAME] == WALL_LABEL) & resolution_filter,
-               file_info["value"]] = metric_csv.loc[WALL_LABEL, "value"]
+    file_info["value"]] = metric_csv.loc[WALL_LABEL, "value"]
     result.loc[(result[LABEL_COLUMN_NAME] == MEM_LABEL) & resolution_filter,
-               file_info["value"]] = metric_csv.loc[MEM_LABEL, "value"]
+    file_info["value"]] = metric_csv.loc[MEM_LABEL, "value"]
     return result
 
 
 def gen_summary_png(parameter_name, result_csv: pd.DataFrame, file_info_dict):
     x = np.array(list(file_info_dict.keys())).astype(float)
     bd_rate = result_csv.loc[result_csv[LABEL_COLUMN_NAME] == BD_RATE_LABEL,
-                             file_info_dict.keys()].values.flatten().astype(float)
+    file_info_dict.keys()].values.flatten().astype(float)
     dynamic_stream = result_csv.loc[result_csv[LABEL_COLUMN_NAME] == DYNAMIC_STREAM_LABEL,
-                                    file_info_dict.keys()].values.flatten().astype(float)
+    file_info_dict.keys()].values.flatten().astype(float)
     i = x.argsort()
     x = x[i]
     bd_rate = bd_rate[i]
     dynamic_stream = dynamic_stream[i]
-
 
     fig, axes = plt.subplots()
     fig: plt.Figure

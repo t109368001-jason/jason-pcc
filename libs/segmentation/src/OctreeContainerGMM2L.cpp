@@ -47,22 +47,17 @@ bool OctreeContainerGMM2L::isStatic(const std::vector<double>& staticThreshold1V
                                     const std::vector<double>& staticThreshold2Vector,
                                     const std::vector<double>& nullStaticThreshold1Vector,
                                     const std::vector<double>& nullStaticThreshold2Vector,
-                                    const std::vector<bool>&   outputExistsPointOnlyVector,
                                     const bool                 lastIsStatic) {
   if (isnan(this->lastPoint_.x)) {
-    if (!outputExistsPointOnlyVector[LONG_INDEX]) {
-      if (!lastIsStatic) {
-        if (gmmArray_[LONG_INDEX].getStaticProbability() > nullStaticThreshold1Vector[LONG_INDEX]) { return true; }
-      } else {
-        if (gmmArray_[LONG_INDEX].getStaticProbability() > nullStaticThreshold2Vector[LONG_INDEX]) { return true; }
-      }
+    if (!lastIsStatic) {
+      if (gmmArray_[LONG_INDEX].getStaticProbability() > nullStaticThreshold1Vector[LONG_INDEX]) { return true; }
+    } else {
+      if (gmmArray_[LONG_INDEX].getStaticProbability() > nullStaticThreshold2Vector[LONG_INDEX]) { return true; }
     }
-    if (!outputExistsPointOnlyVector[SHORT_INDEX]) {
-      if (!lastIsStatic) {
-        if (gmmArray_[SHORT_INDEX].getStaticProbability() > nullStaticThreshold1Vector[SHORT_INDEX]) { return true; }
-      } else {
-        if (gmmArray_[SHORT_INDEX].getStaticProbability() > nullStaticThreshold2Vector[SHORT_INDEX]) { return true; }
-      }
+    if (!lastIsStatic) {
+      if (gmmArray_[SHORT_INDEX].getStaticProbability() > nullStaticThreshold1Vector[SHORT_INDEX]) { return true; }
+    } else {
+      if (gmmArray_[SHORT_INDEX].getStaticProbability() > nullStaticThreshold2Vector[SHORT_INDEX]) { return true; }
     }
     return false;
   } else {
