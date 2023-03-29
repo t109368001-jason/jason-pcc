@@ -25,7 +25,9 @@ Analyzer::Analyzer(const float&  frequency,
 
   outputPath /= subFolder.str();
 
-  if (!filesystem::exists(outputPath)) { create_directories(outputPath); }
+  if (!filesystem::exists(outputPath)) {
+    create_directories(outputPath);
+  }
 
   string filename = title + otherParameters + ".csv";
 
@@ -33,13 +35,19 @@ Analyzer::Analyzer(const float&  frequency,
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-Analyzer::~Analyzer() { releaseLockFile(); }
+Analyzer::~Analyzer() {
+  releaseLockFile();
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-const filesystem::path& Analyzer::getFilepath() const { return filepath_; }
+const filesystem::path& Analyzer::getFilepath() const {
+  return filepath_;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-bool Analyzer::exists() { return filesystem::exists(filepath_); }
+bool Analyzer::exists() {
+  return filesystem::exists(filepath_);
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 bool Analyzer::tryLockFile() {
@@ -60,7 +68,9 @@ void Analyzer::releaseLockFile() {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void Analyzer::reset() { releaseLockFile(); }
+void Analyzer::reset() {
+  releaseLockFile();
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void Analyzer::saveCloud() {

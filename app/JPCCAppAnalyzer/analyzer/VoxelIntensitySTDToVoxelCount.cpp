@@ -18,7 +18,8 @@ namespace jpcc {
 VoxelIntensitySTDToVoxelCount::VoxelIntensitySTDToVoxelCount(const float&       frequency,
                                                              const double&      resolution,
                                                              const std::string& outputDir) :
-    Analyzer(frequency, resolution, outputDir, "VoxelIntensitySTDToVoxelCount"), octree_(resolution) {}
+    Analyzer(frequency, resolution, outputDir, "VoxelIntensitySTDToVoxelCount"), octree_(resolution) {
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void VoxelIntensitySTDToVoxelCount::compute(PclFrameConstPtr<PointAnalyzer> background,
@@ -36,7 +37,9 @@ void VoxelIntensitySTDToVoxelCount::finalCompute() {
     octree_.switchBuffers(bufferIndex);
     for (auto it = octree_.leaf_depth_begin(), end = octree_.leaf_depth_end(); it != end; ++it) {
       const vector<float>& intensities = it.getLeafContainer().getIntensities();
-      if (intensities.empty()) { continue; }
+      if (intensities.empty()) {
+        continue;
+      }
 
       double intensitySTD = standard_deviation(intensities);
 
@@ -80,7 +83,9 @@ void VoxelIntensitySTDToVoxelCount::getCloud(PclFramePtr<PointAnalyzer>& cloud) 
           static_cast<float>((static_cast<double>(it.getCurrentOctreeKey().z) + 0.5f) * this->resolution_ + min_z_);
 
       const vector<float>& intensities = it.getLeafContainer().getIntensities();
-      if (intensities.empty()) { continue; }
+      if (intensities.empty()) {
+        continue;
+      }
 
       double intensitySTD = standard_deviation(intensities);
 

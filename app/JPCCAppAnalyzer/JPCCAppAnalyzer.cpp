@@ -156,7 +156,9 @@ void main_(AppParameter& parameter) {
       };
       if (frequency == 10.0) {
         for (const auto& quantResolution : parameter.quantResolutions) {
-          if (static_cast<double>(quantResolution) > resolution) { continue; }
+          if (static_cast<double>(quantResolution) > resolution) {
+            continue;
+          }
 
           analyzers.push_back(  //
               jpcc::make_shared<VoxelOccludedPercentageToVoxelCount>(frequency, resolution, parameter.outputDir,
@@ -199,7 +201,9 @@ int main(int argc, char* argv[]) {
   try {
     ParameterParser pp;
     pp.add(parameter);
-    if (!pp.parse(argc, argv)) { return 1; }
+    if (!pp.parse(argc, argv)) {
+      return 1;
+    }
     BOOST_LOG_TRIVIAL(info) << parameter;
   } catch (exception& e) {
     BOOST_LOG_TRIVIAL(error) << e.what();
@@ -210,7 +214,9 @@ int main(int argc, char* argv[]) {
     ParameterParser pp;
     // Timers to count elapsed wall/user time
     main_(parameter);
-  } catch (exception& e) { BOOST_LOG_TRIVIAL(error) << e.what(); }
+  } catch (exception& e) {
+    BOOST_LOG_TRIVIAL(error) << e.what();
+  }
 
   BOOST_LOG_TRIVIAL(info) << "JPCC App Analyzer End";
   return 0;

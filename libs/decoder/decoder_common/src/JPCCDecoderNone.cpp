@@ -5,7 +5,9 @@
 namespace jpcc::decoder {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-bool JPCCDecoderNone::isConvertFromCoderTypeThreadSafe() { return true; }
+bool JPCCDecoderNone::isConvertFromCoderTypeThreadSafe() {
+  return true;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void JPCCDecoderNone::decode(std::istream& is, std::shared_ptr<void>& coderReconstructFrame) {

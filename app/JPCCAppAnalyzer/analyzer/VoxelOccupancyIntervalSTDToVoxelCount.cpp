@@ -18,7 +18,8 @@ namespace jpcc {
 VoxelOccupancyIntervalSTDToVoxelCount::VoxelOccupancyIntervalSTDToVoxelCount(const float&  frequency,
                                                                              const double& resolution,
                                                                              const string& outputDir) :
-    Analyzer(frequency, resolution, outputDir, "VoxelOccupancyIntervalSTDToVoxelCount"), octree_(resolution) {}
+    Analyzer(frequency, resolution, outputDir, "VoxelOccupancyIntervalSTDToVoxelCount"), octree_(resolution) {
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void VoxelOccupancyIntervalSTDToVoxelCount::compute(PclFrameConstPtr<PointAnalyzer> background,
@@ -43,7 +44,9 @@ void VoxelOccupancyIntervalSTDToVoxelCount::finalCompute() {
     octree_.switchBuffers(bufferIndex);
     for (auto it = octree_.leaf_depth_begin(), end = octree_.leaf_depth_end(); it != end; ++it) {
       const vector<int>& occupancyIntervals = it.getLeafContainer().getOccupancyIntervals();
-      if (occupancyIntervals.empty()) { continue; }
+      if (occupancyIntervals.empty()) {
+        continue;
+      }
 
       double occupancyIntervalSTD = standard_deviation(occupancyIntervals);
 
@@ -86,7 +89,9 @@ void VoxelOccupancyIntervalSTDToVoxelCount::getCloud(PclFramePtr<PointAnalyzer>&
           static_cast<float>((static_cast<double>(it.getCurrentOctreeKey().z) + 0.5f) * this->resolution_ + min_z_);
 
       const vector<int>& occupancyIntervals = it.getLeafContainer().getOccupancyIntervals();
-      if (occupancyIntervals.empty()) { continue; }
+      if (occupancyIntervals.empty()) {
+        continue;
+      }
 
       double occupancyIntervalSTD = standard_deviation(occupancyIntervals);
 

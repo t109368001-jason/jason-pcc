@@ -31,14 +31,18 @@ void parse(const AppParameter& parameter, Stopwatch& clock) {
     clock.start();
     reader->loadAll(frameNumber, groupOfFramesSize, frames, parameter.parallel);
     if constexpr (!pcl::traits::has_intensity_v<PointT>) {
-      for (const auto& frame : frames) { frame->removeReflectances(); }
+      for (const auto& frame : frames) {
+        frame->removeReflectances();
+      }
     }
     preProcessor.process(frames, nullptr, parameter.parallel);
     if constexpr (pcl::traits::has_normal_v<PointT>) {
       auto normalEstimation = jpcc::make_shared<JPCCNormalEstimation>(parameter.jpccNormalEstimation);
       normalEstimation->computeInPlaceAll(frames, parameter.parallel);
     } else {
-      for (const auto& frame : frames) { frame->removeNormals(); }
+      for (const auto& frame : frames) {
+        frame->removeNormals();
+      }
     }
     clock.stop();
 
@@ -69,7 +73,9 @@ int main(int argc, char* argv[]) {
   try {
     ParameterParser pp;
     pp.add(parameter);
-    if (!pp.parse(argc, argv)) { return 1; }
+    if (!pp.parse(argc, argv)) {
+      return 1;
+    }
     BOOST_LOG_TRIVIAL(info) << parameter;
   } catch (exception& e) {
     BOOST_LOG_TRIVIAL(error) << e.what();
@@ -90,7 +96,9 @@ int main(int argc, char* argv[]) {
     BOOST_LOG_TRIVIAL(info) << "Processing time (wall): " << static_cast<float>(totalWall) / 1000.0 << " s";
     BOOST_LOG_TRIVIAL(info) << "Processing time (user): " << static_cast<float>(totalUser) / 1000.0 << " s";
     BOOST_LOG_TRIVIAL(info) << "Peak memory: " << getPeakMemory() << " KB";
-  } catch (exception& e) { BOOST_LOG_TRIVIAL(error) << e.what(); }
+  } catch (exception& e) {
+    BOOST_LOG_TRIVIAL(error) << e.what();
+  }
 
   BOOST_LOG_TRIVIAL(info) << "JPCC App Dataset Parser End";
   return 0;

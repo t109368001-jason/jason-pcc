@@ -166,7 +166,9 @@ PcapReader::PcapReader(DatasetReaderParameter param, DatasetParameter datasetPar
     BOOST_THROW_EXCEPTION(std::logic_error("sensor not support"));
   }
   this->currentFrameNumbers_.resize(this->datasetParam_.count());
-  for (size_t i = 0; i < this->datasetParam_.count(); i++) { pcaps_.emplace_back(nullptr, &pcapClose); }
+  for (size_t i = 0; i < this->datasetParam_.count(); i++) {
+    pcaps_.emplace_back(nullptr, &pcapClose);
+  }
   this->frameBuffers_.resize(this->datasetParam_.count());
   this->finishVectors_.resize(this->datasetParam_.count());
   this->timestampVectors_.resize(this->datasetParam_.count());
@@ -177,7 +179,9 @@ PcapReader::PcapReader(DatasetReaderParameter param, DatasetParameter datasetPar
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void PcapReader::open_(const size_t datasetIndex, const size_t startFrameNumber) {
-  if (pcaps_[datasetIndex] && this->currentFrameNumbers_[datasetIndex] <= startFrameNumber) { return; }
+  if (pcaps_[datasetIndex] && this->currentFrameNumbers_[datasetIndex] <= startFrameNumber) {
+    return;
+  }
   const std::string pcapPath = this->datasetParam_.getFilePath(datasetIndex);
 
   this->eof_[datasetIndex] = false;
@@ -189,10 +193,14 @@ void PcapReader::open_(const size_t datasetIndex, const size_t startFrameNumber)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-bool PcapReader::isOpen_(const size_t datasetIndex) const { return static_cast<bool>(pcaps_[datasetIndex]); }
+bool PcapReader::isOpen_(const size_t datasetIndex) const {
+  return static_cast<bool>(pcaps_[datasetIndex]);
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-bool PcapReader::isEof_(const size_t datasetIndex) const { return DatasetStreamReader::isEof_(datasetIndex); }
+bool PcapReader::isEof_(const size_t datasetIndex) const {
+  return DatasetStreamReader::isEof_(datasetIndex);
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void PcapReader::load_(const size_t datasetIndex, const size_t startFrameNumber, const size_t groupOfFramesSize) {
@@ -203,7 +211,9 @@ void PcapReader::load_(const size_t datasetIndex, const size_t startFrameNumber,
   std::vector<int64_t>& timestampVector = this->timestampVectors_[datasetIndex];
 
   int ret = parseDataPacket(pcap, frameBuffer, finishVector, timestampVector);
-  if (ret <= 0) { this->eof_[datasetIndex] = true; }
+  if (ret <= 0) {
+    this->eof_[datasetIndex] = true;
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -218,7 +228,9 @@ int PcapReader::parseDataPacket(void* const           pcap,
   const int64_t        timestamp = timestampUS / 1000;
   if (ret != 1) {
     if (ret <= 0) {
-      for (auto&& i : finishVector) { i = true; }
+      for (auto&& i : finishVector) {
+        i = true;
+      }
     }
     return ret;
   }
@@ -242,7 +254,9 @@ int PcapReader::parseDataPacket(void* const           pcap,
 
     for (int laser_index = 0; laser_index < LASER_PER_FIRING; laser_index++) {
       const float distance = static_cast<float>(firing_data.laserReturns[laser_index].distance) * 2.0f;
-      if (distance < 1) { continue; }
+      if (distance < 1) {
+        continue;
+      }
       const float azimuth = static_cast<float>(azimuth100) * PI_DIV18000;
       //      float   vertical  = verticals_[laser_index % maxNumLasers_];
       uint8_t     intensity = firing_data.laserReturns[laser_index].intensity;
@@ -289,13 +303,17 @@ int PcapReader::parseDataPacket(void* const           pcap,
 
         size_t ii = frameBuffer[index]->getPointCount();
         (*frameBuffer[index]).addPoint(PointType{PointValueType(x), PointValueType(y), PointValueType(z)});
-        if (frameBuffer[index]->hasReflectances()) { frameBuffer[index]->getReflectance(ii) = uint16_t(intensity); }
+        if (frameBuffer[index]->hasReflectances()) {
+          frameBuffer[index]->getReflectance(ii) = uint16_t(intensity);
+        }
       }
     }
   }
 
   for (size_t i = 0; i < frameBuffer.size(); i++) {
-    if ((timestampVector[i] + (int64_t)this->param_.interval) > timestamp) { break; }
+    if ((timestampVector[i] + (int64_t)this->param_.interval) > timestamp) {
+      break;
+    }
     finishVector[i] = true;
   }
   return ret;

@@ -31,7 +31,8 @@ OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::OctreeNBufBase(co
     tree_dirty_flag_(source.tree_dirty_flag_),
     octree_depth_(source.octree_depth_),
     dynamic_depth_enabled_(source.dynamic_depth_enabled_),
-    bufferIndex_(source.bufferIndex_) {}
+    bufferIndex_(source.bufferIndex_) {
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <BufferIndex BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
@@ -45,7 +46,9 @@ OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::~OctreeNBufBase()
 template <BufferIndex BUFFER_SIZE, typename LeafContainerT, typename BranchContainerT>
 OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>&
 OctreeNBufBase<BUFFER_SIZE, LeafContainerT, BranchContainerT>::operator=(const OctreeNBufBase& source) {
-  if (this == &source) { return *this; }
+  if (this == &source) {
+    return *this;
+  }
   deleteTree();
   leaf_count_            = source.leaf_count_;
   branch_count_          = source.branch_count_;

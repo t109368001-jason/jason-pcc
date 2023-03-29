@@ -18,7 +18,8 @@ namespace jpcc {
 VoxelPointNormalAngleEntropyToVoxelCount::VoxelPointNormalAngleEntropyToVoxelCount(const float&  frequency,
                                                                                    const double& resolution,
                                                                                    const string& outputDir) :
-    Analyzer(frequency, resolution, outputDir, "VoxelPointNormalAngleEntropyToVoxelCount"), octree_(resolution) {}
+    Analyzer(frequency, resolution, outputDir, "VoxelPointNormalAngleEntropyToVoxelCount"), octree_(resolution) {
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void VoxelPointNormalAngleEntropyToVoxelCount::compute(PclFrameConstPtr<PointAnalyzer> background,
@@ -37,7 +38,9 @@ void VoxelPointNormalAngleEntropyToVoxelCount::finalCompute() {
     for (auto it = octree_.leaf_depth_begin(), end = octree_.leaf_depth_end(); it != end; ++it) {
       const std::vector<double>& azimuths_ = it.getLeafContainer().getAzimuths();
       const std::vector<double>& zeniths_  = it.getLeafContainer().getZeniths();
-      if (azimuths_.empty() && zeniths_.empty()) { continue; }
+      if (azimuths_.empty() && zeniths_.empty()) {
+        continue;
+      }
 
       double azimuthEntropy = entropy(azimuths_, 0.0, M_PI * 2, M_PI * 2 / 10.0);
       double zenithEntropy  = entropy(zeniths_, 0.0, M_PI, M_PI / 10.0);
@@ -103,7 +106,9 @@ void VoxelPointNormalAngleEntropyToVoxelCount::getCloud(PclFramePtr<PointAnalyze
           static_cast<float>((static_cast<double>(it.getCurrentOctreeKey().z) + 0.5f) * this->resolution_ + min_z_);
 
       const std::vector<double>& azimuths_ = it.getLeafContainer().getAzimuths();
-      if (azimuths_.empty()) { continue; }
+      if (azimuths_.empty()) {
+        continue;
+      }
 
       double azimuthEntropy = entropy(azimuths_, 0.0, M_PI * 2, M_PI * 2 / 10.0);
 

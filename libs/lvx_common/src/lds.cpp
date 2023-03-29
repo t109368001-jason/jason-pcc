@@ -586,14 +586,20 @@ void Lds::ResetLidar(LidarDevice* lidar, uint8_t data_src) {
   lidar->raw_data_type      = 0xFF;
 }
 
-void Lds::SetLidarDataSrc(LidarDevice* lidar, uint8_t data_src) { lidar->data_src = data_src; }
+void Lds::SetLidarDataSrc(LidarDevice* lidar, uint8_t data_src) {
+  lidar->data_src = data_src;
+}
 
 void Lds::ResetLds(uint8_t data_src) {
   lidar_count_ = kMaxSourceLidar;
-  for (uint32_t i = 0; i < kMaxSourceLidar; i++) { ResetLidar(&lidars_[i], data_src); }
+  for (uint32_t i = 0; i < kMaxSourceLidar; i++) {
+    ResetLidar(&lidars_[i], data_src);
+  }
 }
 
-void Lds::RequestExit() { request_exit_ = true; }
+void Lds::RequestExit() {
+  request_exit_ = true;
+}
 
 // bool Lds::IsAllQueueEmpty() {
 //   for (int i = 0; i < lidar_count_; i++) {
@@ -706,6 +712,7 @@ void Lds::UpdateLidarInfoByEthPacket(LidarDevice* p_lidar, LivoxEthPacket* eth_p
 //   }
 // }
 
-void Lds::PrepareExit(void) {}
+void Lds::PrepareExit(void) {
+}
 
 }  // namespace livox_ros

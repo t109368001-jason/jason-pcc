@@ -11,7 +11,9 @@ namespace jpcc::process {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 JPCCNormalEstimation::JPCCNormalEstimation(JPCCNormalEstimationParameter param) : param_(std::move(param)) {
-  if (!param_.enable) { BOOST_THROW_EXCEPTION(std::logic_error(std::string("Normal Estimation not enabled"))); }
+  if (!param_.enable) {
+    BOOST_THROW_EXCEPTION(std::logic_error(std::string("Normal Estimation not enabled")));
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -38,7 +40,9 @@ void JPCCNormalEstimation::computeInPlace(FramePtr& frame) const {
       bool ret = kdtree.index->radiusSearchCustomCallback(&pointDouble[0], resultSet, nanoflann::SearchParams(10));
       THROW_IF_NOT(ret);
       indices.clear();
-      for (const auto& [ii, dd] : indicesDists) { indices.push_back(ii); }
+      for (const auto& [ii, dd] : indicesDists) {
+        indices.push_back(ii);
+      }
     } else if (param_.kSearch > 0) {
       size_t                          K = param_.kSearch;
       std::vector<size_t>             _indices(K);
@@ -128,7 +132,9 @@ void JPCCNormalEstimation::computeInPlace(FramePtr& frame) const {
 //////////////////////////////////////////////////////////////////////////////////////////////
 void JPCCNormalEstimation::computeInPlaceAll(GroupOfFrame& frames, bool parallel) const {
   if (!parallel) {
-    for (auto& frame : frames) { this->computeInPlace(frame); }
+    for (auto& frame : frames) {
+      this->computeInPlace(frame);
+    }
   } else {
     std::for_each(std::execution::par_unseq, frames.begin(), frames.end(),
                   [this](FramePtr& frame) { this->computeInPlace(frame); });

@@ -11,7 +11,8 @@ using namespace std;
 using namespace Eigen;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-Condition::Condition() : type(), operation(), threshold() {}
+Condition::Condition() : type(), operation(), threshold() {
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 Condition::Condition(const string& condition) {  // NOLINT(misc-no-recursion)
@@ -56,7 +57,9 @@ Condition::Condition(const string& condition) {  // NOLINT(misc-no-recursion)
     boost::algorithm::split(vector, f, boost::is_any_of(",[]*p"));
     vector.erase(remove_if(vector.begin(), vector.end(), [](const string& s) { return s.empty(); }), vector.end());
     assert(vector.size() == 3 || vector.size() == 4);
-    for (int i = 0; i < vector.size(); i++) { (*this->coefficient)(i) = stof(vector[i]); }
+    for (int i = 0; i < vector.size(); i++) {
+      (*this->coefficient)(i) = stof(vector[i]);
+    }
   } else {
     BOOST_THROW_EXCEPTION(logic_error("not support type: " + f));
   }

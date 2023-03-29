@@ -127,7 +127,9 @@ void jpcc::octree::JPCCOctreePointCloud<PointT, LeafContainerT, BranchContainerT
   }
 
   (*leaf_node)->addPointIndex(point_idx_arg);
-  if constexpr (has_add_point_v<LeafContainerT, PointT>) { (*leaf_node)->addPoint(point); }
+  if constexpr (has_add_point_v<LeafContainerT, PointT>) {
+    (*leaf_node)->addPoint(point);
+  }
 }
 
 template <typename PointT, typename LeafContainerT, typename BranchContainerT, typename OctreeT>
@@ -164,7 +166,9 @@ void jpcc::octree::JPCCOctreePointCloud<PointT, LeafContainerT, BranchContainerT
       this->createLeafRecursive(new_index_key, depth_mask, childBranch, newLeaf, newBranchParent);
 
       (*newLeaf)->addPointIndex(leafIndex);
-      if constexpr (has_add_point_v<LeafContainerT, PointT>) { (*newLeaf)->addPoint(point_from_index); }
+      if constexpr (has_add_point_v<LeafContainerT, PointT>) {
+        (*newLeaf)->addPoint(point_from_index);
+      }
     }
   }
 }

@@ -11,7 +11,8 @@ using namespace po;
 #define CONFIGS_OPT "configs"
 #define CONFIG_CONFIGS_OPT "config.configs"
 
-ParserParameter::ParserParameter() : ParserParameter("", "ParserParameter (command line only)") {}
+ParserParameter::ParserParameter() : ParserParameter("", "ParserParameter (command line only)") {
+}
 
 ParserParameter::ParserParameter(const string& prefix, const string& caption) :
     Parameter(prefix, caption), disableEnvVar(false), configs() {
@@ -24,9 +25,13 @@ ParserParameter::ParserParameter(const string& prefix, const string& caption) :
       ;
 }
 
-string ParserParameter::getConfigsOpt() { return CONFIGS_OPT; }
+string ParserParameter::getConfigsOpt() {
+  return CONFIGS_OPT;
+}
 
-string ParserParameter::getConfigConfigsOpt() { return CONFIG_CONFIGS_OPT; }
+string ParserParameter::getConfigConfigsOpt() {
+  return CONFIG_CONFIGS_OPT;
+}
 
 ostream& operator<<(ostream& out, const ParserParameter& obj) {
   obj.coutParameters(out)                       //

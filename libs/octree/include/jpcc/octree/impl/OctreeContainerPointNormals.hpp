@@ -19,7 +19,9 @@ void OctreeContainerPointNormals<PointT>::addPoint(const PointT& point) {
   if constexpr (!pcl::traits::has_normal_v<PointT>) {
     static_assert(dependent_false_v<PointT>, "invalid template type");
   }
-  if (std::isnan(point.normal_x)) { return; }
+  if (std::isnan(point.normal_x)) {
+    return;
+  }
   double azimuth;
   if (point.normal_x > 0) {
     azimuth = std::atan2(point.normal_y, point.normal_x);
@@ -39,7 +41,9 @@ void OctreeContainerPointNormals<PointT>::addPoint(const PointT& point) {
   assert(!std::isnan(azimuth));
   assert(!std::isnan(zenith));
 
-  if (azimuth < 0) { azimuth += M_PI + M_PI; }
+  if (azimuth < 0) {
+    azimuth += M_PI + M_PI;
+  }
 
   azimuths_.push_back(azimuth);
   zeniths_.push_back(zenith);

@@ -28,7 +28,9 @@ bool JPCCSegmentationOPCGMMCenter<LeafContainerT>::isBuilt() const {
 template <typename LeafContainerT>
 void JPCCSegmentationOPCGMMCenter<LeafContainerT>::appendTrainSamplesAndBuild(const FramePtr&            frame,
                                                                               const PclFramePtr<PointT>& pclFrame) {
-  if (this->isBuilt()) { return; }
+  if (this->isBuilt()) {
+    return;
+  }
   this->addFrame(pclFrame);
   this->appendTrainSamples(frame);
   this->build(frame);
@@ -99,7 +101,9 @@ void JPCCSegmentationOPCGMMCenter<LeafContainerT>::segmentation(IJPCCSegmentatio
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename LeafContainerT>
 void JPCCSegmentationOPCGMMCenter<LeafContainerT>::appendTrainSamples(const FramePtr& frame) {
-  if (this->isBuilt()) { return; }
+  if (this->isBuilt()) {
+    return;
+  }
   this->addTrainSampleAndResetLastPointRecursive(frame, this->root_node_);
 }
 
@@ -130,7 +134,9 @@ void JPCCSegmentationOPCGMMCenter<LeafContainerT>::addTrainSampleAndResetLastPoi
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename LeafContainerT>
 void JPCCSegmentationOPCGMMCenter<LeafContainerT>::build(const FramePtr& frame) {
-  if (this->isBuilt()) { return; }
+  if (this->isBuilt()) {
+    return;
+  }
   for (size_t i = 0; i < SIZE; i++) {
     if (!this->builtVector[i] &&
         (frame->getFrameNumber() - this->startFrameNumber_ + 1) >= this->parameter_.getNTrain(i)) {

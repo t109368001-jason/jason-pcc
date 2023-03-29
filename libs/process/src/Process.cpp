@@ -60,7 +60,9 @@ void quantize(const FramePtr& frame, const double resolution) {
 //////////////////////////////////////////////////////////////////////////////////////////////
 void quantize(const GroupOfFrame& frames, const double resolution, const bool parallel) {
   if (!parallel) {
-    for (const auto& frame : frames) { quantize(frame, resolution); }
+    for (const auto& frame : frames) {
+      quantize(frame, resolution);
+    }
   } else {
     std::for_each(std::execution::par_unseq, frames.begin(), frames.end(),
                   [&resolution](const auto& frame) { quantize(frame, resolution); });

@@ -18,7 +18,8 @@ namespace jpcc {
 VoxelOccupancyIntervalEntropyToVoxelCount::VoxelOccupancyIntervalEntropyToVoxelCount(const float&  frequency,
                                                                                      const double& resolution,
                                                                                      const string& outputDir) :
-    Analyzer(frequency, resolution, outputDir, "VoxelOccupancyIntervalEntropyToVoxelCount"), octree_(resolution) {}
+    Analyzer(frequency, resolution, outputDir, "VoxelOccupancyIntervalEntropyToVoxelCount"), octree_(resolution) {
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void VoxelOccupancyIntervalEntropyToVoxelCount::compute(PclFrameConstPtr<PointAnalyzer> background,
@@ -43,7 +44,9 @@ void VoxelOccupancyIntervalEntropyToVoxelCount::finalCompute() {
     octree_.switchBuffers(bufferIndex);
     for (auto it = octree_.leaf_depth_begin(), end = octree_.leaf_depth_end(); it != end; ++it) {
       const vector<int>& occupancyIntervals = it.getLeafContainer().getOccupancyIntervals();
-      if (occupancyIntervals.empty()) { continue; }
+      if (occupancyIntervals.empty()) {
+        continue;
+      }
 
       double occupancyIntervalEntropy = entropy(occupancyIntervals, 0, 6372, 10);
 
@@ -85,7 +88,9 @@ void VoxelOccupancyIntervalEntropyToVoxelCount::getCloud(PclFramePtr<PointAnalyz
           static_cast<float>((static_cast<double>(it.getCurrentOctreeKey().z) + 0.5f) * this->resolution_ + min_z_);
 
       const vector<int>& occupancyIntervals = it.getLeafContainer().getOccupancyIntervals();
-      if (occupancyIntervals.empty()) { continue; }
+      if (occupancyIntervals.empty()) {
+        continue;
+      }
 
       double occupancyIntervalEntropy = entropy(occupancyIntervals, 0, 6372, 10);
 

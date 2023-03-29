@@ -27,7 +27,9 @@ uint64_t getPeakMemory() {
 int getUsedMemory() {
   struct mach_task_basic_info info;
   mach_msg_type_number_t      infoCount = MACH_TASK_BASIC_INFO_COUNT;
-  if (task_info(mach_task_self(), MACH_TASK_BASIC_INFO, (task_info_t)&info, &infoCount) != KERN_SUCCESS) { return 0; }
+  if (task_info(mach_task_self(), MACH_TASK_BASIC_INFO, (task_info_t)&info, &infoCount) != KERN_SUCCESS) {
+    return 0;
+  }
   return static_cast<size_t>(info.resident_size);
 }
 uint64_t getPeakMemory() {
@@ -39,7 +41,9 @@ uint64_t getPeakMemory() {
 int parseLine(char* pLine) {
   int         iLen = static_cast<int>(strlen(pLine));
   const char* pTmp = pLine;
-  while (*pTmp < '0' || *pTmp > '9') { pTmp++; }
+  while (*pTmp < '0' || *pTmp > '9') {
+    pTmp++;
+  }
   pLine[iLen - 3] = '\0';
   iLen            = atoi(pTmp);
   return iLen;
@@ -53,7 +57,9 @@ int getUsedMemory() {
       if (strncmp(pLine, "VmSize:", 7) == 0) {
         iResult          = static_cast<int>(strlen(pLine));
         const char* pTmp = pLine;
-        while (*pTmp < '0' || *pTmp > '9') { pTmp++; }
+        while (*pTmp < '0' || *pTmp > '9') {
+          pTmp++;
+        }
         pLine[iResult - 3] = '\0';
         iResult            = atoi(pTmp);
         break;
@@ -71,7 +77,9 @@ uint64_t getPeakMemory() {
     while (fgets(pLine, 128, pFile) != NULL) {
       if (strncmp(pLine, "VmPeak:", 7) == 0) {
         const char* pTmp = pLine;
-        while (*pTmp < '0' || *pTmp > '9') { pTmp++; }
+        while (*pTmp < '0' || *pTmp > '9') {
+          pTmp++;
+        }
         pLine[static_cast<int>(strlen(pLine)) - 3] = '\0';
         iResult                                    = atoi(pTmp);
         break;

@@ -4,7 +4,8 @@ namespace jpcc::octree {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <BufferIndex BUFFER_SIZE>
-OctreeCounter<BUFFER_SIZE>::OctreeCounter(const double resolution) : Base(resolution) {}
+OctreeCounter<BUFFER_SIZE>::OctreeCounter(const double resolution) : Base(resolution) {
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <BufferIndex BUFFER_SIZE>

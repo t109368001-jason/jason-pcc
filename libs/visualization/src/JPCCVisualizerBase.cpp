@@ -48,7 +48,9 @@ JPCCVisualizerBase::JPCCVisualizerBase(const VisualizerParameter& param) :
     event.getPoint(point.x, point.y, point.z);
     BOOST_LOG_TRIVIAL(info) << "picked point=" << point;
   });
-  if (param_.windowWidth != 0 && param_.windowHeight != 0) { setSize(param_.windowWidth, param_.windowHeight); }
+  if (param_.windowWidth != 0 && param_.windowHeight != 0) {
+    setSize(param_.windowWidth, param_.windowHeight);
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -63,7 +65,9 @@ void JPCCVisualizerBase::updateOrAddText(const std::string& text, const int ypos
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 int JPCCVisualizerBase::updateText(int* windowSize) {
-  if (!windowSize) { windowSize = getRenderWindow()->GetSize(); }
+  if (!windowSize) {
+    windowSize = getRenderWindow()->GetSize();
+  }
   int textHeight = windowSize[1] - lineHeight_;
 
   if (!param_.description.empty()) {
@@ -83,7 +87,9 @@ int JPCCVisualizerBase::updateText(int* windowSize) {
   return textHeight;
 }
 
-void JPCCVisualizerBase::updateAll() { updateText(nullptr); }
+void JPCCVisualizerBase::updateAll() {
+  updateText(nullptr);
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void JPCCVisualizerBase::registerKeyboardEvent(const KeyboardEvent& callback, const std::string& id) {
@@ -136,7 +142,9 @@ void JPCCVisualizerBase::handleKeyboardEvent(const pcl::visualization::KeyboardE
         break;
     }
   }
-  for (auto& keyboardCallback : keyboardCallbacks_) { keyboardCallback.second(event); }
+  for (auto& keyboardCallback : keyboardCallbacks_) {
+    keyboardCallback.second(event);
+  }
   if (event.getKeyCode() != 0) {
     BOOST_LOG_TRIVIAL(info) << "KeyboardEvent: keyCode=" << event.getKeyCode() << " keyDown=" << event.keyDown();
   }
@@ -144,28 +152,38 @@ void JPCCVisualizerBase::handleKeyboardEvent(const pcl::visualization::KeyboardE
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 RGBColor JPCCVisualizerBase::getTextColor(const std::string& id) {
-  if (rgbColorMap_.find(id) != rgbColorMap_.end()) { return rgbColorMap_[id]; }
+  if (rgbColorMap_.find(id) != rgbColorMap_.end()) {
+    return rgbColorMap_[id];
+  }
   return {1.0, 1.0, 1.0};
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void JPCCVisualizerBase::setPrimaryId(const std::string& primaryId) { primaryId_ = primaryId; }
+void JPCCVisualizerBase::setPrimaryId(const std::string& primaryId) {
+  primaryId_ = primaryId;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void JPCCVisualizerBase::setColor(const std::string& id, const std::string& field) {
   const auto& it = rgbColorMap_.find(id);
-  if (it != rgbColorMap_.end()) { rgbColorMap_.erase(it); }
+  if (it != rgbColorMap_.end()) {
+    rgbColorMap_.erase(it);
+  }
   fieldColorMap_[id] = field;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void JPCCVisualizerBase::setColor(const std::string& id, const double r, const double g, const double b) {
   const auto& it = fieldColorMap_.find(id);
-  if (it != fieldColorMap_.end()) { fieldColorMap_.erase(it); }
+  if (it != fieldColorMap_.end()) {
+    fieldColorMap_.erase(it);
+  }
   rgbColorMap_[id] = {r, g, b};
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void JPCCVisualizerBase::addParameter(const Parameter& parameter) { parameter.getShowTexts(parameterTexts_); }
+void JPCCVisualizerBase::addParameter(const Parameter& parameter) {
+  parameter.getShowTexts(parameterTexts_);
+}
 
 }  // namespace jpcc::visualization

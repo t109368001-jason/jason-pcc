@@ -7,7 +7,8 @@ using namespace po;
 
 #define BACKEND_TYPE_OPT ".backendType"
 
-JPCCEncoderParameter::JPCCEncoderParameter() : JPCCEncoderParameter(JPCC_ENCODER_OPT_PREFIX, __FUNCTION__) {}
+JPCCEncoderParameter::JPCCEncoderParameter() : JPCCEncoderParameter(JPCC_ENCODER_OPT_PREFIX, __FUNCTION__) {
+}
 
 JPCCEncoderParameter::JPCCEncoderParameter(const string& prefix, const string& caption) :
     Parameter(prefix, caption),
@@ -31,11 +32,15 @@ JPCCEncoderParameter::JPCCEncoderParameter(const string& prefix, const string& c
 void JPCCEncoderParameter::notify() {
   backendType = getCoderBackendType(backendType_);
 #if defined(HAVE_MPEG_PCC_TMC2)
-  if (backendType == CoderBackendType::TMC2) { tmc2.notify(); }
+  if (backendType == CoderBackendType::TMC2) {
+    tmc2.notify();
+  }
 #else
   THROW_IF_NOT(backendType != CoderBackendType::TMC2);
 #endif
-  if (backendType == CoderBackendType::TMC3) { tmc3.notify(); }
+  if (backendType == CoderBackendType::TMC3) {
+    tmc3.notify();
+  }
 }
 
 ostream& operator<<(ostream& out, const JPCCEncoderParameter& obj) {
@@ -43,9 +48,13 @@ ostream& operator<<(ostream& out, const JPCCEncoderParameter& obj) {
       (BACKEND_TYPE_OPT, obj.backendType_)  //
       ;
 #if defined(HAVE_MPEG_PCC_TMC2)
-  if (obj.backendType == CoderBackendType::TMC2) { out << obj.tmc2; }
+  if (obj.backendType == CoderBackendType::TMC2) {
+    out << obj.tmc2;
+  }
 #endif
-  if (obj.backendType == CoderBackendType::TMC3) { out << obj.tmc3; }
+  if (obj.backendType == CoderBackendType::TMC3) {
+    out << obj.tmc3;
+  }
   return out;
 }
 

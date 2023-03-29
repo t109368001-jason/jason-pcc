@@ -15,7 +15,8 @@ namespace jpcc {
 VoxelOccupancyChangeCountToVoxelCount::VoxelOccupancyChangeCountToVoxelCount(const float&       frequency,
                                                                              const double&      resolution,
                                                                              const std::string& outputDir) :
-    Analyzer(frequency, resolution, outputDir, "VoxelOccupancyChangeCountToVoxelCount"), octree_(resolution) {}
+    Analyzer(frequency, resolution, outputDir, "VoxelOccupancyChangeCountToVoxelCount"), octree_(resolution) {
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void VoxelOccupancyChangeCountToVoxelCount::compute(PclFrameConstPtr<PointAnalyzer> background,

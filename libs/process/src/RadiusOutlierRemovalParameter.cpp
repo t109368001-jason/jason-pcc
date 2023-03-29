@@ -10,7 +10,8 @@ using namespace po;
 #define MIN_NEIGHBORS_IN_RADIUS_OPT ".minNeighborsInRadius"
 
 RadiusOutlierRemovalParameter::RadiusOutlierRemovalParameter() :
-    RadiusOutlierRemovalParameter(RADIUS_OUTLIER_REMOVAL_OPT_PREFIX, __FUNCTION__) {}
+    RadiusOutlierRemovalParameter(RADIUS_OUTLIER_REMOVAL_OPT_PREFIX, __FUNCTION__) {
+}
 
 RadiusOutlierRemovalParameter::RadiusOutlierRemovalParameter(const string& prefix, const string& caption) :
     Parameter(prefix, caption), enable(false), radius(1.0), minNeighborsInRadius(1) {

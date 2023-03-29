@@ -23,7 +23,8 @@ using namespace Eigen;
 #define TRANSFORMS_OPT ".transforms"
 #define HAVE_GPS_TIME_OPT ".haveGpsTime"
 
-DatasetParameter::DatasetParameter() : DatasetParameter(DATASET_OPT_PREFIX, __FUNCTION__) {}
+DatasetParameter::DatasetParameter() : DatasetParameter(DATASET_OPT_PREFIX, __FUNCTION__) {
+}
 
 DatasetParameter::DatasetParameter(const string& prefix, const string& caption) :
     Parameter(prefix, caption),
@@ -74,20 +75,26 @@ void DatasetParameter::getShowTexts(vector<string>& showTexts) const {
   showTexts.push_back(prefix_ + FRAME_COUNTS_OPT ": " + to_string(getFrameCount()));
 }
 
-void DatasetParameter::notify() { notify(true); }
+void DatasetParameter::notify() {
+  notify(true);
+}
 
 void DatasetParameter::notify(bool isInput) {
   THROW_IF_NOT(!name.empty());
   sensor = getSensor(sensor_);
   THROW_IF_NOT(!type_.empty());
   type = getType(type_);
-  if (preProcessed) { THROW_IF_NOT(type == Type::PLY); }
+  if (preProcessed) {
+    THROW_IF_NOT(type == Type::PLY);
+  }
   THROW_IF_NOT(!folderPrefix.empty());
   THROW_IF_NOT(!folder.empty());
   THROW_IF_NOT(frameCounts.size() == files.size());
   THROW_IF_NOT((startFrameNumbers.empty()) || (startFrameNumbers.size() == files.size()));
   endFrameNumbers.resize(startFrameNumbers.size());
-  for (size_t i = 0; i < startFrameNumbers.size(); i++) { endFrameNumbers[i] = startFrameNumbers[i] + frameCounts[i]; }
+  for (size_t i = 0; i < startFrameNumbers.size(); i++) {
+    endFrameNumbers[i] = startFrameNumbers[i] + frameCounts[i];
+  }
   folderPath = path(folderPrefix) / folder;
   filePaths.resize(files.size());
   for (size_t i = 0; i < files.size(); i++) {
@@ -98,7 +105,9 @@ void DatasetParameter::notify(bool isInput) {
         sprintf(fileName, filePaths[i].string().c_str(), startFrameNumbers[i]);
         THROW_IF_NOT(exists(path(fileName)));
       } else if (type == Type::PLY_SEG) {
-        if (i != 0) { continue; }
+        if (i != 0) {
+          continue;
+        }
         char fileName[4096];
         sprintf(fileName, filePaths[i].string().c_str(), startFrameNumbers[i]);
         THROW_IF_NOT(exists(path(fileName)));
@@ -118,27 +127,41 @@ void DatasetParameter::notify(bool isInput) {
       THROW_IF_NOT(ss.size() == (*transforms[i]).size());
       auto it = ss.begin();
       for (int ii = 0; ii < 4; ii++) {
-        for (int jj = 0; jj < 4; jj++) { (*transforms[i])(ii, jj) = stof(*it++); }
+        for (int jj = 0; jj < 4; jj++) {
+          (*transforms[i])(ii, jj) = stof(*it++);
+        }
       }
     }
   }
 }
 
-size_t DatasetParameter::count() const { return files.size(); }
+size_t DatasetParameter::count() const {
+  return files.size();
+}
 
-string DatasetParameter::getFilePath(const size_t index) const { return filePaths[index].string(); }
+string DatasetParameter::getFilePath(const size_t index) const {
+  return filePaths[index].string();
+}
 
-size_t DatasetParameter::getFrameCounts(const size_t index) const { return frameCounts[index]; }
+size_t DatasetParameter::getFrameCounts(const size_t index) const {
+  return frameCounts[index];
+}
 
-size_t DatasetParameter::getFrameCount() const { return *min_element(frameCounts.begin(), frameCounts.end()); }
+size_t DatasetParameter::getFrameCount() const {
+  return *min_element(frameCounts.begin(), frameCounts.end());
+}
 
-size_t DatasetParameter::getStartFrameNumbers(const size_t index) const { return startFrameNumbers[index]; }
+size_t DatasetParameter::getStartFrameNumbers(const size_t index) const {
+  return startFrameNumbers[index];
+}
 
 size_t DatasetParameter::getStartFrameNumber() const {
   return *max_element(startFrameNumbers.begin(), startFrameNumbers.end());
 }
 
-size_t DatasetParameter::getEndFrameNumbers(const size_t index) const { return endFrameNumbers[index]; }
+size_t DatasetParameter::getEndFrameNumbers(const size_t index) const {
+  return endFrameNumbers[index];
+}
 
 size_t DatasetParameter::getEndFrameNumber() const {
   return *min_element(endFrameNumbers.begin(), endFrameNumbers.end());

@@ -23,7 +23,8 @@ using namespace po;
 #define OUTPUT_SCREENSHOT_DIR_OPT ".outputScreenshotDir"
 #define OUTPUT_SCREENSHOT_BEFORE_NEXT_FRAME_OPT ".outputScreenshotBeforeNextFrame"
 
-VisualizerParameter::VisualizerParameter() : VisualizerParameter(VISUALIZER_OPT_PREFIX, __FUNCTION__) {}
+VisualizerParameter::VisualizerParameter() : VisualizerParameter(VISUALIZER_OPT_PREFIX, __FUNCTION__) {
+}
 
 VisualizerParameter::VisualizerParameter(const string& prefix, const string& caption) :
     Parameter(prefix, caption),
@@ -113,13 +114,19 @@ void VisualizerParameter::notify() {
     }
   }
   if (outputScreenshot) {
-    if (!boost::iends_with(outputScreenshotDir, "/")) { outputScreenshotDir += "/"; }
-    if (!exists(outputScreenshotDir)) { create_directories(outputScreenshotDir); }
+    if (!boost::iends_with(outputScreenshotDir, "/")) {
+      outputScreenshotDir += "/";
+    }
+    if (!exists(outputScreenshotDir)) {
+      create_directories(outputScreenshotDir);
+    }
   }
 }
 
 void VisualizerParameter::getShowTexts(vector<std::string>& showTexts) const {
-  if (outputScreenshot) { showTexts.push_back(prefix_ + OUTPUT_SCREENSHOT_DIR_OPT ": " + outputScreenshotDir); }
+  if (outputScreenshot) {
+    showTexts.push_back(prefix_ + OUTPUT_SCREENSHOT_DIR_OPT ": " + outputScreenshotDir);
+  }
 }
 
 ostream& operator<<(ostream& out, const VisualizerParameter& obj) {

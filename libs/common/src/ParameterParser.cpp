@@ -46,12 +46,18 @@ bool ParameterParser::parse(int argc, char* argv[]) {
     for_each(pOpts_.begin(), pOpts_.end(), [&vm_final](auto& pOpts) { store(pOpts, vm_final); });
 
     for (Parameter* const param : params_) {
-      for (auto& [p1, p2] : param->getConflicts()) { conflicting_options(vm_final, p1, p2); }
-      for (auto& [p1, p2] : param->getDependencies()) { option_dependency(vm_final, p1, p2); }
+      for (auto& [p1, p2] : param->getConflicts()) {
+        conflicting_options(vm_final, p1, p2);
+      }
+      for (auto& [p1, p2] : param->getDependencies()) {
+        option_dependency(vm_final, p1, p2);
+      }
     }
 
     notify(vm_final);
-    for (Parameter* param : params_) { param->notify(); }
+    for (Parameter* param : params_) {
+      param->notify();
+    }
     BOOST_LOG_TRIVIAL(info) << param_;
     return true;
   } catch (exception& e) {
@@ -75,9 +81,13 @@ void ParameterParser::parseConfigs(const variables_map& vmArg) {  // NOLINT(misc
   for (auto it = configs.rbegin(); it != configs.rend(); ++it) {
     const string& config = *it;
     // check if config parsed then return
-    if (pCfgs_.find(config) != pCfgs_.end()) { return; }
+    if (pCfgs_.find(config) != pCfgs_.end()) {
+      return;
+    }
     ifstream ifs(config.c_str());
-    if (!ifs.good()) { BOOST_THROW_EXCEPTION(runtime_error("'" + config + "' not found")); }
+    if (!ifs.good()) {
+      BOOST_THROW_EXCEPTION(runtime_error("'" + config + "' not found"));
+    }
     const parsed_options cfgOpts = parse_config_file(ifs, opts_, true);
     variables_map        vm;
     store(cfgOpts, vm);

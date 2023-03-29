@@ -112,14 +112,22 @@ class JPCCPointSet3 {
 
   void resize(const size_t size) {
     positions_.resize(size);
-    if (hasReflectances()) { reflectances_.resize(size); }
-    if (hasNormals()) { normals_.resize(size); }
+    if (hasReflectances()) {
+      reflectances_.resize(size);
+    }
+    if (hasNormals()) {
+      normals_.resize(size);
+    }
   }
 
   void reserve(const size_t size) {
     positions_.reserve(size);
-    if (hasReflectances()) { reflectances_.reserve(size); }
-    if (hasNormals()) { normals_.reserve(size); }
+    if (hasReflectances()) {
+      reflectances_.reserve(size);
+    }
+    if (hasNormals()) {
+      normals_.reserve(size);
+    }
   }
   void clear() {
     positions_.clear();
@@ -147,8 +155,12 @@ class JPCCPointSet3 {
     assert(index1 < getPointCount());
     assert(index2 < getPointCount());
     std::swap((*this)[index1], (*this)[index2]);
-    if (hasReflectances()) { std::swap(getReflectance(index1), getReflectance(index2)); }
-    if (hasNormals()) { std::swap(getNormal(index1), getNormal(index2)); }
+    if (hasReflectances()) {
+      std::swap(getReflectance(index1), getReflectance(index2));
+    }
+    if (hasNormals()) {
+      std::swap(getNormal(index1), getNormal(index2));
+    }
   }
 
   void addRemoveAttributes(const JPCCPointSet3& ref) {

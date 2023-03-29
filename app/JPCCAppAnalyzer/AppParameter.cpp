@@ -85,7 +85,9 @@ void AppParameter::notify() {
   preProcess.notify();
   normalEstimation.notify();
   visualizerParameter.notify();
-  if (!boost::iends_with(outputDir, "/")) { outputDir += "/"; }
+  if (!boost::iends_with(outputDir, "/")) {
+    outputDir += "/";
+  }
 }
 
 ostream& operator<<(ostream& out, const AppParameter& obj) {

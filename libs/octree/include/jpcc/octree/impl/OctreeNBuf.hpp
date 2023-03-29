@@ -96,7 +96,9 @@ void OctreeNBuf<BUFFER_SIZE, LeafContainerT, BranchContainerT>::getIndicesByFilt
         case pcl::octree::LEAF_NODE: {
           const auto childLeaf = dynamic_cast<LeafNode*>(branchNode->getChildPtr(this->bufferIndex_, childIndex));
 
-          if (filter(branchNode->getBufferPattern(childIndex))) { childLeaf->getContainer().getPointIndices(indices); }
+          if (filter(branchNode->getBufferPattern(childIndex))) {
+            childLeaf->getContainer().getPointIndices(indices);
+          }
           break;
         }
         default: break;
@@ -210,7 +212,9 @@ bool OctreeNBuf<BUFFER_SIZE, LeafContainerT, BranchContainerT>::deleteBufferRecu
 
           if (noChild) {
             delete (childNode);
-            if (bufferIndex == this->bufferIndex_) { this->branch_count_--; }
+            if (bufferIndex == this->bufferIndex_) {
+              this->branch_count_--;
+            }
             this->branch_counts_[bufferIndex]--;
           }
           break;
@@ -218,7 +222,9 @@ bool OctreeNBuf<BUFFER_SIZE, LeafContainerT, BranchContainerT>::deleteBufferRecu
         case pcl::octree::LEAF_NODE: {
           delete (childNode);
           branchNode.setChildPtr(bufferIndex, childIndex, nullptr);
-          if (bufferIndex == this->bufferIndex_) { this->leaf_count_--; }
+          if (bufferIndex == this->bufferIndex_) {
+            this->leaf_count_--;
+          }
           this->leaf_counts_[bufferIndex]--;
           break;
         }
@@ -235,7 +241,9 @@ bool OctreeNBuf<BUFFER_SIZE, LeafContainerT, BranchContainerT>::deleteBufferRecu
         break;
       }
     }
-    if (!noChild) { break; }
+    if (!noChild) {
+      break;
+    }
   }
   return noChild;
 }

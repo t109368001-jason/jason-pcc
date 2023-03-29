@@ -15,7 +15,8 @@ JPCCContext::JPCCContext(const std::string& compressedStreamPathPrefix) :
     dynamic_(),
     static_(),
     staticAdded_(),
-    staticRemoved_() {}
+    staticRemoved_() {
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void JPCCContext::clear() {
@@ -103,12 +104,20 @@ void JPCCContext::ifsSeekgEnd() {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 bool JPCCContext::anyEof() const {
-  if (dynamic_->eof()) { return true; }
+  if (dynamic_->eof()) {
+    return true;
+  }
   if (segmentationOutputType_ == SegmentationOutputType::DYNAMIC_STATIC) {
-    if (static_->eof()) { return true; }
+    if (static_->eof()) {
+      return true;
+    }
   } else if (segmentationOutputType_ == SegmentationOutputType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED) {
-    if (staticAdded_->eof()) { return true; }
-    if (staticRemoved_->eof()) { return true; }
+    if (staticAdded_->eof()) {
+      return true;
+    }
+    if (staticRemoved_->eof()) {
+      return true;
+    }
   }
   return false;
 }
@@ -117,7 +126,9 @@ bool JPCCContext::anyEof() const {
 void JPCCContext::convertToPclBuild(bool parallel) {
   pclFrames_.resize(frames_.size());
   if (!parallel) {
-    for (size_t i = 0; i < frames_.size(); i++) { pclFrames_[i] = frames_[i]->toPcl<PointSegmentation>(); }
+    for (size_t i = 0; i < frames_.size(); i++) {
+      pclFrames_[i] = frames_[i]->toPcl<PointSegmentation>();
+    }
   } else {
     const auto range = boost::counting_range<size_t>(0, frames_.size());
     std::for_each(std::execution::par, range.begin(), range.end(),

@@ -10,7 +10,8 @@ using namespace po;
 #define STDDEV_MUL_THRESH_OPT ".stddevMulThresh"
 
 StatisticalOutlierRemovalParameter::StatisticalOutlierRemovalParameter() :
-    StatisticalOutlierRemovalParameter(STATISTICAL_OUTLIER_REMOVAL_OPT_PREFIX, __FUNCTION__) {}
+    StatisticalOutlierRemovalParameter(STATISTICAL_OUTLIER_REMOVAL_OPT_PREFIX, __FUNCTION__) {
+}
 
 StatisticalOutlierRemovalParameter::StatisticalOutlierRemovalParameter(const string& prefix, const string& caption) :
     Parameter(prefix, caption), enable(false), meanK(50), stddevMulThresh(1.0) {

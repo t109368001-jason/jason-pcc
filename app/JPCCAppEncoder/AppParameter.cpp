@@ -53,7 +53,9 @@ void AppParameter::notify() {
   jpccEncoderStatic.notify();
   normalEstimation.notify();
   metricParameter.notify();
-  if (!parallel) { groupOfFramesSize = 1; }
+  if (!parallel) {
+    groupOfFramesSize = 1;
+  }
 }
 
 ostream& operator<<(ostream& out, const AppParameter& obj) {

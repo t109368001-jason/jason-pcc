@@ -7,7 +7,8 @@ namespace jpcc::visualization {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-JPCCVisualizer<PointT>::JPCCVisualizer(const VisualizerParameter& param) : JPCCVisualizerBase(param) {}
+JPCCVisualizer<PointT>::JPCCVisualizer(const VisualizerParameter& param) : JPCCVisualizerBase(param) {
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
@@ -25,7 +26,9 @@ template <typename PointT>
 int JPCCVisualizer<PointT>::updateText(int* windowSize) {
   int textHeight = JPCCVisualizerBase::updateText(windowSize);
   if (textHeight <= 0) {
-    if (!windowSize) { windowSize = getRenderWindow()->GetSize(); }
+    if (!windowSize) {
+      windowSize = getRenderWindow()->GetSize();
+    }
     textHeight = windowSize[1] - lineHeight_;
   }
 
@@ -98,18 +101,26 @@ void JPCCVisualizer<PointT>::nextFrame() {
   std::lock_guard<std::recursive_mutex> lock(mutex_);
 
   const auto& it = queueMap_.find(primaryId_);
-  if (it == queueMap_.end()) { return; }
+  if (it == queueMap_.end()) {
+    return;
+  }
 
-  if (param_.outputScreenshot && param_.outputScreenshotBeforeNextFrame) { saveScreenshot(); }
+  if (param_.outputScreenshot && param_.outputScreenshotBeforeNextFrame) {
+    saveScreenshot();
+  }
 
   for (auto& [id, queue] : queueMap_) {
-    if (queue.empty()) { continue; }
+    if (queue.empty()) {
+      continue;
+    }
     frameMap_[id] = queue.front();
     queue.pop();
   }
   updateAll();
 
-  if (param_.outputScreenshot && !param_.outputScreenshotBeforeNextFrame) { saveScreenshot(); }
+  if (param_.outputScreenshot && !param_.outputScreenshotBeforeNextFrame) {
+    saveScreenshot();
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -127,7 +138,9 @@ void JPCCVisualizer<PointT>::handleKeyboardEvent(const pcl::visualization::Keybo
         break;
       case 'j':
       case 'J':
-        if (event.isShiftPressed() && !event.isCtrlPressed() && !event.isAltPressed()) { saveScreenshot(); }
+        if (event.isShiftPressed() && !event.isCtrlPressed() && !event.isAltPressed()) {
+          saveScreenshot();
+        }
         break;
       case 'a':
       case 'A':
@@ -161,7 +174,9 @@ void JPCCVisualizer<PointT>::enqueue(const GroupOfFrameMap& framesMap) {
   GroupOfPclFrameMap<PointT> pclFramesMap;
   for (const auto& [id, frames] : framesMap) {
     GroupOfPclFrame<PointT> pclFrames;
-    for (auto& frame : frames) { pclFrames.push_back(frame->template toPcl<PointT>()); }
+    for (auto& frame : frames) {
+      pclFrames.push_back(frame->template toPcl<PointT>());
+    }
     pclFramesMap.insert_or_assign(id, pclFrames);
   }
   this->enqueue(pclFramesMap);
@@ -172,12 +187,18 @@ template <typename PointT>
 void JPCCVisualizer<PointT>::enqueue(const GroupOfPclFrameMap<PointT>& framesMap) {
   std::lock_guard<std::recursive_mutex> lock(mutex_);
   for (const auto& [id, frames] : framesMap) {
-    if (queueMap_.find(id) == queueMap_.end()) { queueMap_[id] = PclFrameQueue(); }
+    if (queueMap_.find(id) == queueMap_.end()) {
+      queueMap_[id] = PclFrameQueue();
+    }
     PclFrameQueue& queue = queueMap_[id];
-    for (const PclFramePtr<PointT>& frame : frames) { queue.push(frame); }
+    for (const PclFramePtr<PointT>& frame : frames) {
+      queue.push(frame);
+    }
   }
   updateQueue();
-  if (frameMap_.empty()) { nextFrame(); }
+  if (frameMap_.empty()) {
+    nextFrame();
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -214,7 +235,9 @@ bool JPCCVisualizer<PointT>::isFull() {
   std::lock_guard<std::recursive_mutex> lock(mutex_);
 
   const auto it = queueMap_.find(primaryId_);
-  if (it == queueMap_.end()) { return false; }
+  if (it == queueMap_.end()) {
+    return false;
+  }
   return it->second.size() >= param_.bufferSize;
 }
 
@@ -224,7 +247,9 @@ bool JPCCVisualizer<PointT>::isEmpty() {
   std::lock_guard<std::recursive_mutex> lock(mutex_);
 
   const auto it = queueMap_.find(primaryId_);
-  if (it == queueMap_.end()) { return true; }
+  if (it == queueMap_.end()) {
+    return true;
+  }
   return it->second.empty();
 }
 

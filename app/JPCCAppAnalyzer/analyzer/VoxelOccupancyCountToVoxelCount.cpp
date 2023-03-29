@@ -14,7 +14,8 @@ namespace jpcc {
 VoxelOccupancyCountToVoxelCount::VoxelOccupancyCountToVoxelCount(const float&  frequency,
                                                                  const double& resolution,
                                                                  const string& outputDir) :
-    VoxelPointCountToVoxelCount(frequency, resolution, outputDir, "VoxelOccupancyCountToVoxelCount") {}
+    VoxelPointCountToVoxelCount(frequency, resolution, outputDir, "VoxelOccupancyCountToVoxelCount") {
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void VoxelOccupancyCountToVoxelCount::compute(PclFrameConstPtr<PointAnalyzer> background,

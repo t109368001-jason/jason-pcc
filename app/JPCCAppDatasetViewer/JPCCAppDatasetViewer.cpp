@@ -63,10 +63,14 @@ void main_(const AppParameter& parameter, Stopwatch& clock) {
 
       viewer->enqueue(GroupOfFrameMap{{primaryId, context.getStaticFrames()}, {"dynamic", context.getDynamicFrames()}});
 
-      while (run && viewer->isFull()) { this_thread::sleep_for(100ms); }
+      while (run && viewer->isFull()) {
+        this_thread::sleep_for(100ms);
+      }
       context.getStartFrameNumber() += (Index)context.getFrames().size();
     }
-    while (run && !viewer->isEmpty()) { this_thread::sleep_for(100ms); }
+    while (run && !viewer->isEmpty()) {
+      this_thread::sleep_for(100ms);
+    }
     run = false;
   };
 
@@ -91,16 +95,24 @@ void main_(const AppParameter& parameter, Stopwatch& clock) {
 
         viewer->enqueue(*framesMap);
 
-        while (run && viewer->isFull()) { this_thread::sleep_for(100ms); }
+        while (run && viewer->isFull()) {
+          this_thread::sleep_for(100ms);
+        }
 
-        if (frames.size() < groupOfFramesSize) { break; }
+        if (frames.size() < groupOfFramesSize) {
+          break;
+        }
 
         startFrameNumber += groupOfFramesSize;
       }
 
-      while (run && !viewer->isEmpty()) { this_thread::sleep_for(100ms); }
+      while (run && !viewer->isEmpty()) {
+        this_thread::sleep_for(100ms);
+      }
 
-    } catch (exception& e) { BOOST_LOG_TRIVIAL(error) << e.what(); }
+    } catch (exception& e) {
+      BOOST_LOG_TRIVIAL(error) << e.what();
+    }
     run = false;
   };
   shared_ptr<thread> loadThread;
@@ -114,7 +126,9 @@ void main_(const AppParameter& parameter, Stopwatch& clock) {
     this_thread::sleep_for(100ms);
   }
   run = false;
-  if (loadThread && loadThread->joinable()) { loadThread->join(); }
+  if (loadThread && loadThread->joinable()) {
+    loadThread->join();
+  }
 }
 
 int main(int argc, char* argv[]) {
@@ -124,7 +138,9 @@ int main(int argc, char* argv[]) {
   try {
     ParameterParser pp;
     pp.add(parameter);
-    if (!pp.parse(argc, argv)) { return 1; }
+    if (!pp.parse(argc, argv)) {
+      return 1;
+    }
     BOOST_LOG_TRIVIAL(info) << parameter;
   } catch (exception& e) {
     BOOST_LOG_TRIVIAL(error) << e.what();
@@ -145,7 +161,9 @@ int main(int argc, char* argv[]) {
     BOOST_LOG_TRIVIAL(info) << "Processing time (wall): " << static_cast<float>(totalWall) / 1000.0 << " s";
     BOOST_LOG_TRIVIAL(info) << "Processing time (user): " << static_cast<float>(totalUser) / 1000.0 << " s";
     BOOST_LOG_TRIVIAL(info) << "Peak memory: " << getPeakMemory() << " KB";
-  } catch (exception& e) { BOOST_LOG_TRIVIAL(error) << e.what(); }
+  } catch (exception& e) {
+    BOOST_LOG_TRIVIAL(error) << e.what();
+  }
 
   BOOST_LOG_TRIVIAL(info) << "JPCC App Dataset Viewer End";
   return 0;

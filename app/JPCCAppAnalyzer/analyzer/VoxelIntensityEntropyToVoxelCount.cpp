@@ -18,7 +18,8 @@ namespace jpcc {
 VoxelIntensityEntropyToVoxelCount::VoxelIntensityEntropyToVoxelCount(const float&       frequency,
                                                                      const double&      resolution,
                                                                      const std::string& outputDir) :
-    Analyzer(frequency, resolution, outputDir, "VoxelIntensityEntropyToVoxelCount"), octree_(resolution) {}
+    Analyzer(frequency, resolution, outputDir, "VoxelIntensityEntropyToVoxelCount"), octree_(resolution) {
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void VoxelIntensityEntropyToVoxelCount::compute(PclFrameConstPtr<PointAnalyzer> background,
@@ -36,7 +37,9 @@ void VoxelIntensityEntropyToVoxelCount::finalCompute() {
     octree_.switchBuffers(bufferIndex);
     for (auto it = octree_.leaf_depth_begin(), end = octree_.leaf_depth_end(); it != end; ++it) {
       const vector<float>& intensities = it.getLeafContainer().getIntensities();
-      if (intensities.empty()) { continue; }
+      if (intensities.empty()) {
+        continue;
+      }
 
       double intensityEntropy = entropy(intensities, 0.0f, 1.0f, 0.04f);
 
@@ -78,7 +81,9 @@ void VoxelIntensityEntropyToVoxelCount::getCloud(PclFramePtr<PointAnalyzer>& clo
           static_cast<float>((static_cast<double>(it.getCurrentOctreeKey().z) + 0.5f) * this->resolution_ + min_z_);
 
       const vector<float>& intensities = it.getLeafContainer().getIntensities();
-      if (intensities.empty()) { continue; }
+      if (intensities.empty()) {
+        continue;
+      }
 
       double intensityEntropy = entropy(intensities, 0.0f, 1.0f, 0.04f);
 

@@ -90,7 +90,9 @@ void encode(const AppParameter& parameter, JPCCMetric& metric) {
       GroupOfPclFrame<pcl::PointXYZINormal> pclFrames;
       {  // Convert to pcl (build)
         ScopeStopwatch clock = metric.start("ConvertToPcl (Build)", frameNumber);
-        for (const auto& frame : frames) { pclFrames.push_back(frame->toPcl<pcl::PointXYZINormal>()); }
+        for (const auto& frame : frames) {
+          pclFrames.push_back(frame->toPcl<pcl::PointXYZINormal>());
+        }
       }
       {  // build
         ScopeStopwatch clock = metric.start("Build", frameNumber);
@@ -218,7 +220,9 @@ int main(int argc, char* argv[]) {
   try {
     ParameterParser pp;
     pp.add(parameter);
-    if (!pp.parse(argc, argv)) { return 1; }
+    if (!pp.parse(argc, argv)) {
+      return 1;
+    }
     BOOST_LOG_TRIVIAL(info) << parameter;
   } catch (exception& e) {
     BOOST_LOG_TRIVIAL(error) << e.what();

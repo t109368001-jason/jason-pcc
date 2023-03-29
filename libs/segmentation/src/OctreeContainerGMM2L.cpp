@@ -9,8 +9,12 @@ OctreeContainerGMM2L::OctreeContainerGMM2L() : octree::OctreeContainerLastPoint<
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void OctreeContainerGMM2L::reset() {
-  for (auto& gmm : gmmArray_) { gmm.reset(); }
-  for (auto& trainSamples : trainSamplesArray_) { trainSamples = make_shared<std::vector<Intensity>>(); }
+  for (auto& gmm : gmmArray_) {
+    gmm.reset();
+  }
+  for (auto& trainSamples : trainSamplesArray_) {
+    trainSamples = make_shared<std::vector<Intensity>>();
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -20,13 +24,19 @@ void OctreeContainerGMM2L::addPoint(const PointSegmentation& point) {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-bool OctreeContainerGMM2L::isBuilt(const int index) const { return gmmArray_[index].isBuilt(); }
+bool OctreeContainerGMM2L::isBuilt(const int index) const {
+  return gmmArray_[index].isBuilt();
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void OctreeContainerGMM2L::addTrainSample() {
-  if (std::isnan(this->lastPoint_.x)) { return; }
+  if (std::isnan(this->lastPoint_.x)) {
+    return;
+  }
   for (auto& trainSamples : trainSamplesArray_) {
-    if (!trainSamples) { continue; }
+    if (!trainSamples) {
+      continue;
+    }
     trainSamples->push_back(Intensity(this->lastPoint_.intensity));
   }
 }
@@ -50,14 +60,22 @@ bool OctreeContainerGMM2L::isStatic(const std::vector<double>& staticThreshold1V
                                     const bool                 lastIsStatic) {
   if (isnan(this->lastPoint_.x)) {
     if (!lastIsStatic) {
-      if (gmmArray_[LONG_INDEX].getStaticProbability() > nullStaticThreshold1Vector[LONG_INDEX]) { return true; }
+      if (gmmArray_[LONG_INDEX].getStaticProbability() > nullStaticThreshold1Vector[LONG_INDEX]) {
+        return true;
+      }
     } else {
-      if (gmmArray_[LONG_INDEX].getStaticProbability() > nullStaticThreshold2Vector[LONG_INDEX]) { return true; }
+      if (gmmArray_[LONG_INDEX].getStaticProbability() > nullStaticThreshold2Vector[LONG_INDEX]) {
+        return true;
+      }
     }
     if (!lastIsStatic) {
-      if (gmmArray_[SHORT_INDEX].getStaticProbability() > nullStaticThreshold1Vector[SHORT_INDEX]) { return true; }
+      if (gmmArray_[SHORT_INDEX].getStaticProbability() > nullStaticThreshold1Vector[SHORT_INDEX]) {
+        return true;
+      }
     } else {
-      if (gmmArray_[SHORT_INDEX].getStaticProbability() > nullStaticThreshold2Vector[SHORT_INDEX]) { return true; }
+      if (gmmArray_[SHORT_INDEX].getStaticProbability() > nullStaticThreshold2Vector[SHORT_INDEX]) {
+        return true;
+      }
     }
     return false;
   } else {

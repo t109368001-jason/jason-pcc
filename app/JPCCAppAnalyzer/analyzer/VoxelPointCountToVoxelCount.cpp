@@ -11,13 +11,15 @@ VoxelPointCountToVoxelCount::VoxelPointCountToVoxelCount(const float&  frequency
                                                          const double& resolution,
                                                          const string& outputDir,
                                                          const string& title) :
-    Analyzer(frequency, resolution, outputDir, title), octree_(resolution) {}
+    Analyzer(frequency, resolution, outputDir, title), octree_(resolution) {
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 VoxelPointCountToVoxelCount::VoxelPointCountToVoxelCount(const float&  frequency,
                                                          const double& resolution,
                                                          const string& outputDir) :
-    VoxelPointCountToVoxelCount(frequency, resolution, outputDir, "VoxelPointCountToVoxelCount") {}
+    VoxelPointCountToVoxelCount(frequency, resolution, outputDir, "VoxelPointCountToVoxelCount") {
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void VoxelPointCountToVoxelCount::compute(PclFrameConstPtr<PointAnalyzer> background,

@@ -20,7 +20,9 @@ void loadPly(GroupOfFrame&      frames,
   frames.clear();
   frames.resize(frameCount);
   std::vector<size_t> frameNumbers;
-  for (size_t i = startFrameNumber; i < endFrameNumber; i++) { frameNumbers.push_back(i); }
+  for (size_t i = startFrameNumber; i < endFrameNumber; i++) {
+    frameNumbers.push_back(i);
+  }
   auto func = [&](const size_t frameNumber) {
     char fileName[4096];
     sprintf(fileName, filePath.c_str(), frameNumber);
@@ -43,7 +45,9 @@ void loadPly(GroupOfFrame&      frames,
 //////////////////////////////////////////////////////////////////////////////////////////////
 void savePly(const GroupOfFrame& frames, const std::string& filePath, const bool parallel) {
   auto func = [&](const FramePtr& frame) {
-    if (!frame || frame->getPointCount() == 0) { return; }
+    if (!frame || frame->getPointCount() == 0) {
+      return;
+    }
     char fileName[4096];
     sprintf(fileName, filePath.c_str(), frame->getFrameNumber());
     const bool result = frame->write(std::string(fileName), true);
@@ -51,7 +55,9 @@ void savePly(const GroupOfFrame& frames, const std::string& filePath, const bool
   };
 
   if (!parallel) {
-    for (const auto& frame : frames) { func(frame); }
+    for (const auto& frame : frames) {
+      func(frame);
+    }
   } else {
     const auto range = boost::counting_range<size_t>(0, frames.size());
     std::for_each(std::execution::par, range.begin(), range.end(),

@@ -13,7 +13,9 @@ Cluster::Cluster(const std::vector<Intensity>& samples, const double weight, con
   mean_ = std::accumulate(samples.begin(), samples.end(), Intensity{0});
   mean_ /= static_cast<double>(samples.size());
   variance_ = 0;
-  for (auto& sample : samples) { variance_ += pow(sample - mean_, 2); }
+  for (auto& sample : samples) {
+    variance_ += pow(sample - mean_, 2);
+  }
   variance_ = variance_ / static_cast<double>(samples.size());
   checkVariance(minimumVariance);
   assert(!isnan(mean_));
@@ -60,22 +62,34 @@ void Cluster::addSample(const Intensity sample, const bool matched, const double
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void Cluster::checkVariance(const double minimumVariance) {
-  if (variance_ < minimumVariance) { variance_ = minimumVariance; }
+  if (variance_ < minimumVariance) {
+    variance_ = minimumVariance;
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-double Cluster::getWeight() const { return weight_; }
+double Cluster::getWeight() const {
+  return weight_;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-double& Cluster::getWeight() { return weight_; }
+double& Cluster::getWeight() {
+  return weight_;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-double Cluster::getMean() const { return mean_; }
+double Cluster::getMean() const {
+  return mean_;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-double Cluster::getVariance() const { return variance_; }
+double Cluster::getVariance() const {
+  return variance_;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-bool Cluster::operator<(const Cluster& obj) const { return mean_ < obj.mean_; }
+bool Cluster::operator<(const Cluster& obj) const {
+  return mean_ < obj.mean_;
+}
 
 }  // namespace jpcc::math

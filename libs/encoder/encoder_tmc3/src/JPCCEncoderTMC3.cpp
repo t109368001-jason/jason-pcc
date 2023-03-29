@@ -29,22 +29,32 @@ class PCCTMC3Encoder3LambdaCallbacks : public PCCTMC3Encoder3::Callbacks {
 PCCTMC3Encoder3LambdaCallbacks::PCCTMC3Encoder3LambdaCallbacks(
     const std::function<void(const PayloadBuffer& buffer)>& onOutputBuffer,
     const std::function<void(const PCCPointSet3& set3)>&    onPostRecolour) :
-    onOutputBuffer_(onOutputBuffer), onPostRecolour_(onPostRecolour) {}
+    onOutputBuffer_(onOutputBuffer), onPostRecolour_(onPostRecolour) {
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void PCCTMC3Encoder3LambdaCallbacks::onOutputBuffer(const PayloadBuffer& buffer) { onOutputBuffer_(buffer); }
+void PCCTMC3Encoder3LambdaCallbacks::onOutputBuffer(const PayloadBuffer& buffer) {
+  onOutputBuffer_(buffer);
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void PCCTMC3Encoder3LambdaCallbacks::onPostRecolour(const PCCPointSet3& set3) { onPostRecolour_(set3); }
+void PCCTMC3Encoder3LambdaCallbacks::onPostRecolour(const PCCPointSet3& set3) {
+  onPostRecolour_(set3);
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-JPCCEncoderTMC3::JPCCEncoderTMC3(const JPCCEncoderTMC3Parameter parameter) : JPCCEncoder(), parameter_(parameter) {}
+JPCCEncoderTMC3::JPCCEncoderTMC3(const JPCCEncoderTMC3Parameter parameter) : JPCCEncoder(), parameter_(parameter) {
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-bool JPCCEncoderTMC3::isConvertToCoderTypeThreadSafe() { return true; }
+bool JPCCEncoderTMC3::isConvertToCoderTypeThreadSafe() {
+  return true;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-bool JPCCEncoderTMC3::isEncodeThreadSafe() { return true; }
+bool JPCCEncoderTMC3::isEncodeThreadSafe() {
+  return true;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void JPCCEncoderTMC3::convertToCoderType(const FramePtr& frame, CoderFramePtr& coderFrame) {

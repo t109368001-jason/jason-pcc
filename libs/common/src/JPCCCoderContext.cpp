@@ -4,7 +4,8 @@ namespace jpcc {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 JPCCCoderContext::JPCCCoderContext(const std::string& compressedStreamPath) :
-    compressedStreamPath_(compressedStreamPath), header_({0}), startFrameNumber_(0), frames_(), coderFrames_(), fs_() {}
+    compressedStreamPath_(compressedStreamPath), header_({0}), startFrameNumber_(0), frames_(), coderFrames_(), fs_() {
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void JPCCCoderContext::writeHeader(double resolution, CoderBackendType backendType) {
@@ -27,7 +28,9 @@ void JPCCCoderContext::clear() {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void JPCCCoderContext::flush() { fs_.flush(); }
+void JPCCCoderContext::flush() {
+  fs_.flush();
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void JPCCCoderContext::ifsSeekgEnd() {
@@ -37,6 +40,8 @@ void JPCCCoderContext::ifsSeekgEnd() {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-bool JPCCCoderContext::eof() const { return fs_.eof(); }
+bool JPCCCoderContext::eof() const {
+  return fs_.eof();
+}
 
 }  // namespace jpcc

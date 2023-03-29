@@ -22,10 +22,14 @@ JPCCEncoderTMC2::JPCCEncoderTMC2(const JPCCEncoderTMC2Parameter parameter) :
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-bool JPCCEncoderTMC2::isConvertToCoderTypeThreadSafe() { return true; }
+bool JPCCEncoderTMC2::isConvertToCoderTypeThreadSafe() {
+  return true;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-bool JPCCEncoderTMC2::isEncodeThreadSafe() { return false; }
+bool JPCCEncoderTMC2::isEncodeThreadSafe() {
+  return false;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void JPCCEncoderTMC2::convertToCoderType(const FramePtr& frame, CoderFramePtr& coderFrame) {
@@ -75,7 +79,9 @@ void JPCCEncoderTMC2::encode(const CoderGroupOfFrame& coderFrames, std::ostream&
   size_t headerSize = bitstreamWriter.write(ssvu, bitstream, _params->forcedSsvhUnitSizePrecisionBytes_);
   bitstreamStat.incrHeader(headerSize);
 
-  for (auto& data : bitstream.vector()) { os << data; }
+  for (auto& data : bitstream.vector()) {
+    os << data;
+  }
 }
 
 }  // namespace jpcc::encoder

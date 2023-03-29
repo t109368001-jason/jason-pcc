@@ -22,7 +22,9 @@ void kmeans(const std::vector<Intensity>&        samples,
   int  k;
   bool isConverged = false;
   while (!isConverged) {
-    for (k = 0; k < K; k++) { clusters[k].clear(); }
+    for (k = 0; k < K; k++) {
+      clusters[k].clear();
+    }
 
     for (const auto& sample : samples) {
       size_t minIndex    = 0;
@@ -40,7 +42,9 @@ void kmeans(const std::vector<Intensity>&        samples,
     for (k = 0; k < K; k++) {
       if (clusters[k].empty()) {
         for (int k2 = 0; k2 < K; k2++) {
-          if (clusters[k2].size() < 2) { continue; }
+          if (clusters[k2].size() < 2) {
+            continue;
+          }
           std::vector<Intensity> uniques;
           for (const auto& sample : clusters[k2]) {
             bool exists = false;
@@ -52,7 +56,9 @@ void kmeans(const std::vector<Intensity>&        samples,
             }
             if (!exists) {
               uniques.push_back(sample);
-              if (uniques.size() > 1) { break; }
+              if (uniques.size() > 1) {
+                break;
+              }
             }
           }
           if (uniques.size() > 1) {
@@ -68,7 +74,9 @@ void kmeans(const std::vector<Intensity>&        samples,
 
     isConverged = true;
     for (k = 0; k < K; k++) {
-      if (centroids[k] != previousCentroids[k]) { isConverged = false; }
+      if (centroids[k] != previousCentroids[k]) {
+        isConverged = false;
+      }
     }
     copy(centroids.begin(), centroids.end(), previousCentroids.begin());
   }

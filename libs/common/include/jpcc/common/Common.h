@@ -10,9 +10,11 @@
 
 #define JPCC_NOT_USED(x)
 
-#define THROW_IF_NOT(expression)                                                 \
-  do {                                                                           \
-    if (!(expression)) { BOOST_THROW_EXCEPTION(std::logic_error(#expression)); } \
+#define THROW_IF_NOT(expression)                            \
+  do {                                                      \
+    if (!(expression)) {                                    \
+      BOOST_THROW_EXCEPTION(std::logic_error(#expression)); \
+    }                                                       \
   } while (0)
 
 namespace jpcc {

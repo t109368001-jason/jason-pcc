@@ -18,20 +18,28 @@ void OctreeContainerOccupancyChangeCount::reset() {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void OctreeContainerOccupancyChangeCount::addPointIndex(const Index& index) { current_ = true; }
+void OctreeContainerOccupancyChangeCount::addPointIndex(const Index& index) {
+  current_ = true;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void OctreeContainerOccupancyChangeCount::resetCurrent() { current_ = false; }
+void OctreeContainerOccupancyChangeCount::resetCurrent() {
+  current_ = false;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void OctreeContainerOccupancyChangeCount::compute() {
-  if (previous_ == current_) { return; }
+  if (previous_ == current_) {
+    return;
+  }
 
   count_++;
   previous_ = current_;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-size_t OctreeContainerOccupancyChangeCount::getCount() const { return count_; }
+size_t OctreeContainerOccupancyChangeCount::getCount() const {
+  return count_;
+}
 
 }  // namespace jpcc::octree

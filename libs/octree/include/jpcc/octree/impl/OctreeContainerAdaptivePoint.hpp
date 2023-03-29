@@ -12,7 +12,9 @@ void OctreeContainerAdaptivePoint<PointT>::reset() {
   adaptivePoint_.x = numeric_limits<float>::quiet_NaN();
   adaptivePoint_.y = numeric_limits<float>::quiet_NaN();
   adaptivePoint_.z = numeric_limits<float>::quiet_NaN();
-  if constexpr (pcl::traits::has_intensity_v<PointT>) { adaptivePoint_.intensity = numeric_limits<float>::quiet_NaN(); }
+  if constexpr (pcl::traits::has_intensity_v<PointT>) {
+    adaptivePoint_.intensity = numeric_limits<float>::quiet_NaN();
+  }
   adaptivePoint_.normal_x  = numeric_limits<float>::quiet_NaN();
   adaptivePoint_.normal_y  = numeric_limits<float>::quiet_NaN();
   adaptivePoint_.normal_z  = numeric_limits<float>::quiet_NaN();
@@ -28,12 +30,16 @@ void OctreeContainerAdaptivePoint<PointT>::addPoint(const PointT& point) {
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void OctreeContainerAdaptivePoint<PointT>::updateAdaptivePoint(double alpha) {
-  if (std::isnan(this->lastPoint_.x)) { return; }
+  if (std::isnan(this->lastPoint_.x)) {
+    return;
+  }
   if (std::isnan(adaptivePoint_.x)) {
     adaptivePoint_.x = this->lastPoint_.x;
     adaptivePoint_.y = this->lastPoint_.y;
     adaptivePoint_.z = this->lastPoint_.z;
-    if constexpr (pcl::traits::has_intensity_v<PointT>) { adaptivePoint_.intensity = this->lastPoint_.intensity; }
+    if constexpr (pcl::traits::has_intensity_v<PointT>) {
+      adaptivePoint_.intensity = this->lastPoint_.intensity;
+    }
     if constexpr (pcl::traits::has_normal_v<PointT>) {
       adaptivePoint_.normal_x  = this->lastPoint_.normal_x;
       adaptivePoint_.normal_y  = this->lastPoint_.normal_y;

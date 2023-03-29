@@ -13,7 +13,8 @@
 namespace jpcc::process {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-PreProcessor::PreProcessor(PreProcessParameter param) : param_(std::move(param)) {}
+PreProcessor::PreProcessor(PreProcessParameter param) : param_(std::move(param)) {
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void PreProcessor::process(GroupOfFrame&             groupOfFrame,
@@ -23,10 +24,14 @@ void PreProcessor::process(GroupOfFrame&             groupOfFrame,
     GroupOfFrame removed;
     if (removedMap) {
       removed.resize(groupOfFrame.size());
-      for (auto& frame : removed) { frame = jpcc::make_shared<Frame>(); }
+      for (auto& frame : removed) {
+        frame = jpcc::make_shared<Frame>();
+      }
     }
     applyAlgorithm(algorithm, groupOfFrame, removed, parallel);
-    if (removedMap) { removedMap->insert_or_assign(algorithm, removed); }
+    if (removedMap) {
+      removedMap->insert_or_assign(algorithm, removed);
+    }
   }
 }
 
@@ -73,7 +78,9 @@ void PreProcessor::applyAlgorithm(const std::string& algorithm, const FramePtr& 
   }
   auto _frame = jpcc::make_shared<Frame>(*frame);
   _frame->subset(*frame, indices);
-  if (removed) { _frame->subset(*removed, removedIndices); }
+  if (removed) {
+    _frame->subset(*removed, removedIndices);
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -90,7 +97,9 @@ void radiusOutlierRemoval(Frame& frame, const float radius, const int minNeighbo
     resultSet.init();
     bool ret = kdtree.index->radiusSearchCustomCallback(&pointDouble[0], resultSet, nanoflann::SearchParams(10));
     THROW_IF_NOT(ret);
-    if ((indicesDists.size() - 1) >= minNeighborsInRadius) { indices.push_back(i); }
+    if ((indicesDists.size() - 1) >= minNeighborsInRadius) {
+      indices.push_back(i);
+    }
   }
 }
 
@@ -120,7 +129,9 @@ void radiusOutlierRemoval(
 void conditionalRemoval(Frame& frame, const Condition& condition, Indices& indices) {
   for (Index i = 0; i < frame.getPointCount(); i++) {
     bool predict = condition.predict((frame)[i]);
-    if (predict) { indices.push_back(i); }
+    if (predict) {
+      indices.push_back(i);
+    }
   }
 }
 

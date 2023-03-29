@@ -16,8 +16,12 @@ void JPCCHeader::read(std::istream& is) {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 bool JPCCHeader::operator==(const JPCCHeader& other) const {
-  if (this->resolution != other.resolution) { return false; }
-  if (this->backendType != other.backendType) { return false; }
+  if (this->resolution != other.resolution) {
+    return false;
+  }
+  if (this->backendType != other.backendType) {
+    return false;
+  }
   return true;
 }
 

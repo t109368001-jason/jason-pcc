@@ -28,7 +28,9 @@ using PointT = pcl::PointXYZ;
 
 void main_(const AppParameter& parameter, Stopwatch& clock) {
   JPCCVisualizer<PointT>::Ptr viewer;
-  if (!parameter.headless) { viewer = jpcc::make_shared<JPCCVisualizer<PointT>>(parameter.visualizerParameter); }
+  if (!parameter.headless) {
+    viewer = jpcc::make_shared<JPCCVisualizer<PointT>>(parameter.visualizerParameter);
+  }
 
   const string cloudPlaneId = "cloudPlane";
   const string cloudOtherId = "cloudOther";
@@ -62,7 +64,9 @@ void main_(const AppParameter& parameter, Stopwatch& clock) {
     BOOST_LOG_TRIVIAL(info) << "RANSAC iteration=" << ransac.iterations_;
     BOOST_LOG_TRIVIAL(info) << "RANSAC coefficients=" << endl << ransac.model_coefficients_ << endl;
 
-    if (!viewer) { return; }
+    if (!viewer) {
+      return;
+    }
 
     auto framePlane = jpcc::make_shared<Frame>();
     auto frameOther = jpcc::make_shared<Frame>();
@@ -88,7 +92,9 @@ int main(int argc, char* argv[]) {
   try {
     ParameterParser pp;
     pp.add(parameter);
-    if (!pp.parse(argc, argv)) { return 1; }
+    if (!pp.parse(argc, argv)) {
+      return 1;
+    }
     BOOST_LOG_TRIVIAL(info) << parameter;
   } catch (exception& e) {
     BOOST_LOG_TRIVIAL(error) << e.what();
@@ -110,7 +116,9 @@ int main(int argc, char* argv[]) {
     BOOST_LOG_TRIVIAL(info) << "Processing time (wall): " << static_cast<float>(totalWall) / 1000.0 << " s";
     BOOST_LOG_TRIVIAL(info) << "Processing time (user): " << static_cast<float>(totalUser) / 1000.0 << " s";
     BOOST_LOG_TRIVIAL(info) << "Peak memory: " << getPeakMemory() << " KB";
-  } catch (exception& e) { BOOST_LOG_TRIVIAL(error) << e.what(); }
+  } catch (exception& e) {
+    BOOST_LOG_TRIVIAL(error) << e.what();
+  }
 
   BOOST_LOG_TRIVIAL(info) << "JPCC App Ground Segmentation End";
   return 0;

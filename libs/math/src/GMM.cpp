@@ -32,7 +32,9 @@ void GMM::buildN(vector<Intensity>&         samples,
     }
     if (!anyEqual) {
       uniqueSamples.push_back(sample);
-      if (uniqueSamples.size() >= K_) { break; }
+      if (uniqueSamples.size() >= K_) {
+        break;
+      }
     }
   }
   if (uniqueSamples.size() >= K_) {
@@ -50,7 +52,9 @@ void GMM::buildN(vector<Intensity>&         samples,
           break;
         }
       }
-      if (!exists) { centroids.push_back(static_cast<float>(*sampleIter)); }
+      if (!exists) {
+        centroids.push_back(static_cast<float>(*sampleIter));
+      }
     }
   } else {
     for (size_t i = 0; i < uniqueSamples.size() && centroids.size() < K_; i++) {
@@ -62,7 +66,9 @@ void GMM::buildN(vector<Intensity>&         samples,
           break;
         }
       }
-      if (!exists) { centroids.push_back(static_cast<float>(sample)); }
+      if (!exists) {
+        centroids.push_back(static_cast<float>(sample));
+      }
     }
     for (auto it = alternateCentroids.begin(); it != alternateCentroids.end() && centroids.size() < K_; it++) {
       centroids.push_back(static_cast<float>(*it));
@@ -82,7 +88,9 @@ void GMM::buildN(vector<Intensity>&         samples,
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-bool GMM::isBuilt() const { return !clusters_.empty(); }
+bool GMM::isBuilt() const {
+  return !clusters_.empty();
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 [[nodiscard]] double GMM::getProbability(Intensity sample) {
@@ -142,15 +150,23 @@ void GMM::updateModel(Intensity sample, const double alpha, const double minimum
 //////////////////////////////////////////////////////////////////////////////////////////////
 void GMM::normalizeWeights() {
   double sum = 0.0;
-  for (const Cluster& cluster : clusters_) { sum += cluster.getWeight(); }
+  for (const Cluster& cluster : clusters_) {
+    sum += cluster.getWeight();
+  }
 
-  for (Cluster& cluster : clusters_) { cluster.getWeight() /= sum; }
+  for (Cluster& cluster : clusters_) {
+    cluster.getWeight() /= sum;
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-const vector<Cluster>& GMM::getClusters() const { return clusters_; }
+const vector<Cluster>& GMM::getClusters() const {
+  return clusters_;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void GMM::reset() { clusters_.clear(); }
+void GMM::reset() {
+  clusters_.clear();
+}
 
 }  // namespace jpcc::math

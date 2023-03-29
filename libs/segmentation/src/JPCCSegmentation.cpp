@@ -13,14 +13,18 @@ JPCCSegmentation::JPCCSegmentation(const JPCCSegmentationParameter& parameter, c
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-bool JPCCSegmentation::isThreadSafe() { return false; }
+bool JPCCSegmentation::isThreadSafe() {
+  return false;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void JPCCSegmentation::appendTrainSamplesAndBuild(const GroupOfFrame&            frames,
                                                   const GroupOfPclFrame<PointT>& pclFrames,
                                                   const bool                     parallel) {
   if (!parallel || !isThreadSafe()) {
-    for (size_t i = 0; i < frames.size(); i++) { this->appendTrainSamplesAndBuild(frames[i], pclFrames[i]); }
+    for (size_t i = 0; i < frames.size(); i++) {
+      this->appendTrainSamplesAndBuild(frames[i], pclFrames[i]);
+    }
   } else {
     const auto range = boost::counting_range<size_t>(0, frames.size());
     std::for_each(std::execution::par, range.begin(), range.end(),
@@ -61,7 +65,9 @@ void JPCCSegmentation::segmentation(IJPCCSegmentationContext& context, const boo
     });
   }
   if (!parallel || !isThreadSafe()) {
-    for (size_t i = 0; i < context.getFrames().size(); i++) { this->segmentation(context, i); }
+    for (size_t i = 0; i < context.getFrames().size(); i++) {
+      this->segmentation(context, i);
+    }
   } else {
     const auto range = boost::counting_range<size_t>(0, context.getFrames().size());
     std::for_each(std::execution::par, range.begin(), range.end(),

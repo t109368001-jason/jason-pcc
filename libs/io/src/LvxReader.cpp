@@ -31,7 +31,9 @@ LvxReader::LvxReader(DatasetReaderParameter param, DatasetParameter datasetParam
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void LvxReader::open_(const size_t datasetIndex, const size_t startFrameNumber) {
-  if (lvxs_[datasetIndex] && this->currentFrameNumbers_[datasetIndex] <= startFrameNumber) { return; }
+  if (lvxs_[datasetIndex] && this->currentFrameNumbers_[datasetIndex] <= startFrameNumber) {
+    return;
+  }
   lvxs_[datasetIndex]       = nullptr;
   const std::string lvxPath = this->datasetParam_.getFilePath(datasetIndex);
   auto*             lvx     = new LvxHandler();
@@ -47,7 +49,9 @@ void LvxReader::open_(const size_t datasetIndex, const size_t startFrameNumber) 
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-bool LvxReader::isOpen_(const size_t datasetIndex) const { return static_cast<bool>(lvxs_[datasetIndex]); }
+bool LvxReader::isOpen_(const size_t datasetIndex) const {
+  return static_cast<bool>(lvxs_[datasetIndex]);
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 bool LvxReader::isEof_(const size_t datasetIndex) const {
@@ -66,7 +70,9 @@ void LvxReader::load_(const size_t datasetIndex, const size_t startFrameNumber, 
 
   const int ret = lvx->parsePacketsOfFrameXYZ([&](const int64_t timestampNS, const uint8_t deviceIndex, const float x,
                                                   const float y, const float z, const uint8_t reflectivity) {
-    if (x < 0.001 && y < 0.001 && z < 0.001) { return; }
+    if (x < 0.001 && y < 0.001 && z < 0.001) {
+      return;
+    }
     const int64_t timestamp = timestampNS / 1000000;
     if (frameBuffer.empty()) {
       // new frame
@@ -108,18 +114,26 @@ void LvxReader::load_(const size_t datasetIndex, const size_t startFrameNumber, 
     position[0]     = PointValueType(x);
     position[1]     = PointValueType(y);
     position[2]     = PointValueType(z);
-    if (frameBuffer[index]->hasReflectances()) { frameBuffer[index]->getReflectance(ii) = uint16_t(reflectivity); }
+    if (frameBuffer[index]->hasReflectances()) {
+      frameBuffer[index]->getReflectance(ii) = uint16_t(reflectivity);
+    }
     lastTimestamps[deviceIndex] = timestamp;
   });
   assert(ret == 0 || ret == livox_ros::kLvxFileAtEnd);
-  if (ret == livox_ros::kLvxFileAtEnd) { this->eof_[datasetIndex] = true; }
+  if (ret == livox_ros::kLvxFileAtEnd) {
+    this->eof_[datasetIndex] = true;
+  }
 
   if (ret == livox_ros::kLvxFileAtEnd) {
-    for (auto&& i : finishVector) { i = true; }
+    for (auto&& i : finishVector) {
+      i = true;
+    }
   } else {
     const int64_t minLastTimestamp = *min_element(lastTimestamps.begin(), lastTimestamps.end());
     for (size_t i = 0; i < finishVector.size(); i++) {
-      if ((timestampVector[i] + (int64_t)this->param_.interval) > minLastTimestamp) { break; }
+      if ((timestampVector[i] + (int64_t)this->param_.interval) > minLastTimestamp) {
+        break;
+      }
       finishVector[i] = true;
     }
   }

@@ -76,8 +76,12 @@ void JPCCCombination::combineDynamicStatic(const FramePtr& dynamicFrame,
                                            const FramePtr& staticFrame,
                                            FramePtr&       reconstructFrame) {
   reconstructFrame = jpcc::make_shared<Frame>(*dynamicFrame);
-  if (dynamicFrame) { reconstructFrame->append(*dynamicFrame); }
-  if (staticFrame) { reconstructFrame->append(*staticFrame); }
+  if (dynamicFrame) {
+    reconstructFrame->append(*dynamicFrame);
+  }
+  if (staticFrame) {
+    reconstructFrame->append(*staticFrame);
+  }
   if (dynamicFrame) {
     reconstructFrame->setFrameNumber(dynamicFrame->getFrameNumber());
   } else if (staticFrame) {

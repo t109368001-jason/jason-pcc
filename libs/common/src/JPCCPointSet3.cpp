@@ -34,15 +34,21 @@ void JPCCPointSet3::subset(JPCCPointSet3& frame, const Indices& indices) const {
   Index indexFrame = 0;
   for (Index index : indices) {
     frame[indexFrame] = (*this)[index];
-    if (hasReflectances()) { frame.getReflectance(indexFrame) = this->getReflectance(index); }
-    if (hasNormals()) { frame.getNormal(indexFrame) = this->getNormal(index); }
+    if (hasReflectances()) {
+      frame.getReflectance(indexFrame) = this->getReflectance(index);
+    }
+    if (hasNormals()) {
+      frame.getNormal(indexFrame) = this->getNormal(index);
+    }
     indexFrame++;
   }
 }
 
 bool JPCCPointSet3::write(const std::string& fileName, const bool asAscii) {
   std::ofstream fout(fileName, std::ofstream::out);
-  if (!fout.is_open()) { return false; }
+  if (!fout.is_open()) {
+    return false;
+  }
   const size_t pointCount = getPointCount();
   fout << "ply" << std::endl;
 
@@ -74,7 +80,9 @@ bool JPCCPointSet3::write(const std::string& fileName, const bool asAscii) {
     fout << "property float ny" << std::endl;
     fout << "property float nz" << std::endl;
   }
-  if (hasReflectances()) { fout << "property uint16 refc" << std::endl; }
+  if (hasReflectances()) {
+    fout << "property uint16 refc" << std::endl;
+  }
   fout << "element face 0" << std::endl;
   fout << "property list uint8 int32 vertex_index" << std::endl;
   fout << "end_header" << std::endl;
@@ -88,7 +96,9 @@ bool JPCCPointSet3::write(const std::string& fileName, const bool asAscii) {
         fout << " " << static_cast<float>(normal[0]) << " " << static_cast<float>(normal[1]) << " "
              << static_cast<float>(normal[2]);
       }
-      if (hasReflectances()) { fout << " " << static_cast<int>(getReflectance(i)); }
+      if (hasReflectances()) {
+        fout << " " << static_cast<int>(getReflectance(i));
+      }
       fout << std::endl;
     }
   } else {
@@ -121,7 +131,9 @@ bool JPCCPointSet3::write(const std::string& fileName, const bool asAscii) {
 }
 bool JPCCPointSet3::read(const std::string& fileName, const bool readNormals) {
   std::ifstream ifs(fileName, std::ifstream::in);
-  if (!ifs.is_open()) { return false; }
+  if (!ifs.is_open()) {
+    return false;
+  }
   enum AttributeType {
     ATTRIBUTE_TYPE_FLOAT64 = 0,
     ATTRIBUTE_TYPE_FLOAT32 = 1,
@@ -164,7 +176,9 @@ bool JPCCPointSet3::read(const std::string& fileName, const bool readNormals) {
     }
     ifs.getline(tmp, MAX_BUFFER_SIZE);
     getTokens(tmp, sep, tokens);
-    if (tokens.empty() || tokens[0] == "comment") { continue; }
+    if (tokens.empty() || tokens[0] == "comment") {
+      continue;
+    }
     if (tokens[0] == "format") {
       if (tokens.size() != 3) {
         BOOST_LOG_TRIVIAL(error) << "Error: corrupted format info!";
@@ -283,13 +297,19 @@ bool JPCCPointSet3::read(const std::string& fileName, const bool readNormals) {
     while (!ifs.eof() && pointCounter < pointCount) {
       ifs.getline(tmp, MAX_BUFFER_SIZE);
       getTokens(tmp, sep, tokens);
-      if (tokens.empty()) { continue; }
-      if (tokens.size() < attributeCount) { return false; }
+      if (tokens.empty()) {
+        continue;
+      }
+      if (tokens.size() < attributeCount) {
+        return false;
+      }
       auto& position = positions_[pointCounter];
       position[0]    = atof(tokens[indexX].c_str());
       position[1]    = atof(tokens[indexY].c_str());
       position[2]    = atof(tokens[indexZ].c_str());
-      if (hasReflectances()) { reflectances_[pointCounter] = uint16_t(atoi(tokens[indexReflectance].c_str())); }
+      if (hasReflectances()) {
+        reflectances_[pointCounter] = uint16_t(atoi(tokens[indexReflectance].c_str()));
+      }
       ++pointCounter;
     }
   } else {

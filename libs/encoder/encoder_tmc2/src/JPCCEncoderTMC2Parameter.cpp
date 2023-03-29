@@ -212,7 +212,8 @@ using namespace po;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 JPCCEncoderTMC2Parameter::JPCCEncoderTMC2Parameter() :
-    JPCCEncoderTMC2Parameter(JPCC_ENCODER_TMC2_OPT_PREFIX, __FUNCTION__) {}
+    JPCCEncoderTMC2Parameter(JPCC_ENCODER_TMC2_OPT_PREFIX, __FUNCTION__) {
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 JPCCEncoderTMC2Parameter::JPCCEncoderTMC2Parameter(  // NOLINT(cppcoreguidelines-pro-type-member-init)
@@ -878,7 +879,9 @@ void JPCCEncoderTMC2Parameter::notify() {
     const string& config = *it;
     // check if config parsed then return
     ifstream ifs(config.c_str());
-    if (!ifs.good()) { BOOST_THROW_EXCEPTION(runtime_error("'" + config + "' not found")); }
+    if (!ifs.good()) {
+      BOOST_THROW_EXCEPTION(runtime_error("'" + config + "' not found"));
+    }
     const parsed_options cfgOpts = parse_config_file(ifs, tmc2Opts_, true);
     variables_map        vm;
     store(cfgOpts, vm);
@@ -1105,27 +1108,43 @@ std::istream& operator>>(std::istream& in, PCCCodecId& val) {
   in >> tmp;
 
 #ifdef USE_JMAPP_VIDEO_CODEC
-  if (tmp == "JMAPP" || tmp == "jmapp") { val = JMAPP; }
+  if (tmp == "JMAPP" || tmp == "jmapp") {
+    val = JMAPP;
+  }
 #endif
 #ifdef USE_HMAPP_VIDEO_CODEC
-  if (tmp == "HMAPP" || tmp == "hmapp") { val = HMAPP; }
+  if (tmp == "HMAPP" || tmp == "hmapp") {
+    val = HMAPP;
+  }
 #endif
 #ifdef USE_SHMAPP_VIDEO_CODEC
-  if (tmp == "SHMAPP" || tmp == "shmapp" || tmp == "shm" || tmp == "shm2" || tmp == "shm3") { val = SHMAPP; }
+  if (tmp == "SHMAPP" || tmp == "shmapp" || tmp == "shm" || tmp == "shm2" || tmp == "shm3") {
+    val = SHMAPP;
+  }
 #endif
 #ifdef USE_JMLIB_VIDEO_CODEC
-  if (tmp == "JMLIB" || tmp == "jmlib" || tmp == "jm" || tmp == "avc") { val = JMLIB; }
+  if (tmp == "JMLIB" || tmp == "jmlib" || tmp == "jm" || tmp == "avc") {
+    val = JMLIB;
+  }
 #endif
 #ifdef USE_HMLIB_VIDEO_CODEC
-  if (tmp == "HMLIB" || tmp == "hmlib" || tmp == "hm" || tmp == "hevc") { val = HMLIB; }
+  if (tmp == "HMLIB" || tmp == "hmlib" || tmp == "hm" || tmp == "hevc") {
+    val = HMLIB;
+  }
 #endif
 #ifdef USE_VTMLIB_VIDEO_CODEC
-  if (tmp == "VTMLIB" || tmp == "vtmlib" || tmp == "vtm" || tmp == "vvc") { val = VTMLIB; }
+  if (tmp == "VTMLIB" || tmp == "vtmlib" || tmp == "vtm" || tmp == "vvc") {
+    val = VTMLIB;
+  }
 #endif
 #ifdef USE_FFMPEG_VIDEO_CODEC
-  if (tmp == "FFMPEG" || tmp == "ffmpeg") { val = FFMPEG; }
+  if (tmp == "FFMPEG" || tmp == "ffmpeg") {
+    val = FFMPEG;
+  }
 #endif
-  if (val == UNKNOWN_CODEC) { fprintf(stderr, "PCCCodecId could not be indentified from: \"%s\" \n", tmp.c_str()); }
+  if (val == UNKNOWN_CODEC) {
+    fprintf(stderr, "PCCCodecId could not be indentified from: \"%s\" \n", tmp.c_str());
+  }
   return in;
 }
 std::ostream& operator<<(std::ostream& out, const PCCColorTransform& val) {

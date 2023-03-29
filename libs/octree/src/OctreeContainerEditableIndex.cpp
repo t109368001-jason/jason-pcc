@@ -2,6 +2,8 @@
 
 namespace jpcc::octree {
 
-void OctreeContainerEditableIndex::setPointIndex(Index index) { data_ = index; }
+void OctreeContainerEditableIndex::setPointIndex(Index index) {
+  data_ = index;
+}
 
 }  // namespace jpcc::octree

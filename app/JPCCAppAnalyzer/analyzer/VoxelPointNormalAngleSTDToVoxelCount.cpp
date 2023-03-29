@@ -18,7 +18,8 @@ namespace jpcc {
 VoxelPointNormalAngleSTDToVoxelCount::VoxelPointNormalAngleSTDToVoxelCount(const float&  frequency,
                                                                            const double& resolution,
                                                                            const string& outputDir) :
-    Analyzer(frequency, resolution, outputDir, "VoxelPointNormalAngleSTDToVoxelCount"), octree_(resolution) {}
+    Analyzer(frequency, resolution, outputDir, "VoxelPointNormalAngleSTDToVoxelCount"), octree_(resolution) {
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void VoxelPointNormalAngleSTDToVoxelCount::compute(PclFrameConstPtr<PointAnalyzer> background,
@@ -37,7 +38,9 @@ void VoxelPointNormalAngleSTDToVoxelCount::finalCompute() {
     for (auto it = octree_.leaf_depth_begin(), end = octree_.leaf_depth_end(); it != end; ++it) {
       const vector<double>& azimuths_ = it.getLeafContainer().getAzimuths();
       const vector<double>& zeniths_  = it.getLeafContainer().getZeniths();
-      if (azimuths_.empty() && zeniths_.empty()) { continue; }
+      if (azimuths_.empty() && zeniths_.empty()) {
+        continue;
+      }
 
       double azimuthSTD = standard_deviation(azimuths_);
       double zenithSTD  = standard_deviation(zeniths_);
@@ -109,7 +112,9 @@ void VoxelPointNormalAngleSTDToVoxelCount::getCloud(PclFramePtr<PointAnalyzer>& 
           static_cast<float>((static_cast<double>(it.getCurrentOctreeKey().z) + 0.5f) * this->resolution_ + min_z_);
 
       const vector<double>& azimuths_ = it.getLeafContainer().getAzimuths();
-      if (azimuths_.empty()) { continue; }
+      if (azimuths_.empty()) {
+        continue;
+      }
 
       double azimuthSTD = standard_deviation(azimuths_);
 

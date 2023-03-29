@@ -10,7 +10,8 @@ using namespace po;
 #define PRE_PROCESS_OPT_PREFIX "preProcess"
 #define ORDER_OPT ".order"
 
-PreProcessParameter::PreProcessParameter() : PreProcessParameter(PRE_PROCESS_OPT_PREFIX, __FUNCTION__) {}
+PreProcessParameter::PreProcessParameter() : PreProcessParameter(PRE_PROCESS_OPT_PREFIX, __FUNCTION__) {
+}
 
 PreProcessParameter::PreProcessParameter(const string& prefix, const string& caption) :
     Parameter(prefix, caption),
@@ -30,7 +31,9 @@ PreProcessParameter::PreProcessParameter(const string& prefix, const string& cap
 }
 
 void PreProcessParameter::getShowTexts(vector<string>& showTexts) const {
-  if (!order_.empty()) { showTexts.push_back(prefix_ + ORDER_OPT ": " + order_); }
+  if (!order_.empty()) {
+    showTexts.push_back(prefix_ + ORDER_OPT ": " + order_);
+  }
   radiusOutlierRemoval.getShowTexts(showTexts);
   statisticalOutlierRemoval.getShowTexts(showTexts);
   jpccConditionalRemovalParameter.getShowTexts(showTexts);
@@ -53,7 +56,9 @@ void PreProcessParameter::notify() {
     THROW_IF_NOT(boost::icontains(order_, JPCC_CONDITIONAL_REMOVAL_OPT_PREFIX));
     algorithmCount++;
   }
-  if (!order_.empty()) { boost::algorithm::split(order, order_, boost::is_any_of(",")); }
+  if (!order_.empty()) {
+    boost::algorithm::split(order, order_, boost::is_any_of(","));
+  }
   THROW_IF_NOT(order.size() == algorithmCount);
 }
 

@@ -16,17 +16,23 @@ void OctreeContainerOccupancyInterval::reset() {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void OctreeContainerOccupancyInterval::addPointIndex(const Index& index) { appendCount(); }
+void OctreeContainerOccupancyInterval::addPointIndex(const Index& index) {
+  appendCount();
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void OctreeContainerOccupancyInterval::appendCount() {
-  if (count_ != 0) { occupancyIntervals_.push_back(count_); }
+  if (count_ != 0) {
+    occupancyIntervals_.push_back(count_);
+  }
 
   count_ = 0;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-const vector<int>& OctreeContainerOccupancyInterval::getOccupancyIntervals() const { return occupancyIntervals_; }
+const vector<int>& OctreeContainerOccupancyInterval::getOccupancyIntervals() const {
+  return occupancyIntervals_;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 OctreeContainerOccupancyInterval& OctreeContainerOccupancyInterval::operator++() {

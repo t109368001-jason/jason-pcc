@@ -24,15 +24,20 @@ void PlyReader::load(const size_t  datasetIndex,
   const size_t endFrameNumber =
       std::min(startFrameNumber + groupOfFramesSize, this->datasetParam_.getStartFrameNumbers(datasetIndex) +
                                                          this->datasetParam_.getFrameCounts(datasetIndex));
-  if (startFrameNumber >= endFrameNumber) { return; }
+  if (startFrameNumber >= endFrameNumber) {
+    return;
+  }
 
   loadPly(frames, this->datasetParam_.getFilePath(datasetIndex), startFrameNumber, endFrameNumber, parallel);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void PlyReader::open_(size_t JPCC_NOT_USED(datasetIndex), size_t JPCC_NOT_USED(startFrameNumber)) {}
+void PlyReader::open_(size_t JPCC_NOT_USED(datasetIndex), size_t JPCC_NOT_USED(startFrameNumber)) {
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-bool PlyReader::isOpen_(size_t JPCC_NOT_USED(datasetIndex)) const { return true; }
+bool PlyReader::isOpen_(size_t JPCC_NOT_USED(datasetIndex)) const {
+  return true;
+}
 
 }  // namespace jpcc::io

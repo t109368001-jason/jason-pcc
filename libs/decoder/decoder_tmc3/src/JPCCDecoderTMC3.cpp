@@ -26,13 +26,18 @@ class PCCTMC3Decoder3LambdaCallbacks : public PCCTMC3Decoder3::Callbacks {
 //////////////////////////////////////////////////////////////////////////////////////////////
 PCCTMC3Decoder3LambdaCallbacks::PCCTMC3Decoder3LambdaCallbacks(
     const std::function<void(const CloudFrame& frame)>& onOutputCloud) :
-    onOutputCloud_(onOutputCloud) {}
+    onOutputCloud_(onOutputCloud) {
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void PCCTMC3Decoder3LambdaCallbacks::onOutputCloud(const CloudFrame& frame) { onOutputCloud_(frame); }
+void PCCTMC3Decoder3LambdaCallbacks::onOutputCloud(const CloudFrame& frame) {
+  onOutputCloud_(frame);
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-bool JPCCDecoderTMC3::isConvertFromCoderTypeThreadSafe() { return true; }
+bool JPCCDecoderTMC3::isConvertFromCoderTypeThreadSafe() {
+  return true;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void JPCCDecoderTMC3::decode(std::istream& is, std::shared_ptr<void>& coderReconstructFrame) {
@@ -73,15 +78,21 @@ void JPCCDecoderTMC3::decode(std::istream& is, std::shared_ptr<void>& coderRecon
     }
 
     // at end of file (or other error), flush decoder
-    if (!is) { bufferPtr = nullptr; }
+    if (!is) {
+      bufferPtr = nullptr;
+    }
 
     if (decoder.decompress(bufferPtr, &callback)) {
       BOOST_THROW_EXCEPTION(std::logic_error("decompress point cloud error"));
     }
 
-    if (!bufferPtr) { break; }
+    if (!bufferPtr) {
+      break;
+    }
 
-    if (coderReconstructFrame) { break; }
+    if (coderReconstructFrame) {
+      break;
+    }
   }
   if (coderReconstructFrame) {
     BOOST_LOG_TRIVIAL(info) << "bytes=" << is.tellg() - startPosition << ", "

@@ -32,29 +32,38 @@ JPCCMetric::JPCCMetric(const JPCCMetricParameter& parameter) :
     c2cPSNRMapMap_(),
     c2pMSEMapMap_(),
     c2pPSNRMapMap_(),
-    clockMapMap_() {}
+    clockMapMap_() {
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void JPCCMetric::addPoints(const std::string& name, const FramePtr& frame, bool addBytes) {
   const auto& points = frame->getPointCount();
-  if (points == 0) { return; }
+  if (points == 0) {
+    return;
+  }
   frameNumberSet_.insert(frame->getFrameNumber());
   pointsNameSet_.insert(name);
   pointsMapMap_[frame->getFrameNumber()][name] += points;
   BOOST_LOG_TRIVIAL(info) << "name=" << name << ", "
                           << "frameNumber_=" << frame->getFrameNumber() << ", "
                           << "points=" << points;
-  if (addBytes) { this->addBytes(name, frame->getFrameNumber(), points * sizeof(PointValueType) * 3); }
+  if (addBytes) {
+    this->addBytes(name, frame->getFrameNumber(), points * sizeof(PointValueType) * 3);
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void JPCCMetric::addPoints(const std::string& name, const GroupOfFrame& frames, bool addBytes) {
-  for (const auto& frame : frames) { this->addPoints(name, frame, addBytes); }
+  for (const auto& frame : frames) {
+    this->addPoints(name, frame, addBytes);
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void JPCCMetric::addBytes(const std::string& name, FrameNumber frameNumber, const uint64_t bytes) {
-  if (bytes == 0) { return; }
+  if (bytes == 0) {
+    return;
+  }
   BOOST_LOG_TRIVIAL(info) << "name=" << name << ", "
                           << "frameNumber_=" << frameNumber << ", "
                           << "bytes=" << bytes;
@@ -67,7 +76,9 @@ void JPCCMetric::addBytes(const std::string& name, FrameNumber frameNumber, cons
 void JPCCMetric::addBytes(const std::string&                    name,
                           FrameNumber                           firstFrameNumber,
                           const std::vector<std::vector<char>>& bytesVector) {
-  for (size_t i = 0; i < bytesVector.size(); i++) { this->addBytes(name, firstFrameNumber + i, bytesVector[i].size()); }
+  for (size_t i = 0; i < bytesVector.size(); i++) {
+    this->addBytes(name, firstFrameNumber + i, bytesVector[i].size());
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -106,7 +117,9 @@ void JPCCMetric::addPSNR(const std::string&  name,
                          const bool          parallel) {
   assert(framesA.size() == framesB.size());
   if (!parallel) {
-    for (size_t i = 0; i < framesA.size(); i++) { this->addPSNR(name, framesA[i], framesB[i]); }
+    for (size_t i = 0; i < framesA.size(); i++) {
+      this->addPSNR(name, framesA[i], framesB[i]);
+    }
   } else {
     const auto range = boost::counting_range<size_t>(0, framesA.size());
     std::for_each(std::execution::par, range.begin(), range.end(),
@@ -118,7 +131,9 @@ void JPCCMetric::addPSNR(const std::string&  name,
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void JPCCMetric::copyNormalToReconstruct(const FramePtr& frame, const FramePtr& reconstructFrame) {
-  if (frame->getPointCount() == 0 || reconstructFrame->getPointCount() == 0) { return; }
+  if (frame->getPointCount() == 0 || reconstructFrame->getPointCount() == 0) {
+    return;
+  }
   size_t                                      K = 1;
   std::vector<size_t>                         pointIdxKNNSearch(K);
   std::vector<double>                         pointKNNSquaredDistance(K);
@@ -250,13 +265,27 @@ void JPCCMetric::writeAndShow() {
   std::ofstream metricCSV(parameter_.outputCSVFolderPath / "metric.csv");
   {  // write header
     metricCSV << "Frame Number,";
-    for (const auto& name : pointsNameSet_) { metricCSV << name << " (points),"; }
-    for (const auto& name : bytesNameSet_) { metricCSV << name << " (bytes),"; }
-    for (const auto& name : c2cMSENameSet_) { metricCSV << name << " (c2c)(mm^2),"; }
-    for (const auto& name : c2cPSNRNameSet_) { metricCSV << name << " (c2c)(db),"; }
-    for (const auto& name : c2pMSENameSet_) { metricCSV << name << " (c2p)(mm^2),"; }
-    for (const auto& name : c2pPSNRNameSet_) { metricCSV << name << " (c2p)(db),"; }
-    for (const auto& name : clockNameSet_) { metricCSV << name << " (s),"; }
+    for (const auto& name : pointsNameSet_) {
+      metricCSV << name << " (points),";
+    }
+    for (const auto& name : bytesNameSet_) {
+      metricCSV << name << " (bytes),";
+    }
+    for (const auto& name : c2cMSENameSet_) {
+      metricCSV << name << " (c2c)(mm^2),";
+    }
+    for (const auto& name : c2cPSNRNameSet_) {
+      metricCSV << name << " (c2c)(db),";
+    }
+    for (const auto& name : c2pMSENameSet_) {
+      metricCSV << name << " (c2p)(mm^2),";
+    }
+    for (const auto& name : c2pPSNRNameSet_) {
+      metricCSV << name << " (c2p)(db),";
+    }
+    for (const auto& name : clockNameSet_) {
+      metricCSV << name << " (s),";
+    }
     metricCSV << std::endl;
   }
   for (const auto& frameNumber : frameNumberSet_) {  // write rows
@@ -327,13 +356,27 @@ void JPCCMetric::writeAndShow() {
   metricSummaryCSV << "Frame Count," << frameCount << endl;
 
   int maxNameLength = 0;
-  for (const auto& name : pointsNameSet_) { maxNameLength = max(maxNameLength, static_cast<int>(name.size())); }
-  for (const auto& name : bytesNameSet_) { maxNameLength = max(maxNameLength, static_cast<int>(name.size())); }
-  for (const auto& name : c2cMSENameSet_) { maxNameLength = max(maxNameLength, static_cast<int>(name.size())); }
-  for (const auto& name : c2cPSNRNameSet_) { maxNameLength = max(maxNameLength, static_cast<int>(name.size())); }
-  for (const auto& name : c2pMSENameSet_) { maxNameLength = max(maxNameLength, static_cast<int>(name.size())); }
-  for (const auto& name : c2pPSNRNameSet_) { maxNameLength = max(maxNameLength, static_cast<int>(name.size())); }
-  for (const auto& name : clockNameSet_) { maxNameLength = max(maxNameLength, static_cast<int>(name.size())); }
+  for (const auto& name : pointsNameSet_) {
+    maxNameLength = max(maxNameLength, static_cast<int>(name.size()));
+  }
+  for (const auto& name : bytesNameSet_) {
+    maxNameLength = max(maxNameLength, static_cast<int>(name.size()));
+  }
+  for (const auto& name : c2cMSENameSet_) {
+    maxNameLength = max(maxNameLength, static_cast<int>(name.size()));
+  }
+  for (const auto& name : c2cPSNRNameSet_) {
+    maxNameLength = max(maxNameLength, static_cast<int>(name.size()));
+  }
+  for (const auto& name : c2pMSENameSet_) {
+    maxNameLength = max(maxNameLength, static_cast<int>(name.size()));
+  }
+  for (const auto& name : c2pPSNRNameSet_) {
+    maxNameLength = max(maxNameLength, static_cast<int>(name.size()));
+  }
+  for (const auto& name : clockNameSet_) {
+    maxNameLength = max(maxNameLength, static_cast<int>(name.size()));
+  }
   BOOST_LOG_TRIVIAL(info) << "";
   BOOST_LOG_TRIVIAL(info) << "Metric:";
   BOOST_LOG_TRIVIAL(info) << "  Points:";

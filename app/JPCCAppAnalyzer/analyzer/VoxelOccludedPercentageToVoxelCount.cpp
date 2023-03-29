@@ -21,7 +21,8 @@ VoxelOccludedPercentageToVoxelCount::VoxelOccludedPercentageToVoxelCount(const f
              "VoxelOccludedPercentageToVoxelCount",
              "[" + to_string(quantResolution) + "]"),
     quantCount_(static_cast<size_t>(resolution / static_cast<double>(quantResolution))),
-    octree_(resolution) {}
+    octree_(resolution) {
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void VoxelOccludedPercentageToVoxelCount::compute(PclFrameConstPtr<PointAnalyzer> background,

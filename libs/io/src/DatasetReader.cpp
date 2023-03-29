@@ -10,7 +10,8 @@ namespace jpcc::io {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 DatasetReader::DatasetReader(DatasetReaderParameter param, DatasetParameter datasetParam) :
-    DatasetReaderBase(std::move(param), std::move(datasetParam)) {}
+    DatasetReaderBase(std::move(param), std::move(datasetParam)) {
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void DatasetReader::loadAll(const size_t  startFrameNumber,
@@ -43,11 +44,15 @@ void DatasetReader::loadAll(const size_t  startFrameNumber,
     frame->setFrameNumber(Index(startFrameNumber) + i);
     size_t size = 0;
     for (size_t datasetIndex = 0; datasetIndex < datasetParam_.count(); datasetIndex++) {
-      if (i < sources[datasetIndex].size()) { size += sources[datasetIndex][i]->getPointCount(); }
+      if (i < sources[datasetIndex].size()) {
+        size += sources[datasetIndex][i]->getPointCount();
+      }
     }
     frame->reserve(size);
     for (size_t datasetIndex = 0; datasetIndex < datasetParam_.count(); datasetIndex++) {
-      if (i < sources[datasetIndex].size()) { frame->append(*sources[datasetIndex][i]); }
+      if (i < sources[datasetIndex].size()) {
+        frame->append(*sources[datasetIndex][i]);
+      }
     }
     BOOST_LOG_TRIVIAL(info) << "reader read "
                             << "frameNumber_=" << frame->getFrameNumber() << ", "

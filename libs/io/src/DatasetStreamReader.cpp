@@ -24,7 +24,9 @@ void DatasetStreamReader::load(const size_t  datasetIndex,
   frames.clear();
   const size_t endFrameNumber = std::min(startFrameNumber + groupOfFramesSize,  //
                                          this->datasetParam_.getEndFrameNumbers(datasetIndex));
-  if (startFrameNumber >= endFrameNumber) { return; }
+  if (startFrameNumber >= endFrameNumber) {
+    return;
+  }
 
   size_t&                     currentFrameNumber = this->currentFrameNumbers_[datasetIndex];
   GroupOfFrame&               frameBuffer        = frameBuffers_[datasetIndex];
@@ -81,6 +83,8 @@ void DatasetStreamReader::load(const size_t  datasetIndex,
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-bool DatasetStreamReader::isEof_(const size_t datasetIndex) const { return !this->isOpen() || eof_[datasetIndex]; }
+bool DatasetStreamReader::isEof_(const size_t datasetIndex) const {
+  return !this->isOpen() || eof_[datasetIndex];
+}
 
 }  // namespace jpcc::io

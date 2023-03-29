@@ -23,7 +23,9 @@ template <typename PointT>
 void OctreeContainerOccludedCount<PointT>::compute(const Eigen::Vector3f& min_pt,
                                                    const Eigen::Vector3f& max_pt,
                                                    const size_t           quantCount) {
-  if (count3D_.empty()) { count3D_.resize(quantCount * quantCount * quantCount); }
+  if (count3D_.empty()) {
+    count3D_.resize(quantCount * quantCount * quantCount);
+  }
   for (const PointT& point : pointBuffer_) {
     auto xIndex =
         static_cast<size_t>((point.x - min_pt.x()) / (max_pt.x() - min_pt.x()) * static_cast<float>(quantCount));
@@ -59,7 +61,9 @@ float OctreeContainerOccludedCount<PointT>::getXYOccludedPercentage(const size_t
       size_t count = 0;
       for (size_t zIndex = 0; zIndex < quantCount; zIndex++) {
         size_t index = xIndex * quantCount * quantCount + yIndex * quantCount + zIndex;
-        if (count3D_.test(index)) { count++; }
+        if (count3D_.test(index)) {
+          count++;
+        }
       }
       if (count > 0) {
         total += count;
@@ -80,7 +84,9 @@ float OctreeContainerOccludedCount<PointT>::getXZOccludedPercentage(const size_t
       size_t count = 0;
       for (size_t yIndex = 0; yIndex < quantCount; yIndex++) {
         size_t index = xIndex * quantCount * quantCount + yIndex * quantCount + zIndex;
-        if (count3D_.test(index)) { count++; }
+        if (count3D_.test(index)) {
+          count++;
+        }
       }
       if (count > 0) {
         total += count;
@@ -101,7 +107,9 @@ float OctreeContainerOccludedCount<PointT>::getYZOccludedPercentage(const size_t
       size_t count = 0;
       for (size_t xIndex = 0; xIndex < quantCount; xIndex++) {
         size_t index = xIndex * quantCount * quantCount + yIndex * quantCount + zIndex;
-        if (count3D_.test(index)) { count++; }
+        if (count3D_.test(index)) {
+          count++;
+        }
       }
       if (count > 0) {
         total += count;

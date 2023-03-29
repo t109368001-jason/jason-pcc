@@ -9,7 +9,9 @@ void JPCCPointSet3::toPcl(const PclFramePtr<PointT>& pclFrame) const {
   for (int i = 0; i < pclFrame->size(); i++) {
     (*pclFrame)[i] = PointT((*this)[i][0], (*this)[i][1], (*this)[i][2]);
     if constexpr (pcl::traits::has_intensity_v<PointT>) {
-      if (this->hasReflectances()) { pclFrame->points[i].intensity = this->getReflectance(i); }
+      if (this->hasReflectances()) {
+        pclFrame->points[i].intensity = this->getReflectance(i);
+      }
     }
     if constexpr (pcl::traits::has_normal_v<PointT>) {
       if (this->hasNormals()) {
@@ -36,8 +38,12 @@ void JPCCPointSet3::fromPcl(const PclFramePtr<PointT>& pclFrame) {
   this->setFrameNumber((Index)pclFrame->header.seq);
   this->resize(pclFrame->size());
 
-  if constexpr (pcl::traits::has_intensity_v<PointT>) { this->addReflectances(); }
-  if constexpr (pcl::traits::has_normal_v<PointT>) { this->addNormals(); }
+  if constexpr (pcl::traits::has_intensity_v<PointT>) {
+    this->addReflectances();
+  }
+  if constexpr (pcl::traits::has_normal_v<PointT>) {
+    this->addNormals();
+  }
   for (int i = 0; i < this->getPointCount(); i++) {
     (*this)[i] =
         PointType{(PointValueType)(*pclFrame)[i].x, (PointValueType)(*pclFrame)[i].y, (PointValueType)(*pclFrame)[i].z};

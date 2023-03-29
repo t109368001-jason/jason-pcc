@@ -107,7 +107,8 @@ using namespace po;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 JPCCEncoderTMC3Parameter::JPCCEncoderTMC3Parameter() :
-    JPCCEncoderTMC3Parameter(JPCC_ENCODER_TMC3_OPT_PREFIX, __FUNCTION__) {}
+    JPCCEncoderTMC3Parameter(JPCC_ENCODER_TMC3_OPT_PREFIX, __FUNCTION__) {
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 JPCCEncoderTMC3Parameter::JPCCEncoderTMC3Parameter(  // NOLINT(cppcoreguidelines-pro-type-member-init)
@@ -440,7 +441,8 @@ void JPCCEncoderTMC3Parameter::setDefault() {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void JPCCEncoderTMC3Parameter::notify() {}
+void JPCCEncoderTMC3Parameter::notify() {
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 ostream& operator<<(ostream& out, const JPCCEncoderTMC3Parameter& obj) {
@@ -555,10 +557,18 @@ static std::istream& operator>>(std::istream& in, ScaleUnit& val) {
   }
   return in;
 }
-static std::istream& operator>>(std::istream& in, AxisOrder& val) { return readUInt(in, val); }
-static std::istream& operator>>(std::istream& in, PartitionMethod& val) { return readUInt(in, val); }
-static std::istream& operator>>(std::istream& in, PredGeomEncOpts::SortMode& val) { return readUInt(in, val); }
-static std::istream& operator>>(std::istream& in, OctreeEncOpts::QpMethod& val) { return readUInt(in, val); }
+static std::istream& operator>>(std::istream& in, AxisOrder& val) {
+  return readUInt(in, val);
+}
+static std::istream& operator>>(std::istream& in, PartitionMethod& val) {
+  return readUInt(in, val);
+}
+static std::istream& operator>>(std::istream& in, PredGeomEncOpts::SortMode& val) {
+  return readUInt(in, val);
+}
+static std::istream& operator>>(std::istream& in, OctreeEncOpts::QpMethod& val) {
+  return readUInt(in, val);
+}
 static std::ostream& operator<<(std::ostream& out, const ScaleUnit& val) {
   switch (val) {
     case ScaleUnit::kDimensionless: out << "0 (Dimensionless)"; break;

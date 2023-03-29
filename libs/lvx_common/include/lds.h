@@ -301,11 +301,17 @@ inline uint32_t GetPointsPerPacket(uint32_t data_type) {
   return data_type_info_pair_table[data_type].points_per_packet;
 }
 
-inline uint32_t GetEthPacketLen(uint32_t data_type) { return data_type_info_pair_table[data_type].packet_length; }
+inline uint32_t GetEthPacketLen(uint32_t data_type) {
+  return data_type_info_pair_table[data_type].packet_length;
+}
 
-inline uint32_t GetPointLen(uint32_t data_type) { return data_type_info_pair_table[data_type].raw_point_length; }
+inline uint32_t GetPointLen(uint32_t data_type) {
+  return data_type_info_pair_table[data_type].raw_point_length;
+}
 
-inline uint32_t GetEchoNumPerPoint(uint32_t data_type) { return data_type_info_pair_table[data_type].echo_num; }
+inline uint32_t GetEchoNumPerPoint(uint32_t data_type) {
+  return data_type_info_pair_table[data_type].echo_num;
+}
 
 inline void RawPointConvert(LivoxPointXyzr* dst_point, LivoxPoint* raw_point) {
   dst_point->x            = raw_point->x;
@@ -374,9 +380,13 @@ inline void RawPointConvert(LivoxPointXyzr*              dst_point1,
   dst_point3->reflectivity = (float)raw_point->reflectivity3;
 }
 
-inline bool IsTripleIntNoneZero(int32_t x, int32_t y, int32_t z) { return (x | y | z); }
+inline bool IsTripleIntNoneZero(int32_t x, int32_t y, int32_t z) {
+  return (x | y | z);
+}
 
-inline bool IsTripleFloatNoneZero(float x, float y, float z) { return ((x != 0.0f) || (y != 0.0f) || (z != 0.0f)); }
+inline bool IsTripleFloatNoneZero(float x, float y, float z) {
+  return ((x != 0.0f) || (y != 0.0f) || (z != 0.0f));
+}
 
 class Semaphore {
  public:

@@ -10,7 +10,8 @@ using namespace po;
 #define OUTPUT_CSV_FOLDER_OPT ".outputCSVFolder"
 #define MAXIMUM_VALUE_OPT ".maximumValue"
 
-JPCCMetricParameter::JPCCMetricParameter() : JPCCMetricParameter(JPCC_METRIC_OPT_PREFIX, __FUNCTION__) {}
+JPCCMetricParameter::JPCCMetricParameter() : JPCCMetricParameter(JPCC_METRIC_OPT_PREFIX, __FUNCTION__) {
+}
 
 JPCCMetricParameter::JPCCMetricParameter(const string& prefix, const string& caption) :
     Parameter(prefix, caption), outputCSVFolder(), maximumValue(100.0) {
@@ -26,7 +27,9 @@ JPCCMetricParameter::JPCCMetricParameter(const string& prefix, const string& cap
 
 void JPCCMetricParameter::notify() {
   outputCSVFolderPath = outputCSVFolder;
-  if (!filesystem::exists(outputCSVFolderPath)) { create_directories(outputCSVFolderPath); }
+  if (!filesystem::exists(outputCSVFolderPath)) {
+    create_directories(outputCSVFolderPath);
+  }
   THROW_IF_NOT(maximumValue > 0);
 }
 

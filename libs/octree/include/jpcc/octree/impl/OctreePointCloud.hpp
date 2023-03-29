@@ -124,7 +124,9 @@ void OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::addPoi
 template <typename PointT, typename LeafContainerT, typename BranchContainerT, typename OctreeT>
 bool OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::isVoxelOccupiedAtPoint(
     const PointT& point_arg) const {
-  if (!isPointWithinBoundingBox(point_arg)) { return false; }
+  if (!isPointWithinBoundingBox(point_arg)) {
+    return false;
+  }
 
   OctreeKey key;
 
@@ -163,7 +165,9 @@ bool OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::isVoxe
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename LeafContainerT, typename BranchContainerT, typename OctreeT>
 void OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::deleteVoxelAtPoint(const PointT& point_arg) {
-  if (!isPointWithinBoundingBox(point_arg)) { return; }
+  if (!isPointWithinBoundingBox(point_arg)) {
+    return;
+  }
 
   OctreeKey key;
 

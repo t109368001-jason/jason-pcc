@@ -64,7 +64,9 @@ bool LvxFileHandle::ReadAndCheckHeader() {
   lvx_file_.seekg(0, std::ios::beg);
   lvx_file_.read((char*)(&public_header_), sizeof(public_header_));
 
-  if (strcmp((const char*)public_header_.signature, kLvxHeaderSigStr)) { return false; }
+  if (strcmp((const char*)public_header_.signature, kLvxHeaderSigStr)) {
+    return false;
+  }
 
   /**
   if (public_header_.magic_code != kLvxHeaderMagicCode) {
@@ -93,7 +95,9 @@ uint64_t LvxFileHandle::MiniFileSize() {
   }
 }
 
-uint64_t LvxFileHandle::PrivateHeaderOffset() { return sizeof(LvxFilePublicHeader); }
+uint64_t LvxFileHandle::PrivateHeaderOffset() {
+  return sizeof(LvxFilePublicHeader);
+}
 
 uint64_t LvxFileHandle::DataStartOffset() {
   if (file_ver_ == kLvxFileV1) {
@@ -116,7 +120,9 @@ bool LvxFileHandle::AddAndCheckDeviceInfo() {
     device_count_ = private_header_v0_.device_count;
   }
 
-  if (!device_count_) { return false; }
+  if (!device_count_) {
+    return false;
+  }
 
   for (int i = 0; i < device_count_; i++) {
     LvxFileDeviceInfo device_info;
@@ -142,7 +148,9 @@ bool LvxFileHandle::PrepareDataRead() {
   FrameHeader frame_header; /* v0&v1 compatible */
   lvx_file_.read((char*)(&frame_header), sizeof(frame_header));
 
-  if ((frame_header.current_offset != DataStartOffset()) || (frame_header.frame_index != 0)) { return false; }
+  if ((frame_header.current_offset != DataStartOffset()) || (frame_header.frame_index != 0)) {
+    return false;
+  }
 
   /** reset the read position to the start offset of data erea */
   lvx_file_.seekg(DataStartOffset(), std::ios::beg);
@@ -196,7 +204,9 @@ int LvxFileHandle::Open(const char* filename, std::ios_base::openmode mode) {
   return state_;
 }
 
-bool LvxFileHandle::Eof() { return lvx_file_.eof(); }
+bool LvxFileHandle::Eof() {
+  return lvx_file_.eof();
+}
 
 int LvxFileHandle::InitLvxFile() {
   time_t curtime      = time(nullptr);
@@ -259,7 +269,9 @@ void LvxFileHandle::SaveFrameToLvxFile(std::list<LvxFilePacket>& point_packet_li
 
   frame_header.current_offset = cur_offset_;
   frame_header.next_offset    = cur_offset_ + sizeof(FrameHeader);
-  for (auto iter : point_packet_list_temp) { frame_header.next_offset += iter.pack_size; }
+  for (auto iter : point_packet_list_temp) {
+    frame_header.next_offset += iter.pack_size;
+  }
 
   frame_header.frame_index = cur_frame_index_;
 
@@ -327,7 +339,9 @@ int LvxFileHandle::GetPacketsOfFrame(OutPacketBuffer* packets_of_frame) {
   uint64_t      read_length;
   if (file_ver_ == kLvxFileV1) {
     lvx_file_.read((char*)&frame_header, sizeof(frame_header));
-    if (!lvx_file_) { return kLvxFileReadFail; }
+    if (!lvx_file_) {
+      return kLvxFileReadFail;
+    }
     if ((size_ < frame_header.current_offset) || (frame_header.next_offset < frame_header.current_offset)) {
       return kLvxFileFrameHeaderError;
     }
@@ -335,7 +349,9 @@ int LvxFileHandle::GetPacketsOfFrame(OutPacketBuffer* packets_of_frame) {
     read_length                 = packets_of_frame->data_size;
   } else {
     lvx_file_.read((char*)&frame_header_v0, sizeof(frame_header_v0));
-    if (!lvx_file_) { return kLvxFileReadFail; }
+    if (!lvx_file_) {
+      return kLvxFileReadFail;
+    }
     if ((size_ < frame_header_v0.current_offset) || (frame_header_v0.next_offset < frame_header_v0.current_offset)) {
       return kLvxFileFrameHeaderError;
     }
@@ -351,7 +367,9 @@ int LvxFileHandle::GetPacketsOfFrame(OutPacketBuffer* packets_of_frame) {
 }
 
 int LvxFileHandle::GetLvxFileReadProgress() {
-  if (!size_) { return 0; }
+  if (!size_) {
+    return 0;
+  }
 
   if (!lvx_file_.eof()) {
     return (lvx_file_.tellg() * 100ULL) / size_;
@@ -364,14 +382,18 @@ int LvxFileHandle::parsePacketsOfFrameXYZ(
     std::function<void(int64_t timestampNS, uint8_t deviceIndex, float x, float y, float z, uint8_t reflectivity)>
         pointCallback) {
   int file_state = GetPacketsOfFrame(&buffer_);
-  if (file_state != 0) { return file_state; }
+  if (file_state != 0) {
+    return file_state;
+  }
 
   uint32_t              data_size   = buffer_.data_size;
   uint8_t*              packet_base = buffer_.packet;
   uint32_t              data_offset = 0;
   uint32_t              fix_offset  = 0;
   std::vector<LdsStamp> lastTimestamps(GetDeviceCount());
-  for (LdsStamp& lastTimestamp : lastTimestamps) { lastTimestamp.stamp = -1; }
+  for (LdsStamp& lastTimestamp : lastTimestamps) {
+    lastTimestamp.stamp = -1;
+  }
   while (data_offset < data_size) {
     LivoxEthPacket* eth_packet;
     int32_t         handle;
@@ -398,7 +420,9 @@ int LvxFileHandle::parsePacketsOfFrameXYZ(
     //    if (detail_packet->device_index >= GetDeviceCount()) {
     //      throw std::logic_error("detail_packet->device_index >= GetDeviceCount() ");
     //    }
-    if (data_type >= kMaxPointDataType) { throw std::logic_error("data_type >= kMaxPointDataType"); }
+    if (data_type >= kMaxPointDataType) {
+      throw std::logic_error("data_type >= kMaxPointDataType");
+    }
     if (eth_packet->timestamp_type != kTimestampTypeNoSync) {
       throw std::logic_error("eth_packet->timestamp_type != kTimestampTypeNoSync ");
     }
@@ -465,12 +489,24 @@ void ParseExtrinsicXml(DeviceItem& item, LvxFileDeviceInfo& info) {
         info.device_type  = item.info.type;
         info.device_index = item.handle;
         for (rapidxml::xml_attribute<>* param = device->first_attribute(); param; param = param->next_attribute()) {
-          if ("roll" == (std::string)param->name()) { info.roll = static_cast<float>(atof(param->value())); }
-          if ("pitch" == (std::string)param->name()) { info.pitch = static_cast<float>(atof(param->value())); }
-          if ("yaw" == (std::string)param->name()) { info.yaw = static_cast<float>(atof(param->value())); }
-          if ("x" == (std::string)param->name()) { info.x = static_cast<float>(atof(param->value())); }
-          if ("y" == (std::string)param->name()) { info.y = static_cast<float>(atof(param->value())); }
-          if ("z" == (std::string)param->name()) { info.z = static_cast<float>(atof(param->value())); }
+          if ("roll" == (std::string)param->name()) {
+            info.roll = static_cast<float>(atof(param->value()));
+          }
+          if ("pitch" == (std::string)param->name()) {
+            info.pitch = static_cast<float>(atof(param->value()));
+          }
+          if ("yaw" == (std::string)param->name()) {
+            info.yaw = static_cast<float>(atof(param->value()));
+          }
+          if ("x" == (std::string)param->name()) {
+            info.x = static_cast<float>(atof(param->value()));
+          }
+          if ("y" == (std::string)param->name()) {
+            info.y = static_cast<float>(atof(param->value()));
+          }
+          if ("z" == (std::string)param->name()) {
+            info.z = static_cast<float>(atof(param->value()));
+          }
         }
       }
     }

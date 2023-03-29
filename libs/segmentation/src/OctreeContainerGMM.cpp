@@ -20,12 +20,18 @@ void OctreeContainerGMM::addPoint(const PointSegmentation& point) {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-bool OctreeContainerGMM::isBuilt(const int index) const { return GMM::isBuilt(); }
+bool OctreeContainerGMM::isBuilt(const int index) const {
+  return GMM::isBuilt();
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void OctreeContainerGMM::addTrainSample() {
-  if (std::isnan(this->lastPoint_.x)) { return; }
-  if (!trainSamples_) { return; }
+  if (std::isnan(this->lastPoint_.x)) {
+    return;
+  }
+  if (!trainSamples_) {
+    return;
+  }
   trainSamples_->push_back(Intensity(this->lastPoint_.intensity));
 }
 
@@ -48,16 +54,24 @@ bool OctreeContainerGMM::isStatic(const std::vector<double>& staticThreshold1Vec
                                   const bool                 lastIsStatic) {
   if (isnan(this->lastPoint_.x)) {
     if (!lastIsStatic) {
-      if (GMM::getStaticProbability() > nullStaticThreshold1Vector.front()) { return true; }
+      if (GMM::getStaticProbability() > nullStaticThreshold1Vector.front()) {
+        return true;
+      }
     } else {
-      if (GMM::getStaticProbability() > nullStaticThreshold2Vector.front()) { return true; }
+      if (GMM::getStaticProbability() > nullStaticThreshold2Vector.front()) {
+        return true;
+      }
     }
     return false;
   } else {
     if (!lastIsStatic) {
-      if (GMM::getProbability(Intensity(this->lastPoint_.intensity)) > staticThreshold1Vector.front()) { return true; }
+      if (GMM::getProbability(Intensity(this->lastPoint_.intensity)) > staticThreshold1Vector.front()) {
+        return true;
+      }
     } else {
-      if (GMM::getProbability(Intensity(this->lastPoint_.intensity)) > staticThreshold2Vector.front()) { return true; }
+      if (GMM::getProbability(Intensity(this->lastPoint_.intensity)) > staticThreshold2Vector.front()) {
+        return true;
+      }
     }
     return false;
   }

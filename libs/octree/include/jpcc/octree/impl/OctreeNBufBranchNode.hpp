@@ -19,7 +19,9 @@ OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>::OctreeNBufBranchNode(const 
 template <BufferIndex BUFFER_SIZE, typename BranchContainerT>
 OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>& OctreeNBufBranchNode<BUFFER_SIZE, BranchContainerT>::operator=(
     const OctreeNBufBranchNode& source) {
-  if (this == &source) { return *this; }
+  if (this == &source) {
+    return *this;
+  }
   reset();
 
   for (BufferIndex bufferIndex = 0; bufferIndex < BUFFER_SIZE; ++bufferIndex) {

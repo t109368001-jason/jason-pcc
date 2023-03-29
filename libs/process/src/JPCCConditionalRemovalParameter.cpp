@@ -14,7 +14,8 @@ using namespace po;
 #define CONDITIONS_OPT ".conditions"
 
 JPCCConditionalRemovalParameter::JPCCConditionalRemovalParameter() :
-    JPCCConditionalRemovalParameter(JPCC_CONDITIONAL_REMOVAL_OPT_PREFIX, __FUNCTION__) {}
+    JPCCConditionalRemovalParameter(JPCC_CONDITIONAL_REMOVAL_OPT_PREFIX, __FUNCTION__) {
+}
 
 JPCCConditionalRemovalParameter::JPCCConditionalRemovalParameter(const string& prefix, const string& caption) :
     Parameter(prefix, caption), conditions_(), type_("and"), enable(false), type(Condition::AND), condition() {
@@ -36,7 +37,9 @@ void JPCCConditionalRemovalParameter::getShowTexts(vector<string>& showTexts) co
     stringstream ss;
     ss << prefix_ << CONDITIONS_OPT ": ";
     for (size_t i = 0; i < conditions_.size(); i++) {
-      if (i != 0) { ss << (type == Condition::AND ? " && " : " || "); }
+      if (i != 0) {
+        ss << (type == Condition::AND ? " && " : " || ");
+      }
       ss << conditions_[i];
     }
     showTexts.push_back(ss.str());

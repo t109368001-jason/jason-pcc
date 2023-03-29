@@ -9,7 +9,9 @@ using namespace pcc;
 namespace jpcc::decoder {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-bool JPCCDecoderTMC2::isConvertFromCoderTypeThreadSafe() { return true; }
+bool JPCCDecoderTMC2::isConvertFromCoderTypeThreadSafe() {
+  return true;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void JPCCDecoderTMC2::decode(std::istream& is, std::shared_ptr<void>& coderReconstructFrame) {
