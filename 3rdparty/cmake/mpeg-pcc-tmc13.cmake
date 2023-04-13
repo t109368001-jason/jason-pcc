@@ -20,7 +20,7 @@ IF (NOT EXISTS "${TMC3_DIR}/PATCHED")
             "${CMAKE_SOURCE_DIR}/3rdparty/patch/mpeg-pcc-tmc13-for-jpcc.patch"
             )
         MESSAGE("mpeg-pcc-tmc13 patch: ${TMC3_DIR} (${TMC3_PATCH})")
-        EXECUTE_PROCESS(COMMAND git apply ${TMC3_PATCH} --whitespace=nowarn WORKING_DIRECTORY ${TMC3_DIR} RESULT_VARIABLE ret)
+        EXECUTE_PROCESS(COMMAND git apply ${TMC3_PATCH} --whitespace=nowarn --ignore-whitespace WORKING_DIRECTORY ${TMC3_DIR} RESULT_VARIABLE ret)
         IF (NOT ${ret} EQUAL "0")
             MESSAGE(FATAL_ERROR "Error during the mpeg-pcc-tmc13 patch process. Check that git is well installed on your system.")
         ENDIF ()
