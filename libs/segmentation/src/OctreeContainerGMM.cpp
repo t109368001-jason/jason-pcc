@@ -52,23 +52,41 @@ bool OctreeContainerGMM::isStatic(const std::vector<double>& staticThreshold1Vec
                                   const std::vector<double>& nullStaticThreshold1Vector,
                                   const std::vector<double>& nullStaticThreshold2Vector,
                                   const bool                 lastIsStatic) {
-  Intensity intensity = isnan(this->lastPoint_.x) ? NULL_INTENSITY : static_cast<Intensity>(this->lastPoint_.intensity);
-  if (!lastIsStatic) {
-    if (GMM::getProbability(intensity) > staticThreshold1Vector.front()) {
-      return true;
+  if (isnan(this->lastPoint_.x)) {
+    if (!lastIsStatic) {
+      if (GMM::getStaticProbability() > nullStaticThreshold1Vector.front()) {
+        return true;
+      }
+    } else {
+      if (GMM::getStaticProbability() > nullStaticThreshold2Vector.front()) {
+        return true;
+      }
     }
+    return false;
   } else {
-    if (GMM::getProbability(intensity) > staticThreshold2Vector.front()) {
-      return true;
+    if (!lastIsStatic) {
+      if (GMM::getProbability(Intensity(this->lastPoint_.intensity)) > staticThreshold1Vector.front()) {
+        return true;
+      }
+    } else {
+      if (GMM::getProbability(Intensity(this->lastPoint_.intensity)) > staticThreshold2Vector.front()) {
+        return true;
+      }
     }
+    return false;
   }
-  return false;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void OctreeContainerGMM::updateModel(int index, double alpha, double minimumVariance) {
-  Intensity intensity = isnan(this->lastPoint_.x) ? NULL_INTENSITY : static_cast<Intensity>(this->lastPoint_.intensity);
-  GMM::updateModel(intensity, alpha, minimumVariance);
+void OctreeContainerGMM::updateModel(const int    index,
+                                     const double alpha,
+                                     const double nullAlpha,
+                                     const double minimumVariance) {
+  if (std::isnan(this->lastPoint_.x)) {
+    GMM::updateModel(NULL_INTENSITY, nullAlpha, minimumVariance);
+  } else {
+    GMM::updateModel(Intensity(this->lastPoint_.intensity), alpha, minimumVariance);
+  }
 }
 
 }  // namespace jpcc::segmentation

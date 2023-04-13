@@ -58,20 +58,63 @@ bool OctreeContainerGMM2L::isStatic(const std::vector<double>& staticThreshold1V
                                     const std::vector<double>& nullStaticThreshold1Vector,
                                     const std::vector<double>& nullStaticThreshold2Vector,
                                     const bool                 lastIsStatic) {
-  Intensity intensity = isnan(this->lastPoint_.x) ? NULL_INTENSITY : static_cast<Intensity>(this->lastPoint_.intensity);
-  const auto& staticThresholdVector = lastIsStatic ? staticThreshold2Vector : staticThreshold1Vector;
-  for (size_t i = 0; i < SIZE; i++) {
-    if (gmmArray_[i].getProbability(intensity) > staticThresholdVector[i]) {
-      return true;
+  if (isnan(this->lastPoint_.x)) {
+    if (!lastIsStatic) {
+      if (gmmArray_[LONG_INDEX].getStaticProbability() > nullStaticThreshold1Vector[LONG_INDEX]) {
+        return true;
+      }
+    } else {
+      if (gmmArray_[LONG_INDEX].getStaticProbability() > nullStaticThreshold2Vector[LONG_INDEX]) {
+        return true;
+      }
     }
+    if (!lastIsStatic) {
+      if (gmmArray_[SHORT_INDEX].getStaticProbability() > nullStaticThreshold1Vector[SHORT_INDEX]) {
+        return true;
+      }
+    } else {
+      if (gmmArray_[SHORT_INDEX].getStaticProbability() > nullStaticThreshold2Vector[SHORT_INDEX]) {
+        return true;
+      }
+    }
+    return false;
+  } else {
+    if (!lastIsStatic) {
+      if (gmmArray_[SHORT_INDEX].getProbability(Intensity(this->lastPoint_.intensity)) >
+          staticThreshold1Vector[SHORT_INDEX]) {
+        return true;
+      }
+    } else {
+      if (gmmArray_[SHORT_INDEX].getProbability(Intensity(this->lastPoint_.intensity)) >
+          staticThreshold2Vector[SHORT_INDEX]) {
+        return true;
+      }
+    }
+    if (!lastIsStatic) {
+      if (gmmArray_[LONG_INDEX].getProbability(Intensity(this->lastPoint_.intensity)) >
+          staticThreshold1Vector[LONG_INDEX]) {
+        return true;
+      }
+    } else {
+      if (gmmArray_[LONG_INDEX].getProbability(Intensity(this->lastPoint_.intensity)) >
+          staticThreshold2Vector[LONG_INDEX]) {
+        return true;
+      }
+    }
+    return false;
   }
-  return false;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void OctreeContainerGMM2L::updateModel(int index, double alpha, double minimumVariance) {
-  Intensity intensity = isnan(this->lastPoint_.x) ? NULL_INTENSITY : static_cast<Intensity>(this->lastPoint_.intensity);
-  gmmArray_[index].updateModel(intensity, alpha, minimumVariance);
+void OctreeContainerGMM2L::updateModel(const int    index,
+                                       const double alpha,
+                                       const double nullAlpha,
+                                       const double minimumVariance) {
+  if (std::isnan(this->lastPoint_.x)) {
+    gmmArray_[index].updateModel(NULL_INTENSITY, nullAlpha, minimumVariance);
+  } else {
+    gmmArray_[index].updateModel(Intensity(this->lastPoint_.intensity), alpha, minimumVariance);
+  }
 }
 
 }  // namespace jpcc::segmentation

@@ -17,6 +17,8 @@ class Cluster {
 
   [[nodiscard]] double getProbability(Intensity sample) const;
 
+  [[nodiscard]] double getStaticProbability() const;
+
   void addSample(Intensity sample, bool matched, double alpha, double minimumVariance);
 
   void checkVariance(double minimumVariance);

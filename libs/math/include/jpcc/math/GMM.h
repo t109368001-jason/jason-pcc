@@ -28,6 +28,8 @@ class GMM {
 
   [[nodiscard]] double getProbability(Intensity sample);
 
+  [[nodiscard]] double getStaticProbability();
+
   [[nodiscard]] size_t getOptimalModelIndex(Intensity sample) const;
 
   void updateModel(Intensity sample, double alpha, double minimumVariance);

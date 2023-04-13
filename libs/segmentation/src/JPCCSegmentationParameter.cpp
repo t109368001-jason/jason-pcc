@@ -110,8 +110,6 @@ void JPCCSegmentationParameter::notify() {
   assert(!staticThreshold2Vector_.empty());
   assert(!nullStaticThreshold1Vector_.empty());
   assert(!nullStaticThreshold2Vector_.empty());
-  assert(kVector_.size() == alphaVector_.size() == nTrainVector_.size() == staticThreshold1Vector_.size() ==
-         staticThreshold2Vector_.size() == nullStaticThreshold1Vector_.size() == nullStaticThreshold2Vector_.size());
   for (auto& k : kVector_) {
     assert(k > 0);
   }

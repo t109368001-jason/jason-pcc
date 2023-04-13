@@ -109,6 +109,22 @@ bool GMM::isBuilt() const {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
+[[nodiscard]] double GMM::getStaticProbability() {
+  double totalProbability = 0.0;
+
+  for (const auto& cluster : clusters_) {
+    const double probability = cluster.getWeight() * cluster.getStaticProbability();
+    if (cluster.getMean() > MAX_INTENSITY) {
+      totalProbability -= probability;
+    } else {
+      totalProbability += probability;
+    }
+  }
+  assert(!isnan(totalProbability));
+  return totalProbability;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
 size_t GMM::getOptimalModelIndex(const Intensity sample) const {
   size_t optimalIndex       = 0;
   double optimalProbability = clusters_.front().getWeight() * clusters_.front().getProbability(sample);

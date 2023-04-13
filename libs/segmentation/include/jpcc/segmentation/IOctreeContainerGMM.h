@@ -27,7 +27,7 @@ class IOctreeContainerGMM {
                                       const std::vector<double>& nullStaticThreshold2Vector,
                                       bool                       lastIsStatic) = 0;
 
-  virtual void updateModel(int index, double alpha, double minimumVariance) = 0;
+  virtual void updateModel(int index, double alpha, double nullAlpha, double minimumVariance) = 0;
 };
 
 }  // namespace jpcc::segmentation
