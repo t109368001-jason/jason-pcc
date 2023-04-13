@@ -79,7 +79,7 @@ RESOLUTION_COLUMN.extend([""])
 params = {
     'font.size':
         16,
-    'figure.figsize': (10, 10),  # (10, 10) = 1000 x 1000 pixels
+    'figure.figsize': (10,5),  # (10, 10) = 1000 x 1000 pixels
     'lines.markersize':
         10,
     "axes.prop_cycle":
@@ -101,6 +101,14 @@ annotate_kwargs = dict(xycoords='data',
                        xytext=(0, 16),
                        horizontalalignment='center',
                        verticalalignment='center')
+
+parameter_name_to_title_name_dict = {
+    "k": r"$K$",
+    "N": r"$N_{GMM,short}$",
+    "alpha": r"$\alpha_{short}$",
+    "ST": r"${TH}_{static}$",
+    "NST": r"${TH}_{static,null}$",
+}
 
 
 def gen_summary_csv(parameter_name, file_info_dict: dict):
@@ -173,10 +181,10 @@ def gen_summary_png(parameter_name, result_csv: pd.DataFrame, file_info_dict):
     # noinspection PyProtectedMember
     right_axes._get_lines.prop_cycler = axes._get_lines.prop_cycler
     filename = f"test-{parameter_name}.png"
-    axes.set_title(f"{parameter_name} - BD-Rate/BD-PSNR")
-    axes.set_xlabel(parameter_name)
-    axes.set_ylabel("%")
-    right_axes.set_ylabel("%")
+    axes.set_title(f"{parameter_name_to_title_name_dict[parameter_name]} - BD-Rate/BD-PSNR")
+    axes.set_xlabel(parameter_name_to_title_name_dict[parameter_name])
+    axes.set_ylabel("BD-Rate (%)")
+    right_axes.set_ylabel(r"$R_{dynamic}$ (%)")
     x_min = np.min(x)
     x_max = np.max(x)
     x_l = x_max - x_min
@@ -190,13 +198,13 @@ def gen_summary_png(parameter_name, result_csv: pd.DataFrame, file_info_dict):
     yr_l = yr_max - yr_min
     right_axes.set_ylim(yr_min - yr_l * 0.2, yr_max + yr_l * 0.2)
 
-    axes.plot(x, bd_rate, label="DB-Rate")
-    for xx, yy in zip(x, bd_rate):
-        axes.annotate(f"({xx:.4g}, {yy:.4g})", (xx, yy), **annotate_kwargs)
-
-    right_axes.plot(x, dynamic_stream, label="Dynamic Stream")
-    for xx, yy in zip(x, dynamic_stream):
-        right_axes.annotate(f"({xx:.4g}, {yy:.4g})", (xx, yy), **annotate_kwargs)
+    axes.plot(x, bd_rate, label="BD-Rate")
+    # for xx, yy in zip(x, bd_rate):
+    #     axes.annotate(f"({xx:.4g}, {yy:.4g})", (xx, yy), **annotate_kwargs)
+    # 
+    right_axes.plot(x, dynamic_stream, label=r"$R_{dynamic}$")
+    # for xx, yy in zip(x, dynamic_stream):
+    #     right_axes.annotate(f"({xx:.4g}, {yy:.4g})", (xx, yy), **annotate_kwargs)
 
     axes.legend(loc="upper left")
     right_axes.legend(loc="upper right")
