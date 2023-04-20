@@ -1,0 +1,1 @@
+./bin/JPCCAppDatasetPreprocess --configs ./cfg/app/DatasetPreprocess/ctc.cfg
