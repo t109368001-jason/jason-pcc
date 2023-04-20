@@ -1,0 +1,46 @@
+#!/bin/bash
+set -ex
+
+source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)/JPCCAppSegmentationTestNST.sh"
+
+# 2 ~ 1 % non-null
+JPCCAppSegmentationTestNST 100 -0.038298432 -0.039096316 &
+JPCCAppSegmentationTestNST 200 -0.038298432 -0.039096316 &
+JPCCAppSegmentationTestNST 300 -0.038298432 -0.039096316 &
+JPCCAppSegmentationTestNST 400 -0.038298432 -0.039096316 &
+JPCCAppSegmentationTestNST 500 -0.038298432 -0.039096316 &
+
+# 3 ~ 2 % non-null
+JPCCAppSegmentationTestNST 100 -0.037500548 -0.038298432 &
+JPCCAppSegmentationTestNST 200 -0.037500548 -0.038298432 &
+JPCCAppSegmentationTestNST 300 -0.037500548 -0.038298432 &
+JPCCAppSegmentationTestNST 400 -0.037500548 -0.038298432 &
+JPCCAppSegmentationTestNST 500 -0.037500548 -0.038298432 &
+
+# 4 ~ 3 % non-null
+JPCCAppSegmentationTestNST 100 -0.036702664 -0.037500548 &
+JPCCAppSegmentationTestNST 200 -0.036702664 -0.037500548 &
+JPCCAppSegmentationTestNST 300 -0.036702664 -0.037500548 &
+JPCCAppSegmentationTestNST 400 -0.036702664 -0.037500548 &
+JPCCAppSegmentationTestNST 500 -0.036702664 -0.037500548 &
+
+# 6 ~ 4 % non-null
+JPCCAppSegmentationTestNST 100 -0.035106896 -0.036702664 &
+JPCCAppSegmentationTestNST 200 -0.035106896 -0.036702664 &
+JPCCAppSegmentationTestNST 300 -0.035106896 -0.036702664 &
+JPCCAppSegmentationTestNST 400 -0.035106896 -0.036702664 &
+JPCCAppSegmentationTestNST 500 -0.035106896 -0.036702664 &
+
+# 11 ~ 9 % non-null
+JPCCAppSegmentationTestNST 100 -0.031117476 -0.032713244 &
+JPCCAppSegmentationTestNST 200 -0.031117476 -0.032713244 &
+JPCCAppSegmentationTestNST 300 -0.031117476 -0.032713244 &
+JPCCAppSegmentationTestNST 400 -0.031117476 -0.032713244 &
+JPCCAppSegmentationTestNST 500 -0.031117476 -0.032713244 &
+
+# 21 ~ 19 % non-null
+JPCCAppSegmentationTestNST 100 -0.023138636 -0.024734404 &
+JPCCAppSegmentationTestNST 200 -0.023138636 -0.024734404 &
+JPCCAppSegmentationTestNST 300 -0.023138636 -0.024734404 &
+JPCCAppSegmentationTestNST 400 -0.023138636 -0.024734404 &
+JPCCAppSegmentationTestNST 500 -0.023138636 -0.024734404 &
