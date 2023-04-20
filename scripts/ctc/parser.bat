@@ -1,0 +1,1 @@
+start ./bin/JPCCAppDatasetParser.exe --configs ./cfg/app/DatasetParser/ctc.cfg
