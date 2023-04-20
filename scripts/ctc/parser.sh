@@ -1,1 +1,1 @@
-./bin/JPCCAppDatasetParser --configs ./cfg/app/DatasetParser/ZX-XS-20220330-ctc.cfg
+./bin/JPCCAppDatasetParser --configs ./cfg/app/DatasetParser/ctc.cfg
