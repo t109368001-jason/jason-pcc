@@ -40,6 +40,12 @@ class JPCCSegmentationOPCGMMCenter : virtual public JPCCSegmentation,
 
   void segmentation(IJPCCSegmentationContext& context, size_t index) override;
 
+  void segmentation(const GroupOfFrame&            frames,
+                    const GroupOfPclFrame<PointT>& pclFrames,
+                    const GroupOfFrame&            dynamicFrames,
+                    const GroupOfFrame&            staticAddedFrames,
+                    const GroupOfFrame&            staticRemovedFrames) override;
+
   void appendTrainSamples(const FramePtr& frame);
 
   void addTrainSampleAndResetLastPointRecursive(const FramePtr& frame, const BranchNode* branchNode);

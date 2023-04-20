@@ -13,15 +13,15 @@ namespace jpcc::io {
 
 enum class Sensor { NONE, MID_100, MID_70, VLP_16, HI_RES, HDL_32 };
 enum class Type {
-  NONE,  //
+  NONE,                                     //
 
-  PLY,      //
-  PLY_SEG,  //
-  PLY_END,  //
+  PLY,                                      //
+  PLY_DYNAMIC_STATIC_ADDED_STATIC_REMOVED,  //
+  PLY_END,                                  //
 
-  PCAP,  //
+  PCAP,                                     //
 
-  LVX  //
+  LVX                                       //
 };
 
 class DatasetParameter : public virtual Parameter {

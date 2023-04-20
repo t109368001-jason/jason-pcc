@@ -1,0 +1,1 @@
+./bin/JPCCAppSegmentation --configs ./cfg/app/Segmentation/ctc.cfg

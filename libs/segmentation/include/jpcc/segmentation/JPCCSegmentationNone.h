@@ -14,6 +14,12 @@ class JPCCSegmentationNone : virtual public JPCCSegmentation {
 
   void appendTrainSamplesAndBuild(const FramePtr& frame, const PclFramePtr<PointSegmentation>& pclFrame) override;
 
+  void segmentation(const GroupOfFrame&            frames,
+                    const GroupOfPclFrame<PointT>& pclFrames,
+                    const GroupOfFrame&            dynamicFrames,
+                    const GroupOfFrame&            staticAddedFrames,
+                    const GroupOfFrame&            staticRemovedFrames) override;
+
  protected:
   void segmentation(IJPCCSegmentationContext& context, size_t index) override;
 };

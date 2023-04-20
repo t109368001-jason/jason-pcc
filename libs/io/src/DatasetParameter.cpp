@@ -104,10 +104,7 @@ void DatasetParameter::notify(bool isInput) {
         char fileName[4096];
         sprintf(fileName, filePaths[i].string().c_str(), startFrameNumbers[i]);
         THROW_IF_NOT(exists(path(fileName)));
-      } else if (type == Type::PLY_SEG) {
-        if (i != 0) {
-          continue;
-        }
+      } else if (type == Type::PLY_DYNAMIC_STATIC_ADDED_STATIC_REMOVED) {
         char fileName[4096];
         sprintf(fileName, filePaths[i].string().c_str(), startFrameNumbers[i]);
         THROW_IF_NOT(exists(path(fileName)));
@@ -211,8 +208,8 @@ Type getType(const string& type) {
     return Type::NONE;
   } else if (type == "ply") {
     return Type::PLY;
-  } else if (type == "ply-seg") {
-    return Type::PLY_SEG;
+  } else if (type == "ply-dynamic-staticAdded-staticRemoved") {
+    return Type::PLY_DYNAMIC_STATIC_ADDED_STATIC_REMOVED;
   } else if (type == "pcap") {
     return Type::PCAP;
   } else if (type == "lvx") {

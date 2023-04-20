@@ -31,6 +31,12 @@ class JPCCSegmentation {
 
   virtual void segmentation(IJPCCSegmentationContext& context, bool parallel);
 
+  virtual void segmentation(const GroupOfFrame&            frames,
+                            const GroupOfPclFrame<PointT>& pclFrames,
+                            const GroupOfFrame&            dynamicFrames,
+                            const GroupOfFrame&            staticAddedFrames,
+                            const GroupOfFrame&            staticRemovedFrames) = 0;
+
  protected:
   virtual void segmentation(IJPCCSegmentationContext& context, size_t index) = 0;
 };

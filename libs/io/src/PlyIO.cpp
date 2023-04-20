@@ -45,7 +45,7 @@ void loadPly(GroupOfFrame&      frames,
 //////////////////////////////////////////////////////////////////////////////////////////////
 void savePly(const GroupOfFrame& frames, const std::string& filePath, const bool parallel) {
   auto func = [&](const FramePtr& frame) {
-    if (!frame || frame->getPointCount() == 0) {
+    if (!frame) {
       return;
     }
     char fileName[4096];

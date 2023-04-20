@@ -100,6 +100,22 @@ void JPCCSegmentationOPCGMMCenter<LeafContainerT>::segmentation(IJPCCSegmentatio
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename LeafContainerT>
+void JPCCSegmentationOPCGMMCenter<LeafContainerT>::segmentation(const GroupOfFrame&            frames,
+                                                                const GroupOfPclFrame<PointT>& pclFrames,
+                                                                const GroupOfFrame&            dynamicFrames,
+                                                                const GroupOfFrame&            staticAddedFrames,
+                                                                const GroupOfFrame&            staticRemovedFrames) {
+  for (size_t i = 0; i < frames.size(); i++) {
+    this->addFrame(pclFrames[i]);
+
+    OctreeKey key;
+    this->segmentationRecursive(frames[i], dynamicFrames[i], nullptr, staticAddedFrames[i], staticRemovedFrames[i], key,
+                                this->root_node_);
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename LeafContainerT>
 void JPCCSegmentationOPCGMMCenter<LeafContainerT>::appendTrainSamples(const FramePtr& frame) {
   if (this->isBuilt()) {
     return;

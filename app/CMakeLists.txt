@@ -1,6 +1,7 @@
 add_subdirectory(JPCCAppAnalyzer)
 add_subdirectory(JPCCAppDatasetParser)
 add_subdirectory(JPCCAppDatasetPreprocess)
+add_subdirectory(JPCCAppSegmentation)
 add_subdirectory(JPCCAppDatasetRegistrationTool)
 add_subdirectory(JPCCAppDatasetViewer)
 add_subdirectory(JPCCAppEncoder)
