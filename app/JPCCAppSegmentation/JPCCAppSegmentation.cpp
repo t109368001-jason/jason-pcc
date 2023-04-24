@@ -70,9 +70,9 @@ void encode(const AppParameter& parameter) {
     }
     gmmSegmentation->segmentation(frames, pclFrames, dynamicFrames, staticAddedFrames, staticRemovedFrames);
 
-    savePly(dynamicFrames, parameter.outputDataset.getFilePath(0), parameter.parallel);
-    savePly(staticAddedFrames, parameter.outputDataset.getFilePath(1), parameter.parallel);
-    savePly(staticRemovedFrames, parameter.outputDataset.getFilePath(2), parameter.parallel);
+    savePly(dynamicFrames, parameter.outputDataset.getFilePath(0), parameter.parallel, false);
+    savePly(staticAddedFrames, parameter.outputDataset.getFilePath(1), parameter.parallel, false);
+    savePly(staticRemovedFrames, parameter.outputDataset.getFilePath(2), parameter.parallel, false);
 
     frameNumber += groupOfFramesSize;
   }

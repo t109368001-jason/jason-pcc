@@ -307,6 +307,12 @@ bool JPCCPointSet3::read(const std::string& fileName, const bool readNormals) {
       position[0]    = atof(tokens[indexX].c_str());
       position[1]    = atof(tokens[indexY].c_str());
       position[2]    = atof(tokens[indexZ].c_str());
+      if (hasNormals()) {
+        auto& normal = normals_[pointCounter];
+        normal[0]    = atof(tokens[indexNX].c_str());
+        normal[1]    = atof(tokens[indexNY].c_str());
+        normal[2]    = atof(tokens[indexNZ].c_str());
+      }
       if (hasReflectances()) {
         reflectances_[pointCounter] = uint16_t(atoi(tokens[indexReflectance].c_str()));
       }
@@ -404,8 +410,9 @@ bool JPCCPointSet3::read(const std::string& fileName, const bool readNormals) {
             ifs.read(reinterpret_cast<char*>(&reflectance), sizeof(uint8_t));
             reflectances_[pointCounter] = reflectance;
           } else {
-            auto& reflectance = reflectances_[pointCounter];
-            ifs.read(reinterpret_cast<char*>(reflectance), sizeof(uint16_t));
+            uint16_t reflectance;
+            ifs.read(reinterpret_cast<char*>(&reflectance), sizeof(uint16_t));
+            reflectances_[pointCounter] = reflectance;
           }
         } else {
           char buffer[128];

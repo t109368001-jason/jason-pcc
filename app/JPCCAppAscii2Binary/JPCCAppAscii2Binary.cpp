@@ -7,8 +7,6 @@
 #include <jpcc/common/ParameterParser.h>
 #include <jpcc/io/Reader.h>
 #include <jpcc/io/PlyIO.h>
-#include <jpcc/process/PreProcessor.h>
-#include <jpcc/process/JPCCNormalEstimation.h>
 
 #include "AppParameter.h"
 
@@ -16,32 +14,27 @@ using namespace std;
 using namespace std::chrono;
 using namespace jpcc;
 using namespace jpcc::io;
-using namespace jpcc::process;
 
-void preprocess(const AppParameter& parameter, Stopwatch& clock) {
-  const typename DatasetReader::Ptr reader = newReader(parameter.inputReader, parameter.inputDataset);
-  PreProcessor                      preProcessor(parameter.preProcess);
-  auto normalEstimation = jpcc::make_shared<JPCCNormalEstimation>(parameter.jpccNormalEstimation);
+void toBinary(const AppParameter& parameter, Stopwatch& clock) {
+  const typename DatasetReader::Ptr reader = newReader(parameter.reader, parameter.dataset);
 
   GroupOfFrame frames;
-  size_t       frameNumber    = parameter.inputDataset.getStartFrameNumber();
-  const size_t endFrameNumber = parameter.inputDataset.getEndFrameNumber();
+  size_t       frameNumber    = parameter.dataset.getStartFrameNumber();
+  const size_t endFrameNumber = parameter.dataset.getEndFrameNumber();
   while (frameNumber < endFrameNumber) {
     size_t groupOfFramesSize = std::min(parameter.groupOfFramesSize, endFrameNumber - frameNumber);
     clock.start();
     reader->loadAll(frameNumber, groupOfFramesSize, frames, parameter.parallel);
+    clock.stop();
 
-    preProcessor.process(frames, nullptr, parameter.parallel);
-    normalEstimation->computeInPlaceAll(frames, parameter.parallel);
-
-    savePly(frames, parameter.outputDataset.getFilePath(), parameter.parallel, false);
+    savePly(frames, parameter.dataset.getFilePath(), parameter.parallel, false);
 
     frameNumber += groupOfFramesSize;
   }
 }
 
 int main(int argc, char* argv[]) {
-  BOOST_LOG_TRIVIAL(info) << "JPCC App Dataset Preprocess Start";
+  BOOST_LOG_TRIVIAL(info) << "JPCC App ASCII to Binary Start";
 
   AppParameter parameter;
   try {
@@ -62,7 +55,7 @@ int main(int argc, char* argv[]) {
     Stopwatch clockUser;
 
     clockWall.start();
-    preprocess(parameter, clockUser);
+    toBinary(parameter, clockUser);
     clockWall.stop();
 
     auto totalWall = duration_cast<milliseconds>(clockWall.count()).count();
@@ -74,6 +67,6 @@ int main(int argc, char* argv[]) {
     BOOST_LOG_TRIVIAL(error) << e.what();
   }
 
-  BOOST_LOG_TRIVIAL(info) << "JPCC App Dataset Preprocess End";
+  BOOST_LOG_TRIVIAL(info) << "JPCC App ASCII to Binary End";
   return 0;
 }

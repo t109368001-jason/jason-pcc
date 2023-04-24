@@ -43,14 +43,14 @@ void loadPly(GroupOfFrame&      frames,
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void savePly(const GroupOfFrame& frames, const std::string& filePath, const bool parallel) {
+void savePly(const GroupOfFrame& frames, const std::string& filePath, const bool parallel, const bool asAscii) {
   auto func = [&](const FramePtr& frame) {
     if (!frame) {
       return;
     }
     char fileName[4096];
     sprintf(fileName, filePath.c_str(), frame->getFrameNumber());
-    const bool result = frame->write(std::string(fileName), true);
+    const bool result = frame->write(std::string(fileName), asAscii);
     THROW_IF_NOT(result);
   };
 
