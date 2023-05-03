@@ -9,6 +9,8 @@ function JPCCAppEncoderTestBest() {
   local output_folder="${OUTPUT_FOLDER_PREFIX:="../../result/test-best-$(date +%Y%m%d-%H)/"}/ZX-XS-20220707[seg-split-${resolution}][tmc3-${qp}-0]/"
 
   JPCCAppEncoderCommon ${resolution} ${qp} ${output_folder} \
+    --jpccGMMSegmentationParameter.k 2 \
+    --jpccGMMSegmentationParameter.k 2 \
     --jpccGMMSegmentationParameter.nTrain 350 \
     --jpccGMMSegmentationParameter.nTrain 18090 \
     --jpccGMMSegmentationParameter.alpha 0.01310 \
