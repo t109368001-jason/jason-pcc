@@ -33,18 +33,21 @@ file_info_pattern = re.compile(r'(?P<file_path>.*'
 LABEL_COLUMN_NAME = "Parameter Value"
 RESOLUTION_COLUMN_NAME = "Resolution (mm)"
 
-BD_RATE_LABEL = "BD-Rate"
-BD_PSNR_LABEL = "BD-PSNR"
+D1_BD_RATE_LABEL = "D1 BD-Rate"
+D2_BD_RATE_LABEL = "D2 BD-Rate"
+D1_BD_PSNR_LABEL = "D1 BD-PSNR"
+D2_BD_PSNR_LABEL = "D2 BD-PSNR"
 DYNAMIC_STREAM_LABEL = "Dynamic Stream (%)"
 DYNAMIC_LABEL = "Dynamic (bytes)"
 STATIC_ADDED_LABEL = "StaticAdded (bytes)"
 STATIC_REMOVED_LABEL = "StaticRemoved (bytes)"
 TOTAL_LABEL = "Total (bytes)"
 PSNR_LABEL = "A2B (db)"
+D2_PSNR_LABEL = "D2 A2B (db)"
 WALL_LABEL = "Wall (s)"
 MEM_LABEL = "Peek memory (KB)"
 
-LABEL_COLUMN = [BD_RATE_LABEL, BD_PSNR_LABEL, DYNAMIC_STREAM_LABEL, ""]
+LABEL_COLUMN = [D1_BD_RATE_LABEL, D2_BD_RATE_LABEL, D1_BD_PSNR_LABEL, D2_BD_PSNR_LABEL, DYNAMIC_STREAM_LABEL, ""]
 LABEL_COLUMN.extend([DYNAMIC_LABEL] * len(RESOLUTION_LIST))
 LABEL_COLUMN.extend([""])
 LABEL_COLUMN.extend([STATIC_ADDED_LABEL] * len(RESOLUTION_LIST))
@@ -55,12 +58,16 @@ LABEL_COLUMN.extend([TOTAL_LABEL] * len(RESOLUTION_LIST))
 LABEL_COLUMN.extend([""])
 LABEL_COLUMN.extend([PSNR_LABEL] * len(RESOLUTION_LIST))
 LABEL_COLUMN.extend([""])
+LABEL_COLUMN.extend([D2_PSNR_LABEL] * len(RESOLUTION_LIST))
+LABEL_COLUMN.extend([""])
 LABEL_COLUMN.extend([WALL_LABEL] * len(RESOLUTION_LIST))
 LABEL_COLUMN.extend([""])
 LABEL_COLUMN.extend([MEM_LABEL] * len(RESOLUTION_LIST))
 LABEL_COLUMN.extend([""])
 
-RESOLUTION_COLUMN = [""] * 4
+RESOLUTION_COLUMN = [""] * 6
+RESOLUTION_COLUMN.extend(RESOLUTION_LIST)
+RESOLUTION_COLUMN.extend([""])
 RESOLUTION_COLUMN.extend(RESOLUTION_LIST)
 RESOLUTION_COLUMN.extend([""])
 RESOLUTION_COLUMN.extend(RESOLUTION_LIST)
@@ -79,7 +86,7 @@ RESOLUTION_COLUMN.extend([""])
 params = {
     'font.size':
         16,
-    'figure.figsize': (10,5),  # (10, 10) = 1000 x 1000 pixels
+    'figure.figsize': (10, 5),  # (10, 10) = 1000 x 1000 pixels
     'lines.markersize':
         10,
     "axes.prop_cycle":
@@ -130,12 +137,17 @@ def gen_summary_csv(parameter_name, file_info_dict: dict):
 def cal_bd(parameter_value, result):
     all_dynamic_bytes = result.loc[result[LABEL_COLUMN_NAME] == DYNAMIC_LABEL, parameter_value].astype(float).values
     all_bytes = result.loc[result[LABEL_COLUMN_NAME] == TOTAL_LABEL, parameter_value].astype(float).values
-    all_psnr = result.loc[result[LABEL_COLUMN_NAME] == PSNR_LABEL, parameter_value].astype(float).values
-    bd_rate = bd.bd_rate(GPCC_BYTES, GPCC_PSNR, all_bytes, all_psnr)
-    bd_psnr = bd.bd_psnr(GPCC_BYTES, GPCC_PSNR, all_bytes, all_psnr)
+    all_d1_psnr = result.loc[result[LABEL_COLUMN_NAME] == PSNR_LABEL, parameter_value].astype(float).values
+    all_d2_psnr = result.loc[result[LABEL_COLUMN_NAME] == D2_PSNR_LABEL, parameter_value].astype(float).values
+    d1_bd_rate = bd.bd_rate(GPCC_BYTES, GPCC_PSNR, all_bytes, all_d1_psnr)
+    d1_bd_psnr = bd.bd_psnr(GPCC_BYTES, GPCC_PSNR, all_bytes, all_d1_psnr)
+    d2_bd_rate = bd.bd_rate(GPCC_BYTES, GPCC_PSNR, all_bytes, all_d2_psnr)
+    d2_bd_psnr = bd.bd_psnr(GPCC_BYTES, GPCC_PSNR, all_bytes, all_d2_psnr)
     dynamic_stream_percentage = np.mean(all_dynamic_bytes / all_bytes) * 100.0
-    result.loc[(result[LABEL_COLUMN_NAME] == BD_RATE_LABEL), parameter_value] = bd_rate
-    result.loc[(result[LABEL_COLUMN_NAME] == BD_PSNR_LABEL), parameter_value] = bd_psnr
+    result.loc[(result[LABEL_COLUMN_NAME] == D1_BD_RATE_LABEL), parameter_value] = d1_bd_rate
+    result.loc[(result[LABEL_COLUMN_NAME] == D1_BD_PSNR_LABEL), parameter_value] = d1_bd_psnr
+    result.loc[(result[LABEL_COLUMN_NAME] == D2_BD_RATE_LABEL), parameter_value] = d2_bd_rate
+    result.loc[(result[LABEL_COLUMN_NAME] == D2_BD_PSNR_LABEL), parameter_value] = d2_bd_psnr
     result.loc[result[LABEL_COLUMN_NAME] == DYNAMIC_STREAM_LABEL, parameter_value] = dynamic_stream_percentage
 
 
@@ -145,9 +157,8 @@ def copy_file_info_to_result_csv(file_info, result):
     static_added_bytes = metric_csv.loc[STATIC_ADDED_LABEL, "value"]
     static_removed_bytes = metric_csv.loc[STATIC_REMOVED_LABEL, "value"]
     total_bytes = int(dynamic_bytes) + int(static_added_bytes) + int(static_removed_bytes)
-    a2b_psnr = metric_csv.loc[PSNR_LABEL, "value"]
-    if not isinstance(a2b_psnr, str):
-        a2b_psnr = a2b_psnr[0]
+    d1_a2b_psnr = metric_csv.loc[PSNR_LABEL, "value"][0]
+    d2_a2b_psnr = metric_csv.loc[PSNR_LABEL, "value"][1]
     resolution_filter = (result[RESOLUTION_COLUMN_NAME] == file_info["resolution"])
     result.loc[(result[LABEL_COLUMN_NAME] == DYNAMIC_LABEL) & resolution_filter, file_info["value"]] = dynamic_bytes
     result.loc[(result[LABEL_COLUMN_NAME] == STATIC_ADDED_LABEL) & resolution_filter,
@@ -155,7 +166,8 @@ def copy_file_info_to_result_csv(file_info, result):
     result.loc[(result[LABEL_COLUMN_NAME] == STATIC_REMOVED_LABEL) & resolution_filter,
     file_info["value"]] = static_removed_bytes
     result.loc[(result[LABEL_COLUMN_NAME] == TOTAL_LABEL) & resolution_filter, file_info["value"]] = total_bytes
-    result.loc[(result[LABEL_COLUMN_NAME] == PSNR_LABEL) & resolution_filter, file_info["value"]] = a2b_psnr
+    result.loc[(result[LABEL_COLUMN_NAME] == PSNR_LABEL) & resolution_filter, file_info["value"]] = d1_a2b_psnr
+    result.loc[(result[LABEL_COLUMN_NAME] == D2_PSNR_LABEL) & resolution_filter, file_info["value"]] = d2_a2b_psnr
     result.loc[(result[LABEL_COLUMN_NAME] == WALL_LABEL) & resolution_filter,
     file_info["value"]] = metric_csv.loc[WALL_LABEL, "value"]
     result.loc[(result[LABEL_COLUMN_NAME] == MEM_LABEL) & resolution_filter,
@@ -165,7 +177,7 @@ def copy_file_info_to_result_csv(file_info, result):
 
 def gen_summary_png(parameter_name, result_csv: pd.DataFrame, file_info_dict):
     x = np.array(list(file_info_dict.keys())).astype(float)
-    bd_rate = result_csv.loc[result_csv[LABEL_COLUMN_NAME] == BD_RATE_LABEL,
+    bd_rate = result_csv.loc[result_csv[LABEL_COLUMN_NAME] == D1_BD_RATE_LABEL,
     file_info_dict.keys()].values.flatten().astype(float)
     dynamic_stream = result_csv.loc[result_csv[LABEL_COLUMN_NAME] == DYNAMIC_STREAM_LABEL,
     file_info_dict.keys()].values.flatten().astype(float)
@@ -181,9 +193,9 @@ def gen_summary_png(parameter_name, result_csv: pd.DataFrame, file_info_dict):
     # noinspection PyProtectedMember
     right_axes._get_lines.prop_cycler = axes._get_lines.prop_cycler
     filename = f"test-{parameter_name}.png"
-    axes.set_title(f"{parameter_name_to_title_name_dict[parameter_name]} - BD-Rate/BD-PSNR")
+    axes.set_title(f"{parameter_name_to_title_name_dict[parameter_name]} - D1 BD-Rate/BD-PSNR")
     axes.set_xlabel(parameter_name_to_title_name_dict[parameter_name])
-    axes.set_ylabel("BD-Rate (%)")
+    axes.set_ylabel("D1 BD-Rate (%)")
     right_axes.set_ylabel(r"$R_{dynamic}$ (%)")
     x_min = np.min(x)
     x_max = np.max(x)
@@ -201,7 +213,7 @@ def gen_summary_png(parameter_name, result_csv: pd.DataFrame, file_info_dict):
     axes.plot(x, bd_rate, label="BD-Rate")
     # for xx, yy in zip(x, bd_rate):
     #     axes.annotate(f"({xx:.4g}, {yy:.4g})", (xx, yy), **annotate_kwargs)
-    # 
+    #
     right_axes.plot(x, dynamic_stream, label=r"$R_{dynamic}$")
     # for xx, yy in zip(x, dynamic_stream):
     #     right_axes.annotate(f"({xx:.4g}, {yy:.4g})", (xx, yy), **annotate_kwargs)

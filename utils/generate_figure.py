@@ -128,7 +128,7 @@ def quiver(x, y, axes: plt.Axes, **kwargs):
     v = np.diff(y)
     pos_prob = x[:-1] + u / 2
     pos_y1 = y[:-1] + v / 2
-    norm = np.sqrt(u**2 + v**2)
+    norm = np.sqrt(u ** 2 + v ** 2)
     axes.quiver(pos_prob, pos_y1, u / norm, v / norm, **kwargs)
 
 
@@ -170,6 +170,39 @@ def plot_schmitt(filename="schmitt_trigger.png"):
     img.convert("L").save(filepath.with_stem(filepath.stem + "_gray"))
 
 
+def plot_comparison(proposed_br,
+                    proposed_d1_psnr,
+                    proposed_d2_psnr,
+                    gpcc_br,
+                    gpcc_d1_psnr,
+                    gpcc_d2_psnr,
+                    filename="comparison.png"):
+    fig, (d1_axes, d2_axes) = plt.subplots(1, 2)
+    fig: plt.Figure
+    fig.set_size_inches(20, 10)
+    d1_axes: plt.Axes
+    d2_axes: plt.Axes
+    d1_axes.set_xlabel("Bytes")
+    d1_axes.set_ylabel("D1 PSNR (db)")
+    d2_axes.set_xlabel("Bytes")
+    d2_axes.set_ylabel("D2 PSNR (db)")
+
+    d1_axes.plot(proposed_br, proposed_d1_psnr, label="Proposed")
+    d1_axes.plot(gpcc_br, gpcc_d1_psnr, label="G-PCC")
+    d2_axes.plot(proposed_br, proposed_d2_psnr, label="Proposed")
+    d2_axes.plot(gpcc_br, gpcc_d2_psnr, label="G-PCC")
+
+    d1_axes.legend()
+    d2_axes.legend()
+    d1_axes.grid()
+    d2_axes.grid()
+
+    filepath = folder / filename
+    fig.savefig(filepath, **savefig_kwargs)
+    img = Image.open(filepath)
+    img.convert("L").save(filepath.with_stem(filepath.stem + "_gray"))
+
+
 if __name__ == '__main__':
     print("generate_figure.py")
 
@@ -182,9 +215,9 @@ if __name__ == '__main__':
         "alpha": 0.00656,
         "annotate_x": 700
     }],
-                       700,
-                       "weight_curve-n[700].png",
-                       title=r"Weight Curve $N=700$")
+        700,
+        "weight_curve-n[700].png",
+        title=r"Weight Curve $N=700$")
 
     plot_gmm([{
         "u": 75,
@@ -196,10 +229,10 @@ if __name__ == '__main__':
         "u": 200,
         "s": 50
     }],
-             "gmm.png",
-             title=r"Gaussian Mixture Model $K=3$",
-             xlim=[0, 255],
-             ylim=[-0.03, 0.09])
+        "gmm.png",
+        title=r"Gaussian Mixture Model $K=3$",
+        xlim=[0, 255],
+        ylim=[-0.03, 0.09])
     plot_gmm([{
         "u": 512,
         "s": 10
@@ -210,8 +243,8 @@ if __name__ == '__main__':
         "u": 128,
         "s": 10
     }],
-             "gmm_without_weight.png",
-             title=r"Gaussian Mixture Model $K=3$")
+        "gmm_without_weight.png",
+        title=r"Gaussian Mixture Model $K=3$")
     plot_gmm([{
         "u": 512,
         "s": 10,
@@ -221,8 +254,8 @@ if __name__ == '__main__':
         "s": 10,
         "w": 0.1
     }],
-             "gmm_weight[9_1].png",
-             title=r"Gaussian Mixture Model $K=2$")
+        "gmm_weight[9_1].png",
+        title=r"Gaussian Mixture Model $K=2$")
     plot_gmm([{
         "u": 512,
         "s": 10,
@@ -236,8 +269,8 @@ if __name__ == '__main__':
         "s": 10,
         "w": 0.09
     }],
-             "gmm_weight[9_0.5_0.5].png",
-             title=r"Gaussian Mixture Model $K=3$")
+        "gmm_weight[9_0.5_0.5].png",
+        title=r"Gaussian Mixture Model $K=3$")
 
     plot_gmm(
         [{
@@ -254,3 +287,8 @@ if __name__ == '__main__':
         ylim=[-0.0015, 0.0045])
 
     plot_schmitt()
+
+    plot_comparison([304283444, 128550921, 81911822, 57384353, 47463767], [70.7401, 64.8376, 61.2336, 58.9434, 56.5661],
+                    [76.4597, 70.2887, 66.4402, 64.3093, 61.14],
+                    [582787403, 362976909, 252035824, 188440045, 149546411],
+                    [70.4182, 65.0899, 61.5701, 59.1515, 57.1218], [75.2006, 69.8344, 66.4166, 64.0504, 61.8438])
