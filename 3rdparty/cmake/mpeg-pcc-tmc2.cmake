@@ -1,7 +1,7 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.0 FATAL_ERROR)
 
 PROJECT(TMC2 C CXX)
-SET(TMC2_VERSION release-v15.0)
+SET(TMC2_VERSION release-v18.0)
 SET(TMC2_DIR ${CMAKE_SOURCE_DIR}/3rdparty/mpeg-pcc-tmc2/)
 MESSAGE("Clone and build mpeg-pcc-tmc2 libraries: ${TMC2_LIB_SOURCE_DIR}")
 
@@ -20,7 +20,7 @@ IF (NOT EXISTS "${TMC2_DIR}/PATCHED")
             "${CMAKE_SOURCE_DIR}/3rdparty/patch/mpeg-pcc-tmc2-for-jpcc.patch"
             )
         MESSAGE("mpeg-pcc-tmc2 patch: ${TMC2_DIR} (${TMC2_PATCH})")
-        EXECUTE_PROCESS(COMMAND git apply ${TMC2_PATCH} --whitespace=nowarn WORKING_DIRECTORY ${TMC2_DIR} RESULT_VARIABLE ret)
+        EXECUTE_PROCESS(COMMAND git apply ${TMC2_PATCH} --whitespace=nowarn --ignore-whitespace WORKING_DIRECTORY ${TMC2_DIR} RESULT_VARIABLE ret)
         IF (NOT ${ret} EQUAL "0")
             MESSAGE(FATAL_ERROR "Error during the mpeg-pcc-tmc2 patch process. Check that git is well installed on your system.")
         ENDIF ()

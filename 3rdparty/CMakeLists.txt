@@ -1,9 +1,7 @@
 
 include(cmake/nanoflann.cmake)
 include(cmake/mpeg-pcc-tmc13.cmake)
-if (${USE_MPEG_PCC_TMC2})
-    include(cmake/mpeg-pcc-tmc2.cmake)
-endif ()
+include(cmake/mpeg-pcc-tmc2.cmake)
 
 set(NANOFLANN_BUILD_EXAMPLES OFF)
 set(NANOFLANN_BUILD_BENCHMARKS OFF)
@@ -11,9 +9,7 @@ set(NANOFLANN_BUILD_TESTS OFF)
 
 add_subdirectory(nanoflann)
 add_subdirectory(mpeg-pcc-tmc13)
-if (${USE_MPEG_PCC_TMC2})
-    add_subdirectory(mpeg-pcc-tmc2)
-endif ()
+add_subdirectory(mpeg-pcc-tmc2)
 
 target_include_directories(tmc3 PUBLIC mpeg-pcc-tmc13)
 if (MSVC)
