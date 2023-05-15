@@ -37,6 +37,7 @@ void quantize(const AppParameter& parameter, Stopwatch& clock) {
         return FramePtr{};
       }
       auto outputFrame = make_shared<Frame>();
+      outputFrame->setFrameNumber(frame->getFrameNumber());
       outputFrame->addRemoveAttributes(*frame);
 
       auto                                         cloud = make_shared<pcl::PointCloud<pcl::PointXYZ>>();
@@ -83,7 +84,7 @@ void quantize(const AppParameter& parameter, Stopwatch& clock) {
                     });
     }
 
-    savePly(frames, parameter.outputDataset.getFilePath(), parameter.parallel, false);
+    savePly(outputFrames, parameter.outputDataset.getFilePath(), parameter.parallel, false);
 
     frameNumber += groupOfFramesSize;
   }
