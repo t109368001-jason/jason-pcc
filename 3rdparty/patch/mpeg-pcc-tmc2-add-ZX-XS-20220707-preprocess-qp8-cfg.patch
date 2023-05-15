@@ -1,0 +1,59 @@
+Subject: [PATCH] add ZX-XS-20220707-preprocess-qp8.cfg
+---
+Index: CMakeLists.txt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+--- a/CMakeLists.txt	(revision f20ebac8e927ac06a0ab3fc1ae636c65a23d472c)
++++ b/CMakeLists.txt	(revision 737c38c7c96a143be34c592bdfcb088cb37d9efc)
+@@ -39,9 +39,9 @@
+   INCLUDE( ${TMC2_SOURCE_DIR}/dependencies/cmake/papi.cmake )
+ ENDIF()
+ 
+-SET( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${TMC2_SOURCE_DIR}/lib )
+-SET( CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${TMC2_SOURCE_DIR}/lib )
+-SET( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${TMC2_SOURCE_DIR}/bin )
++#SET( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${TMC2_SOURCE_DIR}/lib )
++#SET( CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${TMC2_SOURCE_DIR}/lib )
++#SET( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${TMC2_SOURCE_DIR}/bin )
+ IF (MSVC)
+   MESSAGE(STATUS "MSVC OPTIONS")
+   ADD_DEFINITIONS("/wd5105")
+Index: cfg/sequence/ZX-XS-20220707-preprocess-qp8.cfg
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/cfg/sequence/ZX-XS-20220707-preprocess-qp8.cfg b/cfg/sequence/ZX-XS-20220707-preprocess-qp8.cfg
+new file mode 100644
+--- /dev/null	(revision 737c38c7c96a143be34c592bdfcb088cb37d9efc)
++++ b/cfg/sequence/ZX-XS-20220707-preprocess-qp8.cfg	(revision 737c38c7c96a143be34c592bdfcb088cb37d9efc)
+@@ -0,0 +1,26 @@
++##
++# Source perameters for the given sequence
++# -- NB: the following paths will likely need to be overridden by the user
++
++reconstructedDataPath:                  ../../result/tmc2/ZX-XS-20220707-preprocess-qp8/rec_%05d.ply
++compressedStreamPath:                   ../../result/tmc2/ZX-XS-20220707-preprocess-qp8/output.bin
++uncompressedDataPath:                   ../../dataset/converted/ZX-XS-20220707-preprocess-qp8/ZX-XS-20220707-preprocess-qp8_%05d.ply
++frameCount:                             32
++startFrameNumber:                       113
++groupOfFramesSize:                      1
++
++# packing
++minimumImageWidth:                      5120
++minimumImageHeight:                     5120
++
++# Segmentation
++minPointCountPerCCPatchSegmentation:    32          # reduce memory usage
++maxAllowedDist2RawPointsDetection:      156250000   # 100,000 mm
++maxAllowedDist2RawPointsSelection:      15625       # 1,000 mm
++
++# Smoothing
++flagGeometrySmoothing:                  0           # reduce memory usage, enable will allocate about 170 GB RAM
++
++noAttributes:                           1
++enhancedProjectionPlane:                0
++geometry3dCoordinatesBitdepth:          15
