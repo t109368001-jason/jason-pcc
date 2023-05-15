@@ -1,0 +1,1 @@
+start ./bin/JPCCAppDatasetQuantizer.exe --configs ./cfg/app/DatasetQuantizer/ctc.cfg
