@@ -18,6 +18,8 @@ ENDIF ()
 IF (NOT EXISTS "${TMC2_DIR}/PATCHED")
     FOREACH (TMC2_PATCH
             "${CMAKE_SOURCE_DIR}/3rdparty/patch/mpeg-pcc-tmc2-for-jpcc.patch"
+            "${CMAKE_SOURCE_DIR}/3rdparty/patch/mpeg-pcc-tmc2-fix-reflectance.patch.patch"
+            "${CMAKE_SOURCE_DIR}/3rdparty/patch/mpeg-pcc-tmc2-move-reflectivity-to-color.patch.patch"
             )
         MESSAGE("mpeg-pcc-tmc2 patch: ${TMC2_DIR} (${TMC2_PATCH})")
         EXECUTE_PROCESS(COMMAND git apply ${TMC2_PATCH} --whitespace=nowarn --ignore-whitespace WORKING_DIRECTORY ${TMC2_DIR} RESULT_VARIABLE ret)

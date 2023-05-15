@@ -1,0 +1,22 @@
+Subject: [PATCH] fix reflectance
+---
+Index: source/lib/PccLibCommon/source/PCCPointSet.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/source/lib/PccLibCommon/source/PCCPointSet.cpp b/source/lib/PccLibCommon/source/PCCPointSet.cpp
+--- a/source/lib/PccLibCommon/source/PCCPointSet.cpp	(revision 89668d5ef5b2f439c319e44143c2e141cb58edf1)
++++ b/source/lib/PccLibCommon/source/PCCPointSet.cpp	(revision 3f1a65e91e1ca755cbbaf2720aa1a6c7a57221cc)
+@@ -743,8 +743,9 @@
+             ifs.read( reinterpret_cast<char*>( &reflectance ), sizeof( uint8_t ) );
+             reflectances_[pointCounter] = reflectance;
+           } else {
+-            auto& reflectance = reflectances_[pointCounter];
+-            ifs.read( reinterpret_cast<char*>( reflectance ), sizeof( uint16_t ) );
++            uint16_t reflectance;
++            ifs.read( reinterpret_cast<char*>( &reflectance ), sizeof( uint16_t ) );
++            reflectances_[pointCounter] = reflectance;
+           }
+         } else {
+           char buffer[128];

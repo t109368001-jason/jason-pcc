@@ -1,0 +1,24 @@
+Subject: [PATCH] move reflectivity to color
+---
+Index: source/lib/PccLibCommon/source/PCCGroupOfFrames.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/source/lib/PccLibCommon/source/PCCGroupOfFrames.cpp b/source/lib/PccLibCommon/source/PCCGroupOfFrames.cpp
+--- a/source/lib/PccLibCommon/source/PCCGroupOfFrames.cpp	(revision 3f1a65e91e1ca755cbbaf2720aa1a6c7a57221cc)
++++ b/source/lib/PccLibCommon/source/PCCGroupOfFrames.cpp	(revision f20ebac8e927ac06a0ab3fc1ae636c65a23d472c)
+@@ -69,6 +69,13 @@
+         frames_.resize( frameNumber - startFrameNumber );
+       } else {
+         if ( colorTransform == COLOR_TRANSFORM_RGB_TO_YCBCR ) { pointSet.convertRGBToYUV(); }
++        if ( !pointSet.hasColors() && pointSet.hasReflectances() ) {
++          pointSet.addColors();
++          for ( size_t i = 0; i < pointSet.getPointCount(); i++ ) {
++            pointSet.setColor( i, PCCColor3B( static_cast<uint8_t>( pointSet.getReflectance( i ) ) ) );
++          }
++          pointSet.removeReflectances();
++        }
+       }
+ #if defined( ENABLE_TBB )
+     } );
