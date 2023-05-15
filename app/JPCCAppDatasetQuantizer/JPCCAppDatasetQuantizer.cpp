@@ -1,8 +1,10 @@
 #include <chrono>
+#include <execution>
 #include <iostream>
 #include <vector>
 
 #include <boost/log/trivial.hpp>
+#include <boost/range/counting_range.hpp>
 
 #include <jpcc/common/ParameterParser.h>
 #include <jpcc/io/Reader.h>
@@ -27,13 +29,28 @@ void quantize(const AppParameter& parameter, Stopwatch& clock) {
     reader->loadAll(frameNumber, groupOfFramesSize, frames, parameter.parallel);
     clock.stop();
 
-    for (auto& frame : frames) {
+    auto func = [&](const FramePtr& frame) {
+      if (!frame) {
+        return;
+      }
       for (size_t i = 0; i < frame->getPointCount(); i++) {
         auto& point = (*frame)[i];
         point[0] /= parameter.qp;
         point[1] /= parameter.qp;
         point[2] /= parameter.qp;
       }
+    };
+
+    if (!parameter.parallel) {
+      for (const auto& frame : frames) {
+        func(frame);
+      }
+    } else {
+      const auto range = boost::counting_range<size_t>(0, frames.size());
+      std::for_each(std::execution::par, range.begin(), range.end(),
+                    [&](const size_t& i) {  //
+                      func(frames[i]);
+                    });
     }
 
     savePly(frames, parameter.outputDataset.getFilePath(), parameter.parallel, false);
