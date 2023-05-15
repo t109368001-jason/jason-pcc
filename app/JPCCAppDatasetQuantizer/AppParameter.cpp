@@ -10,6 +10,7 @@ using namespace po;
 #define APP_OPT_PREFIX "app"
 #define PARALLEL_OPT ".parallel"
 #define GROUP_OF_FRAMES_SIZE_OPT ".groupOfFramesSize"
+#define OFFSET_OPT ".offset"
 #define QP_OPT ".qp"
 
 AppParameter::AppParameter() :
@@ -27,6 +28,9 @@ AppParameter::AppParameter() :
       (string(prefix_ + GROUP_OF_FRAMES_SIZE_OPT).c_str(),                   //
        value<size_t>(&groupOfFramesSize)->default_value(groupOfFramesSize),  //
        "groupOfFramesSize")                                                  //
+      (string(prefix_ + OFFSET_OPT).c_str(),                                 //
+       value<vector<double>>(&offset),                                       //
+       "offset")                                                             //
       (string(prefix_ + QP_OPT).c_str(),                                     //
        value<int>(&qp)->default_value(qp),                                   //
        "qp")                                                                 //
@@ -44,6 +48,7 @@ void AppParameter::notify() {
   if (!filesystem::exists(path.parent_path())) {
     filesystem::create_directories(path.parent_path());
   }
+  THROW_IF_NOT(offset.size() == 0 || offset.size() == 3);
   if (!parallel) {
     groupOfFramesSize = 1;
   }
@@ -53,6 +58,7 @@ ostream& operator<<(ostream& out, const AppParameter& obj) {
   obj.coutParameters(out)                                //
       (PARALLEL_OPT, obj.parallel)                       //
       (GROUP_OF_FRAMES_SIZE_OPT, obj.groupOfFramesSize)  //
+      (OFFSET_OPT, obj.offset)                           //
       (QP_OPT, obj.qp)                                   //
       ;
   out << obj.inputDataset;

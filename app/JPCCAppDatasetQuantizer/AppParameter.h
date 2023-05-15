@@ -10,6 +10,7 @@ class AppParameter : public Parameter {
  public:
   bool                       parallel;
   size_t                     groupOfFramesSize;
+  std::vector<double>        offset;
   int                        qp;
   io::DatasetParameter       inputDataset;
   io::DatasetReaderParameter inputReader;

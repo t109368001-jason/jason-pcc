@@ -33,11 +33,20 @@ void quantize(const AppParameter& parameter, Stopwatch& clock) {
       if (!frame) {
         return;
       }
+      if (!parameter.offset.empty()) {
+        for (size_t i = 0; i < frame->getPointCount(); i++) {
+          PointType& point = (*frame)[i];
+          point[0] += static_cast<PointValueType>(parameter.offset[0]);
+          point[1] += static_cast<PointValueType>(parameter.offset[1]);
+          point[2] += static_cast<PointValueType>(parameter.offset[2]);
+        }
+      }
       for (size_t i = 0; i < frame->getPointCount(); i++) {
-        auto& point = (*frame)[i];
+        PointType& point = (*frame)[i];
         point[0] /= parameter.qp;
         point[1] /= parameter.qp;
         point[2] /= parameter.qp;
+        THROW_IF_NOT(point[0] >= 0 && point[1] >= 0 && point[1] >= 0);
       }
     };
 
