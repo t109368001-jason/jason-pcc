@@ -18,8 +18,8 @@ ENDIF ()
 IF (NOT EXISTS "${TMC2_DIR}/PATCHED")
     FOREACH (TMC2_PATCH
             "${CMAKE_SOURCE_DIR}/3rdparty/patch/mpeg-pcc-tmc2-for-jpcc.patch"
-            "${CMAKE_SOURCE_DIR}/3rdparty/patch/mpeg-pcc-tmc2-fix-reflectance.patch.patch"
-            "${CMAKE_SOURCE_DIR}/3rdparty/patch/mpeg-pcc-tmc2-move-reflectivity-to-color.patch.patch"
+            "${CMAKE_SOURCE_DIR}/3rdparty/patch/mpeg-pcc-tmc2-fix-reflectance.patch"
+            "${CMAKE_SOURCE_DIR}/3rdparty/patch/mpeg-pcc-tmc2-move-reflectivity-to-color.patch"
             "${CMAKE_SOURCE_DIR}/3rdparty/patch/mpeg-pcc-tmc2-add-ZX-XS-20220707-preprocess-qp8-cfg.patch"
             "${CMAKE_SOURCE_DIR}/3rdparty/patch/mpeg-pcc-tmc2-disable-write-V3C_AD.patch"
             )
