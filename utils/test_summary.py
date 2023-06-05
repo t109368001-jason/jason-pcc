@@ -111,10 +111,10 @@ annotate_kwargs = dict(xycoords='data',
 
 parameter_name_to_title_name_dict = {
     "k": r"$K$",
-    "N": r"$N_{GMM,short}$",
-    "alpha": r"$\alpha_{short}$",
-    "ST": r"${TH}_{static}$",
-    "NST": r"${TH}_{static,null}$",
+    "N": r"$N_{GMM,Short}$",
+    "alpha": r"$\alpha_{Short}$",
+    "ST": r"${TH}_{Static}$",
+    "NST": r"${TH}_{Static,Null}$",
 }
 
 
@@ -162,25 +162,25 @@ def copy_file_info_to_result_csv(file_info, result):
     resolution_filter = (result[RESOLUTION_COLUMN_NAME] == file_info["resolution"])
     result.loc[(result[LABEL_COLUMN_NAME] == DYNAMIC_LABEL) & resolution_filter, file_info["value"]] = dynamic_bytes
     result.loc[(result[LABEL_COLUMN_NAME] == STATIC_ADDED_LABEL) & resolution_filter,
-    file_info["value"]] = static_added_bytes
+               file_info["value"]] = static_added_bytes
     result.loc[(result[LABEL_COLUMN_NAME] == STATIC_REMOVED_LABEL) & resolution_filter,
-    file_info["value"]] = static_removed_bytes
+               file_info["value"]] = static_removed_bytes
     result.loc[(result[LABEL_COLUMN_NAME] == TOTAL_LABEL) & resolution_filter, file_info["value"]] = total_bytes
     result.loc[(result[LABEL_COLUMN_NAME] == PSNR_LABEL) & resolution_filter, file_info["value"]] = d1_a2b_psnr
     result.loc[(result[LABEL_COLUMN_NAME] == D2_PSNR_LABEL) & resolution_filter, file_info["value"]] = d2_a2b_psnr
     result.loc[(result[LABEL_COLUMN_NAME] == WALL_LABEL) & resolution_filter,
-    file_info["value"]] = metric_csv.loc[WALL_LABEL, "value"]
+               file_info["value"]] = metric_csv.loc[WALL_LABEL, "value"]
     result.loc[(result[LABEL_COLUMN_NAME] == MEM_LABEL) & resolution_filter,
-    file_info["value"]] = metric_csv.loc[MEM_LABEL, "value"]
+               file_info["value"]] = metric_csv.loc[MEM_LABEL, "value"]
     return result
 
 
 def gen_summary_png(parameter_name, result_csv: pd.DataFrame, file_info_dict):
     x = np.array(list(file_info_dict.keys())).astype(float)
     bd_rate = result_csv.loc[result_csv[LABEL_COLUMN_NAME] == D1_BD_RATE_LABEL,
-    file_info_dict.keys()].values.flatten().astype(float)
+                             file_info_dict.keys()].values.flatten().astype(float)
     dynamic_stream = result_csv.loc[result_csv[LABEL_COLUMN_NAME] == DYNAMIC_STREAM_LABEL,
-    file_info_dict.keys()].values.flatten().astype(float)
+                                    file_info_dict.keys()].values.flatten().astype(float)
     i = x.argsort()
     x = x[i]
     bd_rate = bd_rate[i]
@@ -193,10 +193,10 @@ def gen_summary_png(parameter_name, result_csv: pd.DataFrame, file_info_dict):
     # noinspection PyProtectedMember
     right_axes._get_lines.prop_cycler = axes._get_lines.prop_cycler
     filename = f"test-{parameter_name}.png"
-    axes.set_title(f"{parameter_name_to_title_name_dict[parameter_name]} - D1 BD-Rate/BD-PSNR")
+    axes.set_title(fr"{parameter_name_to_title_name_dict[parameter_name]} - D1 BD-Rate,$R_{{Dynamic}}$")
     axes.set_xlabel(parameter_name_to_title_name_dict[parameter_name])
     axes.set_ylabel("D1 BD-Rate (%)")
-    right_axes.set_ylabel(r"$R_{dynamic}$ (%)")
+    right_axes.set_ylabel(r"$R_{Dynamic}$ (%)")
     x_min = np.min(x)
     x_max = np.max(x)
     x_l = x_max - x_min
@@ -220,6 +220,44 @@ def gen_summary_png(parameter_name, result_csv: pd.DataFrame, file_info_dict):
 
     axes.legend(loc="upper left")
     right_axes.legend(loc="upper right")
+    axes.grid()
+    filepath = ROOT_FOLDER / filename
+    fig.savefig(filepath, **savefig_kwargs)
+    img = Image.open(filepath)
+    img.convert("L").save(filepath.with_stem(filepath.stem + "_gray"))
+
+
+def gen_k_png(parameter_name, result_csv: pd.DataFrame, file_info_dict):
+    x = np.array(list(file_info_dict.keys())).astype(float)
+    bd_rate = result_csv.loc[result_csv[LABEL_COLUMN_NAME] == D1_BD_RATE_LABEL,
+                             file_info_dict.keys()].values.flatten().astype(float)
+    i = x.argsort()
+    x = x[i]
+    y = bd_rate[i]
+    y = y / x
+
+    fig, axes = plt.subplots()
+    fig: plt.Figure
+    axes: plt.Axes
+    filename = f"test-{parameter_name}-2.png"
+    axes.set_title(fr"{parameter_name_to_title_name_dict[parameter_name]} - D1 BD-Rate/K")
+    axes.set_xlabel(parameter_name_to_title_name_dict[parameter_name])
+    axes.set_ylabel("D1 BD-Rate/K (%/K)")
+    x_min = np.min(x)
+    x_max = np.max(x)
+    x_l = x_max - x_min
+    axes.set_xlim(x_min - x_l * 0.2, x_max + x_l * 0.2)
+    yl_min = np.min(y)
+    yl_max = np.max(y)
+    yl_l = yl_max - yl_min
+    axes.set_ylim(yl_min - yl_l * 0.1, yl_max + yl_l * 0.3)
+
+    axes.plot(x, y, label="BD-Rate")
+    # for xx, yy in zip(x, y):
+    #     axes.annotate(f"({xx:.4g}, {yy:.4g})", (xx, yy), **annotate_kwargs)
+    #
+
+    axes.legend(loc="upper left")
     axes.grid()
     filepath = ROOT_FOLDER / filename
     fig.savefig(filepath, **savefig_kwargs)
@@ -251,6 +289,8 @@ def main():
     for parameter_name, file_info_dict in file_info_dict_dict.items():
         result_csv = gen_summary_csv(parameter_name, file_info_dict)
         gen_summary_png(parameter_name, result_csv, file_info_dict)
+        if parameter_name == "k":
+            gen_k_png(parameter_name, result_csv, file_info_dict)
 
 
 if __name__ == '__main__':

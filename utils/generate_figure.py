@@ -7,6 +7,8 @@ from matplotlib import pyplot as plt, cycler
 
 from bd import bd_rate, bd_psnr
 
+from utils.bd import bd_rate, bd_psnr
+
 marker_list = [
     'o',  # 'point'
     'D',  # 'diamond'
@@ -188,6 +190,11 @@ def plot_comparison(proposed_br,
     d1_axes.set_ylabel("D1 PSNR (db)")
     d2_axes.set_xlabel("Bytes")
     d2_axes.set_ylabel("D2 PSNR (db)")
+    y_min = np.min([np.min(proposed_d1_psnr), np.min(gpcc_d1_psnr), np.min(proposed_d2_psnr), np.min(gpcc_d2_psnr)])
+    y_max = np.max([np.max(proposed_d1_psnr), np.max(gpcc_d1_psnr), np.max(proposed_d2_psnr), np.max(gpcc_d2_psnr)])
+    offset = (y_max - y_min) * 0.1
+    d1_axes.set_ylim(y_min - offset, y_max + offset)
+    d2_axes.set_ylim(y_min - offset, y_max + offset)
 
     d1_axes.plot(proposed_br, proposed_d1_psnr, label="Proposed")
     d1_axes.plot(gpcc_br, gpcc_d1_psnr, label="G-PCC")
@@ -198,6 +205,11 @@ def plot_comparison(proposed_br,
     d2_axes.legend()
     d1_axes.grid()
     d2_axes.grid()
+
+    print('D1 BD-RATE: ', bd_rate(gpcc_br, gpcc_d1_psnr, proposed_br, proposed_d1_psnr))
+    print('D1 BD-PSNR: ', bd_psnr(gpcc_br, gpcc_d1_psnr, proposed_br, proposed_d1_psnr))
+    print('D2 BD-RATE: ', bd_rate(gpcc_br, gpcc_d2_psnr, proposed_br, proposed_d2_psnr))
+    print('D2 BD-PSNR: ', bd_psnr(gpcc_br, gpcc_d2_psnr, proposed_br, proposed_d2_psnr))
 
     filepath = folder / filename
     fig.savefig(filepath, **savefig_kwargs)
