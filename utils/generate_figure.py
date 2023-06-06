@@ -16,24 +16,18 @@ marker_list = [
     'v'  # 'triangle_down'
 ]
 
+linestyle = [
+    '-',  # 'solid',
+    ':',  # 'dotted',
+    '--',  # 'dashed',
+    '-.'  # 'dashdot'
+]
 params = {
-    'font.size':
-        16,
+    'font.size': 16,
     'figure.figsize': (10, 10),  # (10, 10) = 1000 x 1000 pixels
-    'lines.markersize':
-        10,
-    "axes.prop_cycle":
-        cycler(
-            color=["r", "g", "b", "k"],
-            linestyle=[
-                '-',  # 'solid',
-                ':',  # 'dotted',
-                '--',  # 'dashed',
-                '-.'  # 'dashdot'
-            ],
-            marker=marker_list)
+    'lines.markersize': 10,
+    "axes.prop_cycle": cycler(color=["r", "g", "b", "k"], linestyle=linestyle, marker=marker_list)
 }
-pylab.rcParams.update(params)
 savefig_kwargs = dict(bbox_inches='tight')
 annotate_kwargs = dict(xycoords='data',
                        textcoords="offset points",
@@ -228,11 +222,29 @@ if __name__ == '__main__':
     folder.mkdir(parents=True, exist_ok=True)
 
     plot_learning_rate([{
-        "alpha": 0.00198,
-        "annotate_x": 350
+        "alpha": 0.01310,
+        "annotate_x": 350,
+        "name": r"$0.01\omega_{k,t_0}$ at $t_N=\frac{N_{GMM,Short}}{2}$"
+    }, {
+        "alpha": 0.00395,
+        "annotate_x": 175,
+        "name": r"$0.5\omega_{k,t_0}$ at $t_N=\frac{N_{GMM,Short}}{4}$"
     }, {
         "alpha": 0.00656,
-        "annotate_x": 700
+        "annotate_x": 700,
+        "name": r"$0.01\omega_{k,t_0}$ at $t_N=N_{GMM,Short}$"
+    }, {
+        "alpha": 0.00198,
+        "annotate_x": 350,
+        "name": r"$0.5\omega_{k,t_0}$ at $t_N=\frac{N_{GMM,Short}}{2}$"
+    }, {
+        "alpha": 0.00328,
+        "annotate_x": 1400,
+        "name": r"$0.01\omega_{k,t_0}$ at $t_N=2N_{GMM,Short}$"
+    }, {
+        "alpha": 0.00099,
+        "annotate_x": 700,
+        "name": r"$0.5\omega_{k,t_0}$ at $t_N=N_{GMM,Short}$"
     }],
                        700,
                        "weight_curve-n[700].png",
