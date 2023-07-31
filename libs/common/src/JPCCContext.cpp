@@ -142,7 +142,7 @@ void JPCCContext::convertToPclBuild(bool parallel) {
 //////////////////////////////////////////////////////////////////////////////////////////////
 void JPCCContext::convertToPclCombination(bool parallel) {
   if (segmentationOutputType_ != SegmentationOutputType::DYNAMIC_STATIC_ADDED_STATIC_REMOVED) {
-    BOOST_THROW_EXCEPTION(std::logic_error("invalid segmentationOutputType"));
+    return;
   }
   staticAddedPclFrames_.resize(staticAdded_->getFrames().size());
   if (!parallel) {
