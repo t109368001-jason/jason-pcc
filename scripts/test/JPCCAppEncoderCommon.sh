@@ -9,7 +9,7 @@ function JPCCAppEncoderCommon() {
   mkdir -p "${output_folder}"
 
   ./bin/JPCCAppEncoder \
-    ${@:-4} \
+    ${@:4} \
     --jpccGMMSegmentationParameter.outputType dynamic-staticAdded-staticRemoved \
     --jpccGMMSegmentationParameter.resolution ${resolution} \
     --jpccEncoderDynamic.tmc3.positionQuantisationEnabled true \
