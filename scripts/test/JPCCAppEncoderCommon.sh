@@ -15,6 +15,8 @@ function JPCCAppEncoderCommon() {
     --jpccEncoderDynamic.tmc3.positionQuantisationEnabled true \
     --jpccEncoderDynamic.tmc3.positionBaseQp ${qp} \
     --jpccEncoderDynamic.tmc3.positionQuantisationOctreeDepth 0 \
+    --jpccEncoderStatic.tmc3.positionBaseQp ${qp} \
+    --jpccEncoderStatic.tmc3.positionQuantisationOctreeDepth 0 \
     --app.compressedStreamPath "${output_folder}/output.bin" \
     --jpccMetricParameter.outputCSVFolder "${output_folder}/" \
     --configs cfg/app/Encoder/ctc-raw.cfg |& tee "${output_folder}/JPCCAppEncoder-$(date +%Y%m%d-%H%M%S).log"
