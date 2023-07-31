@@ -51,15 +51,22 @@ def plot_learning_rate(alpha_dicts, n, filename="learning_rate.png", **kwargs):
     axes.set_title(kwargs.get("title", f"Weight Curve N=700{n}"))
     axes.set_xlabel(r"$t$")
     axes.set_ylabel(r"$\omega$")
+    axes.set_ylim(0, 1.3)
     x = np.arange(n + 1)
     for index, alpha_dict in enumerate(alpha_dicts):
         y = np.power(1 - alpha_dict["alpha"], x)
         annotate_x = alpha_dict["annotate_x"]
         annotate_y = np.power(1 - alpha_dict["alpha"], annotate_x)
-        axes.plot(x, y, label=fr"$\alpha={alpha_dict['alpha']}$", markevery=[annotate_x])
-        axes.annotate(f"({annotate_x:.3g}, {annotate_y:.3g})", (annotate_x, annotate_y), **annotate_kwargs)
+        axes.plot(x,
+                  y,
+                  label=alpha_dict["name"],
+                  markevery=[annotate_x],
+                  linestyle=linestyle[index % 3],
+                  marker=marker_list[index % 4])
+        axes.annotate(f"({annotate_x:.0f}, {annotate_y:.3g})", (annotate_x if annotate_x > 175 else 140, annotate_y),
+                      **annotate_kwargs)
 
-    axes.set_yticks(np.arange(0.0, 1.1, 0.1))
+    axes.set_yticks(np.arange(0.0, 1.4, 0.1))
     axes.legend(loc="upper right")
     axes.grid()
     filepath = folder / filename
@@ -224,31 +231,33 @@ if __name__ == '__main__':
     plot_learning_rate([{
         "alpha": 0.01310,
         "annotate_x": 350,
-        "name": r"$0.01\omega_{k,t_0}$ at $t_N=\frac{N_{GMM,Short}}{2}$"
+        "name": r"$N=\frac{N_{GMM,Short}}{2}$ and $\omega_{i,t_0+N}=0.01\omega_{k,t_0}$"
     }, {
         "alpha": 0.00395,
         "annotate_x": 175,
-        "name": r"$0.5\omega_{k,t_0}$ at $t_N=\frac{N_{GMM,Short}}{4}$"
+        "name": r"$N=\frac{N_{GMM,Short}}{4}$ and $\omega_{i,t_0+N}=0.5\omega_{k,t_0}$"
     }, {
         "alpha": 0.00656,
         "annotate_x": 700,
-        "name": r"$0.01\omega_{k,t_0}$ at $t_N=N_{GMM,Short}$"
+        "name": r"$N=N_{GMM,Short}$ and $\omega_{i,t_0+N}=0.01\omega_{k,t_0}$"
     }, {
         "alpha": 0.00198,
         "annotate_x": 350,
-        "name": r"$0.5\omega_{k,t_0}$ at $t_N=\frac{N_{GMM,Short}}{2}$"
+        "name": r"$N=\frac{N_{GMM,Short}}{2}$ and $\omega_{i,t_0+N}=0.5\omega_{k,t_0}$"
     }, {
         "alpha": 0.00328,
         "annotate_x": 1400,
-        "name": r"$0.01\omega_{k,t_0}$ at $t_N=2N_{GMM,Short}$"
+        "name": r"$N=2N_{GMM,Short}$ and $\omega_{i,t_0+N}=0.01\omega_{k,t_0}$"
     }, {
         "alpha": 0.00099,
         "annotate_x": 700,
-        "name": r"$0.5\omega_{k,t_0}$ at $t_N=N_{GMM,Short}$"
+        "name": r"$N=N_{GMM,Short}$ and $\omega_{i,t_0+N}=0.5\omega_{k,t_0}$"
     }],
-                       700,
+                       1400,
                        "weight_curve-n[700].png",
                        title=r"Weight Curve $N=700$")
+
+    pylab.rcParams.update(params)
 
     plot_gmm([{
         "u": 75,
