@@ -6,7 +6,7 @@ source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)/JPCCAppE
 function JPCCAppEncoderTestBest() {
   local resolution=${1}
   local qp=${2}
-  local postfix=${3:""}
+  local postfix=${3:-""}
   local output_folder="${OUTPUT_FOLDER_PREFIX:="../../result/test-best-${postfix}-$(date +%Y%m%d-%H)/"}/ZX-XS-20220707[seg-split-${resolution}][tmc3-${qp}-0]/"
 
   JPCCAppEncoderCommon ${resolution} ${qp} ${output_folder} ${@:4} \

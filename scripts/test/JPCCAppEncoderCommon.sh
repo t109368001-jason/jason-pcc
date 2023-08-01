@@ -10,7 +10,6 @@ function JPCCAppEncoderCommon() {
 
   ./bin/JPCCAppEncoder \
     ${@:4} \
-    --jpccGMMSegmentationParameter.outputType dynamic-staticAdded-staticRemoved \
     --jpccGMMSegmentationParameter.resolution ${resolution} \
     --jpccEncoderDynamic.tmc3.positionQuantisationEnabled true \
     --jpccEncoderDynamic.tmc3.positionBaseQp ${qp} \
